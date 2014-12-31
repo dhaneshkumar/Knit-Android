@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="ROLE"
+        android:textStyle="bold"
+        android:textSize="22sp"
+        android:textColor="@color/txtgrey"
+        android:gravity="center"/>
+     <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Select your profession"
+        android:textSize="14sp"
+        android:textColor="@color/darkergrey"/>
+	<LinearLayout 
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_marginBottom="16dp"
+	    android:orientation="horizontal">
+	    <TextView
+	        android:id="@+id/parent"
+			android:layout_width="0dp"
+		  	android:layout_height="48dp"
+		  	android:layout_weight="2"
+		  	android:background="@color/white"
+		  	android:gravity="center"
+		    android:text="PARENT" 
+		    android:textStyle="italic"
+	  	    android:textSize="18sp"
+	  	    android:textColor="@color/buttoncolor"/>
+		
+		
+	    <TextView
+	        android:id="@+id/teacher"
+	        android:layout_width="0dp"
+		  	android:layout_height="48dp"
+		  	android:layout_weight="2"
+		  	android:background="@color/white"
+		  	android:gravity="center"
+		    android:text="TEACHER" 
+		    android:textStyle="italic"
+	  	    android:textSize="18sp"
+	  	    android:textColor="@color/buttoncolor" />
+	</LinearLayout>
+
+</LinearLayout>

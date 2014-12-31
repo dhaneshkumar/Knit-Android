@@ -1,0 +1,30 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
+
+    <item
+        android:id="@+id/joinclass"
+        android:icon="@drawable/ic_action_import"
+        android:orderInCategory="200"
+        android:title="Join a Class"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/addclass"
+        android:icon="@drawable/ic_action_add"
+        android:orderInCategory="100"
+        android:title="Add a Class"
+        app:showAsAction="always"/>
+    
+    <item android:id="@+id/refresh"
+       app:showAsAction="never"
+        android:title="Refresh"/>
+     <item
+        android:id="@+id/joinedclasses"
+        android:title="Joined Classes"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/profile"
+        android:title="Profile &amp; Settings"
+        app:showAsAction="never"/>
+   
+
+</menu>

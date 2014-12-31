@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\exploded-aar\SplashScreen\main\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="189711e3d394b356565893919a37b7f0b853adfd">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\classes-5f92c0875253c11ad2d9ab45d372eab23f4efd78.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\libs\internal_impl-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\internal_impl-21.0.3-d8b224f6e22b1af7e3ab6f845fb89298f0aa7b88.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\libs\Parse-1.8.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="61cf79e2775b882ac0ea32d60ea2dbbf6f245cea">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\Parse-1.8.0-de90cc24b2896dbfb2e2f387db92bff8519fe37e.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\libs\common-lang3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="70d0d4ddef60cfa67f28fd3382fc631119380030">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\common-lang3-6adb5453656f3becb553667717252af27edff573.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\exploded-aar\com.android.support\appcompat-v7\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\classes-3cd484b2b7fb1028facdf60d1f9a2a7b1c037ada.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\exploded-aar\SplashScreen\library\unspecified\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="b3bc817d4bb817db57daf2186f740eefe96181ec">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\classes-2d626e59285bad73f2e093fbfd5c37e46be59246.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\libs\json-simple-1.1.1.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="5d6f9b6a9ddca2a28c0216cc44efb2e20d9c23b5">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\json-simple-1.1.1-7cb59ef3246b3664ea8158417e200bc7f759d179.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\exploded-aar\com.android.support\support-v4\21.0.3\classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\classes-02dda1a7319ff62eb4573be62199ef9540887a16.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\libs\bolts-android-1.1.4.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="129874135e6081269ace2312092031558865de12">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\bolts-android-1.1.4-ac760784ce96514b090786173d911ecb665ad744.jar" />
+    </item>
+    <item
+        jar="E:\textSlate\knit\SplashScreen\splashScreen\libs\ParseCrashReporting-1.8.0.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="55e71442ecbce939ce2a1ad75d1a4408a61d6804">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\ParseCrashReporting-1.8.0-8ed8c4c22a5e82b993a4a46d30654d0a8d1ca2b9.jar" />
+    </item>
+    <item
+        jar="E:\sdk\extras\android\m2repository\com\android\support\support-annotations\21.0.3\support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="E:\textSlate\knit\SplashScreen\splashScreen\build\intermediates\pre-dexed\debug\support-annotations-21.0.3-a710e577cbcc5b9c24c85b2f28c89d8d38dfd293.jar" />
+    </item>
+
+</items>

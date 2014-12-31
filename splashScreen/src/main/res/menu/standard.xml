@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:id="@+id/empty"
+        android:title="..."/>
+    <item android:title="1"/>
+    <item android:title="2"/>
+    <item android:title="3"/>
+    <item android:title="4"/>
+    <item android:title="5"/>
+    <item android:title="6"/>
+    <item android:title="7"/>
+    <item android:title="8"/>
+    <item android:title="9"/>
+    <item android:title="10"/>
+    <item android:title="LKG"/>
+    <item android:title="UKG"/>
+    <item android:title="Nursery"/>
+
+</menu>

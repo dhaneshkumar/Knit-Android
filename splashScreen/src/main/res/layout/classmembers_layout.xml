@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/lightbackgroundcolor"
+    android:gravity="center_horizontal">
+
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/ptr_progress"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        style="@style/GNowProgressBar"
+        android:visibility="gone"
+        android:background="@color/white"
+        android:indeterminate="true" />
+
+    <LinearLayout
+        android:id="@+id/progressBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/lightbackgroundcolor"
+        android:gravity="center"
+        android:visibility="gone"
+        android:orientation="vertical"
+       >
+
+        <ProgressBar
+            android:id="@+id/progressBar1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="Removing Child..."
+            android:textSize="18dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/editLayout"
+
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="1dp"
+            android:gravity="center_vertical|left"
+            android:text="Subscribers"
+            android:textSize="22sp"
+            android:textColor="@color/txtgrey" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/memberslistview"></ListView>
+
+        <LinearLayout
+            android:id="@+id/inviteLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="3dp"
+            android:paddingBottom="3dp"
+            android:gravity="center"
+            android:background="@color/buttoncolor">
+
+            <ImageButton
+                android:id="@+id/gallery"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:background="@color/buttoncolor"
+                android:src="@drawable/ic_action_user_add" />
+
+            <TextView
+                android:id="@+id/lettercount"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Invite Parents"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                android:textSize="22sp" />
+
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

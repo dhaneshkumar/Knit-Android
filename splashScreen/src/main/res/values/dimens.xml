@@ -1,0 +1,19 @@
+<resources>
+	<dimen name="image_Width">256dp</dimen>
+	<dimen name="image_Height">256dp</dimen>
+	<dimen name="dimen6">6dp</dimen>
+	<dimen name="dimen4">4dp</dimen>
+	<dimen name="dimen2">2dp</dimen>
+	<dimen name="black_corner_radius">15dp</dimen>
+	<dimen name = "signupPaddingTop">18dp</dimen>
+	<dimen name = "signupTopPaddingButton">12dp</dimen>
+	<dimen name = "signupLeftPaddingButton">40dp</dimen>
+	<dimen name="profile_left_margin">10dp</dimen>
+	<dimen name="profile_right_margin">10dp</dimen>
+	<dimen name="profile_bar_height">1dp</dimen>
+	<dimen name="edit">16sp</dimen>
+	<dimen name="profil_heading_font_size">17sp</dimen>
+	<dimen name="profil_edit_font_size">13sp</dimen>
+	<dimen name="profil_bar_font_size">14sp</dimen>
+	<dimen name = "text_left_margin">5dp</dimen>
+</resources>

@@ -1,0 +1,11 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/forgotpassword"
+        android:title="Forgot?"
+        app:showAsAction="always"/>
+    <item
+        android:id="@+id/signupmenu"
+        android:title="Sign Up"
+        app:showAsAction="always"/>
+</menu>

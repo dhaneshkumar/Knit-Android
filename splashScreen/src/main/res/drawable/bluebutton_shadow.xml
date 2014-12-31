@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+<item android:state_pressed="false">
+	<layer-list>
+	    <!-- "shadow" -->
+	    <item>
+	        <shape android:shape="rectangle" >
+	           <solid android:color="@color/shadowcolor"/>
+	        </shape>
+	    </item>
+	
+		<!-- "button" -->
+	    <item android:bottom="6dp">
+	        <shape android:shape="rectangle"> 
+	            <solid android:color="@color/buttoncolor"/>
+	         </shape>
+	    </item>
+	</layer-list>
+</item>
+<item android:state_pressed="true">
+	<layer-list>
+	    <!-- "shadow" -->
+	    <item>
+	        <shape android:shape="rectangle" >
+	           <solid android:color="@color/shadowcolor"/>
+	           <!-- <corners android:radius="12dp" /> -->
+	        </shape>
+	    </item>
+		<!-- "button" -->
+	    <item android:bottom="6dp">
+	        <shape android:shape="rectangle"> 
+	            <solid android:color="@color/presscolor"/>
+	            <!-- <corners android:radius="12dp" /> -->
+	         </shape>
+	    </item>
+	</layer-list>
+</item>
+</selector>

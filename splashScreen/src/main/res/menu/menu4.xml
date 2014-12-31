@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+     <item
+        android:id="@+id/copyicon"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_copy"
+        android:title="Copy Message"/>
+    <item
+        android:id="@+id/shareicon"
+        android:orderInCategory="200"
+        app:showAsAction="always"
+        android:icon="@drawable/social_share"
+        android:title="Share The Message"/>
+    <item
+        android:id="@+id/deletebin"
+        android:orderInCategory="300"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_delete"
+        android:title="Delete Items"/>
+</menu>

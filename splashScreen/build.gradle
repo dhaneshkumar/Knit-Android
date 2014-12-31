@@ -1,0 +1,30 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    defaultConfig {
+        applicationId "trumplab.textslate"
+        minSdkVersion 11
+        targetSdkVersion 21
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+dependencies {
+    compile project(':library')
+    compile project(':main')
+    compile 'com.android.support:appcompat-v7:21.0.3'
+    compile files('libs/bolts-android-1.1.4.jar')
+    compile files('libs/common-lang3.jar')
+    compile files('libs/json-simple-1.1.1.jar')
+    compile files('libs/Parse-1.8.0.jar')
+    compile files('libs/ParseCrashReporting-1.8.0.jar')
+}

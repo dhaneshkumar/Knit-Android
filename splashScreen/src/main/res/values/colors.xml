@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="lightbackgroundcolor">#f1f1f1</color>
+    <color name="shadowtitlecolor">#e9e9e9</color>
+    <color name="darkgrey">#d7d7d7</color>
+    <color name="darkergrey">#929292</color>
+    <color name="greylight">#fafafa</color>
+    <color name="greyDark">#5e5e5e</color>
+    <color name="hintgrey">#cbcbcb</color>
+    <color name="txtgrey">#555555</color>
+    <color name="txtgreyDark">#3E3E3E</color>
+    <color name="lightcolor">#4a79d1</color>
+    <!-- <color name="buttoncolor">#3498db</color>607D8B  009688 -->
+    <color name="buttoncolor">#29B6F6</color>
+    <color name="lightbuttoncolor">#33b5e5</color>
+    <color name="presscolor">#1c5ed3</color>
+    <color name="shadowcolor">#244f9e</color>
+    <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
+    <color name="googlered">#d4402b</color>
+    <color name="googlegreen">#019a56</color>
+    <color name="googleyellow">#ffb302</color>
+    <color name="color4">#dfe3ee</color>
+    <color name="color3">#f7f7f7</color>
+    <color name="color2">#8b9dc3</color>
+    <color name="grey_medium">#949494</color>
+    <color name="color1">#3b5998</color>
+    <color name="highlightcolor">#6083c8f9</color>
+    <color name="transparent">#00000000</color>
+    <color name="secondarycolor">#e82b32</color>
+    <color name="googleredtrans">#bfd4402b</color>
+    <color name="googlegreentrans">#bf019a56</color>
+    <color name="googleyellowtrans">#bfffb302</color>
+    <color name="googlebluetrans">#bf2974f5</color>
+    <color name="googleblue">#2974f5</color>
+    <color name="buttoncolortrans">#bf3498db</color>
+    <color name="googleblacktrans">#3b000000</color>
+    <color name="internetbarcolor">#bfd4402b</color>
+    <color name="divider">#d6d6d6</color>
+    <color name="parrot">#1eff00</color>
+    <color name="profile_edit">#5f5e5e</color>
+    <color name="profile_heading">#000000</color>
+    <color name="profile_head_bar">#c2c2c2</color>
+    <color name="profile_tail_bar">#eeeeee</color>
+    <color name="profile_title">#999999</color>
+
+</resources>

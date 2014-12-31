@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightbackgroundcolor"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/internetbar"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@color/internetbarcolor"
+        android:gravity="center"
+        android:text="No internet Connection"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/progresslayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <ScrollView
+            android:id="@+id/createclasslayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/white"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/school"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:gravity="center_vertical|left"
+                        android:maxEms="15"
+                        android:paddingBottom="18dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="10dp"
+                        android:paddingTop="18dp"
+                        android:singleLine="true"
+                        android:text="KNIT"
+                        android:textColor="@color/black"
+                        android:textSize="16sp" />
+
+                    <LinearLayout
+                        android:id="@+id/schoolButton"
+                        android:layout_width="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:layout_width="20dp"
+                            android:layout_height="20dp"
+                            android:layout_marginRight="5dp"
+                            android:src="@drawable/ic_action_expand" />
+                    </LinearLayout>
+
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/divider"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.7dp"
+                    android:layout_weight="1"
+                    android:background="#CECECE"
+                    android:text=""
+                    android:textColor="@color/txtgreyDark"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/classnameid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#ffffff"
+                    android:gravity="center_vertical|left"
+                    android:hint="Enter Class Name"
+                    android:inputType="textCapCharacters|textNoSuggestions"
+                    android:paddingBottom="18dp"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="1dp"
+                    android:paddingTop="18dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="#8A8A8A"
+                    android:textSize="16sp" />
+
+                <TextView
+                    android:id="@+id/divider2"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.7dp"
+                    android:layout_weight="1"
+                    android:background="#CECECE"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="8dp"
+                    android:text=""
+                    android:textColor="@color/txtgreyDark"
+                    android:textSize="16sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#CECECE"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:background="#ffffff"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:id="@+id/standard"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="#ffffff"
+                                android:paddingBottom="18dp"
+                                android:paddingLeft="15dp"
+                                android:paddingRight="1dp"
+                                android:paddingTop="18dp"
+                                android:text="Standard"
+                                android:textColor="#8A8A8A"
+                                android:textSize="16sp" />
+
+
+                            <LinearLayout
+                                android:id="@+id/standardButton"
+                                android:layout_width="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:padding="10dp"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginRight="4dp"
+                                    android:src="@drawable/ic_action_expand" />
+                            </LinearLayout>
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="0.7dp"
+                            android:layout_weight="1"
+                            android:background="#ffffff"
+                            android:gravity="center">
+
+                            <TextView
+                                android:id="@+id/division"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:background="#ffffff"
+                                android:paddingBottom="18dp"
+                                android:paddingLeft="15dp"
+                                android:paddingRight="1dp"
+                                android:paddingTop="18dp"
+                                android:text="Division"
+                                android:textColor="#8A8A8A"
+                                android:textSize="16sp" />
+
+                            <LinearLayout
+                                android:id="@+id/divisionButton"
+                                android:layout_width="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_centerVertical="true"
+                                android:padding="10dp"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginRight="5dp"
+                                    android:src="@drawable/ic_action_expand" />
+                            </LinearLayout>
+
+                        </RelativeLayout>
+                    </LinearLayout>
+                </RelativeLayout>
+
+                <Button
+                    android:id="@+id/create_button"
+                    android:layout_width="128dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="right"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginTop="40dp"
+                    android:background="@drawable/round_corner_button_color"
+                    android:text="Create"
+                    android:textColor="@color/white"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </ScrollView>
+
+        <LinearLayout
+            android:id="@+id/codeviewlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="48dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/codetxtview"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal"
+                    android:background="@drawable/codestyle"
+                    android:padding="6dp"
+                    android:text="#GD5928"
+                    android:textColor="@color/txtgrey"
+                    android:textSize="32sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:text="This is a unique code generated for every class and is to be used by parents to subscribe to your classroom."
+                    android:textColor="@color/darkergrey"
+                    android:textSize="14sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="6dp"
+                    android:layout_marginRight="6dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/instructions"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="left"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="1dp"
+                        android:paddingTop="10dp"
+                        android:text="Instructions"
+                        android:textColor="@color/buttoncolor"
+                        android:textSize="18sp"
+                        android:textStyle="italic" />
+
+                    <TextView
+                        android:id="@+id/okay_button"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@color/transparent"
+                        android:gravity="right"
+                        android:paddingBottom="10dp"
+                        android:paddingLeft="1dp"
+                        android:paddingRight="15dp"
+                        android:paddingTop="10dp"
+                        android:text="OK"
+                        android:textColor="@color/buttoncolor"
+                        android:textSize="18sp" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/addclass"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_add"
+        android:title="Add a Class"/>
+   <item android:id="@+id/refresh"
+        app:showAsAction="never"
+        android:title="Refresh"/>
+   <item android:id="@+id/profile"
+        app:showAsAction="never"
+       	 android:title="Profile &amp; Settings"/>
+   <item android:id="@+id/signout"
+       app:showAsAction="never"
+       	 android:title="Sign Out"/>
+</menu>

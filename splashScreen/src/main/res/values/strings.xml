@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Knit</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="action_settings">Settings</string>
+    <string name="prompt_choice">Choose</string>
+    <string name="attherate">\@</string>
+    <string name="instructions">Enter the code and  join class rooms. you will start getting notifications after that. </string>
+    <string name="FB_APP_id">739740569426782</string>
+    
+    <string-array name="optionschoice">
+		<item>Copy</item>
+		<item>Share</item>
+		<item>Delete</item>
+		</string-array>
+     <string-array name="mrchoice">
+        <item>...</item>
+        <item>Mr</item>
+        <item>Mrs</item>
+        <item>Ms</item>
+     </string-array>
+     <string-array name="relation">
+        <item>Father</item>
+        <item>Mother</item>
+        <item>Gaurdian</item>
+     </string-array>
+     <string-array name="classnames">
+        <item>English</item>
+        <item>History</item>
+        <item>Hindi</item>
+     </string-array>
+     <string-array name="options">
+        <item></item>
+        <item>Share</item>
+        <item>Delete</item>
+     </string-array>
+</resources>

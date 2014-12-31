@@ -1,0 +1,113 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightbackgroundcolor"
+    android:fillViewport="true" >
+
+    <LinearLayout
+         android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f1f1f1"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/internetbar"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:background="@color/internetbarcolor"
+            android:gravity="center"
+            android:text="No internet Connection"
+            android:textColor="@color/white"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/progresslayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/logText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Logging in...."
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/loginlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/loginheadline"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical|left"
+                android:paddingBottom="@dimen/signupPaddingTop"
+                android:paddingLeft="16dp"
+                android:paddingRight="1dp"
+                android:paddingTop="@dimen/signupPaddingTop"
+                android:text="Sign In"
+                android:textColor="@color/txtgrey"
+                android:textSize="22sp" />
+
+            <EditText
+                android:id="@+id/usernameid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/white"
+                android:hint="Email-id"
+                android:inputType="textEmailAddress"
+                android:paddingBottom="@dimen/signupPaddingTop"
+                android:paddingLeft="16dp"
+                android:paddingRight="1dp"
+                android:paddingTop="@dimen/signupPaddingTop"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/passwordid"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:background="@color/white"
+                android:hint="Password"
+                android:paddingBottom="@dimen/signupPaddingTop"
+                android:paddingLeft="16dp"
+                android:paddingRight="1dp"
+                android:paddingTop="@dimen/signupPaddingTop"
+                android:password="true"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/signin_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="32dp"
+                android:paddingBottom="@dimen/signupTopPaddingButton"
+                android:paddingLeft="@dimen/signupLeftPaddingButton"
+                android:paddingRight="@dimen/signupLeftPaddingButton"
+                android:paddingTop="@dimen/signupTopPaddingButton"
+                android:background="@drawable/round_corner_button_color"
+                android:text="Sign In"
+                android:textColor="@color/white"
+                android:textSize="18sp" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

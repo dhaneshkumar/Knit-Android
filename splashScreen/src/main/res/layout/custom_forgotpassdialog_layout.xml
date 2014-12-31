@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" 
+    android:background="@color/lightbackgroundcolor">
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:paddingLeft="16dp"
+        android:text="Forgot Password?"
+        android:gravity="center_vertical"
+        android:textSize="22sp"
+        android:textColor="@color/txtgrey"/>
+    <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/grey_medium"
+    android:orientation="vertical" >
+    <EditText
+  	    android:id="@+id/emailid_forgot"
+	  	android:layout_width="match_parent"
+	    android:layout_height="48dp"
+	    android:layout_margin="1dp"
+	    android:background="@color/white"
+	    android:paddingLeft="10dp"
+	    android:hint="Enter your Email-id."
+	    android:inputType="textEmailAddress"
+	    android:textSize="14sp"
+  	    android:textColor="@color/black"/>
+    </LinearLayout>
+    <TextView 
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="A verification mail will be sent to this email-id"
+        android:textSize="12sp"
+        android:textColor="@color/darkergrey"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"/>
+	<TextView
+  	  	    android:id="@+id/button_forgotpass"
+  	  	    android:layout_width="wrap_content"
+  	  	    android:layout_height="wrap_content"
+  	  	    android:text="Send"
+  	  	    android:padding="16dp"
+  	  	    android:layout_gravity="right"
+ 	  	    android:textStyle="bold"
+ 	  	    android:textSize="20sp"
+ 	  	    android:textColor="@color/buttoncolor"/>
+</LinearLayout>

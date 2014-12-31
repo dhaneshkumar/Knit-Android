@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="trumplab.textslate"
+    android:versionCode="13"
+    android:versionName="2.1.5">
+
+    <uses-sdk
+        android:minSdkVersion="11"
+        android:targetSdkVersion="21" />
+
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+    <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
+    <uses-permission android:name="com.google.android.apps.photos.permission.GOOGLE_PHOTOS" />
+
+    <permission
+        android:name="trumplab.textslate.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+
+    <uses-permission android:name="trumplab.textslate.permission.C2D_MESSAGE" />
+
+    <!-- For Google Login -->
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <!-- For Google Login -->
+
+    <application
+        android:name="trumplabs.schoolapp.Application"
+        android:allowBackup="true"
+        android:icon="@drawable/logo12"
+        android:label="@string/app_name"
+        android:launchMode="singleTask"
+        android:theme="@style/AppBaseTheme">
+        <activity
+            android:name="loginpages.SplashScreen"
+            android:label="@string/app_name"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="loginpages.LoginPage"
+            android:label="@string/app_name"
+            android:windowSoftInputMode="adjustPan">
+            <intent-filter>
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="trumplabs.schoolapp.CreateClass"></activity>
+        <activity
+            android:name="trumplabs.schoolapp.ClassContainer"
+            android:windowSoftInputMode="stateHidden"></activity>
+        <activity android:name="trumplabs.schoolapp.MainActivity"></activity>
+        <activity android:name="loginpages.Signup1Class"></activity>
+        <activity android:name="loginpages.Signup1_5Class"></activity>
+        <activity android:name="profileDetails.ProfilePage"></activity>
+        <activity android:name="profileDetails.FAQs"></activity>
+        <activity
+            android:name="loginpages.Signup2Class"
+            android:windowSoftInputMode="stateVisible"></activity>
+        <activity android:name="joinclasses.JoinClassesContainer"></activity>
+        <activity android:name="joinclasses.AddChildToClass"></activity>
+        <activity android:name="utility.Utility"></activity>
+        <activity android:name="utility.PushOpen"></activity>
+        <activity android:name="additionals.InviteParents"></activity>
+        <activity android:name="additionals.ClassInstructions"></activity>
+        <activity android:name="additionals.ShareInstructions"></activity>
+
+        <service android:name="com.parse.PushService" />
+
+        <receiver android:name="com.parse.ParseBroadcastReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.USER_PRESENT" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.parse.GcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND">
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
+
+                <category android:name="trumplab.textslate" />
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="utility.MyReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.parse.push.intent.RECEIVE" />
+                <action android:name="com.parse.push.intent.DELETE" />
+                <action android:name="com.parse.push.intent.OPEN" />
+                <action android:name="notification_cancelled" />
+                <action android:name="NOTIFICATION_DELETED" />
+            </intent-filter>
+        </receiver>
+    </application>
+
+</manifest>

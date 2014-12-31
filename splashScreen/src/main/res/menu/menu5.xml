@@ -1,0 +1,16 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android" 
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+      
+     <item android:id="@+id/refresh"
+       app:showAsAction="always"
+        android:icon="@drawable/ic_action_reload"
+        android:orderInCategory="100"
+        android:title="Refresh"/>
+    <item
+        android:id="@+id/classmsgmenu"
+        android:orderInCategory="100"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_mail"
+        android:title="Go to Class Messages"/>
+   
+</menu>
