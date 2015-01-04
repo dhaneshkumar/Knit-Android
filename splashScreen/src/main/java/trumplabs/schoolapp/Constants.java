@@ -36,7 +36,7 @@ public class Constants {
   
   
   /*
-   * Databse table names
+   * Database table names
    */
   public static final String MESSAGE_NEEDERS= "Messageneeders";
   

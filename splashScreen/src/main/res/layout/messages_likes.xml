@@ -154,7 +154,7 @@
                     android:id="@+id/likeButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/buttoncolor"
+                    android:background="@color/white"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
@@ -166,8 +166,8 @@
                         android:id="@+id/like"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="20"
-                        android:textColor="@color/white"
+                        android:text="0"
+                        android:textColor="@color/buttoncolor"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -177,7 +177,7 @@
                         android:layout_height="24dp"
                         android:layout_marginLeft="4dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_action_like1"></ImageView>
+                        android:src="@drawable/ic_action_like"></ImageView>
 
 
                 </LinearLayout>
@@ -197,7 +197,7 @@
                     android:id="@+id/confuseButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/buttoncolor"
+                    android:background="@color/white"
                     android:gravity="center"
                     android:orientation="horizontal"
                     android:paddingLeft="16dp"
@@ -209,8 +209,8 @@
                         android:id="@+id/confusion"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="20"
-                        android:textColor="@color/white"
+                        android:text="0"
+                        android:textColor="@color/buttoncolor"
                         android:textSize="13sp"
                         android:textStyle="bold" />
 
@@ -220,7 +220,7 @@
                         android:layout_height="24dp"
                         android:layout_marginLeft="4dp"
                         android:layout_gravity="center"
-                        android:src="@drawable/ic_action_like1"></ImageView>
+                        android:src="@drawable/ic_action_help"></ImageView>
 
 
                 </LinearLayout>

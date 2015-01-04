@@ -15,6 +15,9 @@ import android.widget.TextView;
 import android.widget.TextView.BufferType;
 import baseclasses.MyActionBarActivity;
 
+/**
+ *  Contain instructions for teacher to invite parents
+ */
 public class ClassInstructions extends MyActionBarActivity {
 
   @Override
@@ -31,7 +34,7 @@ public class ClassInstructions extends MyActionBarActivity {
     
     
 
-    String subString1 = "Download our free TextSlate app and enter ";
+    String subString1 = "Download our free Knit app and enter ";
     String subString2 = " to join ";
    
     String andr = subString1 +

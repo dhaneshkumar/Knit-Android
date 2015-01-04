@@ -56,7 +56,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-public class messages_likes extends Fragment implements OnRefreshListener {
+public class Messages_old extends Fragment implements OnRefreshListener {
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
     public static ListView listv;
@@ -317,9 +317,6 @@ public class messages_likes extends Fragment implements OnRefreshListener {
             return msgs.size();
         }
 
-
-
-
         @Override
         public Object getItem(int position) {
 
@@ -355,16 +352,17 @@ public class messages_likes extends Fragment implements OnRefreshListener {
             imgmsgview = (ImageView) row.findViewById(R.id.imgmsgcontent);
             final TextView faildownload = (TextView) row.findViewById(R.id.faildownload);
             final ProgressBar uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
-
-
-            final LinearLayout likeButton = (LinearLayout) row.findViewById(R.id.likeButton);
-            final LinearLayout confuseButton = (LinearLayout) row.findViewById(R.id.confuseButton);
-            final TextView like = (TextView) row.findViewById(R.id.like);
-            final TextView confusion = (TextView) row.findViewById(R.id.confusion);
-            final ImageView likeIcon = (ImageView) row.findViewById(R.id.likeIcon);
-            final ImageView confusingIcon = (ImageView) row.findViewById(R.id.confusionIcon);
-           // final LinearLayout countLayout = (LinearLayout) row.findViewById(R.id.countLayout);
-
+      /*
+       * final TextView likeCount = (TextView) row.findViewById(R.id.likeCount); final TextView
+       * confusionCount = (TextView) row.findViewById(R.id.confusionCount); final LinearLayout
+       * likeButton = (LinearLayout) row.findViewById(R.id.likeButton); final LinearLayout
+       * confuseButton = (LinearLayout) row.findViewById(R.id.confuseButton); final TextView like =
+       * (TextView) row.findViewById(R.id.like); final TextView confusion = (TextView)
+       * row.findViewById(R.id.confusion); final ImageView likeIcon = (ImageView)
+       * row.findViewById(R.id.likeIcon); final ImageView confusingIcon = (ImageView)
+       * row.findViewById(R.id.confusionIcon); final LinearLayout countLayout = (LinearLayout)
+       * row.findViewById(R.id.countLayout);
+       */
             // Setting type face
             // like.setTypeface(typeFace);
             // confusion.setTypeface(typeFace);

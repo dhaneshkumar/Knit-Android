@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 
 import joinclasses.JoinClassesContainer;
+import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
@@ -56,6 +57,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+/**
+ * Class for Inbox's functions & activity
+ */
 public class Messages extends Fragment implements OnRefreshListener {
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
@@ -92,7 +96,7 @@ public class Messages extends Fragment implements OnRefreshListener {
             boolean pushOpen = getActivity().getIntent().getExtras().getBoolean("pushOpen", false);
             if (pushOpen) {
 
-                if(Utility.isInternetOn(getActivity())) {
+                if (Utility.isInternetOn(getActivity())) {
                     if (MainActivity.mHeaderProgressBar != null) {
                         Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
                     }
@@ -317,6 +321,7 @@ public class Messages extends Fragment implements OnRefreshListener {
             return msgs.size();
         }
 
+
         @Override
         public Object getItem(int position) {
 
@@ -335,7 +340,7 @@ public class Messages extends Fragment implements OnRefreshListener {
         public View getView(final int position, View convertView, ViewGroup parent) {
             View row = convertView;
             if (row == null) {
-                row = layoutinflater.inflate(R.layout.messages, parent, false);
+                row = layoutinflater.inflate(R.layout.messages_likes, parent, false);
             }
 
             // on select list item, set background color white
@@ -352,134 +357,207 @@ public class Messages extends Fragment implements OnRefreshListener {
             imgmsgview = (ImageView) row.findViewById(R.id.imgmsgcontent);
             final TextView faildownload = (TextView) row.findViewById(R.id.faildownload);
             final ProgressBar uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
-      /*
-       * final TextView likeCount = (TextView) row.findViewById(R.id.likeCount); final TextView
-       * confusionCount = (TextView) row.findViewById(R.id.confusionCount); final LinearLayout
-       * likeButton = (LinearLayout) row.findViewById(R.id.likeButton); final LinearLayout
-       * confuseButton = (LinearLayout) row.findViewById(R.id.confuseButton); final TextView like =
-       * (TextView) row.findViewById(R.id.like); final TextView confusion = (TextView)
-       * row.findViewById(R.id.confusion); final ImageView likeIcon = (ImageView)
-       * row.findViewById(R.id.likeIcon); final ImageView confusingIcon = (ImageView)
-       * row.findViewById(R.id.confusionIcon); final LinearLayout countLayout = (LinearLayout)
-       * row.findViewById(R.id.countLayout);
-       */
+
+
+            final LinearLayout likeButton = (LinearLayout) row.findViewById(R.id.likeButton);
+            final LinearLayout confuseButton = (LinearLayout) row.findViewById(R.id.confuseButton);
+            final TextView likes = (TextView) row.findViewById(R.id.like);
+            final TextView confused = (TextView) row.findViewById(R.id.confusion);
+            final ImageView likeIcon = (ImageView) row.findViewById(R.id.likeIcon);
+            final ImageView confusingIcon = (ImageView) row.findViewById(R.id.confusionIcon);
+
             // Setting type face
-            // like.setTypeface(typeFace);
-            // confusion.setTypeface(typeFace);
+            //likes.setTypeface(typeFace);
+            //confused.setTypeface(typeFace);
 
 
-            ParseObject object = (ParseObject) getItem(position);
+            final ParseObject object = (ParseObject) getItem(position);
 
       /*
        * Setting likes and confused count
        */
-      /*
-       * if (object.getInt(Constants.LIKE_COUNT) > 0)
-       * likeCount.setText(object.getInt(Constants.LIKE_COUNT) + " liked"); if
-       * (object.getInt(Constants.CONFUSED_COUNT) > 0)
-       * confusionCount.setText(object.getInt(Constants.CONFUSED_COUNT) + " confused");
-       * 
-       * if (object.getInt(Constants.CONFUSED_COUNT) > 0 || object.getInt(Constants.LIKE_COUNT) > 0)
-       * countLayout.setVisibility(View.VISIBLE); else countLayout.setVisibility(View.GONE);
-       * 
-       * if (object.getBoolean(Constants.LIKE)) {
-       * likeIcon.setImageResource(R.drawable.ic_action_like);
-       * like.setTextColor(getResources().getColor(R.color.buttoncolor)); }
-       * 
-       * if (object.getBoolean(Constants.CONFUSING)) {
-       * confusingIcon.setImageResource(R.drawable.ic_action_help);
-       * confusion.setTextColor(getResources().getColor(R.color.buttoncolor)); }
-       */
+
+
+            if (object.getInt(Constants.LIKE_COUNT) > 0)
+                likes.setText(object.getInt(Constants.LIKE_COUNT) + "");
+            if (object.getInt(Constants.CONFUSED_COUNT) > 0)
+                confused.setText(object.getInt(Constants.CONFUSED_COUNT) + "");
+
+
+            if (object.getBoolean(Constants.LIKE))
+                liked(likeIcon, likes, likeButton);
+            else
+                unLiked(likeIcon, likes, likeButton);
+
+            if (object.getBoolean(Constants.CONFUSING))
+                confused(confusingIcon, confused, confuseButton);
+            else
+                unConfused(confusingIcon, confused, confuseButton);
+
+
 
       /*
-       * Setting like and confusing button functionality
+       * Setting likes and confused button functionality
        */
 
-      /*
-       * likeButton.setOnClickListener(new OnClickListener() {
-       * 
-       * @Override public void onClick(View v) {
-       * 
-       * ParseObject object1 = (ParseObject) getItem(position);
-       * 
-       * boolean likeFlag = object1.getBoolean(Constants.LIKE); boolean confusingFlag =
-       * object1.getBoolean(Constants.CONFUSING);
-       * 
-       * if (likeFlag) { likeFlag = false; likeIcon.setImageResource(R.drawable.ic_action_like1);
-       * like.setTextColor(getResources().getColor(R.color.greyDark));
-       * 
-       * 
-       * object1.put(Constants.LIKE, false); int likes = object1.getInt(Constants.LIKE_COUNT); int
-       * confusions = object1.getInt(Constants.CONFUSED_COUNT); if (likes > 0) {
-       * object1.put(Constants.LIKE_COUNT, --likes); likeCount.setText(likes + " liked");
-       * 
-       * if(likes ==0){ likeCount.setVisibility(View.GONE);
-       * 
-       * if(confusions == 0) countLayout.setVisibility(View.GONE); }
-       * 
-       * 
-       * try { object1.pin(); } catch (ParseException e) { } } } else {
-       * 
-       * if (!confusingFlag) { likeFlag = true;
-       * likeIcon.setImageResource(R.drawable.ic_action_like);
-       * like.setTextColor(getResources().getColor(R.color.buttoncolor));
-       * 
-       * object1.put(Constants.LIKE, true); int likes = object1.getInt(Constants.LIKE_COUNT);
-       * object1.put(Constants.LIKE_COUNT, ++likes); likeCount.setText(likes + " liked");
-       * countLayout.setVisibility(View.VISIBLE);
-       * 
-       * 
-       * if(likes >0) { countLayout.setVisibility(View.VISIBLE);
-       * likeCount.setVisibility(View.VISIBLE); }
-       * 
-       * Queries2.increaseLikeCount(object1);
-       * 
-       * try { object1.pin(); } catch (ParseException e) { } } }
-       * 
-       * 
-       * } });
-       * 
-       * 
-       * 
-       * Setting like and confusing button functionality
-       * 
-       * 
-       * confuseButton.setOnClickListener(new OnClickListener() {
-       * 
-       * @Override public void onClick(View v) {
-       * 
-       * ParseObject object1 = (ParseObject) getItem(position);
-       * 
-       * boolean likeFlag = object1.getBoolean(Constants.LIKE); boolean confusingFlag =
-       * object1.getBoolean(Constants.CONFUSING); if (confusingFlag) { confusingFlag = false;
-       * confusingIcon.setImageResource(R.drawable.ic_action_help1);
-       * confusion.setTextColor(getResources().getColor(R.color.greyDark));
-       * 
-       * object1.put(Constants.CONFUSING, false); int confusions =
-       * object1.getInt(Constants.CONFUSED_COUNT); int likes = object1.getInt(Constants.LIKE_COUNT);
-       * if (confusions > 0) { confusions--; object1.put(Constants.CONFUSED_COUNT, confusions);
-       * confusionCount.setText(confusions + " confused");
-       * 
-       * if(confusions == 0) { confusionCount.setVisibility(View.GONE);
-       * 
-       * if(likes == 0) countLayout.setVisibility(View.GONE); }
-       * 
-       * try { object1.pin(); } catch (ParseException e) { } }
-       * 
-       * } else { if (!likeFlag) { confusingFlag = true;
-       * confusingIcon.setImageResource(R.drawable.ic_action_help);
-       * confusion.setTextColor(getResources().getColor(R.color.buttoncolor));
-       * 
-       * object1.put(Constants.CONFUSING, true); int confusions =
-       * object1.getInt(Constants.CONFUSED_COUNT); object1.put(Constants.CONFUSED_COUNT,
-       * ++confusions); confusionCount.setText(confusions + " confused");
-       * countLayout.setVisibility(View.VISIBLE);
-       * 
-       * 
-       * if(confusions >0) { countLayout.setVisibility(View.VISIBLE);
-       * confusionCount.setVisibility(View.VISIBLE); } try { object1.pin(); } catch (ParseException
-       * e) { } } } } });
-       */
+
+            likeButton.setOnClickListener(new OnClickListener() {
+
+                                              @Override
+                                              public void onClick(View v) {
+
+                                                  ParseObject object1 = object;
+
+                                                  boolean likeFlag = object1.getBoolean(Constants.LIKE);
+                                                  boolean confusingFlag =
+                                                          object1.getBoolean(Constants.CONFUSING);
+
+                                                  if (likeFlag) {
+                                                      likeFlag = false;
+
+                                                      unLiked(likeIcon, likes, likeButton);
+
+                                                      object1.put(Constants.LIKE, likeFlag);
+
+                                                      int likeCount = object1.getInt(Constants.LIKE_COUNT);
+
+                                                      if (likeCount > 0) {
+                                                          object1.put(Constants.LIKE_COUNT, --likeCount);
+                                                          likes.setText(likeCount + "");
+
+                                                          //updating locally
+                                                          object1.pinInBackground();
+                                                          //updating globally
+                                                          MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object1.getObjectId());
+                                                          decreaseLikeCount.execute();
+                                                      }
+                                                  } else {
+
+
+                                                      likeFlag = true;
+                                                      liked(likeIcon, likes, likeButton);
+
+                                                      object1.put(Constants.LIKE, likeFlag);
+                                                      int likeCount = object1.getInt(Constants.LIKE_COUNT);
+                                                      object1.put(Constants.LIKE_COUNT, ++likeCount);
+                                                      likes.setText(likeCount + "");
+
+                                                      //updating globally
+                                                      MessagesHelper.IncreaseLikeCount increaseLikeCount = new MessagesHelper.IncreaseLikeCount(object1);
+                                                      increaseLikeCount.execute();
+
+                                                      //Ensuring that both buttons are not clicked simultaneously
+
+                                                      if (!confusingFlag) {
+                                                          //storing locally
+                                                          try {
+                                                              object1.pin();
+                                                          } catch (ParseException e) {
+                                                              e.printStackTrace();
+                                                          }
+                                                      } else {
+                                                          confusingFlag = false;
+                                                          unConfused(confusingIcon, confused, confuseButton);
+                                                          object1.put(Constants.CONFUSING, false);
+
+                                                          int confusionedCount = object1.getInt(Constants.CONFUSED_COUNT);
+                                                          if (confusionedCount > 0) {
+                                                              confusionedCount--;
+                                                              object1.put(Constants.CONFUSED_COUNT, confusionedCount);
+                                                              confused.setText(confusionedCount + "");
+
+                                                              //updating locally
+                                                              object1.pinInBackground();
+
+                                                              MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object1.getObjectId());
+                                                              decreaseConfusedCount.execute();
+
+                                                          }
+                                                      }
+
+                                                  }
+                                              }
+                                          }
+            );
+
+
+            // Setting like and confusing button functionality
+
+
+            confuseButton.setOnClickListener(new OnClickListener() {
+
+                                                 @Override
+                                                 public void onClick(View v) {
+
+                                                     ParseObject object1 = (ParseObject) getItem(position);
+
+                                                     boolean likeFlag = object1.getBoolean(Constants.LIKE);
+                                                     boolean confusingFlag =
+                                                             object1.getBoolean(Constants.CONFUSING);
+                                                     if (confusingFlag) {
+                                                         confusingFlag = false;
+
+                                                         unConfused(confusingIcon, confused, confuseButton);
+
+                                                         object1.put(Constants.CONFUSING, false);
+                                                         int confusionedCount = object1.getInt(Constants.CONFUSED_COUNT);
+                                                         if (confusionedCount > 0) {
+                                                             confusionedCount--;
+                                                             object1.put(Constants.CONFUSED_COUNT, confusionedCount);
+                                                             confused.setText(confusionedCount + "");
+
+                                                             //updating locally
+                                                             object1.pinInBackground();
+
+                                                             MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object1.getObjectId());
+                                                             decreaseConfusedCount.execute();
+                                                         }
+
+                                                     } else {
+
+                                                         confusingFlag = true;
+
+                                                         confused(confusingIcon, confused, confuseButton);
+
+                                                         object1.put(Constants.CONFUSING, true);
+                                                         int confusions =
+                                                                 object1.getInt(Constants.CONFUSED_COUNT);
+                                                         object1.put(Constants.CONFUSED_COUNT,
+                                                                 ++confusions);
+                                                         confused.setText(confusions + "");
+                                                         MessagesHelper.IncreaseCounfusedCount increaseCounfusedCount = new MessagesHelper.IncreaseCounfusedCount(object1.getObjectId());
+                                                         increaseCounfusedCount.execute();
+
+                                                         if (!likeFlag) {
+
+                                                             object1.pinInBackground();
+                                                         } else {
+                                                             likeFlag = false;
+
+                                                             unLiked(likeIcon, likes, likeButton);
+
+                                                             object1.put(Constants.LIKE, false);
+
+                                                             int likeCount = object1.getInt(Constants.LIKE_COUNT);
+
+                                                             if (likeCount > 0) {
+                                                                 object1.put(Constants.LIKE_COUNT, --likeCount);
+                                                                 likes.setText(likeCount + "");
+
+                                                                 //updating globally
+                                                                 MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object1.getObjectId());
+                                                                 decreaseLikeCount.execute();
+
+                                                                 //updating locally
+                                                                 object1.pinInBackground();
+                                                             }
+
+                                                         }
+                                                     }
+                                                 }
+                                             }
+
+            );
 
 
             uploadprogressbar.setVisibility(View.GONE);
@@ -510,12 +588,16 @@ public class Messages extends Fragment implements OnRefreshListener {
             Str = object.getString("Creator");
             sender.setText(Str);
 
-            if (senderThumbnailFile.exists()) {
+            if (senderThumbnailFile.exists())
+
+            {
 
                 // image file present locally
                 Bitmap mySenderBitmap = BitmapFactory.decodeFile(senderThumbnailFile.getAbsolutePath());
                 senderImg.setImageBitmap(mySenderBitmap);
-            } else {
+            } else
+
+            {
 
                 ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>("Codegroup");
                 delquery1.fromLocalDatastore();
@@ -566,22 +648,37 @@ public class Messages extends Fragment implements OnRefreshListener {
                     }
                 }
             }
-            try {
+
+            try
+
+            {
                 if (object.getCreatedAt() != null)
                     startTime.setText(Utility.convertTimeStamp(object.getCreatedAt()));
                 else if (object.get("creationTime") != null)
                     startTime.setText(Utility.convertTimeStamp((Date) object.get("creationTime")));
-            } catch (java.text.ParseException e) {
+            } catch (
+                    java.text.ParseException e
+                    )
+
+            {
             }
 
-            if (object.getString("title").equals(""))
+            if (object.getString("title").
+
+                    equals("")
+
+                    )
                 msgslist.setVisibility(View.GONE);
-            else {
+            else
+
+            {
                 msgslist.setVisibility(View.VISIBLE);
                 msgslist.setText(object.getString("title"));
             }
 
-            if (!imagepath.equals("")) {
+            if (!imagepath.equals(""))
+
+            {
                 imgframelayout.setVisibility(View.VISIBLE);
                 imgframelayout.setOnClickListener(new OnClickListener() {
 
@@ -671,7 +768,9 @@ public class Messages extends Fragment implements OnRefreshListener {
                         faildownload.setVisibility(View.VISIBLE);
                     }
                 }
-            } else {
+            } else
+
+            {
                 imgframelayout.setVisibility(View.GONE);
             }
 
@@ -731,6 +830,31 @@ public class Messages extends Fragment implements OnRefreshListener {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    void liked(ImageView likeIcon, TextView likes, LinearLayout likeButton) {
+        likeIcon.setImageResource(R.drawable.ic_action_like1);
+        likes.setTextColor(getResources().getColor(R.color.white));
+        likeButton.setBackgroundColor(getResources().getColor(R.color.buttoncolor));
+    }
+
+    void unLiked(ImageView likeIcon, TextView likes, LinearLayout likeButton) {
+        likeIcon.setImageResource(R.drawable.ic_action_like);
+        likes.setTextColor(getResources().getColor(R.color.buttoncolor));
+        likeButton.setBackgroundColor(getResources().getColor(R.color.white));
+    }
+
+    void confused(ImageView confusingIcon, TextView confused, LinearLayout confuseButton) {
+        confusingIcon.setImageResource(R.drawable.ic_action_help1);
+        confused.setTextColor(getResources().getColor(R.color.white));
+        confuseButton.setBackgroundColor(getResources().getColor(R.color.buttoncolor));
+    }
+
+    void unConfused(ImageView confusingIcon, TextView confused, LinearLayout confuseButton) {
+        confusingIcon.setImageResource(R.drawable.ic_action_help);
+        confused.setTextColor(getResources().getColor(R.color.buttoncolor));
+        confuseButton.setBackgroundColor(getResources().getColor(R.color.white));
     }
 
 }

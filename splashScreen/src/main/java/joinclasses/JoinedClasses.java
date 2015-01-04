@@ -141,29 +141,8 @@ public class JoinedClasses extends Fragment {
         else
             suggestionText.setVisibility(View.VISIBLE);
 
-        Log.d("suggestions", suggestedGroups.size() + "  : size");
-        for (int i = 0; i < suggestedGroups.size(); i++) {
-            Log.d("suggestions", suggestedGroups.get(i).get(0));
-        }
-
         if (suggestionAdapter == null)
             suggestionAdapter = new suggestionAdapter();
-
-
-        ParseCloud.callFunctionInBackground("hello", new HashMap<String, Object>(), new FunctionCallback<String>() {
-            public void done(String result, ParseException e) {
-                if (e == null) {
-                    Utility.toast(result);
-                }
-                else
-                {
-                    Utility.toast("error");
-                    e.printStackTrace();
-                    Utility.ls(e.getCode() + "");
-                    Utility.ls(e.getCause() + "");
-                }
-            }
-        });
 
 
 
