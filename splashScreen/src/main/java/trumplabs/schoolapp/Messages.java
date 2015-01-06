@@ -157,7 +157,6 @@ public class Messages extends Fragment implements OnRefreshListener {
         // Collections.reverse(msgs);
         listv.setAdapter(myadapter);
 
-
         super.onActivityCreated(savedInstanceState);
 
     /*

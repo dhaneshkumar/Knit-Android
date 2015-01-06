@@ -1,18 +1,19 @@
 package BackGroundProcesses;
 
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
+import com.parse.ParseObject;
+
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
-import trumplabs.schoolapp.Messages;
 import utility.Config;
 import utility.Queries;
 import utility.Utility;
-import android.os.AsyncTask;
-import android.view.View;
-
-import com.parse.ParseObject;
 
 
 public class Inbox extends AsyncTask<Void, Void, String[]> {
@@ -60,7 +61,19 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       
       Messages.msgs = newMsgs;
     }
-    
+
+    /* Handle 'seen' of messages. Assume for now that since app is opened, user would have
+    seen the new messages. Do this in a seperate thread */
+    Runnable r = new Runnable() {
+      @Override
+      public void run(){
+          Log.d("DEBUG_SEEN_HANDLER", "spawning asynctask");
+          SeenHandler seenHandler = new SeenHandler();
+          seenHandler.execute();
+      }
+    };
+    new Thread(r).start();
+
     return mStrings;
   }
 
