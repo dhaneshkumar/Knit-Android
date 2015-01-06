@@ -19,7 +19,7 @@ public class Config {
   
   public static String userId;
   public static String role;
-  public static final int inboxMsgCount = 10;
+  public static final int inboxMsgCount = 15;
   public static final int createMsgCount = 15;
   public static final int createMsgMax = 100;
   public static final int membersCount = 100;

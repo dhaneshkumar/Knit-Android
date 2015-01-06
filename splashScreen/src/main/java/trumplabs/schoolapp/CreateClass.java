@@ -4,6 +4,7 @@ package trumplabs.schoolapp;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import joinclasses.School;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Queries;
@@ -96,7 +97,8 @@ public class CreateClass extends MyActionBarActivity {
     classnameview = (EditText) findViewById(R.id.classnameid);
     Button createclassbtn = (Button) findViewById(R.id.create_button);
 
-    selectedSchool = Queries2.getSchoolName(user);
+      School school = new School();
+    selectedSchool = school.getSchoolName(user.getString("school"));
     if (selectedSchool != null)
       school_txt.setText(selectedSchool);
     selectedDivison = "...";
@@ -166,7 +168,8 @@ public class CreateClass extends MyActionBarActivity {
       @Override
       public void onClick(View v) {
 
-        String school = Queries2.getSchoolName(user);
+          School school1 = new School();
+        String school = school1.getSchoolName(user.getString("school"));
 
         /*
          * Creating popmenu for selecting schools

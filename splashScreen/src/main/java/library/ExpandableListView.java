@@ -6,6 +6,9 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 /**
+ * If you have to use two listview within single activity,
+ * use this expandableListView in place of normal listView because it expands both of lists fully to their heights.
+ * <p/>
  * Created by Dhanesh on 12/23/2014.
  */
 public class ExpandableListView extends ListView {
