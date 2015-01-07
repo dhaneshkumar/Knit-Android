@@ -65,7 +65,7 @@ public class Messages extends Fragment {
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
     public static RecyclerView listv;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
     public static RecyclerView.Adapter myadapter;
     public static SwipeRefreshLayout mPullToRefreshLayout;
     private LinearLayout inemptylayout;
@@ -236,15 +236,15 @@ public class Messages extends Fragment {
             @Override
             public void onScrolled(RecyclerView view, int dx, int dy) {
 
-                if (dy > 5) {
+                int visibleItemCount = mLayoutManager.getChildCount();
+                int totalItemCount = mLayoutManager.getItemCount();
+                int pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
 
+                if(visibleItemCount + pastVisiblesItems >= totalItemCount){
                     try {
                         msgs = query.getExtraLocalInboxMsgs(msgs);
                     } catch (ParseException e) {
                     }
-
-                    // lastCount = msgs.size();
-                    myadapter.notifyDataSetChanged();
                 }
             }
 
