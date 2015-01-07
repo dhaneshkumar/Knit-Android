@@ -238,9 +238,9 @@ public class Messages extends Fragment {
 
                 int visibleItemCount = mLayoutManager.getChildCount();
                 int totalItemCount = mLayoutManager.getItemCount();
-                int pastVisiblesItems = mLayoutManager.findFirstVisibleItemPosition();
+                int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
-                if(visibleItemCount + pastVisiblesItems >= totalItemCount){
+                if(visibleItemCount + pastVisibleItems >= totalItemCount-2){
                     try {
                         msgs = query.getExtraLocalInboxMsgs(msgs);
                     } catch (ParseException e) {
