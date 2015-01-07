@@ -79,7 +79,8 @@ public class Messages extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        layoutinflater = inflater;
+        layoutinflater = inflater   ;
+        String a = ""; // no use, just for git test
         getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         return inflater.inflate(R.layout.msgcontainer, container, false);
     }
