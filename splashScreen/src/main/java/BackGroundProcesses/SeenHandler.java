@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Messages;
+import utility.Utility;
 
 /**
  * Created by ashish on 6/1/15.
@@ -25,10 +26,25 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         msgs = Messages.msgs;
     }
 
+    /**
+     * @action Handles the 'seen' status of messages
+     * @param params none
+     * @return
+     * @how from the messages list of Messages activity, adds new messages to local SeenStatus table.
+     *      Now for messages which have status 0, seenCountIncrement cloud function is called and if
+     *      success its local status is changed to 1
+     */
     @Override
     protected String[] doInBackground(Void... params) {
+        if(msgs == null) return mStrings;
+
         Log.d("DEBUG_SEEN_HANDLER", "Starting");
-        String username = ParseUser.getCurrentUser().getUsername();
+        ParseUser user = ParseUser.getCurrentUser();
+
+        if (user == null)
+            Utility.logout();
+
+        String username = user.getUsername();
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("SeenStatus");
         query.whereMatches("username", username);
@@ -36,7 +52,7 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
 
         for(int i=0; i<msgs.size(); i++){
             ParseObject msg = msgs.get(i);
-            if(msg.getObjectId() != null) {
+            if(msg != null && msg.getObjectId() != null) {
                 query.whereMatches("messageId", msg.getObjectId());
                 try {
                     Log.d("DEBUG_SEEN_HANDLER", "querying with msg id" + msg.getObjectId());
@@ -55,7 +71,7 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
                 }
             }
             else{
-                Log.d("DEBUG_SEEN_HANDLER", "msg id null");
+                Log.d("DEBUG_SEEN_HANDLER", "msg or msgid null");
             }
         }
 
@@ -66,7 +82,6 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         seenQuery.whereMatches("username", username);
 
         try{
-
             List<ParseObject> newSeenMessages = seenQuery.find();
             Log.d("DEBUG_SEEN_HANDLER", "newSeenMessages count " + newSeenMessages.size());
             for(int i=0; i < newSeenMessages.size(); i++){
