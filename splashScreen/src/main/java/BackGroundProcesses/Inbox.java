@@ -73,8 +73,8 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
     if(Messages.myadapter != null)
       Messages.myadapter.notifyDataSetChanged();
     if(Messages.mPullToRefreshLayout != null)
-      Messages.mPullToRefreshLayout.setRefreshComplete();
-    
+      Messages.mPullToRefreshLayout.setRefreshing(false);
+
     if(newDataStatus)
     {
       //Utility.toast("No new messages to show");

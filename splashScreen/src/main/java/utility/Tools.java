@@ -19,8 +19,10 @@ import BackGroundProcesses.Inbox;
 import BackGroundProcesses.Refresher;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
@@ -376,8 +378,8 @@ public class Tools {
     timer.schedule(doAsynchronousTask, 0, 900000); // execute in every 15min
   }
 
-  
-  
+
+
   /*
    * make visible smooth progress bar for certain interval
    */
@@ -385,7 +387,7 @@ public class Tools {
 
     if(progressBar == null)
       return ;
-    
+
     progressBar.setVisibility(View.VISIBLE);
     progressBar.setIndeterminate(true);
     
@@ -396,11 +398,40 @@ public class Tools {
       @Override
       public void handleMessage(Message message) {
         progressBar.setVisibility(View.GONE);
-      }     
+      }
     };
     h.sendMessageDelayed(new Message(), seconds*1000);
 
   }
+
+
+    /*
+    stop swipe refreshlayout
+     */
+
+
+    public static void runSwipeRefreshLayout(final SwipeRefreshLayout progressBar, final int seconds) {
+
+        if (progressBar == null)
+            return;
+
+
+        if(! progressBar.isRefreshing()) {
+            progressBar.setRefreshing(true);
+        }
+
+    /*
+     * stop refreshing progress bar
+     */
+        final Handler h = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+                progressBar.setRefreshing(false);
+            }
+        };
+        h.sendMessageDelayed(new Message(), seconds * 1000);
+
+    }
 
   /*
    * make visible  progress bar for certain interval
@@ -409,7 +440,7 @@ public class Tools {
 
     if(progressBar == null)
       return ;
-    
+
     progressBar.setVisibility(View.VISIBLE);
     progressBar.setIndeterminate(true);
     
@@ -420,7 +451,7 @@ public class Tools {
       @Override
       public void handleMessage(Message message) {
         progressBar.setVisibility(View.GONE);
-      }     
+      }
     };
     h.sendMessageDelayed(new Message(), seconds * 1000);
 

@@ -1,30 +1,10 @@
 package trumplabs.schoolapp;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import joinclasses.JoinClassesContainer;
-import library.ExpandableListView;
-import library.UtilString;
-import trumplab.textslate.R;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
-import utility.Queries;
-import utility.Queries2;
-import utility.Tools;
-import utility.Utility;
-import BackGroundProcesses.Inbox;
-
 import android.R.color;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -33,7 +13,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.LruCache;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -57,20 +39,39 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import BackGroundProcesses.Inbox;
+import joinclasses.JoinClassesContainer;
+import library.UtilString;
+import trumplab.textslate.R;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import utility.Queries;
+import utility.Tools;
+import utility.Utility;
+
+
 /**
  * Class for Inbox's functions & activity
  */
-public class Messages extends Fragment implements OnRefreshListener {
+public class Messages extends Fragment {
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
-    public static ListView listv;
-    public static PullToRefreshLayout mPullToRefreshLayout;
+    public static RecyclerView listv;
+    private RecyclerView.LayoutManager mLayoutManager;
+    public static RecyclerView.Adapter myadapter;
+    public static SwipeRefreshLayout mPullToRefreshLayout;
     private LinearLayout inemptylayout;
     private Queries query;
-    public static BaseAdapter myadapter;
     private boolean checkInternet = false;
     // public static LinearLayout progressbar;
-    ImageView imgmsgview;
     static Button notifCount;
     static int mNotifCount = 0;
     private LruCache<String, Bitmap> mMemoryCache;
@@ -85,8 +86,10 @@ public class Messages extends Fragment implements OnRefreshListener {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        mPullToRefreshLayout = (PullToRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
-        listv = (ListView) getActivity().findViewById(R.id.msg_list);
+        mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
+        mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW);
+
+        listv = (RecyclerView) getActivity().findViewById(R.id.msg_list);
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);
 
       /*
@@ -97,8 +100,8 @@ public class Messages extends Fragment implements OnRefreshListener {
             if (pushOpen) {
 
                 if (Utility.isInternetOn(getActivity())) {
-                    if (MainActivity.mHeaderProgressBar != null) {
-                        Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
+                    if (mPullToRefreshLayout != null) {
+                        runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                     }
 
                     Inbox newInboxMsg = new Inbox(msgs);
@@ -140,7 +143,13 @@ public class Messages extends Fragment implements OnRefreshListener {
         };
 
 
-        myadapter = new myBaseAdapter();
+        /*
+        Recycler view handling
+         */
+        // use a linear layout manager
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        listv.setLayoutManager(mLayoutManager);
+
 
         ParseUser parseObject = ParseUser.getCurrentUser();
 
@@ -155,10 +164,17 @@ public class Messages extends Fragment implements OnRefreshListener {
         } catch (ParseException e) {
         }
 
-        if (msgs == null)
+        if (msgs == null) {
             msgs = new ArrayList<ParseObject>();
+            inemptylayout.setVisibility(View.VISIBLE);
+        } else if (msgs.size() == 0)
+            inemptylayout.setVisibility(View.VISIBLE);
+        else
+            inemptylayout.setVisibility(View.GONE);
+
 
         // Collections.reverse(msgs);
+        myadapter = new RecycleAdapter();
         listv.setAdapter(myadapter);
 
 
@@ -167,9 +183,9 @@ public class Messages extends Fragment implements OnRefreshListener {
     /*
      * setup the action bar with pull to refresh layout
      */
-        mPullToRefreshLayout = (PullToRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
+       /* mPullToRefreshLayout = (PullToRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
         ActionBarPullToRefresh.from(getActivity()).allChildrenArePullable().listener(this)
-                .setup(mPullToRefreshLayout);
+                .setup(mPullToRefreshLayout);*/
 
         //
         // listv.setOnItemLongClickListener(new OnItemLongClickListener() {
@@ -213,32 +229,69 @@ public class Messages extends Fragment implements OnRefreshListener {
     /*
      * On scrolling down the list view display extra messages.
      */
-        listv.setOnScrollListener(new OnScrollListener() {
+        listv.setOnScrollListener(new RecyclerView.OnScrollListener() {
             int lastCount = 0;
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
-                                 int totalItemCount) {
+            public void onScrolled(RecyclerView view, int dx, int dy) {
 
-                if (firstVisibleItem + visibleItemCount >= totalItemCount) {
+                if (dy > 5) {
 
-                    if (lastCount != totalItemCount || lastCount == 0) {
-
-                        lastCount = totalItemCount;
-                        // mHeaderProgressBar.setVisibility(View.GONE);
-                        try {
-                            msgs = query.getExtraLocalInboxMsgs(msgs);
-                        } catch (ParseException e) {
-                        }
-
-                        // lastCount = msgs.size();
-                        myadapter.notifyDataSetChanged();
+                    try {
+                        msgs = query.getExtraLocalInboxMsgs(msgs);
+                    } catch (ParseException e) {
                     }
+
+                    // lastCount = msgs.size();
+                    myadapter.notifyDataSetChanged();
                 }
             }
 
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            public void onScrollStateChanged(RecyclerView view, int newState) {
+            }
+        });
+
+
+        mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
+        mPullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                if (MainActivity.mHeaderProgressBar != null)
+                    MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+
+                // mHeaderProgressBar.setVisibility(View.GONE);
+                checkInternet = Utility.isInternetOn(getActivity());
+                if (Utility.isInternetOn(getActivity())) {
+                    Inbox newInboxMsg = new Inbox(msgs);
+                    newInboxMsg.execute();
+
+                    //start handler for 10 secs.  <to stop refreshbar>
+                    final Handler h = new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+
+                            mPullToRefreshLayout.setRefreshing(false);
+                        }
+                    };
+                    h.sendMessageDelayed(new Message(), 10000);
+                } else {
+
+                    //start handler for 2 secs.  <to stop refreshbar>
+                    final Handler h = new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+
+                            mPullToRefreshLayout.setRefreshing(false);
+                        }
+                    };
+                    h.sendMessageDelayed(new Message(), 2000);
+                }
+
+
+                // stop refreshing bar after some certain interval
+
+
             }
         });
     }
@@ -267,7 +320,7 @@ public class Messages extends Fragment implements OnRefreshListener {
             mImageView.setImageBitmap(bitmap);
         } else {
             Bitmap myBitmap = BitmapFactory.decodeFile(imageKey);
-            imgmsgview.setImageBitmap(myBitmap);
+            mImageView.setImageBitmap(myBitmap);
             addBitmapToMemoryCache(imageKey, myBitmap);
         }
     }
@@ -276,123 +329,90 @@ public class Messages extends Fragment implements OnRefreshListener {
      * ********************* LRU END ******************************
      */
 
-
-    private class GetDataFromLocalDatabase extends AsyncTask<Void, Void, String[]> {
-
-        String[] mStrings;
-
-        @Override
-        protected String[] doInBackground(Void... params) {
-
-            try {
-                msgs = query.getExtraLocalInboxMsgs(msgs);
-            } catch (ParseException e) {
-            }
-            return mStrings;
-        }
-
-        @Override
-        protected void onPostExecute(String[] result) {
-            myadapter.notifyDataSetChanged();
-
-            // Call onRefreshComplete when the list has been refreshed.
-            mPullToRefreshLayout.setRefreshComplete();
-
-            super.onPostExecute(result);
-        }
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
     }
 
-    class myBaseAdapter extends BaseAdapter {
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        TextView groupName;
+        TextView sender;
+        TextView startTime;
+        TextView msgslist;
+        FrameLayout imgframelayout;
+        ImageView imgmsgview;
+        TextView faildownload;
+        ProgressBar uploadprogressbar;
+        LinearLayout likeButton;
+        LinearLayout confuseButton;
+        TextView likes;
+        TextView confused;
+        ImageView likeIcon;
+        ImageView confusingIcon;
+        ImageView senderImg;
+
+        public ViewHolder(View row) {
+            super(row);
+
+            groupName = (TextView) row.findViewById(R.id.groupName);
+            sender = (TextView) row.findViewById(R.id.sender);
+            startTime = (TextView) row.findViewById(R.id.startTime);
+            msgslist = (TextView) row.findViewById(R.id.msgs);
+            imgframelayout = (FrameLayout) row.findViewById(R.id.imagefrmlayout);
+            imgmsgview = (ImageView) row.findViewById(R.id.imgmsgcontent);
+            faildownload = (TextView) row.findViewById(R.id.faildownload);
+            uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
+            likeButton = (LinearLayout) row.findViewById(R.id.likeButton);
+            confuseButton = (LinearLayout) row.findViewById(R.id.confuseButton);
+            likes = (TextView) row.findViewById(R.id.like);
+            confused = (TextView) row.findViewById(R.id.confusion);
+            likeIcon = (ImageView) row.findViewById(R.id.likeIcon);
+            confusingIcon = (ImageView) row.findViewById(R.id.confusionIcon);
+            senderImg = (ImageView) row.findViewById(R.id.image);
+        }
+    }
+
+    public class RecycleAdapter extends RecyclerView.Adapter<ViewHolder> {
+
         @Override
-        public int getCount() {
-            if (msgs.size() == 0) {
-                listv.setVisibility(View.VISIBLE);
-                inemptylayout.setVisibility(View.VISIBLE);
-            } else {
-                listv.setVisibility(View.VISIBLE);
-                inemptylayout.setVisibility(View.GONE);
-            }
+        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
+
+            View row = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.messages_likes, viewGroup, false);
+            ViewHolder holder = new ViewHolder(row);
+            return holder;
+        }
+
+
+        @Override
+        public int getItemCount() {
             return msgs.size();
         }
 
-
         @Override
-        public Object getItem(int position) {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-            if (position >= msgs.size())
-                return null;
-            else
-                return msgs.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            View row = convertView;
-            if (row == null) {
-                row = layoutinflater.inflate(R.layout.messages_likes, parent, false);
-            }
-
-            // on select list item, set background color white
-            row.setBackgroundColor(getResources().getColor(color.white));
-
-      /*
-       * Intializing variables
-       */
-            TextView groupName = (TextView) row.findViewById(R.id.groupName);
-            TextView sender = (TextView) row.findViewById(R.id.sender);
-            TextView startTime = (TextView) row.findViewById(R.id.startTime);
-            TextView msgslist = (TextView) row.findViewById(R.id.msgs);
-            FrameLayout imgframelayout = (FrameLayout) row.findViewById(R.id.imagefrmlayout);
-            imgmsgview = (ImageView) row.findViewById(R.id.imgmsgcontent);
-            final TextView faildownload = (TextView) row.findViewById(R.id.faildownload);
-            final ProgressBar uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
-
-
-            final LinearLayout likeButton = (LinearLayout) row.findViewById(R.id.likeButton);
-            final LinearLayout confuseButton = (LinearLayout) row.findViewById(R.id.confuseButton);
-            final TextView likes = (TextView) row.findViewById(R.id.like);
-            final TextView confused = (TextView) row.findViewById(R.id.confusion);
-            final ImageView likeIcon = (ImageView) row.findViewById(R.id.likeIcon);
-            final ImageView confusingIcon = (ImageView) row.findViewById(R.id.confusionIcon);
-
-            // Setting type face
-            //likes.setTypeface(typeFace);
-            //confused.setTypeface(typeFace);
-
-
-            final ParseObject object = (ParseObject) getItem(position);
+            final ParseObject object = msgs.get(position);
 
       /*
        * Setting likes and confused count
        */
-
-
             if (object.getInt(Constants.LIKE_COUNT) > 0)
-                likes.setText(object.getInt(Constants.LIKE_COUNT) + "");
+                (holder.likes).setText(object.getInt(Constants.LIKE_COUNT) + "");
             if (object.getInt(Constants.CONFUSED_COUNT) > 0)
-                confused.setText(object.getInt(Constants.CONFUSED_COUNT) + "");
+                holder.confused.setText(object.getInt(Constants.CONFUSED_COUNT) + "");
 
 
             if (object.getBoolean(Constants.LIKE))
-                liked(likeIcon, likes, likeButton);
+                liked(holder.likeIcon, holder.likes, holder.likeButton);
             else
-                unLiked(likeIcon, likes, likeButton);
+                unLiked(holder.likeIcon, holder.likes, holder.likeButton);
 
             if (object.getBoolean(Constants.CONFUSING))
-                confused(confusingIcon, confused, confuseButton);
+                confused(holder.confusingIcon, holder.confused, holder.confuseButton);
             else
-                unConfused(confusingIcon, confused, confuseButton);
+                unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
 
 
 
@@ -401,168 +421,165 @@ public class Messages extends Fragment implements OnRefreshListener {
        */
 
 
-            likeButton.setOnClickListener(new OnClickListener() {
+            holder.likeButton.setOnClickListener(new OnClickListener() {
 
-                                              @Override
-                                              public void onClick(View v) {
-
-                                                  ParseObject object1 = object;
-
-                                                  boolean likeFlag = object1.getBoolean(Constants.LIKE);
-                                                  boolean confusingFlag =
-                                                          object1.getBoolean(Constants.CONFUSING);
-
-                                                  if (likeFlag) {
-                                                      likeFlag = false;
-
-                                                      unLiked(likeIcon, likes, likeButton);
-
-                                                      object1.put(Constants.LIKE, likeFlag);
-
-                                                      int likeCount = object1.getInt(Constants.LIKE_COUNT);
-
-                                                      if (likeCount > 0) {
-                                                          object1.put(Constants.LIKE_COUNT, --likeCount);
-                                                          likes.setText(likeCount + "");
-
-                                                          //updating locally
-                                                          object1.pinInBackground();
-                                                          //updating globally
-                                                          MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object1.getObjectId());
-                                                          decreaseLikeCount.execute();
-                                                      }
-                                                  } else {
+                                                     @Override
+                                                     public void onClick(View v) {
 
 
-                                                      likeFlag = true;
-                                                      liked(likeIcon, likes, likeButton);
+                                                         boolean likeFlag = object.getBoolean(Constants.LIKE);
+                                                         boolean confusingFlag =
+                                                                 object.getBoolean(Constants.CONFUSING);
 
-                                                      object1.put(Constants.LIKE, likeFlag);
-                                                      int likeCount = object1.getInt(Constants.LIKE_COUNT);
-                                                      object1.put(Constants.LIKE_COUNT, ++likeCount);
-                                                      likes.setText(likeCount + "");
+                                                         if (likeFlag) {
+                                                             likeFlag = false;
 
-                                                      //updating globally
-                                                      MessagesHelper.IncreaseLikeCount increaseLikeCount = new MessagesHelper.IncreaseLikeCount(object1);
-                                                      increaseLikeCount.execute();
+                                                             unLiked(holder.likeIcon, holder.likes, holder.likeButton);
 
-                                                      //Ensuring that both buttons are not clicked simultaneously
+                                                             object.put(Constants.LIKE, likeFlag);
 
-                                                      if (!confusingFlag) {
-                                                          //storing locally
-                                                          try {
-                                                              object1.pin();
-                                                          } catch (ParseException e) {
-                                                              e.printStackTrace();
-                                                          }
-                                                      } else {
-                                                          confusingFlag = false;
-                                                          unConfused(confusingIcon, confused, confuseButton);
-                                                          object1.put(Constants.CONFUSING, false);
+                                                             int likeCount = object.getInt(Constants.LIKE_COUNT);
 
-                                                          int confusionedCount = object1.getInt(Constants.CONFUSED_COUNT);
-                                                          if (confusionedCount > 0) {
-                                                              confusionedCount--;
-                                                              object1.put(Constants.CONFUSED_COUNT, confusionedCount);
-                                                              confused.setText(confusionedCount + "");
+                                                             if (likeCount > 0) {
+                                                                 object.put(Constants.LIKE_COUNT, --likeCount);
+                                                                 holder.likes.setText(likeCount + "");
 
-                                                              //updating locally
-                                                              object1.pinInBackground();
+                                                                 //updating locally
+                                                                 object.pinInBackground();
+                                                                 //updating globally
+                                                                 MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object.getObjectId());
+                                                                 decreaseLikeCount.execute();
+                                                             }
+                                                         } else {
 
-                                                              MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object1.getObjectId());
-                                                              decreaseConfusedCount.execute();
 
-                                                          }
-                                                      }
+                                                             likeFlag = true;
+                                                             liked(holder.likeIcon, holder.likes, holder.likeButton);
 
-                                                  }
-                                              }
-                                          }
+                                                             object.put(Constants.LIKE, likeFlag);
+                                                             int likeCount = object.getInt(Constants.LIKE_COUNT);
+                                                             object.put(Constants.LIKE_COUNT, ++likeCount);
+                                                             holder.likes.setText(likeCount + "");
+
+                                                             //updating globally
+                                                             MessagesHelper.IncreaseLikeCount increaseLikeCount = new MessagesHelper.IncreaseLikeCount(object);
+                                                             increaseLikeCount.execute();
+
+                                                             //Ensuring that both buttons are not clicked simultaneously
+
+                                                             if (!confusingFlag) {
+                                                                 //storing locally
+                                                                 try {
+                                                                     object.pin();
+                                                                 } catch (ParseException e) {
+                                                                     e.printStackTrace();
+                                                                 }
+                                                             } else {
+                                                                 confusingFlag = false;
+                                                                 unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
+                                                                 object.put(Constants.CONFUSING, false);
+
+                                                                 int confusionedCount = object.getInt(Constants.CONFUSED_COUNT);
+                                                                 if (confusionedCount > 0) {
+                                                                     confusionedCount--;
+                                                                     object.put(Constants.CONFUSED_COUNT, confusionedCount);
+                                                                     holder.confused.setText(confusionedCount + "");
+
+                                                                     //updating locally
+                                                                     object.pinInBackground();
+
+                                                                     MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object.getObjectId());
+                                                                     decreaseConfusedCount.execute();
+
+                                                                 }
+                                                             }
+
+                                                         }
+                                                     }
+                                                 }
             );
 
 
             // Setting like and confusing button functionality
 
 
-            confuseButton.setOnClickListener(new OnClickListener() {
+            holder.confuseButton.setOnClickListener(new OnClickListener() {
 
-                                                 @Override
-                                                 public void onClick(View v) {
+                                                        @Override
+                                                        public void onClick(View v) {
 
-                                                     ParseObject object1 = (ParseObject) getItem(position);
 
-                                                     boolean likeFlag = object1.getBoolean(Constants.LIKE);
-                                                     boolean confusingFlag =
-                                                             object1.getBoolean(Constants.CONFUSING);
-                                                     if (confusingFlag) {
-                                                         confusingFlag = false;
+                                                            boolean likeFlag = object.getBoolean(Constants.LIKE);
+                                                            boolean confusingFlag =
+                                                                    object.getBoolean(Constants.CONFUSING);
+                                                            if (confusingFlag) {
+                                                                confusingFlag = false;
 
-                                                         unConfused(confusingIcon, confused, confuseButton);
+                                                                unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
 
-                                                         object1.put(Constants.CONFUSING, false);
-                                                         int confusionedCount = object1.getInt(Constants.CONFUSED_COUNT);
-                                                         if (confusionedCount > 0) {
-                                                             confusionedCount--;
-                                                             object1.put(Constants.CONFUSED_COUNT, confusionedCount);
-                                                             confused.setText(confusionedCount + "");
+                                                                object.put(Constants.CONFUSING, false);
+                                                                int confusionedCount = object.getInt(Constants.CONFUSED_COUNT);
+                                                                if (confusionedCount > 0) {
+                                                                    confusionedCount--;
+                                                                    object.put(Constants.CONFUSED_COUNT, confusionedCount);
+                                                                    holder.confused.setText(confusionedCount + "");
 
-                                                             //updating locally
-                                                             object1.pinInBackground();
+                                                                    //updating locally
+                                                                    object.pinInBackground();
 
-                                                             MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object1.getObjectId());
-                                                             decreaseConfusedCount.execute();
-                                                         }
+                                                                    MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object.getObjectId());
+                                                                    decreaseConfusedCount.execute();
+                                                                }
 
-                                                     } else {
+                                                            } else {
 
-                                                         confusingFlag = true;
+                                                                confusingFlag = true;
 
-                                                         confused(confusingIcon, confused, confuseButton);
+                                                                confused(holder.confusingIcon, holder.confused, holder.confuseButton);
 
-                                                         object1.put(Constants.CONFUSING, true);
-                                                         int confusions =
-                                                                 object1.getInt(Constants.CONFUSED_COUNT);
-                                                         object1.put(Constants.CONFUSED_COUNT,
-                                                                 ++confusions);
-                                                         confused.setText(confusions + "");
-                                                         MessagesHelper.IncreaseCounfusedCount increaseCounfusedCount = new MessagesHelper.IncreaseCounfusedCount(object1.getObjectId());
-                                                         increaseCounfusedCount.execute();
+                                                                object.put(Constants.CONFUSING, true);
+                                                                int confusions =
+                                                                        object.getInt(Constants.CONFUSED_COUNT);
+                                                                object.put(Constants.CONFUSED_COUNT,
+                                                                        ++confusions);
+                                                                holder.confused.setText(confusions + "");
+                                                                MessagesHelper.IncreaseCounfusedCount increaseCounfusedCount = new MessagesHelper.IncreaseCounfusedCount(object.getObjectId());
+                                                                increaseCounfusedCount.execute();
 
-                                                         if (!likeFlag) {
+                                                                if (!likeFlag) {
 
-                                                             object1.pinInBackground();
-                                                         } else {
-                                                             likeFlag = false;
+                                                                    object.pinInBackground();
+                                                                } else {
+                                                                    likeFlag = false;
 
-                                                             unLiked(likeIcon, likes, likeButton);
+                                                                    unLiked(holder.likeIcon, holder.likes, holder.likeButton);
 
-                                                             object1.put(Constants.LIKE, false);
+                                                                    object.put(Constants.LIKE, false);
 
-                                                             int likeCount = object1.getInt(Constants.LIKE_COUNT);
+                                                                    int likeCount = object.getInt(Constants.LIKE_COUNT);
 
-                                                             if (likeCount > 0) {
-                                                                 object1.put(Constants.LIKE_COUNT, --likeCount);
-                                                                 likes.setText(likeCount + "");
+                                                                    if (likeCount > 0) {
+                                                                        object.put(Constants.LIKE_COUNT, --likeCount);
+                                                                        holder.likes.setText(likeCount + "");
 
-                                                                 //updating globally
-                                                                 MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object1.getObjectId());
-                                                                 decreaseLikeCount.execute();
+                                                                        //updating globally
+                                                                        MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object.getObjectId());
+                                                                        decreaseLikeCount.execute();
 
-                                                                 //updating locally
-                                                                 object1.pinInBackground();
-                                                             }
+                                                                        //updating locally
+                                                                        object.pinInBackground();
+                                                                    }
 
-                                                         }
-                                                     }
-                                                 }
-                                             }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
 
             );
 
 
-            uploadprogressbar.setVisibility(View.GONE);
+            holder.uploadprogressbar.setVisibility(View.GONE);
 
-            ImageView senderImg = (ImageView) row.findViewById(R.id.image);
             String senderId = object.getString("senderId");
 
             // senderId = senderId.replaceAll(".", "");
@@ -583,10 +600,10 @@ public class Messages extends Fragment implements OnRefreshListener {
        */
 
             String Str = object.getString("name").toUpperCase();
-            groupName.setText(Str);
+            holder.groupName.setText(Str);
 
             Str = object.getString("Creator");
-            sender.setText(Str);
+            holder.sender.setText(Str);
 
             if (senderThumbnailFile.exists())
 
@@ -594,7 +611,7 @@ public class Messages extends Fragment implements OnRefreshListener {
 
                 // image file present locally
                 Bitmap mySenderBitmap = BitmapFactory.decodeFile(senderThumbnailFile.getAbsolutePath());
-                senderImg.setImageBitmap(mySenderBitmap);
+                holder.senderImg.setImageBitmap(mySenderBitmap);
             } else
 
             {
@@ -613,9 +630,9 @@ public class Messages extends Fragment implements OnRefreshListener {
                         if (!UtilString.isBlank(sex)) {
 
                             if (sex.equals("M"))
-                                senderImg.setImageResource(R.drawable.maleteacherdp);
+                                holder.senderImg.setImageResource(R.drawable.maleteacherdp);
                             else if (sex.equals("F"))
-                                senderImg.setImageResource(R.drawable.femaleteacherdp);
+                                holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
                         } else {
 
                             // if sex is not stored
@@ -626,23 +643,23 @@ public class Messages extends Fragment implements OnRefreshListener {
                                     String title = names[0].trim();
 
                                     if (title.equals("Mr")) {
-                                        senderImg.setImageResource(R.drawable.maleteacherdp);
+                                        holder.senderImg.setImageResource(R.drawable.maleteacherdp);
                                         obj.put("sex", "M");
                                         obj.pin();
                                     } else if (title.equals("Mrs")) {
-                                        senderImg.setImageResource(R.drawable.femaleteacherdp);
+                                        holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
                                         obj.put("sex", "F");
                                         obj.pin();
                                     } else if (title.equals("Ms")) {
-                                        senderImg.setImageResource(R.drawable.femaleteacherdp);
+                                        holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
                                         obj.put("sex", "F");
                                         obj.pin();
                                     } else
-                                        senderImg.setImageResource(R.drawable.logo);
+                                        holder.senderImg.setImageResource(R.drawable.logo);
                                 } else
-                                    senderImg.setImageResource(R.drawable.logo);
+                                    holder.senderImg.setImageResource(R.drawable.logo);
                             } else
-                                senderImg.setImageResource(R.drawable.logo);
+                                holder.senderImg.setImageResource(R.drawable.logo);
                         }
                     } catch (ParseException e) {
                     }
@@ -653,9 +670,9 @@ public class Messages extends Fragment implements OnRefreshListener {
 
             {
                 if (object.getCreatedAt() != null)
-                    startTime.setText(Utility.convertTimeStamp(object.getCreatedAt()));
+                    holder.startTime.setText(Utility.convertTimeStamp(object.getCreatedAt()));
                 else if (object.get("creationTime") != null)
-                    startTime.setText(Utility.convertTimeStamp((Date) object.get("creationTime")));
+                    holder.startTime.setText(Utility.convertTimeStamp((Date) object.get("creationTime")));
             } catch (
                     java.text.ParseException e
                     )
@@ -668,19 +685,19 @@ public class Messages extends Fragment implements OnRefreshListener {
                     equals("")
 
                     )
-                msgslist.setVisibility(View.GONE);
+                holder.msgslist.setVisibility(View.GONE);
             else
 
             {
-                msgslist.setVisibility(View.VISIBLE);
-                msgslist.setText(object.getString("title"));
+                holder.msgslist.setVisibility(View.VISIBLE);
+                holder.msgslist.setText(object.getString("title"));
             }
 
             if (!imagepath.equals(""))
 
             {
-                imgframelayout.setVisibility(View.VISIBLE);
-                imgframelayout.setOnClickListener(new OnClickListener() {
+                holder.imgframelayout.setVisibility(View.VISIBLE);
+                holder.imgframelayout.setOnClickListener(new OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
@@ -704,19 +721,19 @@ public class Messages extends Fragment implements OnRefreshListener {
                 if (imgFile.exists()) {
                     // image file present locally
 
-                    uploadprogressbar.setVisibility(View.GONE);
-                    faildownload.setVisibility(View.GONE);
-                    imgframelayout.setTag(imgFile.getAbsolutePath());
+                    holder.uploadprogressbar.setVisibility(View.GONE);
+                    holder.faildownload.setVisibility(View.GONE);
+                    holder.imgframelayout.setTag(imgFile.getAbsolutePath());
 
-                    loadBitmap(thumbnailFile.getAbsolutePath(), imgmsgview);
+                    loadBitmap(thumbnailFile.getAbsolutePath(), holder.imgmsgview);
 
 
                 } else {
                     if (Utility.isInternetOn(getActivity())) {
                         // Have to download image from server
                         ParseFile imagefile = (ParseFile) object.get("attachment");
-                        uploadprogressbar.setVisibility(View.VISIBLE);
-                        faildownload.setVisibility(View.GONE);
+                        holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                        holder.faildownload.setVisibility(View.GONE);
                         imagefile.getDataInBackground(new GetDataCallback() {
                             public void done(byte[] data, ParseException e) {
                                 if (e == null) {
@@ -734,9 +751,9 @@ public class Messages extends Fragment implements OnRefreshListener {
                                             Utility.createThumbnail(getActivity(), imagepath);
                                             Bitmap mynewBitmap =
                                                     BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                                            imgmsgview.setImageBitmap(mynewBitmap);
-                                            uploadprogressbar.setVisibility(View.GONE);
-                                            faildownload.setVisibility(View.GONE);
+                                            holder.imgmsgview.setImageBitmap(mynewBitmap);
+                                            holder.uploadprogressbar.setVisibility(View.GONE);
+                                            holder.faildownload.setVisibility(View.GONE);
                                             myadapter.notifyDataSetChanged();
                                         } catch (IOException e1) {
                                             e1.printStackTrace();
@@ -755,30 +772,31 @@ public class Messages extends Fragment implements OnRefreshListener {
                                     // might be problem
                                 } else {
                                     // Image not downloaded
-                                    uploadprogressbar.setVisibility(View.GONE);
-                                    faildownload.setVisibility(View.VISIBLE);
+                                    holder.uploadprogressbar.setVisibility(View.GONE);
+                                    holder.faildownload.setVisibility(View.VISIBLE);
                                 }
                             }
                         });
 
-                        imgframelayout.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                        imgmsgview.setImageBitmap(null);
+                        holder.imgframelayout.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                        holder.imgmsgview.setImageBitmap(null);
                     } else {
-                        uploadprogressbar.setVisibility(View.GONE);
-                        faildownload.setVisibility(View.VISIBLE);
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.faildownload.setVisibility(View.VISIBLE);
                     }
                 }
             } else
 
             {
-                imgframelayout.setVisibility(View.GONE);
+                holder.imgframelayout.setVisibility(View.GONE);
             }
 
-            return row;
         }
     }
 
-    @Override
+
+
+  /*  @Override
     public void onRefreshStarted(View view) {
 
         if (MainActivity.mHeaderProgressBar != null)
@@ -794,9 +812,9 @@ public class Messages extends Fragment implements OnRefreshListener {
             mPullToRefreshLayout.setRefreshComplete();
         }
 
-    /*
+    *//*
      * stop refreshing bar after some certain interval
-     */
+     *//*
         final Handler h = new Handler() {
             @Override
             public void handleMessage(Message message) {
@@ -807,7 +825,7 @@ public class Messages extends Fragment implements OnRefreshListener {
         };
         h.sendMessageDelayed(new Message(), 10000);
 
-    }
+    }*/
 
 
     @Override
@@ -816,15 +834,16 @@ public class Messages extends Fragment implements OnRefreshListener {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
 
-                    if (MainActivity.mHeaderProgressBar != null) {
-                        Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
+                    if (mPullToRefreshLayout != null) {
+                        runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                     }
 
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
-                } else {
-                    Utility.toast("Check your Internet connection");
                 }
+                else
+                    Utility.toast("Check your Internet Connection");
+
                 break;
             default:
                 break;
@@ -856,5 +875,30 @@ public class Messages extends Fragment implements OnRefreshListener {
         confused.setTextColor(getResources().getColor(R.color.buttoncolor));
         confuseButton.setBackgroundColor(getResources().getColor(R.color.white));
     }
+
+
+    /*
+   stop swipe refreshlayout
+    */
+    private void runSwipeRefreshLayout(final SwipeRefreshLayout mPullToRefreshLayout, final int seconds) {
+
+        if (mPullToRefreshLayout == null)
+            return;
+
+        mPullToRefreshLayout.setRefreshing(true);
+        if (MainActivity.mHeaderProgressBar != null)
+            MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+
+        //start handler for 10 secs.  <to stop refreshbar>
+        final Handler h = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+
+                mPullToRefreshLayout.setRefreshing(false);
+            }
+        };
+        h.sendMessageDelayed(new Message(), seconds * 1000);
+    }
+
 
 }

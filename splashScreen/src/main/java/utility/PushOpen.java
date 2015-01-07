@@ -7,10 +7,11 @@ import trumplabs.schoolapp.MainActivity;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 
 import com.parse.ParseUser;
 
-public class PushOpen extends Activity {
+public class PushOpen extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

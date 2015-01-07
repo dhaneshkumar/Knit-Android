@@ -262,7 +262,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
           fragment = new Classrooms();
           break;
         case 1:
-
           fragment = new Messages ();
           break;
         default:
