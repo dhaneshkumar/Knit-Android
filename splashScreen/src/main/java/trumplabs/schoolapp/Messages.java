@@ -69,7 +69,7 @@ public class Messages extends Fragment {
     public static RecyclerView.Adapter myadapter;
     public static SwipeRefreshLayout mPullToRefreshLayout;
     private LinearLayout inemptylayout;
-    private Queries query;
+    private Queries query ;
     private boolean checkInternet = false;
     // public static LinearLayout progressbar;
     static Button notifCount;
