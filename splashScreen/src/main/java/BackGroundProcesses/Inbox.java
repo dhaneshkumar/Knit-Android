@@ -60,7 +60,9 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       
       Messages.msgs = newMsgs;
     }
-    
+
+    SyncMessageState.sync();
+
     return mStrings;
   }
 
