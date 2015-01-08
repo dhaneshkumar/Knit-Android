@@ -816,25 +816,51 @@ public class Messages extends Fragment {
     void liked(ImageView likeIcon, TextView likes, LinearLayout likeButton) {
         likeIcon.setImageResource(R.drawable.ic_action_like1);
         likes.setTextColor(getResources().getColor(R.color.white));
-        likeButton.setBackgroundColor(getResources().getColor(R.color.buttoncolor));
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            likeButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.inbox_button_blue_color) );
+        } else {
+            likeButton.setBackground( getResources().getDrawable(R.drawable.inbox_button_blue_color));
+        }
+
     }
 
     void unLiked(ImageView likeIcon, TextView likes, LinearLayout likeButton) {
         likeIcon.setImageResource(R.drawable.ic_action_like);
-        likes.setTextColor(getResources().getColor(R.color.buttoncolor));
+        likes.setTextColor(getResources().getColor(R.color.grey));
         likeButton.setBackgroundColor(getResources().getColor(R.color.white));
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            likeButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_grey_color) );
+        } else {
+            likeButton.setBackground( getResources().getDrawable(R.drawable.round_corner_grey_color));
+        }
     }
 
     void confused(ImageView confusingIcon, TextView confused, LinearLayout confuseButton) {
         confusingIcon.setImageResource(R.drawable.ic_action_help1);
         confused.setTextColor(getResources().getColor(R.color.white));
-        confuseButton.setBackgroundColor(getResources().getColor(R.color.buttoncolor));
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            confuseButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.inbox_button_blue_color) );
+        } else {
+            confuseButton.setBackground( getResources().getDrawable(R.drawable.inbox_button_blue_color));
+        }
     }
 
     void unConfused(ImageView confusingIcon, TextView confused, LinearLayout confuseButton) {
         confusingIcon.setImageResource(R.drawable.ic_action_help);
-        confused.setTextColor(getResources().getColor(R.color.buttoncolor));
-        confuseButton.setBackgroundColor(getResources().getColor(R.color.white));
+        confused.setTextColor(getResources().getColor(R.color.grey));
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            confuseButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_grey_color) );
+        } else {
+            confuseButton.setBackground( getResources().getDrawable(R.drawable.round_corner_grey_color));
+        }
     }
 
 

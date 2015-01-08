@@ -53,16 +53,16 @@ public final class R {
 		public static final int gplus_color_2 = 0x7f07002b;
 		public static final int gplus_color_3 = 0x7f07002c;
 		public static final int gplus_color_4 = 0x7f07002d;
-		public static final int holo_blue_dark = 0x7f070037;
-		public static final int holo_green_dark = 0x7f070038;
-		public static final int holo_purple_dark = 0x7f070039;
-		public static final int holo_red_dark = 0x7f07003a;
-		public static final int holo_yellow_dark = 0x7f07003b;
-		public static final int pocket_color_1 = 0x7f070048;
-		public static final int pocket_color_2 = 0x7f070049;
-		public static final int pocket_color_3 = 0x7f07004a;
-		public static final int pocket_color_4 = 0x7f07004b;
-		public static final int spb_default_color = 0x7f070063;
+		public static final int holo_blue_dark = 0x7f070039;
+		public static final int holo_green_dark = 0x7f07003a;
+		public static final int holo_purple_dark = 0x7f07003b;
+		public static final int holo_red_dark = 0x7f07003c;
+		public static final int holo_yellow_dark = 0x7f07003d;
+		public static final int pocket_color_1 = 0x7f07004a;
+		public static final int pocket_color_2 = 0x7f07004b;
+		public static final int pocket_color_3 = 0x7f07004c;
+		public static final int pocket_color_4 = 0x7f07004d;
+		public static final int spb_default_color = 0x7f070065;
 	}
 	public static final class dimen {
 		public static final int ptr_progress_bar_stroke_width = 0x7f080038;

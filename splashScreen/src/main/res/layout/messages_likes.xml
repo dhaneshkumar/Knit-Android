@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/greyoutline"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:orientation="vertical">
 
     <LinearLayout
@@ -51,7 +53,7 @@
                 android:text="1min ago"
                 android:textColor="#939597"
                 android:textSize="12sp" />
-               <!-- android:textColor="@color/darkergrey"-->
+            <!-- android:textColor="@color/darkergrey"-->
 
 
             <TextView
@@ -142,88 +144,70 @@
             android:layout_marginTop="16dp"
             android:orientation="horizontal">
 
+
             <LinearLayout
+                android:id="@+id/likeButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/round_corner_button_color"
                 android:gravity="center"
+                android:background="@drawable/round_corner_grey_color"
                 android:orientation="horizontal"
-                android:padding="1dp">
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingRight="8dp">
 
-                <LinearLayout
-                    android:id="@+id/likeButton"
+                <TextView
+                    android:id="@+id/like"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp">
+                    android:text="13"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/like"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/buttoncolor"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/likeIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginLeft="4dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_action_like"></ImageView>
+                <ImageView
+                    android:id="@+id/likeIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="4dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_action_like"></ImageView>
 
 
-                </LinearLayout>
             </LinearLayout>
 
 
             <LinearLayout
+                android:id="@+id/confuseButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/round_corner_button_color"
+                android:background="@drawable/round_corner_grey_color"
                 android:gravity="center"
                 android:layout_marginLeft="16dp"
                 android:orientation="horizontal"
-                android:padding="1dp">
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:paddingRight="4dp">
 
-                <LinearLayout
-                    android:id="@+id/confuseButton"
+                <TextView
+                    android:id="@+id/confusion"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
-                    android:gravity="center"
-                    android:orientation="horizontal"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp">
+                    android:text="24"
+                    android:textColor="@color/grey"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:id="@+id/confusion"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textColor="@color/buttoncolor"
-                        android:textSize="13sp"
-                        android:textStyle="bold" />
-
-                    <ImageView
-                        android:id="@+id/confusionIcon"
-                        android:layout_width="24dp"
-                        android:layout_height="24dp"
-                        android:layout_marginLeft="4dp"
-                        android:layout_gravity="center"
-                        android:src="@drawable/ic_action_help"></ImageView>
+                <ImageView
+                    android:id="@+id/confusionIcon"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/ic_action_help"></ImageView>
 
 
-                </LinearLayout>
             </LinearLayout>
 
         </LinearLayout>

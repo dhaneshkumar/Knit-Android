@@ -126,7 +126,7 @@ public class CreateClass extends MyActionBarActivity {
 
 
             if(!UtilString.isBlank(selectedStandard))
-                 typedtxt += "  "+selectedStandard;
+                 typedtxt += " "+selectedStandard;
 
             if(!UtilString.isBlank(selectedDivison))
             typedtxt += selectedDivison;
