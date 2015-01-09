@@ -461,8 +461,13 @@ public class Messages extends Fragment {
       /*
        * Set likes and confused count
        */
-            holder.likes.setText(msgObject.getInt(Constants.LIKE_COUNT) + "");
-            holder.confused.setText(msgObject.getInt(Constants.CONFUSED_COUNT) + "");
+            int likeCount = msgObject.getInt(Constants.LIKE_COUNT);
+            if(likeCount < 0) likeCount = 0;
+            int confusedCount = msgObject.getInt(Constants.CONFUSED_COUNT);
+            if(confusedCount < 0) confusedCount = 0;
+
+            holder.likes.setText(likeCount + "");
+            holder.confused.setText(confusedCount + "");
 
 
             if (msgObject.getBoolean(Constants.LIKE))
