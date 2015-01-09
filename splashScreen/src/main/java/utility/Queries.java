@@ -15,6 +15,7 @@ import android.util.Log;
 
 import baseclasses.MyActivity;
 
+import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -287,7 +288,22 @@ public class Queries extends MyActivity {
 
                                 messages.put("userId", userId);
                                 messages.put(Constants.DIRTY_BIT, false);
+
                                 //likestatus and confused status should be fetched and set here
+                                ParseQuery msgStateQuery = new ParseQuery("MessageState");
+                                msgStateQuery.whereMatches(Constants.USERNAME, userId);
+                                msgStateQuery.whereMatches(Constants.MESSAGE_ID, messages.getObjectId());
+                                //object id won't be null as it was fetched from parse
+                                List<ParseObject> msgStateResults = msgStateQuery.find();
+                                if(msgStateResults==null || msgStateResults.size()==0){//default state 00
+                                    messages.put(Constants.LIKE, false);
+                                    messages.put(Constants.CONFUSING, false);
+                                }
+                                else{
+                                    ParseObject msgState = msgStateResults.get(0);
+                                    messages.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
+                                    messages.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
+                                }
                                 messages.pinInBackground();
                             }
                         }
