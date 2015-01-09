@@ -29,12 +29,25 @@ public class Constants {
    */
   public static final String LIKE_COUNT = "like_count";
   public static final String CONFUSED_COUNT = "counfused_count";
-  public static final String LIKE = "like";
-  public static final String CONFUSING = "confusing";
+  public static final String LIKE = "like"; //local
+  public static final String CONFUSING = "confusing"; //local
   public static final String GROUP_DETAILS = "GroupDetails";
+  public static final String DIRTY_BIT = "dirty_bit"; //local
   
   
-  
+
+  /*
+   * MessageState table variables [only on cloud]
+   * MessageState is written as (LIKE_STATUS, CONSFUSED_STATUS)
+   * 3 states possible 00, 10(liked), 01(confused)
+   */
+   public static final String MESSAGE_STATE = "MessageState";
+   public static final String USERNAME = "username";
+   public static final String MESSAGE_ID = "message_id";
+   public static final String LIKE_STATUS = "like_status";
+   public static final String CONFUSED_STATUS = "confused_status";
+
+
   /*
    * Database table names
    */

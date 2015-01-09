@@ -286,6 +286,8 @@ public class Queries extends MyActivity {
                                 ParseObject messages = newmsgs.get(k);
 
                                 messages.put("userId", userId);
+                                messages.put(Constants.DIRTY_BIT, false);
+                                //likestatus and confused status should be fetched and set here
                                 messages.pinInBackground();
                             }
                         }

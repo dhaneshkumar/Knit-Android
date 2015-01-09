@@ -16,6 +16,7 @@ import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -76,6 +77,7 @@ public class Messages extends Fragment {
     static int mNotifCount = 0;
     private LruCache<String, Bitmap> mMemoryCache;
     private Typeface typeFace;
+    String userId;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -157,7 +159,7 @@ public class Messages extends Fragment {
         if (parseObject == null)
             Utility.logout();
 
-        String userId = parseObject.getUsername();
+        userId = parseObject.getUsername();
 
         query = new Queries();
         try {
@@ -376,6 +378,14 @@ public class Messages extends Fragment {
     }
 
     public class RecycleAdapter extends RecyclerView.Adapter<ViewHolder> {
+        public class MessageStatePair{
+            public int likeStatus;
+            public int confusedStatus;
+            public MessageStatePair(int like, int confused){
+                likeStatus = like;
+                confusedStatus = confused;
+            }
+        }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int position) {
@@ -391,30 +401,79 @@ public class Messages extends Fragment {
             return msgs.size();
         }
 
+        protected void handleStateChange(final ViewHolder holder, MessageStatePair currentState, MessageStatePair newState, ParseObject msgObject){
+            //update button displays if any change
+            if(newState.likeStatus - currentState.likeStatus !=0){
+                //means like status has changed
+                if(newState.likeStatus == 1) {
+                    liked(holder.likeIcon, holder.likes, holder.likeButton);
+                    msgObject.put(Constants.LIKE, true);
+                }
+                else {
+                    unLiked(holder.likeIcon, holder.likes, holder.likeButton);
+                    msgObject.put(Constants.LIKE, false);
+                }
+
+                int likeCount = msgObject.getInt(Constants.LIKE_COUNT);
+                int diff = newState.likeStatus - currentState.likeStatus;
+                Log.d("DEBUG_MESSAGES", "newLS" + newState.likeStatus + " curLS" + currentState.likeStatus + " likeCount"  + likeCount + " diff" + diff);
+                int newLikeCount = likeCount + diff;
+                if(newLikeCount < 0 ) newLikeCount = 0;
+
+                holder.likes.setText(newLikeCount + "");
+
+                msgObject.put(Constants.LIKE_COUNT, newLikeCount);
+            }
+
+            if(newState.confusedStatus - currentState.confusedStatus !=0){
+                if (newState.confusedStatus == 1) {
+                    confused(holder.confusingIcon, holder.confused, holder.confuseButton);
+                    msgObject.put(Constants.CONFUSING, true);
+                }
+                else {
+                    unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
+                    msgObject.put(Constants.CONFUSING, false);
+                }
+
+                int confusedCount = msgObject.getInt(Constants.CONFUSED_COUNT);
+                int diff = newState.confusedStatus - currentState.confusedStatus;
+                Log.d("DEBUG_MESSAGES", "newLS" + newState.confusedStatus + " curLS" + currentState.confusedStatus + " conCount"  + confusedCount + " diff" + diff);
+
+                int newConfusedCount = confusedCount + diff;
+                if(newConfusedCount < 0 ) newConfusedCount = 0;
+
+                holder.confused.setText(newConfusedCount + "");
+
+
+                msgObject.put(Constants.CONFUSED_COUNT, newConfusedCount);
+            }
+
+            msgObject.put(Constants.DIRTY_BIT, true);
+            //updating msgObject locally
+            msgObject.pinInBackground();
+        }
+
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-            final ParseObject object = msgs.get(position);
+            final ParseObject msgObject = msgs.get(position);
 
       /*
-       * Setting likes and confused count
+       * Set likes and confused count
        */
-            if (object.getInt(Constants.LIKE_COUNT) > 0)
-                (holder.likes).setText(object.getInt(Constants.LIKE_COUNT) + "");
-            if (object.getInt(Constants.CONFUSED_COUNT) > 0)
-                holder.confused.setText(object.getInt(Constants.CONFUSED_COUNT) + "");
+            holder.likes.setText(msgObject.getInt(Constants.LIKE_COUNT) + "");
+            holder.confused.setText(msgObject.getInt(Constants.CONFUSED_COUNT) + "");
 
 
-            if (object.getBoolean(Constants.LIKE))
+            if (msgObject.getBoolean(Constants.LIKE))
                 liked(holder.likeIcon, holder.likes, holder.likeButton);
             else
                 unLiked(holder.likeIcon, holder.likes, holder.likeButton);
 
-            if (object.getBoolean(Constants.CONFUSING))
+            if (msgObject.getBoolean(Constants.CONFUSING))
                 confused(holder.confusingIcon, holder.confused, holder.confuseButton);
             else
                 unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
-
 
 
       /*
@@ -426,76 +485,24 @@ public class Messages extends Fragment {
 
                                                      @Override
                                                      public void onClick(View v) {
+                                                         final MessageStatePair currentState = new MessageStatePair(0, 0);
 
-
-                                                         boolean likeFlag = object.getBoolean(Constants.LIKE);
-                                                         boolean confusingFlag =
-                                                                 object.getBoolean(Constants.CONFUSING);
-
-                                                         if (likeFlag) {
-                                                             likeFlag = false;
-
-                                                             unLiked(holder.likeIcon, holder.likes, holder.likeButton);
-
-                                                             object.put(Constants.LIKE, likeFlag);
-
-                                                             int likeCount = object.getInt(Constants.LIKE_COUNT);
-
-                                                             if (likeCount > 0) {
-                                                                 object.put(Constants.LIKE_COUNT, --likeCount);
-                                                                 holder.likes.setText(likeCount + "");
-
-                                                                 //updating locally
-                                                                 object.pinInBackground();
-                                                                 //updating globally
-                                                                 MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object.getObjectId());
-                                                                 decreaseLikeCount.execute();
-                                                             }
-                                                         } else {
-
-
-                                                             likeFlag = true;
-                                                             liked(holder.likeIcon, holder.likes, holder.likeButton);
-
-                                                             object.put(Constants.LIKE, likeFlag);
-                                                             int likeCount = object.getInt(Constants.LIKE_COUNT);
-                                                             object.put(Constants.LIKE_COUNT, ++likeCount);
-                                                             holder.likes.setText(likeCount + "");
-
-                                                             //updating globally
-                                                             MessagesHelper.IncreaseLikeCount increaseLikeCount = new MessagesHelper.IncreaseLikeCount(object);
-                                                             increaseLikeCount.execute();
-
-                                                             //Ensuring that both buttons are not clicked simultaneously
-
-                                                             if (!confusingFlag) {
-                                                                 //storing locally
-                                                                 try {
-                                                                     object.pin();
-                                                                 } catch (ParseException e) {
-                                                                     e.printStackTrace();
-                                                                 }
-                                                             } else {
-                                                                 confusingFlag = false;
-                                                                 unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
-                                                                 object.put(Constants.CONFUSING, false);
-
-                                                                 int confusionedCount = object.getInt(Constants.CONFUSED_COUNT);
-                                                                 if (confusionedCount > 0) {
-                                                                     confusionedCount--;
-                                                                     object.put(Constants.CONFUSED_COUNT, confusionedCount);
-                                                                     holder.confused.setText(confusionedCount + "");
-
-                                                                     //updating locally
-                                                                     object.pinInBackground();
-
-                                                                     MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object.getObjectId());
-                                                                     decreaseConfusedCount.execute();
-
-                                                                 }
-                                                             }
-
+                                                         if(msgObject.getBoolean(Constants.LIKE)){
+                                                             currentState.likeStatus = 1;
                                                          }
+                                                         if(msgObject.getBoolean(Constants.CONFUSING)){
+                                                             currentState.confusedStatus = 1;
+                                                         }
+
+                                                         MessageStatePair newState = null;
+                                                         if(currentState.likeStatus == 1){ //old liked(10) => new 00
+                                                             newState = new MessageStatePair(0, 0);
+                                                         }
+                                                         else{ //new 10 (liked)
+                                                             newState = new MessageStatePair(1, 0);
+                                                         }
+
+                                                         handleStateChange(holder, currentState, newState, msgObject);
                                                      }
                                                  }
             );
@@ -508,71 +515,24 @@ public class Messages extends Fragment {
 
                                                         @Override
                                                         public void onClick(View v) {
+                                                            final MessageStatePair currentState = new MessageStatePair(0, 0);
 
-
-                                                            boolean likeFlag = object.getBoolean(Constants.LIKE);
-                                                            boolean confusingFlag =
-                                                                    object.getBoolean(Constants.CONFUSING);
-                                                            if (confusingFlag) {
-                                                                confusingFlag = false;
-
-                                                                unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
-
-                                                                object.put(Constants.CONFUSING, false);
-                                                                int confusionedCount = object.getInt(Constants.CONFUSED_COUNT);
-                                                                if (confusionedCount > 0) {
-                                                                    confusionedCount--;
-                                                                    object.put(Constants.CONFUSED_COUNT, confusionedCount);
-                                                                    holder.confused.setText(confusionedCount + "");
-
-                                                                    //updating locally
-                                                                    object.pinInBackground();
-
-                                                                    MessagesHelper.DecreaseConfusedCount decreaseConfusedCount = new MessagesHelper.DecreaseConfusedCount(object.getObjectId());
-                                                                    decreaseConfusedCount.execute();
-                                                                }
-
-                                                            } else {
-
-                                                                confusingFlag = true;
-
-                                                                confused(holder.confusingIcon, holder.confused, holder.confuseButton);
-
-                                                                object.put(Constants.CONFUSING, true);
-                                                                int confusions =
-                                                                        object.getInt(Constants.CONFUSED_COUNT);
-                                                                object.put(Constants.CONFUSED_COUNT,
-                                                                        ++confusions);
-                                                                holder.confused.setText(confusions + "");
-                                                                MessagesHelper.IncreaseCounfusedCount increaseCounfusedCount = new MessagesHelper.IncreaseCounfusedCount(object.getObjectId());
-                                                                increaseCounfusedCount.execute();
-
-                                                                if (!likeFlag) {
-
-                                                                    object.pinInBackground();
-                                                                } else {
-                                                                    likeFlag = false;
-
-                                                                    unLiked(holder.likeIcon, holder.likes, holder.likeButton);
-
-                                                                    object.put(Constants.LIKE, false);
-
-                                                                    int likeCount = object.getInt(Constants.LIKE_COUNT);
-
-                                                                    if (likeCount > 0) {
-                                                                        object.put(Constants.LIKE_COUNT, --likeCount);
-                                                                        holder.likes.setText(likeCount + "");
-
-                                                                        //updating globally
-                                                                        MessagesHelper.DecreaseLikeCount decreaseLikeCount = new MessagesHelper.DecreaseLikeCount(object.getObjectId());
-                                                                        decreaseLikeCount.execute();
-
-                                                                        //updating locally
-                                                                        object.pinInBackground();
-                                                                    }
-
-                                                                }
+                                                            if(msgObject.getBoolean(Constants.LIKE)){
+                                                                currentState.likeStatus = 1;
                                                             }
+                                                            if(msgObject.getBoolean(Constants.CONFUSING)){
+                                                                currentState.confusedStatus = 1;
+                                                            }
+
+                                                            MessageStatePair newState = null;
+                                                            if(currentState.confusedStatus == 1){ //old confused(10) => new 00
+                                                                newState = new MessageStatePair(0, 0);
+                                                            }
+                                                            else{ //new 01 (confused)
+                                                                newState = new MessageStatePair(0, 1);
+                                                            }
+
+                                                            handleStateChange(holder, currentState, newState, msgObject);
                                                         }
                                                     }
 
@@ -581,7 +541,7 @@ public class Messages extends Fragment {
 
             holder.uploadprogressbar.setVisibility(View.GONE);
 
-            String senderId = object.getString("senderId");
+            String senderId = msgObject.getString("senderId");
 
             // senderId = senderId.replaceAll(".", "");
             senderId = senderId.replaceAll("@", "");
@@ -591,8 +551,8 @@ public class Messages extends Fragment {
 
             // ///////////////////////////////////////////////////////////
             final String imagepath;
-            if (object.containsKey("attachment_name"))
-                imagepath = object.getString("attachment_name");
+            if (msgObject.containsKey("attachment_name"))
+                imagepath = msgObject.getString("attachment_name");
             else
                 imagepath = "";
 
@@ -600,10 +560,10 @@ public class Messages extends Fragment {
        * Setting group name and sender name
        */
 
-            String Str = object.getString("name").toUpperCase();
+            String Str = msgObject.getString("name").toUpperCase();
             holder.groupName.setText(Str);
 
-            Str = object.getString("Creator");
+            Str = msgObject.getString("Creator");
             holder.sender.setText(Str);
 
             if (senderThumbnailFile.exists())
@@ -620,7 +580,7 @@ public class Messages extends Fragment {
                 ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>("Codegroup");
                 delquery1.fromLocalDatastore();
 
-                String code = object.getString("code");
+                String code = msgObject.getString("code");
                 if (code != null) {
                     delquery1.whereEqualTo("code", code.trim());
                     try {
@@ -670,10 +630,10 @@ public class Messages extends Fragment {
             try
 
             {
-                if (object.getCreatedAt() != null)
-                    holder.startTime.setText(Utility.convertTimeStamp(object.getCreatedAt()));
-                else if (object.get("creationTime") != null)
-                    holder.startTime.setText(Utility.convertTimeStamp((Date) object.get("creationTime")));
+                if (msgObject.getCreatedAt() != null)
+                    holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
+                else if (msgObject.get("creationTime") != null)
+                    holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
             } catch (
                     java.text.ParseException e
                     )
@@ -681,7 +641,7 @@ public class Messages extends Fragment {
             {
             }
 
-            if (object.getString("title").
+            if (msgObject.getString("title").
 
                     equals("")
 
@@ -691,7 +651,7 @@ public class Messages extends Fragment {
 
             {
                 holder.msgslist.setVisibility(View.VISIBLE);
-                holder.msgslist.setText(object.getString("title"));
+                holder.msgslist.setText(msgObject.getString("title"));
             }
 
             if (!imagepath.equals(""))
@@ -732,7 +692,7 @@ public class Messages extends Fragment {
                 } else {
                     if (Utility.isInternetOn(getActivity())) {
                         // Have to download image from server
-                        ParseFile imagefile = (ParseFile) object.get("attachment");
+                        ParseFile imagefile = (ParseFile) msgObject.get("attachment");
                         holder.uploadprogressbar.setVisibility(View.VISIBLE);
                         holder.faildownload.setVisibility(View.GONE);
                         imagefile.getDataInBackground(new GetDataCallback() {
