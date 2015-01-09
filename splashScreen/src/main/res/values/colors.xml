@@ -44,5 +44,6 @@
     <color name="profile_head_bar">#c2c2c2</color>
     <color name="profile_tail_bar">#eeeeee</color>
     <color name="profile_title">#999999</color>
+    <color name="grey">#808284</color>
 
 </resources>
