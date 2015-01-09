@@ -3,6 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/greyoutline"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
     android:orientation="vertical">
 
     <LinearLayout
@@ -187,7 +189,7 @@
                 android:paddingLeft="8dp"
                 android:paddingTop="4dp"
                 android:paddingBottom="4dp"
-                android:paddingRight="8dp">
+                android:paddingRight="4dp">
 
                 <TextView
                     android:id="@+id/confusion"
@@ -202,7 +204,6 @@
                     android:id="@+id/confusionIcon"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:layout_marginLeft="4dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_action_help"></ImageView>
 

@@ -98,8 +98,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
   public static  LinearLayout progressLayout;
   boolean createMsgFlag; // A flag to stop continuous request coming from create msgs on scrolling
 
-  int msgcount = 0;
-
   // Handler handler = new Handler();;
 
   public ClassMsg() {
@@ -443,10 +441,10 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
       String stringmsg = (String) getItem(position);
       String timestampmsg = null;
       try {
-        Date cdate = ((ParseObject) groupDetails.get(position)).getCreatedAt();
+        Date cdate = groupdetails1.getCreatedAt();
 
         if (cdate == null)
-          cdate = (Date) ((ParseObject) groupDetails.get(position)).get("creationTime");
+          cdate = (Date) groupdetails1.get("creationTime");
 
         timestampmsg = Utility.convertTimeStamp(cdate);
       } catch (java.text.ParseException e) {
@@ -457,24 +455,13 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         imagepath = groupdetails1.getString("attachment_name");
       else
         imagepath = "";
+
       // initialize all the view components
-      LinearLayout ccmsgframeview = (LinearLayout) row.findViewById(R.id.ccmsgframe);
       final ImageView imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
       final ProgressBar uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
       TextView msgtxtcontent = (TextView) row.findViewById(R.id.ccmsgtext);
-      ImageView tickview = (ImageView) row.findViewById(R.id.tickmark);
+      //ImageView tickview = (ImageView) row.findViewById(R.id.tickmark);
       final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
-      // //////////handler to update time after some interval
-      /*
-       * Runnable viewtimer= new Runnable() {
-       * 
-       * @Override public void run() { long
-       * difftime=Long.valueOf(Utility.getCurrentTimeStamp())-timeint;
-       * timestampview.setText(""+difftime); handler.postDelayed( this, 2 * 1000 );
-       * //Log.d("bhargav","Running"); } }; handler.postDelayed(viewtimer, 2 * 1000 );
-       * row.setTag(viewtimer);
-       */
-      // //////////////////////////////////////////////
       row.setVisibility(View.VISIBLE);
       uploadprogressbar.setVisibility(View.GONE);
       // /////////////////////////////////////////////

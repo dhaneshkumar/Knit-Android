@@ -45,5 +45,6 @@
     <color name="profile_tail_bar">#eeeeee</color>
     <color name="profile_title">#999999</color>
     <color name="grey">#808284</color>
+    <color name="grey_light">#999999</color>
 
 </resources>
