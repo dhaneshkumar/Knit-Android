@@ -467,9 +467,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
       TextView seenCountArea = (TextView) row.findViewById(R.id.seen);
 
 
-      likeCountArea.setText(Integer.toString(nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT))));
-      confusedCountArea.setText(Integer.toString(nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT))));
-      seenCountArea.setText("seen by " + Integer.toString(nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT))));
+      likeCountArea.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT)));
+      confusedCountArea.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT)));
+      seenCountArea.setText("seen by " + Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT)));
 
       //ImageView tickview = (ImageView) row.findViewById(R.id.tickmark);
       final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
@@ -550,11 +550,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
       }
       return row;
     }
-  }
-
-  public int nonNegative(int x){
-      if(x < 0) return 0;
-      return x;
   }
 
   public void initialiseListViewMethods() {
