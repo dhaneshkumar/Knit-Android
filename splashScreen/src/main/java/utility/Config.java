@@ -23,6 +23,7 @@ public class Config {
                                                         //be updated for like/confused/seen count
   public static final int inboxMsgCount = 15;
   public static final int createMsgCount = 15;
+    public static  final int outboxMsgCount =20;
   public static final int createMsgMax = 100;
   public static final int membersCount = 100;
   public static final String creator = "TextSlate";

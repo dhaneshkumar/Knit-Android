@@ -15,6 +15,12 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
 
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import library.UtilString;
+import trumplabs.schoolapp.Constants;
+
 @SuppressLint("SimpleDateFormat")
 public class SessionManager {
   // Shared Preferences
@@ -30,14 +36,12 @@ public class SessionManager {
   int PRIVATE_MODE = 0;
 
   private static final String PREF_NAME = "AndroidHivePref";
-
   public static final String CURRENT_TIME = "current_time";
-
   public static final String APP_OPENING_COUNT = "app_opening_count";
   public static final String SIGNUP = "signUP";
   public static final String CHILD_NAME_LIST ="childNameList";
   public static final String DEFAULT_CLASS_EXIST = "defaultClasExist";
-  
+
   public SessionManager() {}
 
 
@@ -181,4 +185,37 @@ public class SessionManager {
     editor.commit();
 
   }
+
+
+    /*
+  * keeping new entry in code map
+  */
+    public String getClassName(String code) {
+        String className = pref.getString(code, null);
+
+        if(!UtilString.isBlank(className)) return className;
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
+        query.fromLocalDatastore();
+        query.whereEqualTo("code", code);
+
+        try {
+            ParseObject obj = query.getFirst();
+
+            if(obj != null)
+            {
+                String name = obj.getString("name");
+                if(!UtilString.isBlank(name))
+                {
+                    editor.putString(code, name);
+                    editor.commit();
+                    return name;
+                }
+            }
+        } catch (com.parse.ParseException e) {
+            e.printStackTrace();
+        }
+
+     return null;
+    }
 }
