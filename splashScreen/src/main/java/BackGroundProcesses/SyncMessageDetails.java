@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import trumplabs.schoolapp.ClassMsg;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Messages;
 import utility.Config;
@@ -108,5 +109,72 @@ public class SyncMessageDetails {
         }
         //messages adapter needs to be notified of dataset changed.
         //Currently this happens in Inbox asynctask's onpostexecute
+    }
+
+    /**
+     * updates like and confused count of messages in inbox
+     */
+    public static void fetchLikeConfusedCountOutbox(){
+        //do this for the first few(=Config.outboxRefreshLimit
+        ParseUser parseObject = ParseUser.getCurrentUser();
+
+        if (parseObject == null)
+            Utility.logout();
+
+        String userId = parseObject.getUsername();
+
+        List<List<String>> createdGroups = parseObject.getList(Constants.CREATED_GROUPS);
+
+        for(int i=0; i<createdGroups.size(); i++){
+            List<String> group = createdGroups.get(i);
+
+            ParseQuery outboxQuery = ParseQuery.getQuery("SentMessages");
+            outboxQuery.fromLocalDatastore();
+            outboxQuery.orderByDescending("creationTime");
+            outboxQuery.whereEqualTo("userId", userId);
+            outboxQuery.whereEqualTo("code", group.get(0)); //0 is code
+            outboxQuery.setLimit(Config.outboxMsgRefreshPerClass);
+
+            List<ParseObject> latestmessages;
+            try {
+                latestmessages = outboxQuery.find();
+
+                if (latestmessages != null) {
+                    Log.d("DEBUG_OUTBOX_COUNT_FETCH", "[" + group.get(0) + "]" + " count " + latestmessages.size());
+                    for (int msgno = 0; msgno < latestmessages.size(); msgno++) {
+                        ParseObject msg = latestmessages.get(msgno);
+
+                        HashMap<String, String> parameters = new HashMap<String, String>();
+                        if(msg == null || msg.getString("objectId") == null) {
+                            if(msg != null) {
+                                Log.d("DEBUG_OUTBOX_COUNT_FETCH", "msg or object id is NULL" + msg.get("title")
+                                        + msg.get("name") + " " + msg.get("code"));
+                            }
+                            continue;
+                        }
+
+                        parameters.put("objectId", msg.getString("objectId"));
+                        parameters.put("outbox", "1");
+                        try{
+                            Map<String, Object> updatedmsg = ParseCloud.callFunction("getLikeConfusedCount", parameters);
+
+                            Log.d("DEBUG_OUTBOX_COUNT_FETCH", "[" + group.get(0) + "]" + msg.getObjectId() + "old L/C=" +
+                                    msg.get(Constants.LIKE_COUNT) + "/" + msg.get(Constants.CONFUSED_COUNT) +
+                                    "new L/C=" +
+                                    updatedmsg.get(Constants.LIKE_COUNT) +  "/" + updatedmsg.get(Constants.CONFUSED_COUNT));
+
+                            msg.put(Constants.LIKE_COUNT, updatedmsg.get(Constants.LIKE_COUNT));
+                            msg.put(Constants.CONFUSED_COUNT, updatedmsg.get(Constants.CONFUSED_COUNT));
+                            msg.pinInBackground();
+                        }
+                        catch (ParseException e){
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+        }
     }
 }

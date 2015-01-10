@@ -19,6 +19,8 @@ public class Config {
   
   public static String userId;
   public static String role;
+  public static final int outboxMsgRefreshPerClass = 2; //how many sent messages per class will
+                                                        //be updated for like/confused/seen count
   public static final int inboxMsgCount = 15;
   public static final int createMsgCount = 15;
   public static final int createMsgMax = 100;

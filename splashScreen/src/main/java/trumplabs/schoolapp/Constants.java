@@ -29,6 +29,7 @@ public class Constants {
    */
   public static final String LIKE_COUNT = "like_count";
   public static final String CONFUSED_COUNT = "confused_count";
+  public static final String SEEN_COUNT = "seen_count";
   public static final String LIKE = "like"; //local
   public static final String CONFUSING = "confusing"; //local
   public static final String GROUP_DETAILS = "GroupDetails";

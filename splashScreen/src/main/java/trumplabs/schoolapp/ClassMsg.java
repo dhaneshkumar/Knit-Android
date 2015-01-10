@@ -460,6 +460,17 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
       final ImageView imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
       final ProgressBar uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
       TextView msgtxtcontent = (TextView) row.findViewById(R.id.ccmsgtext);
+
+      //set like,seen and confused counts
+      TextView likeCountArea = (TextView) row.findViewById(R.id.like);
+      TextView confusedCountArea = (TextView) row.findViewById(R.id.confusion);
+      TextView seenCountArea = (TextView) row.findViewById(R.id.seen);
+
+
+      likeCountArea.setText(Integer.toString(nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT))));
+      confusedCountArea.setText(Integer.toString(nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT))));
+      seenCountArea.setText("seen by " + Integer.toString(nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT))));
+
       //ImageView tickview = (ImageView) row.findViewById(R.id.tickmark);
       final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
       row.setVisibility(View.VISIBLE);
@@ -539,6 +550,11 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
       }
       return row;
     }
+  }
+
+  public int nonNegative(int x){
+      if(x < 0) return 0;
+      return x;
   }
 
   public void initialiseListViewMethods() {

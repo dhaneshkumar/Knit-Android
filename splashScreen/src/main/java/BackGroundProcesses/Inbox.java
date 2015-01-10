@@ -62,6 +62,7 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
     SyncMessageDetails.syncStatus();
     SyncMessageDetails.fetchLikeConfusedCountInbox();
+    SyncMessageDetails.fetchLikeConfusedCountOutbox();
 
     return mStrings;
   }
