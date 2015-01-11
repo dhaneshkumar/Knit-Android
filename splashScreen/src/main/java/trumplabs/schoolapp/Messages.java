@@ -180,7 +180,6 @@ public class Messages extends Fragment {
         myadapter = new RecycleAdapter();
         listv.setAdapter(myadapter);
 
-
         super.onActivityCreated(savedInstanceState);
 
     /*
