@@ -164,7 +164,7 @@ public class Outbox extends Fragment {
 
             holder.likes.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT)));
             holder.confused.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT)));
-            holder.seen.setText("seen by" + Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT)));
+            holder.seen.setText("seen by " + Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT)));
 
             /*
             Retrieving timestamp

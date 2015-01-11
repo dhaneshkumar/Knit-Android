@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Messages;
+import utility.Config;
 import utility.Utility;
 
 /**
@@ -36,8 +37,12 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
      */
     @Override
     protected String[] doInBackground(Void... params) {
-        if(msgs == null) return mStrings;
+        syncSeenJob();
+        return mStrings;
+    }
 
+    public void syncSeenJob(){
+        if(msgs == null) return;
         Log.d("DEBUG_SEEN_HANDLER", "Starting");
         ParseUser user = ParseUser.getCurrentUser();
 
@@ -50,12 +55,12 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         query.whereMatches("username", username);
         query.fromLocalDatastore();
 
-        for(int i=0; i<msgs.size(); i++){
+        for(int i=0; i<msgs.size() && i<Config.inboxMsgCount; i++){
             ParseObject msg = msgs.get(i);
             if(msg != null && msg.getObjectId() != null) {
                 query.whereMatches("messageId", msg.getObjectId());
                 try {
-                    Log.d("DEBUG_SEEN_HANDLER", "querying with msg id" + msg.getObjectId());
+                    Log.d("DEBUG_SEEN_HANDLER", "Checking for messages which are not yet in SeenStatus table. id" + msg.getObjectId());
                     List<ParseObject> match = query.find();
                     if (match == null || match.size() == 0) {
                         Log.d("DEBUG_SEEN_HANDLER", "Adding New Message to SeenStatus table");
@@ -100,8 +105,6 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         }
         catch(ParseException e){
         }
-
-        return mStrings;
     }
 
     @Override

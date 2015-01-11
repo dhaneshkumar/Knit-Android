@@ -82,21 +82,26 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       e.printStackTrace();
     }
 
-    //SyncMessageDetails.syncStatus();
-    //SyncMessageDetails.fetchLikeConfusedCountInbox();
-    //SyncMessageDetails.fetchLikeConfusedCountOutbox();
+
     
     /* Handle 'seen' of messages. Assume for now that since app is opened, user would have
     seen the new messages. Do this in a seperate thread */
     Runnable r = new Runnable() {
       @Override
       public void run(){
-          Log.d("DEBUG_SEEN_HANDLER", "spawning asynctask");
+          Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
           SeenHandler seenHandler = new SeenHandler();
-          seenHandler.execute();
+          seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
+
+          SyncMessageDetails.syncStatus();
+          SyncMessageDetails.fetchLikeConfusedCountInbox();
+          SyncMessageDetails.fetchLikeConfusedCountOutbox();
       }
     };
-    new Thread(r).start();
+
+    Thread t = new Thread(r);
+    t.setPriority(Thread.MIN_PRIORITY);
+    t.start();
 
     return mStrings;
   }
