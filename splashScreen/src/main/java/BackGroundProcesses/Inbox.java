@@ -5,7 +5,6 @@ import java.util.List;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
-import trumplabs.schoolapp.Messages;
 import utility.Config;
 import utility.Queries;
 import utility.Utility;
@@ -60,7 +59,10 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       
       Messages.msgs = newMsgs;
     }
-    
+
+    SyncMessageDetails.syncStatus();
+    SyncMessageDetails.fetchLikeConfusedCountInbox();
+
     return mStrings;
   }
 
