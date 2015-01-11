@@ -11,7 +11,10 @@ import utility.Utility;
 import android.os.AsyncTask;
 import android.view.View;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 
 public class Inbox extends AsyncTask<Void, Void, String[]> {
@@ -60,9 +63,26 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       Messages.msgs = newMsgs;
     }
 
-    SyncMessageDetails.syncStatus();
-    SyncMessageDetails.fetchLikeConfusedCountInbox();
-    SyncMessageDetails.fetchLikeConfusedCountOutbox();
+    //update Messages.totalInboxMessages
+    ParseUser user = ParseUser.getCurrentUser();
+
+    if (user == null)
+      Utility.logout();
+
+    ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+    query.fromLocalDatastore();
+    //query.orderByDescending(Constants.TIMESTAMP);
+    query.whereEqualTo("userId", user.getUsername());
+    try{
+      Messages.totalInboxMessages = query.count();
+    }
+    catch(ParseException e){
+      e.printStackTrace();
+    }
+
+    //SyncMessageDetails.syncStatus();
+    //SyncMessageDetails.fetchLikeConfusedCountInbox();
+    //SyncMessageDetails.fetchLikeConfusedCountOutbox();
 
     return mStrings;
   }
