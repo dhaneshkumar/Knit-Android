@@ -4,7 +4,10 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
+import com.parse.ParseException;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.List;
 
