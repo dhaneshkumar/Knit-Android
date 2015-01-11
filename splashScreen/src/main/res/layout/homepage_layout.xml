@@ -4,24 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightbackgroundcolor"
-    android:orientation="vertical" >
+    android:orientation="vertical">
+
     <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-            android:id="@+id/ptr_progress"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            style="@style/GNowProgressBar"
-            android:visibility="gone"
-            android:background="@color/white"
-            android:indeterminate="true"/>
+        android:id="@+id/ptr_progress"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        style="@style/GNowProgressBar"
+        android:visibility="gone"
+        android:background="@color/white"
+        android:indeterminate="true" />
 
     <LinearLayout
         android:id="@+id/progressBarLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-          android:visibility="gone"
-        android:orientation="vertical"
-         >
+        android:visibility="gone"
+        android:orientation="vertical">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -32,10 +32,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-             android:textSize="18sp"
+            android:textSize="18sp"
             android:text="Loading your data..."
-            android:textColor="@color/black"
-            />
+            android:textColor="@color/black" />
     </LinearLayout>
 
     <LinearLayout
@@ -43,7 +42,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/internetbar"
@@ -61,36 +60,58 @@
             android:layout_height="48dp"
             android:alpha="0.6"
             android:background="@color/white"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="42dp"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="bottom"
-                android:orientation="horizontal" >
+                android:gravity="center"
+                android:orientation="horizontal">
 
-                <TextView
+                <LinearLayout
                     android:id="@+id/tab1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Classrooms"
-                    android:textColor="@color/buttoncolor"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
 
-                <TextView
+                    <ImageView
+                        android:id="@+id/tab1Icon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/outbox" />
+                </LinearLayout>
+
+                <LinearLayout
                     android:id="@+id/tab2"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:gravity="center"
-                    android:text="Inbox"
-                    android:textColor="@color/buttoncolor"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/tab2Icon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/inbox_grey" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:id="@+id/tab3"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:layout_height="wrap_content">
+
+                    <ImageView
+                        android:id="@+id/tab3Icon"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:background="@drawable/classroom_grey" />
+                </LinearLayout>
+
+
             </LinearLayout>
 
             <TextView
@@ -111,8 +132,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/buttoncolor" >
-        </android.support.v4.view.ViewPager>
+            android:background="@color/buttoncolor"></android.support.v4.view.ViewPager>
     </LinearLayout>
 
 </LinearLayout>

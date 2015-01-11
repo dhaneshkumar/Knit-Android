@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_marginTop="4dp"
+    android:layout_marginBottom="4dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        >
+        <TextView
+            android:visibility="visible"
+            android:id="@+id/classimage1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_margin="16dp"
+            android:layout_gravity="top|left"
+            android:background="@drawable/circle"
+            android:text="X"
+            android:textSize="24sp"
+            android:gravity="center"
+            android:textColor="@color/white"/>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/classimage1"
+            android:layout_toEndOf="@+id/classimage1"
+            android:background="@color/white"
+            >
+
+            <TextView
+                android:id="@+id/classname1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="English"
+                android:gravity="center"
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                android:ellipsize="end"
+                android:maxEms="10"
+                android:singleLine="true"
+
+                />
+            <TextView
+                android:id="@+id/cctimestamp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="just now"
+                android:textColor="@color/txtgrey"
+                android:textSize="12sp"
+                android:layout_marginLeft="16dp"
+                android:layout_alignBottom="@+id/classname1"
+                android:layout_toRightOf="@+id/classname1"
+                />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="16dp"
+        android:background="@color/white"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginBottom="16dp"
+            android:background="#c6c8c8"/>
+
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+
+            <ImageView
+                android:id="@+id/ccimgmsg"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <ProgressBar
+                android:id="@+id/msgprogressbar"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <TextView
+            android:id="@+id/ccmsgtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Make sure that your child starts reading poems everyday."
+            android:textColor="@color/grey"
+            android:textSize="16sp" />
+
+        <RelativeLayout
+            android:id="@+id/likeButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp">
+
+            <TextView
+                android:id="@+id/like"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="13"
+                android:layout_gravity="center_vertical"
+                android:textColor="@color/grey_light"
+                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+            <ImageView
+                android:id="@+id/likeIcon"
+                android:layout_toRightOf="@+id/like"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="0dp"
+                android:src="@drawable/ic_action_like"/>
+
+            <TextView
+                android:id="@+id/confusion"
+                android:layout_toRightOf="@+id/likeIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="24"
+                android:layout_marginLeft="16dp"
+                android:textColor="@color/grey_light"
+                android:layout_centerVertical="true"
+                android:textSize="16sp"
+                />
+
+            <ImageView
+                android:id="@+id/confusionIcon"
+                android:layout_width="24dp"
+                android:layout_toRightOf="@+id/confusion"
+                android:layout_height="24dp"
+                android:layout_marginLeft="-4dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_action_help"/>
+
+            <TextView
+                android:id="@+id/seen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="seen by 29"
+                android:textColor="@color/grey_light"
+                android:textSize="12sp"
+                android:gravity="right"
+                android:layout_alignBottom="@+id/confusion"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+
+
+        </RelativeLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

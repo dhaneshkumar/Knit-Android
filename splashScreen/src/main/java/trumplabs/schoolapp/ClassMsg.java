@@ -842,6 +842,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
           sentMsg.put("Creator", groupDetails1.getString("Creator"));
           sentMsg.put("code", groupDetails1.getString("code"));
           sentMsg.put("title", groupDetails1.getString("title"));
+          sentMsg.put("name", groupDetails1.getString("name"));
           sentMsg.put("creationTime", groupDetails1.getCreatedAt());
           sentMsg.put("senderId", groupDetails1.getString("senderId"));
           sentMsg.put("userId", userId);
@@ -984,6 +985,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                 sentMsg.put("Creator", groupDetails1.getString("Creator"));
                 sentMsg.put("code", groupDetails1.getString("code"));
                 sentMsg.put("title", groupDetails1.getString("title"));
+                sentMsg.put("name", groupDetails1.getString("name"));
                 sentMsg.put("creationTime", groupDetails1.getCreatedAt());
                 sentMsg.put("senderId", groupDetails1.getString("senderId"));
                 sentMsg.put("userId", userId);

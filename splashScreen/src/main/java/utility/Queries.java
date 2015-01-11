@@ -943,5 +943,30 @@ public class Queries extends MyActivity {
         return msgs;
     }
 
+    /**
+     * Get locally sent messages in combined way
+     * @return list of sent messages
+     * @how query locally from sentMessage table and return first 20 messages list
+     */
+
+    public List<ParseObject> getLocalOutbox()  {
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        query.fromLocalDatastore();
+        query.orderByDescending("creationTime");
+        query.whereEqualTo("userId", userId);
+        query.setLimit(Config.outboxMsgCount);
+
+        List<ParseObject> outboxList = null;
+        try {
+            outboxList = query.find();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return outboxList;
+    }
+
+
 
 }
