@@ -112,7 +112,7 @@ public class SyncMessageDetails {
     }
 
     /**
-     * updates like and confused count of messages in inbox
+     * updates like and confused count of messages in outbox
      */
     public static void fetchLikeConfusedCountOutbox(){
         //do this for the first few(=Config.outboxRefreshLimit
@@ -120,6 +120,9 @@ public class SyncMessageDetails {
 
         if (parseObject == null)
             Utility.logout();
+        if(!parseObject.getString("role").equalsIgnoreCase("teacher")){
+            return;
+        }
 
         String userId = parseObject.getUsername();
 
