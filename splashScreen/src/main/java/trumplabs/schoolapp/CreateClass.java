@@ -3,6 +3,7 @@ package trumplabs.schoolapp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import joinclasses.School;
 import library.UtilString;
@@ -394,11 +395,14 @@ public class CreateClass extends MyActionBarActivity {
       if (!classNameCheckFlag) {
         Utility.toast("Group Creation successful");
 
-        ArrayList<String> newgroup = new ArrayList<String>();
+        List<String> newgroup = new ArrayList<String>();
         newgroup.add(codevalue);
         newgroup.add(typedtxt);
 
         // updating list view of created group
+        if(Classrooms.createdGroups == null)
+            Classrooms.createdGroups = new ArrayList<List<String>>();
+
         Classrooms.createdGroups.add(newgroup);
         Classrooms.members = 0;
         Classrooms.myadapter.notifyDataSetChanged();

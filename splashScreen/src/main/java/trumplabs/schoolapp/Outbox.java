@@ -48,13 +48,13 @@ import utility.Utility;
 public class Outbox extends Fragment {
     protected LayoutInflater layoutinflater;
     RecycleAdapter myadapter;
-    RecyclerView listv;
+    private RecyclerView outboxListv;
     Queries query;
     List<ParseObject> groupDetails; // List of group messages
     Activity myActivity;
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
-    public static SwipeRefreshLayout outboxRefreshLayout;
+    private SwipeRefreshLayout outboxRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -68,11 +68,11 @@ public class Outbox extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
 
         //intializing variables
-        listv = (RecyclerView) getActivity().findViewById(R.id.classmsglistview);
+        outboxListv = (RecyclerView) getActivity().findViewById(R.id.outboxlistview);
         myActivity = getActivity();
         session = new SessionManager(Application.getAppContext());
         query = new Queries();
-        outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
+        outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_outbox);
         outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
 
         //retrieving lcoally stored outbox messges
@@ -82,9 +82,9 @@ public class Outbox extends Fragment {
 
         //setting recycle view & layout
         mLayoutManager = new LinearLayoutManager(getActivity());
-        listv.setLayoutManager(mLayoutManager);
+        outboxListv.setLayoutManager(mLayoutManager);
         myadapter = new RecycleAdapter();
-        listv.setAdapter(myadapter);
+        outboxListv.setAdapter(myadapter);
 
         super.onActivityCreated(savedInstanceState);
 
@@ -93,7 +93,7 @@ public class Outbox extends Fragment {
      /*
      * On scrolling down the list view display extra messages.
      */
-        listv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        outboxListv.setOnScrollListener(new RecyclerView.OnScrollListener() {
             int lastCount = 0;
 
             @Override

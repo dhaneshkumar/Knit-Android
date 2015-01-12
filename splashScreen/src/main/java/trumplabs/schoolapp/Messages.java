@@ -65,7 +65,7 @@ import utility.Utility;
 public class Messages extends Fragment {
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
-    public static RecyclerView listv;
+    private RecyclerView listv;
     private LinearLayoutManager mLayoutManager;
     public static RecyclerView.Adapter myadapter;
     public static SwipeRefreshLayout mPullToRefreshLayout;
@@ -271,9 +271,14 @@ public class Messages extends Fragment {
                 if (MainActivity.mHeaderProgressBar != null)
                     MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
+
+                Utility.ls(" pull to refresh starting ... ");
                 // mHeaderProgressBar.setVisibility(View.GONE);
                 checkInternet = Utility.isInternetOn(getActivity());
                 if (Utility.isInternetOn(getActivity())) {
+
+
+                    Utility.ls(" inbox has to sstart ... ");
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
 
@@ -810,10 +815,18 @@ public class Messages extends Fragment {
         switch (item.getItemId()) {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
+                    Utility.ls(" option selected  ... ");
 
                     if (mPullToRefreshLayout != null) {
+                        Utility.ls(" option selected pull to refresh starting ... ");
+                        if(mPullToRefreshLayout.isRefreshing())
+                            mPullToRefreshLayout.setRefreshing(false);
+                        mPullToRefreshLayout.setRefreshing(true);
                         runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                     }
+                    else
+                        Utility.ls(" option selected  ...null ");
+
 
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
@@ -888,7 +901,6 @@ public class Messages extends Fragment {
         if (mPullToRefreshLayout == null)
             return;
 
-        mPullToRefreshLayout.setRefreshing(true);
         if (MainActivity.mHeaderProgressBar != null)
             MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 

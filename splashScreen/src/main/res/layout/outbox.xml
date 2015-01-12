@@ -8,12 +8,12 @@
 
     <android.support.v4.widget.SwipeRefreshLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/ptr_layout"
+        android:id="@+id/ptr_outbox"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" >
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/classmsglistview"
+        android:id="@+id/outboxlistview"
         android:scrollbars="vertical"
         android:paddingLeft = "8dp"
         android:paddingRight = "8dp"
