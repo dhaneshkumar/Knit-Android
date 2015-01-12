@@ -3,19 +3,20 @@ package trumplabs.schoolapp;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -23,7 +24,6 @@ import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -33,12 +33,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import BackGroundProcesses.CreatedClassRooms;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Queries;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 /**
@@ -53,6 +51,7 @@ public class Outbox extends Fragment {
     Activity myActivity;
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
+    public static SwipeRefreshLayout outboxRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -70,6 +69,8 @@ public class Outbox extends Fragment {
         myActivity = getActivity();
         session = new SessionManager(Application.getAppContext());
         query = new Queries();
+        outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
+        outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
 
         //retrieving lcoally stored outbox messges
         groupDetails = query.getLocalOutbox();
@@ -83,6 +84,80 @@ public class Outbox extends Fragment {
         listv.setAdapter(myadapter);
 
         super.onActivityCreated(savedInstanceState);
+
+
+
+     /*
+     * On scrolling down the list view display extra messages.
+     */
+        listv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            int lastCount = 0;
+
+            @Override
+            public void onScrolled(RecyclerView view, int dx, int dy) {
+
+                int visibleItemCount = mLayoutManager.getChildCount();
+                int totalItemCount = mLayoutManager.getItemCount();
+                int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
+
+                if(visibleItemCount + pastVisibleItems >= totalItemCount-1){
+                    try {
+                        groupDetails = query.getExtraLocalOutbox(groupDetails);
+                        myadapter.notifyDataSetChanged();
+                    } catch (ParseException e) {
+                    }
+                }
+            }
+
+            @Override
+            public void onScrollStateChanged(RecyclerView view, int newState) {
+            }
+        });
+
+
+        /*
+        Refreshing Messages on pulling refresh layout
+         */
+        outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
+        outboxRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+
+                //hiding main activity's progress bar
+                if (MainActivity.mHeaderProgressBar != null)
+                    MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+
+                // mHeaderProgressBar.setVisibility(View.GONE);
+                if (Utility.isInternetOn(getActivity())) {
+
+                    //code to refresh outbox
+                    //.....
+
+                    //start handler for 10 secs.  <to stop refreshbar>
+                    final Handler h = new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+
+                            outboxRefreshLayout.setRefreshing(false);
+                        }
+                    };
+                    h.sendMessageDelayed(new Message(), 10000);
+                } else {
+
+                    //start handler for 2 secs.  <to stop refreshbar>
+                    final Handler h = new Handler() {
+                        @Override
+                        public void handleMessage(Message message) {
+
+                            outboxRefreshLayout.setRefreshing(false);
+                        }
+                    };
+                    h.sendMessageDelayed(new Message(), 2000);
+                }
+
+            }
+        });
+
     }
 
 
@@ -149,23 +224,33 @@ public class Outbox extends Fragment {
             //setting message in view
             holder.msgtxtcontent.setText(groupdetails1.getString("title"));
 
+            String className= null;
             //setting class name
-            if(groupdetails1.getString("name") != null)
+            if(groupdetails1.getString("name") != null) {
                 holder.classname.setText(groupdetails1.getString("name"));
+                className = groupdetails1.getString("name");
+            }
             else
             {
                 //previous version support < in the version from now onwards storing class name also>
                 String groupCode = groupdetails1.getString("code");
 
+
                 //Retrieving from shared preferences to access fast
-                holder.classname.setText(session.getClassName(groupCode));
+                className =session.getClassName(groupCode);
+                holder.classname.setText(className);
+
 
             }
 
             holder.likes.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT)));
             holder.confused.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT)));
-            holder.seen.setText("seen by" + Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT)));
+            holder.seen.setText("seen by " + Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT)));
 
+            //setting background color of circular image
+            GradientDrawable gradientdrawable = (GradientDrawable) holder.classimage.getBackground();
+            gradientdrawable.setColor(Color.parseColor(Utility.classColourCode(className.toUpperCase())));
+            holder.classimage.setText(className.substring(0, 1).toUpperCase());    //setting front end of circular image
             /*
             Retrieving timestamp
              */
@@ -274,12 +359,12 @@ public class Outbox extends Fragment {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
 
-                    //show progress bar
-                    if (MainActivity.mHeaderProgressBar != null) {
-                        Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
+                    if (outboxRefreshLayout != null) {
+                        runSwipeRefreshLayout(outboxRefreshLayout, 10);
                     }
 
                    //update outbox in background
+                    //... code
 
 
                 } else {
@@ -290,6 +375,30 @@ public class Outbox extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+    /*
+stop swipe refreshlayout
+ */
+    public static void runSwipeRefreshLayout(final SwipeRefreshLayout outboxRefreshLayout, final int seconds) {
+
+        if (outboxRefreshLayout == null)
+            return;
+
+        outboxRefreshLayout.setRefreshing(true);
+        if (MainActivity.mHeaderProgressBar != null)
+            MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+
+        //start handler for 10 secs.  <to stop refreshbar>
+        final Handler h = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+
+                outboxRefreshLayout.setRefreshing(false);
+            }
+        };
+        h.sendMessageDelayed(new Message(), seconds * 1000);
     }
 
 

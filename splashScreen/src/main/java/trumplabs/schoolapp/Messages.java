@@ -89,7 +89,7 @@ public class Messages extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
-        mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.YELLOW);
+        mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
 
         listv = (RecyclerView) getActivity().findViewById(R.id.msg_list);
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);

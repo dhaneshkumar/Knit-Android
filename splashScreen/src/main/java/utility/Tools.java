@@ -405,35 +405,8 @@ public class Tools {
   }
 
 
-    /*
-    stop swipe refreshlayout
-     */
-
-
-    public static void runSwipeRefreshLayout(final SwipeRefreshLayout progressBar, final int seconds) {
-
-        if (progressBar == null)
-            return;
-
-
-        if(! progressBar.isRefreshing()) {
-            progressBar.setRefreshing(true);
-        }
 
     /*
-     * stop refreshing progress bar
-     */
-        final Handler h = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-                progressBar.setRefreshing(false);
-            }
-        };
-        h.sendMessageDelayed(new Message(), seconds * 1000);
-
-    }
-
-  /*
    * make visible  progress bar for certain interval
    */
   public static void runProgressBar(final ProgressBar progressBar, final int seconds) {

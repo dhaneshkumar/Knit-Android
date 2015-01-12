@@ -295,11 +295,10 @@ public class Queries extends MyActivity {
                                 msgStateQuery.whereMatches(Constants.MESSAGE_ID, messages.getObjectId());
                                 //object id won't be null as it was fetched from parse
                                 List<ParseObject> msgStateResults = msgStateQuery.find();
-                                if(msgStateResults==null || msgStateResults.size()==0){//default state 00
+                                if (msgStateResults == null || msgStateResults.size() == 0) {//default state 00
                                     messages.put(Constants.LIKE, false);
                                     messages.put(Constants.CONFUSING, false);
-                                }
-                                else{
+                                } else {
                                     ParseObject msgState = msgStateResults.get(0);
                                     messages.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
                                     messages.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
@@ -961,11 +960,12 @@ public class Queries extends MyActivity {
 
     /**
      * Get locally sent messages in combined way
+     *
      * @return list of sent messages
      * @how query locally from sentMessage table and return first 20 messages list
      */
 
-    public List<ParseObject> getLocalOutbox()  {
+    public List<ParseObject> getLocalOutbox() {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
         query.fromLocalDatastore();
@@ -983,6 +983,33 @@ public class Queries extends MyActivity {
         return outboxList;
     }
 
+    public List<ParseObject> getExtraLocalOutbox(List<ParseObject> msgs) throws ParseException {
 
+        if (msgs == null)
+            return null;
+        Date lastTimeStamp = null;
+
+        if (msgs.size() > 0 && msgs.get(msgs.size() - 1) != null) {
+            lastTimeStamp = msgs.get(msgs.size() - 1).getDate("creationTime");
+        }
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        query.fromLocalDatastore();
+        query.orderByDescending("creationTime");
+        query.whereEqualTo("userId", userId);
+        query.setLimit(Config.outboxMsgCount);
+
+        if (lastTimeStamp != null)
+            query.whereLessThan("creationTime", lastTimeStamp);
+
+        List<ParseObject> msgList1 = query.find();
+
+        // appending extra objects to the end of list
+        if (msgList1 != null) {
+            msgs.addAll(msgList1);
+            // Utility.toast(msgList1.size()+"");
+        }
+        return msgs;
+    }
 
 }

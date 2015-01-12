@@ -15,13 +15,13 @@
         <TextView
             android:visibility="visible"
             android:id="@+id/classimage1"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
             android:layout_margin="16dp"
             android:layout_gravity="top|left"
             android:background="@drawable/circle"
             android:text="X"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:gravity="center"
             android:textColor="@color/white"/>
 
@@ -32,7 +32,7 @@
             android:layout_toRightOf="@+id/classimage1"
             android:layout_toEndOf="@+id/classimage1"
             android:background="@color/white"
-            >
+            android:id="@+id/relativeLayout">
 
             <TextView
                 android:id="@+id/classname1"
@@ -40,25 +40,29 @@
                 android:layout_height="wrap_content"
                 android:text="English"
                 android:gravity="center"
-                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:textColor="#363636"
                 android:textSize="16sp"
                 android:ellipsize="end"
                 android:maxEms="10"
                 android:singleLine="true"
 
                 />
+
             <TextView
                 android:id="@+id/cctimestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="just now"
-                android:textColor="@color/txtgrey"
+                android:textColor="@color/grey_light"
                 android:textSize="12sp"
-                android:layout_marginLeft="16dp"
-                android:layout_alignBottom="@+id/classname1"
-                android:layout_toRightOf="@+id/classname1"
-                />
+                android:layout_marginTop="2dp"
+                android:layout_below="@+id/classname1"
+                android:layout_alignLeft="@+id/classname1"
+                android:layout_alignStart="@+id/classname1" />
         </RelativeLayout>
+
+
 
     </RelativeLayout>
 
@@ -73,11 +77,7 @@
         android:gravity="center_horizontal"
         android:orientation="vertical"
         >
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_marginBottom="16dp"
-            android:background="#c6c8c8"/>
+
 
         <FrameLayout
             android:layout_width="wrap_content"
@@ -101,8 +101,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Make sure that your child starts reading poems everyday."
-            android:textColor="@color/grey"
-            android:textSize="16sp" />
+            android:textColor="#444444"
+            android:textSize="14sp" />
 
         <RelativeLayout
             android:id="@+id/likeButton"
@@ -115,9 +115,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="13"
+                android:textStyle="bold"
                 android:layout_gravity="center_vertical"
                 android:textColor="@color/grey_light"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
@@ -137,9 +138,10 @@
                 android:layout_height="wrap_content"
                 android:text="24"
                 android:layout_marginLeft="16dp"
+                android:textStyle="bold"
                 android:textColor="@color/grey_light"
                 android:layout_centerVertical="true"
-                android:textSize="16sp"
+                android:textSize="14sp"
                 />
 
             <ImageView

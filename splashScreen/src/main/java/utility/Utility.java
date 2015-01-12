@@ -219,11 +219,11 @@ public class Utility extends MyActionBarActivity {
             long diffDays = diff / (24 * 60 * 60 * 1000);
 
             if (diffDays != 0) {
-                result = diffDays + " days";
+                result = diffDays + " days ago";
             } else if (diffHours != 0) {
-                result = diffHours + " hrs";
+                result = diffHours + " hrs ago";
             } else if (diffMinutes != 0) {
-                result = diffMinutes + " mins";
+                result = diffMinutes + " mins ago";
 
                 if (diffMinutes < 3)
                     result = "just now";
@@ -387,10 +387,14 @@ public class Utility extends MyActionBarActivity {
         return null;
     }
 
-    public static String classColourCode(int position) {
+    public static String classColourCode(String className) {
         String[] colours =
-                {"#f1c40f", "#e67e22", "#e74c3c", "#95a5a6", "#9b59b6", "#3498db", "#2ecc71", "#1abc9c"};
-        int index = position % 8;
+                {"#E6CA5A", "#E4944D", "#E5766A", "#60D1D9", "#BD81D5", "#6AAEDB", "#67D595"};
+
+        int hashCode = className.hashCode();
+
+
+        int index = Math.abs(hashCode) % 7;
         return colours[index];
     }
 
