@@ -24,7 +24,7 @@
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="top|left"
-                android:layout_marginRight="8dp"
+                android:layout_marginRight="16dp"
                 android:background="@drawable/maleteacher"
                 android:scaleType="fitCenter" />
 
@@ -38,9 +38,10 @@
                 android:layout_toRightOf="@+id/image"
                 android:ellipsize="end"
                 android:maxEms="10"
+                android:textColor="#363636"
                 android:singleLine="true"
                 android:text="ENGLISH"
-                android:textColor="@color/buttoncolor"
+                android:textStyle="bold"
                 android:textSize="16sp" />
 
             <TextView
@@ -49,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignLeft="@+id/groupName"
                 android:layout_below="@+id/groupName"
-                android:layout_marginTop="-2dp"
+                android:layout_marginTop="0dp"
                 android:text="1min ago"
                 android:textColor="#939597"
                 android:textSize="12sp" />
@@ -94,7 +95,7 @@
             android:layout_marginTop="16dp"
             android:text="Make sure that your child starts reading poems everyday. This will help greatly in building personality and improving language."
             android:textColor="@color/txtgreyDark"
-            android:textSize="16sp" />
+            android:textSize="14sp" />
 
         <FrameLayout
             android:id="@+id/imagefrmlayout"

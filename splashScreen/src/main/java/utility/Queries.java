@@ -353,6 +353,7 @@ public class Queries extends MyActivity {
 
     // **********************CREATE CLASS MESSAGES QUERY******************
 
+
     public List<ParseObject> getLocalCreateMsgs(String groupCode, List<ParseObject> groupDetails,
                                                 boolean flag) throws ParseException {
         Date oldTime = null;
@@ -375,7 +376,7 @@ public class Queries extends MyActivity {
             query.setLimit(createMsgCount);
 
         if (oldTime != null)
-            query.whereLessThan(Constants.TIMESTAMP, oldTime);
+            query.whereLessThan("creationTime", oldTime);
 
         List<ParseObject> msgList1 = query.find();
 
@@ -383,9 +384,12 @@ public class Queries extends MyActivity {
 
         if (msgList1 != null) {
             for (int i = 0; i < msgList1.size(); i++) {
-
                 groupDetails.add(0, msgList1.get(i));
+
+
             }
+
+
         }
 
         return groupDetails;
@@ -461,10 +465,13 @@ public class Queries extends MyActivity {
                             sentMsg.put("Creator", messages.getString("Creator"));
                             sentMsg.put("code", messages.getString("code"));
                             sentMsg.put("title", messages.getString("title"));
+                            sentMsg.put("name", messages.getString("name"));
                             sentMsg.put("creationTime", messages.getCreatedAt());
                             sentMsg.put("senderId", messages.getString("senderId"));
                             sentMsg.put("userId", userId);
 
+
+                            Utility.ls(messages.getString("code") +  "  :  " + messages.getString("title"));
 
                             if (messages.get("attachment") != null)
                                 sentMsg.put("attachment", messages.get("attachment"));
