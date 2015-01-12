@@ -267,6 +267,7 @@ public class Messages extends Fragment {
         mPullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                Log.d("DEBUG_MESSAGES_REFRESH", "On refresh called through pull down listener");
                 if (MainActivity.mHeaderProgressBar != null)
                     MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
