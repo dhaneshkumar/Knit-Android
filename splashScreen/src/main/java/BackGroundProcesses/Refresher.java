@@ -100,6 +100,12 @@ public class Refresher {
          */
                 JoinedClassRooms joinClass = new JoinedClassRooms(true);
                 joinClass.execute();
+
+                if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
+                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
+                    OutboxMsgFetch outboxMsgFetch = new OutboxMsgFetch();
+                    outboxMsgFetch.execute();
+                }
             }
 
 

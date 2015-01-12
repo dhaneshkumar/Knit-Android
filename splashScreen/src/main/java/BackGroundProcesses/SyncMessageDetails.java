@@ -156,15 +156,16 @@ public class SyncMessageDetails {
                         parameters.put("objectId", msg.getString("objectId"));
                         parameters.put("outbox", "1");
                         try{
-                            Map<String, Object> updatedmsg = ParseCloud.callFunction("getLikeConfusedCount", parameters);
+                            Map<String, Object> updatedmsg = ParseCloud.callFunction("getLikeConfusedCount", parameters); //also gets seen count
 
-                            Log.d("DEBUG_OUTBOX_COUNT_FETCH", "[" + group.get(0) + "]" + msg.getObjectId() + "old L/C=" +
-                                    msg.get(Constants.LIKE_COUNT) + "/" + msg.get(Constants.CONFUSED_COUNT) +
-                                    "new L/C=" +
-                                    updatedmsg.get(Constants.LIKE_COUNT) +  "/" + updatedmsg.get(Constants.CONFUSED_COUNT));
+                            Log.d("DEBUG_OUTBOX_COUNT_FETCH", "[" + group.get(0) + "]" + msg.getObjectId() + "old L/C/S=" +
+                                    msg.get(Constants.LIKE_COUNT) + "/" + msg.get(Constants.CONFUSED_COUNT) + "/" + msg.get(Constants.SEEN_COUNT)+
+                                    " new L/C/S=" +
+                                    updatedmsg.get(Constants.LIKE_COUNT) +  "/" + updatedmsg.get(Constants.CONFUSED_COUNT)+"/"+updatedmsg.get(Constants.SEEN_COUNT)) ;
 
                             msg.put(Constants.LIKE_COUNT, updatedmsg.get(Constants.LIKE_COUNT));
                             msg.put(Constants.CONFUSED_COUNT, updatedmsg.get(Constants.CONFUSED_COUNT));
+                            msg.put(Constants.SEEN_COUNT, updatedmsg.get(Constants.SEEN_COUNT));
                             msg.pinInBackground();
                         }
                         catch (ParseException e){

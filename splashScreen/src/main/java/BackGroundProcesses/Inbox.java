@@ -1,5 +1,14 @@
 package BackGroundProcesses;
 
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
@@ -8,10 +17,6 @@ import trumplabs.schoolapp.Messages;
 import utility.Config;
 import utility.Queries;
 import utility.Utility;
-import android.os.AsyncTask;
-import android.view.View;
-
-import com.parse.ParseObject;
 
 
 public class Inbox extends AsyncTask<Void, Void, String[]> {
@@ -59,10 +64,44 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       
       Messages.msgs = newMsgs;
     }
+    
+    //update Messages.totalInboxMessages
+    ParseUser user = ParseUser.getCurrentUser();
 
-    SyncMessageDetails.syncStatus();
-    SyncMessageDetails.fetchLikeConfusedCountInbox();
-    SyncMessageDetails.fetchLikeConfusedCountOutbox();
+    if (user == null)
+      Utility.logout();
+
+    ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+    query.fromLocalDatastore();
+    //query.orderByDescending(Constants.TIMESTAMP);
+    query.whereEqualTo("userId", user.getUsername());
+    try{
+      Messages.totalInboxMessages = query.count();
+    }
+    catch(ParseException e){
+      e.printStackTrace();
+    }
+
+
+    
+    /* Handle 'seen' of messages. Assume for now that since app is opened, user would have
+    seen the new messages. Do this in a seperate thread */
+    Runnable r = new Runnable() {
+      @Override
+      public void run(){
+          Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
+          SeenHandler seenHandler = new SeenHandler();
+          seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
+
+          SyncMessageDetails.syncStatus();
+          SyncMessageDetails.fetchLikeConfusedCountInbox();
+          SyncMessageDetails.fetchLikeConfusedCountOutbox();
+      }
+    };
+
+    Thread t = new Thread(r);
+    t.setPriority(Thread.MIN_PRIORITY);
+    t.start();
 
     return mStrings;
   }

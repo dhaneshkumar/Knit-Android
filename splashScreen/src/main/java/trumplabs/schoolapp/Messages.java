@@ -78,6 +78,7 @@ public class Messages extends Fragment {
     private LruCache<String, Bitmap> mMemoryCache;
     private Typeface typeFace;
     String userId;
+    public static int totalInboxMessages; //total pinned messages in inbox
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -179,7 +180,6 @@ public class Messages extends Fragment {
         myadapter = new RecycleAdapter();
         listv.setAdapter(myadapter);
 
-
         super.onActivityCreated(savedInstanceState);
 
     /*
@@ -242,9 +242,17 @@ public class Messages extends Fragment {
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
                 if(visibleItemCount + pastVisibleItems >= totalItemCount-2){
+                    if(totalItemCount >= totalInboxMessages){
+                        Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
+                        return; //nothing to do as all messages have been loaded
+                    }
+                    Log.d("DEBUG_MESSAGES", "Loading more local messages");
+
                     try {
                         msgs = query.getExtraLocalInboxMsgs(msgs);
+                        myadapter.notifyDataSetChanged();
                     } catch (ParseException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -457,6 +465,7 @@ public class Messages extends Fragment {
 
             final ParseObject msgObject = msgs.get(position);
 
+
       /*
        * Set likes and confused count
        */
@@ -480,6 +489,8 @@ public class Messages extends Fragment {
                 unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
 
 
+//            Boolean x = true;
+//            if(x) return;
       /*
        * Setting likes and confused button functionality
        */
