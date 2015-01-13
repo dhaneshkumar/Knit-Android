@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:layout_width="match_parent">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:id="@+id/progresslayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:visibility="gone"
+            android:orientation="vertical"
+           >
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/logText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading...."
+                android:textColor="@color/black"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/loginlayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/logoimgview"
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/logo12" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:textSize="30sp"
+                android:textColor="@color/black"
+                android:text="Sign Up" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:textSize="14sp"
+                android:textColor="@color/buttoncolor"
+                android:text="Please select your" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:textColor="@color/buttoncolor"
+                android:text="ROLE" />
+
+
+            <LinearLayout
+                android:id="@+id/teacherLayout"
+                android:layout_width="@dimen/signup_layout_width"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_corner_button_color"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/signup_image_width"
+                    android:layout_height="@dimen/signup_image_width"
+                    android:background="@drawable/signup_teacher" />
+
+                <TextView
+                    android:layout_width="@dimen/signup_textview_width"
+                    android:layout_height="wrap_content"
+                    android:text="TEACHER"
+                    android:textSize="20sp"
+
+                    android:textColor="@color/white"
+                    android:paddingLeft="32dp"
+                    android:paddingRight="32dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/parent_layout"
+                android:layout_width="@dimen/signup_layout_width"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_corner_button_color"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/signup_image_width"
+                    android:layout_height="@dimen/signup_image_width"
+                    android:background="@drawable/signup_parent" />
+
+                <TextView
+                    android:layout_width="@dimen/signup_textview_width"
+                    android:layout_height="wrap_content"
+                    android:text="PARENT"
+                    android:textSize="20sp"
+
+                    android:textColor="@color/white"
+                    android:paddingLeft="32dp"
+                    android:paddingRight="32dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/student_layout"
+                android:layout_width="@dimen/signup_layout_width"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_corner_button_color"
+                android:gravity="center"
+                android:layout_marginTop="16dp"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="@dimen/signup_image_width"
+                    android:layout_height="@dimen/signup_image_width"
+                    android:background="@drawable/signup_child" />
+
+                <TextView
+                    android:layout_width="@dimen/signup_textview_width"
+                    android:layout_height="wrap_content"
+                    android:text="STUDENT"
+                    android:textSize="20sp"
+                    android:textColor="@color/white"
+                    android:paddingLeft="32dp"
+                    android:paddingRight="32dp" />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="@dimen/signup_textview_width"
+                android:layout_height="2dp"
+                android:layout_marginTop="16dp"
+                android:text=""
+                android:background="@color/darkgrey" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Already a member?"
+                android:textColor="@color/black"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/logiinView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/round_corner_button_color"
+                android:text="Login"
+                android:textSize="20sp"
+                android:layout_marginTop="16dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingTop="4dp"
+                android:layout_marginBottom="32dp"
+                android:paddingBottom="4dp"
+                android:textColor="@color/white" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
