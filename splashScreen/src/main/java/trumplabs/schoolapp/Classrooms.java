@@ -39,7 +39,7 @@ import com.parse.ParseUser;
 
 public class Classrooms extends Fragment {
     private Activity getactivity;
-    private ListView listv;
+    public static ListView listv;
     private LinearLayout emptylayout;
     public static List<List<String>> createdGroups;
     protected LayoutInflater layoutinflater;

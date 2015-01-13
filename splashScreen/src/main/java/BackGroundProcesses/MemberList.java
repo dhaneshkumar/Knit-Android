@@ -9,6 +9,7 @@ import trumplabs.schoolapp.MemberDetails;
 import utility.Queries;
 import utility.Utility;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import com.parse.ParseObject;
@@ -37,8 +38,41 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
   @Override
   protected String[] doInBackground(Void... params) {
 
-    Utility.ls("memberlist running....");
-    memberDetails = query.getServerClassMembers(groupCode, openingFlag,reminder);
+    Runnable r = new Runnable() {
+      @Override
+      public void run(){
+          Utility.ls("memberlist running....");
+          memberDetails = query.getServerClassMembers(groupCode, openingFlag,reminder);
+
+          //following is the onpostexecute thing
+          if (Classrooms.listv != null){
+              Classrooms.listv.post(new Runnable() {
+                  @Override
+                  public void run() {
+                      Log.d("DEBUG_AFTER_MEMBER_LIST_REFRESH", "Notifying ClassMembers.myadapter & Classrooms.myadapter");
+
+                      if (memberDetails != null) {
+                          ClassMembers.memberDetails = memberDetails;
+                      }
+
+                      if (ClassMembers.mHeaderProgressBar != null)
+                          ClassMembers.mHeaderProgressBar.setVisibility(View.GONE);
+
+                      if (ClassMembers.myadapter != null)
+                          ClassMembers.myadapter.notifyDataSetChanged();
+
+                      if (Classrooms.myadapter != null)
+                          Classrooms.myadapter.notifyDataSetChanged();
+                  }
+              });
+          }
+      }
+    };
+
+    Thread t = new Thread(r);
+    t.setPriority(Thread.MIN_PRIORITY);
+    t.start();
+
     return mString;
   }
 
@@ -46,7 +80,7 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
   protected void onPostExecute(String[] result) {
 
 
-    if (memberDetails != null) {
+    /*if (memberDetails != null) {
       ClassMembers.memberDetails = memberDetails;
 
       if (ClassMembers.mHeaderProgressBar != null)
@@ -57,7 +91,7 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
 
       if (Classrooms.myadapter != null)
         Classrooms.myadapter.notifyDataSetChanged();
-    }
+    }*/
 
     super.onPostExecute(result);
   }

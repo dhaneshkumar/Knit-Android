@@ -112,6 +112,18 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
               SyncMessageDetails.syncStatus();
               SyncMessageDetails.fetchLikeConfusedCountInbox();
+
+              if(Messages.mPullToRefreshLayout != null){
+                  Messages.mPullToRefreshLayout.post(new Runnable() {
+                      @Override
+                      public void run() {
+                        Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
+                        if(Messages.myadapter != null){
+                            Messages.myadapter.notifyDataSetChanged();
+                        }
+                      }
+                  });
+              }
           }
       };
 

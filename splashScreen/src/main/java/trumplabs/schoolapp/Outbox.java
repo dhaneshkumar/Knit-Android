@@ -47,14 +47,14 @@ import utility.Utility;
  */
 public class Outbox extends Fragment {
     protected LayoutInflater layoutinflater;
-    RecycleAdapter myadapter;
+    public static RecycleAdapter myadapter;
     private RecyclerView outboxListv;
     Queries query;
     List<ParseObject> groupDetails; // List of group messages
     Activity myActivity;
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
-    private SwipeRefreshLayout outboxRefreshLayout;
+    private static SwipeRefreshLayout outboxRefreshLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -387,12 +387,24 @@ public class Outbox extends Fragment {
 
 
     //update like/confused/seen count for sent messages in a background thread
-    public void refreshCountInBackground(){
+    public static void refreshCountInBackground(){
         Runnable r = new Runnable() {
             @Override
             public void run(){
                 Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
                 SyncMessageDetails.fetchLikeConfusedCountOutbox();
+                //following is the onpostexecute thing
+                if (Outbox.outboxRefreshLayout != null){
+                    Outbox.outboxRefreshLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Notifying Outbox.myadapter");
+                            if(Outbox.myadapter != null){
+                                Outbox.myadapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
+                }
             }
         };
 
