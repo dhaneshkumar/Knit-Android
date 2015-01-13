@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import baseclasses.MyActionBarActivity;
 
 import com.parse.ParseAnalytics;
+import com.parse.ParseUser;
 
 /**
  * Used to display splash screen on opening the app. It also start a background process to update
@@ -119,8 +120,21 @@ public class SplashScreen extends MyActionBarActivity {
           sleep(1500);
 
           // start loginpage activity
-          Intent loginIntent = new Intent(getBaseContext(), LoginPage.class);
-          startActivity(loginIntent);
+
+            ParseUser user = ParseUser.getCurrentUser();
+
+            if(user == null)
+            {
+                Intent loginIntent = new Intent(getBaseContext(), Signup.class);
+                startActivity(loginIntent);
+            }
+            else
+            {
+                Intent loginIntent = new Intent(getBaseContext(), LoginPage.class);
+                startActivity(loginIntent);
+            }
+
+
         } catch (InterruptedException e) {
           e.printStackTrace();
         } finally {

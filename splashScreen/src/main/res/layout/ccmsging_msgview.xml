@@ -70,8 +70,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
+
         android:paddingBottom="16dp"
         android:background="@color/white"
         android:gravity="center_horizontal"
@@ -98,6 +97,8 @@
 
         <TextView
             android:id="@+id/ccmsgtext"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Make sure that your child starts reading poems everyday."
@@ -106,6 +107,8 @@
 
         <RelativeLayout
             android:id="@+id/likeButton"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp">

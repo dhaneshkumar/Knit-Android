@@ -109,7 +109,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         userId = user.getUsername();
         String role = user.getString(Constants.ROLE);
 
-        if (role.equals("parent"))
+        if ( !role.equals(Constants.TEACHER))
             editSchool.setVisibility(View.GONE);
 
 

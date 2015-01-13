@@ -70,21 +70,31 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
         android:paddingBottom="16dp"
         android:background="@color/white"
         android:gravity="center_horizontal"
         android:orientation="vertical"
         >
 
+        <TextView
+            android:id="@+id/ccmsgtext"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:visibility="gone"
+            android:layout_marginBottom="8dp"
+            android:text="Make sure that your child starts reading poems everyday."
+            android:textColor="#444444"
+            android:textSize="14sp" />
 
         <FrameLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content" >
 
             <ImageView
                 android:id="@+id/ccimgmsg"
+                android:visibility="gone"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -96,19 +106,15 @@
                 android:visibility="gone" />
         </FrameLayout>
 
-        <TextView
-            android:id="@+id/ccmsgtext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Make sure that your child starts reading poems everyday."
-            android:textColor="#444444"
-            android:textSize="14sp" />
+
 
         <RelativeLayout
             android:id="@+id/likeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp">
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:layout_marginTop="8dp">
 
             <TextView
                 android:id="@+id/like"

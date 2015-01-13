@@ -16,4 +16,7 @@
 	<dimen name="profil_edit_font_size">13sp</dimen>
 	<dimen name="profil_bar_font_size">14sp</dimen>
 	<dimen name = "text_left_margin">5dp</dimen>
+    <dimen name="signup_layout_width">196dp</dimen>
+    <dimen name="signup_image_width">36dp</dimen>
+    <dimen name="signup_textview_width">160dp</dimen>
 </resources>

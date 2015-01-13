@@ -158,17 +158,7 @@ public class LoginPage extends MyActionBarActivity {
           forgotpassdialog.show(fm, "Forgot Password?");
         }
         break;
-      case R.id.signupmenu:
 
-        if (Utility.isInternetOn(this)) {
-          signUpFlag = true;
-          loginLayout.setVisibility(View.GONE);
-          progressLayout.setVisibility(View.VISIBLE);
-          logText.setVisibility(View.GONE);
-          GetSchools getSchools = new GetSchools(fm);
-          getSchools.execute();
-        }
-        break;
       default:
         break;
     }
@@ -176,17 +166,7 @@ public class LoginPage extends MyActionBarActivity {
     return super.onOptionsItemSelected(item);
   }
 
-  @Override
-  public void onBackPressed() {
 
-    if (!signUpFlag) {
-      Intent intent = new Intent();
-      intent.setAction(Intent.ACTION_MAIN);
-      intent.addCategory(Intent.CATEGORY_HOME);
-      startActivity(intent);
-    } else
-      signUpFlag = false;
-  }
 
   private void setDefaultGroupCheck(ParseUser user) {
     if (user == null)
@@ -221,45 +201,5 @@ public class LoginPage extends MyActionBarActivity {
 
 
 
-  private class GetSchools extends AsyncTask<Void, Void, Void> {
-    private FragmentManager fm;
 
-    GetSchools(FragmentManager fm) {
-      this.fm = fm;
-    }
-
-    @Override
-    protected Void doInBackground(Void... params) {
-
-      ParseQuery<ParseObject> query = ParseQuery.getQuery("SCHOOLS");
-      query.orderByAscending("school_name");
-
-      try {
-        List<ParseObject> schoolList = query.find();
-
-        if (schoolList != null)
-          ParseObject.pinAll(schoolList);
-
-
-      } catch (ParseException e) {
-      }
-
-      return null;
-    }
-
-    @Override
-    protected void onPostExecute(Void result) {
-
-      loginLayout.setVisibility(View.VISIBLE);
-      progressLayout.setVisibility(View.GONE);
-      logText.setVisibility(View.VISIBLE);
-
-      signUp0Class signUp0 = new signUp0Class();
-
-      fm.beginTransaction().add(signUp0, "Choose Profession!").commitAllowingStateLoss();
-      // signUp0.show(fm, "Choose Profession!");
-    }
-
-
-  }
 }

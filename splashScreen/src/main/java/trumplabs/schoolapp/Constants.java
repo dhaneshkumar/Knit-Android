@@ -6,6 +6,7 @@ import java.util.Map;
 public class Constants {
   public static String TEACHER = "teacher";
   public static String PARENT = "parent";
+    public static String STUDENT = "student";
 
   public static Map<String, String> groupSenderMap;
   public static Date currentTimeStamp;

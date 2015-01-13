@@ -59,6 +59,7 @@
             android:name="trumplabs.schoolapp.ClassContainer"
             android:windowSoftInputMode="stateHidden"></activity>
         <activity android:name="trumplabs.schoolapp.MainActivity"></activity>
+        <activity android:name="loginpages.Signup"></activity>
         <activity android:name="loginpages.Signup1Class"></activity>
         <activity android:name="loginpages.Signup1_5Class"></activity>
         <activity android:name="profileDetails.ProfilePage"></activity>

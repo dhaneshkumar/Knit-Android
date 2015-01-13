@@ -1,6 +1,8 @@
 package loginpages;
 
 import android.content.Intent;
+import android.os.AsyncTask;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -8,6 +10,12 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
+import java.util.List;
 
 import baseclasses.MyActionBarActivity;
 import joinclasses.School;
@@ -34,7 +42,7 @@ public class Signup1Class extends MyActionBarActivity {
     Intent intent = getIntent();
     role = intent.getStringExtra("role");
 
-    if (role.equals(Constants.PARENT))
+    if (role.equals(Constants.PARENT) || role.equals(Constants.STUDENT))
       schoolNameView.setVisibility(View.GONE);
     else {
       /*

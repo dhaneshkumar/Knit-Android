@@ -19,6 +19,7 @@ import com.parse.ParseUser;
 import library.UtilString;
 import loginpages.LoginPage;
 
+import loginpages.Signup;
 import trumplabs.schoolapp.Application;
 import trumplab.textslate.R;
 
@@ -68,7 +69,7 @@ public class Utility extends MyActionBarActivity {
         session.reSetChildList();
         session.reSetDefaultClassExtst();
 
-        Intent i = new Intent(_context, LoginPage.class);
+        Intent i = new Intent(_context, Signup.class);
         // Closing all the Activities
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 

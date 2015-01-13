@@ -222,7 +222,11 @@ public class Outbox extends Fragment {
             if (groupdetails1 == null) return;
 
             //setting message in view
-            holder.msgtxtcontent.setText(groupdetails1.getString("title"));
+            String msg = groupdetails1.getString("title");
+            if(msg == null || msg.trim().equals(""));
+            else
+                holder.msgtxtcontent.setVisibility(View.VISIBLE);
+            holder.msgtxtcontent.setText(msg);
 
             String className= null;
             //setting class name
@@ -283,6 +287,7 @@ public class Outbox extends Fragment {
             //If image attachment exist, display image
             if (!UtilString.isBlank(imagepath)) {
                 holder.imgmsgview.setVisibility(View.VISIBLE);
+
                 holder.uploadprogressbar.setTag("Progress");
                 File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
                 final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
@@ -334,6 +339,7 @@ public class Outbox extends Fragment {
 
                     holder.imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
                     holder.imgmsgview.setImageBitmap(null);
+
                     // imgmsgview.setVisibility(View.GONE);
 
 
