@@ -12,6 +12,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import BackGroundProcesses.SeenHandler;
+import BackGroundProcesses.SyncMessageDetails;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Queries;
@@ -131,7 +134,7 @@ public class Outbox extends Fragment {
                 if (Utility.isInternetOn(getActivity())) {
 
                     //code to refresh outbox
-                    //.....
+                    refreshCountInBackground();
 
                     //start handler for 10 secs.  <to stop refreshbar>
                     final Handler h = new Handler() {
@@ -370,8 +373,7 @@ public class Outbox extends Fragment {
                     }
 
                    //update outbox in background
-                    //... code
-
+                    refreshCountInBackground();
 
                 } else {
                     Utility.toast("Check your Internet connection");
@@ -383,6 +385,21 @@ public class Outbox extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+
+    //update like/confused/seen count for sent messages in a background thread
+    public void refreshCountInBackground(){
+        Runnable r = new Runnable() {
+            @Override
+            public void run(){
+                Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
+                SyncMessageDetails.fetchLikeConfusedCountOutbox();
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.start();
+    }
 
     /*
 stop swipe refreshlayout

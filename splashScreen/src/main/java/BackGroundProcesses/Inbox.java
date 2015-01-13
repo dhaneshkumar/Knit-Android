@@ -73,7 +73,6 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
     ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
     query.fromLocalDatastore();
-    //query.orderByDescending(Constants.TIMESTAMP);
     query.whereEqualTo("userId", user.getUsername());
     try{
       Messages.totalInboxMessages = query.count();
@@ -81,8 +80,6 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
     catch(ParseException e){
       e.printStackTrace();
     }
-
-
     return mStrings;
   }
 
@@ -115,17 +112,12 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
               SyncMessageDetails.syncStatus();
               SyncMessageDetails.fetchLikeConfusedCountInbox();
-              SyncMessageDetails.fetchLikeConfusedCountOutbox();
           }
       };
 
       Thread t = new Thread(r);
       t.setPriority(Thread.MIN_PRIORITY);
       t.start();
-
-
-
-
-    super.onPostExecute(result);
+      super.onPostExecute(result);
   }
 }
