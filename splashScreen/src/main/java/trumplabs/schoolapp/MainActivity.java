@@ -182,16 +182,19 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 scrolling from one tab to other
                  */
                 if (position == 0) {
+                    setTitle("Outbox");
                     params.setMargins(positionOffsetPixels / 3, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                     tabcolor.setLayoutParams(params);
                     highLightOutbox();
                 } else if (position == 1) {
+                    setTitle("Inbox");
 
                     params.setMargins((screenwidth / 3) + (positionOffsetPixels / 3), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                     tabcolor.setLayoutParams(params);
 
                     highLightInbox();
                 } else {
+                    setTitle("Classrooms");
                     params.setMargins((2 * screenwidth / 3), 0, 0, 0);
                     tabcolor.setLayoutParams(params);
                     highLightClassrooms();

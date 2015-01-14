@@ -81,10 +81,6 @@ public class SyncMessageDetails {
         //do this for the first few(=Config.inboxMsgCount) messages in Message Activity's msgs
         List<ParseObject> msgs = Messages.msgs;
         if(msgs == null) return;
-        ParseQuery countQuery = new ParseQuery("GroupDetails");
-
-        //We want only confused and like count
-        countQuery.selectKeys(Arrays.asList(Constants.LIKE_COUNT, Constants.CONFUSED_COUNT));
 
         for(int i=0; i< msgs.size() && i< Config.inboxMsgCount; i++){
             ParseObject msg = msgs.get(i);
@@ -127,6 +123,7 @@ public class SyncMessageDetails {
         String userId = parseObject.getUsername();
 
         List<List<String>> createdGroups = parseObject.getList(Constants.CREATED_GROUPS);
+        if(createdGroups == null) return;
 
         for(int i=0; i<createdGroups.size(); i++){
             List<String> group = createdGroups.get(i);

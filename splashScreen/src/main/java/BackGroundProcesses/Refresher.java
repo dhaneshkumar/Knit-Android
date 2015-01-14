@@ -5,6 +5,7 @@ import java.util.List;
 
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.Outbox;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -66,7 +67,11 @@ public class Refresher {
                 Inbox newInboxMsg = new Inbox(null);
                 newInboxMsg.execute();
 
-
+       /*
+        *   Updating counts for outbox messages
+        *
+        */
+                Outbox.refreshCountInBackground();
 
         /*
          * Updating created class rooms list
