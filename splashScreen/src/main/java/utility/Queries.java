@@ -286,8 +286,10 @@ public class Queries extends MyActivity {
                                 // Storing new msgs to local database
                                 ParseObject messages = newmsgs.get(k);
 
-                                messages.put("userId", userId);
+                                messages.put(Constants.USER_ID, userId);
                                 messages.put(Constants.DIRTY_BIT, false);
+                                messages.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded,
+                                                                        // then must have seen
 
                                 //likestatus and confused status should be fetched and set here
                                 ParseQuery msgStateQuery = new ParseQuery("MessageState");

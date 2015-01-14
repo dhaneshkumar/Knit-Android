@@ -35,7 +35,10 @@ public class Constants {
   public static final String CONFUSING = "confusing"; //local
   public static final String GROUP_DETAILS = "GroupDetails";
   public static final String DIRTY_BIT = "dirty_bit"; //local
-  
+  public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
+  public static final String USER_ID = "userId"; //local  user id
+
+
   
 
   /*
