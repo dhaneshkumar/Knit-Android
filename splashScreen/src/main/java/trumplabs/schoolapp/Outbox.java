@@ -93,7 +93,7 @@ public class Outbox extends Fragment {
      /*
      * On scrolling down the list view display extra messages.
      */
-        outboxListv.setOnScrollListener(new RecyclerView.OnScrollListener() {
+        outboxListv.setOnScrollListener(new  RecyclerView.OnScrollListener() {
             int lastCount = 0;
 
             @Override
