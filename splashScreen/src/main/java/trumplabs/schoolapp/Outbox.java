@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -9,7 +10,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -18,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -36,6 +41,7 @@ import java.util.List;
 
 import BackGroundProcesses.SeenHandler;
 import BackGroundProcesses.SyncMessageDetails;
+import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Queries;
@@ -55,10 +61,10 @@ public class Outbox extends Fragment {
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
     private SwipeRefreshLayout outboxRefreshLayout;
+    LinearLayout outboxLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         layoutinflater = inflater;
         View layoutview = inflater.inflate(R.layout.outbox, container, false);
         return layoutview;
@@ -74,9 +80,20 @@ public class Outbox extends Fragment {
         query = new Queries();
         outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_outbox);
         outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
+        outboxLayout = (LinearLayout) getActivity().findViewById(R.id.outboxmsg);
 
         //retrieving lcoally stored outbox messges
         groupDetails = query.getLocalOutbox();
+
+        if (groupDetails == null) {
+            groupDetails = new ArrayList<ParseObject>();
+            outboxLayout.setVisibility(View.VISIBLE);
+        } else if (groupDetails.size() == 0)
+            outboxLayout.setVisibility(View.VISIBLE);
+        else
+            outboxLayout.setVisibility(View.GONE);
+
+
         if (groupDetails == null)
             groupDetails = new ArrayList<ParseObject>();
 
@@ -88,6 +105,17 @@ public class Outbox extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
+
+        getActivity().findViewById(R.id.outboxlink).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                MainActivity.viewpager.setCurrentItem(2);
+
+            }
+        });
 
 
      /*
@@ -161,6 +189,17 @@ public class Outbox extends Fragment {
             }
         });
 
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Set title
+
+
+
+        if(myadapter != null)
+          myadapter.notifyDataSetChanged();
     }
 
 

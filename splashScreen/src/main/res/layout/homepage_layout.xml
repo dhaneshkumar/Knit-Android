@@ -58,7 +58,6 @@
             android:id="@+id/tabviewer"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:alpha="0.6"
             android:background="@color/white"
             android:orientation="vertical">
 
@@ -117,14 +116,14 @@
             <TextView
                 android:id="@+id/tabcolor"
                 android:layout_width="wrap_content"
-                android:layout_height="4dp"
+                android:layout_height="3dp"
                 android:background="@color/buttoncolor" />
 
-            <TextView
+          <!--  <TextView
                 android:layout_width="match_parent"
                 android:layout_height="2dp"
                 android:layout_gravity="left"
-                android:background="@color/buttoncolor" />
+                android:background="@color/buttoncolor" />-->
         </LinearLayout>
 
         <android.support.v4.view.ViewPager
@@ -132,7 +131,7 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:background="@color/buttoncolor"></android.support.v4.view.ViewPager>
+            android:background="@color/white"></android.support.v4.view.ViewPager>
     </LinearLayout>
 
 </LinearLayout>

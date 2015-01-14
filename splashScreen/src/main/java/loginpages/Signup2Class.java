@@ -131,6 +131,8 @@ public class Signup2Class extends MyActionBarActivity {
                         if (android.os.Build.MODEL != null)
                             user.put("MODEL", android.os.Build.MODEL);
 
+                        Utility.ls("signing up..............");
+
                         userId = emailid;
                         childName = mr + " " + name;
                         // Show the progress dialog
@@ -141,6 +143,8 @@ public class Signup2Class extends MyActionBarActivity {
                                 // turnOffProgressDialog();
                                 if (e == null) {
                                     Utility.toast("Signup Successful");
+
+                                    Utility.ls("signing up.............0......");
 
                   /*
                    * setting flag to know its a sign up
@@ -159,7 +163,7 @@ public class Signup2Class extends MyActionBarActivity {
                   /*
                    * Storing current time stamp
                    */
-
+                                    Utility.ls("signing up.............1  ...");
                                     try {
                                         if (role.equals(Constants.TEACHER)) {
 
@@ -174,6 +178,7 @@ public class Signup2Class extends MyActionBarActivity {
                                     } catch (ParseException e2) {
                                     }
 
+                                    Utility.ls("signing up............1.5..");
                                     user.put("test", true);
                                     user.saveInBackground(new SaveCallback() {
 
@@ -186,6 +191,7 @@ public class Signup2Class extends MyActionBarActivity {
                                         }
                                     });
 
+                                    Utility.ls("signing up............1.8..");
                                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                                     installation.put("username", user.getUsername());
                                     try {
@@ -193,7 +199,7 @@ public class Signup2Class extends MyActionBarActivity {
                                     } catch (ParseException e1) {
                                     }
 
-
+                                    Utility.ls("signing up............2..");
                                     Queries query = new Queries();
 
                   /*
@@ -203,11 +209,11 @@ public class Signup2Class extends MyActionBarActivity {
 
                   /*
                    * Joining default groups
-                   */
+                   */ Utility.ls("signing up............3..");
                                     joinDefaultGroup joinGroup = new joinDefaultGroup();
                                     joinGroup.execute();
 
-
+                                    Utility.ls("signing up..........4....");
                                     Intent intent = new Intent(getBaseContext(), MainActivity.class);
                                     startActivity(intent);
 

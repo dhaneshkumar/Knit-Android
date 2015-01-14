@@ -20,4 +20,34 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
     </android.support.v4.widget.SwipeRefreshLayout>
+
+    <LinearLayout
+        android:id="@+id/outboxmsg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="-50dp"
+        android:layout_weight="1"
+        android:gravity="top|center_horizontal"
+        android:orientation="vertical"
+        android:visibility="visible" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="No sent messages to show"
+            android:textColor="@color/darkergrey"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/outboxlink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:text="Go to Classrooms"
+            android:textColor="@color/buttoncolor"
+            android:textSize="18sp"
+            android:textStyle="italic|bold" />
+    </LinearLayout>
+
 </LinearLayout>

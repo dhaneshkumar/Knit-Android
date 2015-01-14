@@ -1,6 +1,7 @@
 package loginpages;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
@@ -31,12 +32,31 @@ public class Signup extends ActionBarActivity {
         setContentView(R.layout.signup);
 
         getSupportActionBar().hide();
+
+        //Intializing variables
         LinearLayout teacher = (LinearLayout) findViewById(R.id.teacherLayout);
         LinearLayout parent = (LinearLayout) findViewById(R.id.parent_layout);
         LinearLayout student = (LinearLayout) findViewById(R.id.student_layout);
         TextView login = (TextView) findViewById(R.id.logiinView);
         progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
         loginlayout  =(LinearLayout) findViewById(R.id.loginlayout);
+        TextView signup = (TextView) findViewById(R.id.signup);
+        TextView ttext = (TextView) findViewById(R.id.ttext);
+        TextView ptext = (TextView) findViewById(R.id.ptext);
+        TextView stext = (TextView) findViewById(R.id.stext);
+        TextView member = (TextView) findViewById(R.id.member);
+
+
+        //Setting the font
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+        Typeface typeFaceItalic = Typeface.createFromAsset(getAssets(), "fonts/Roboto-LightItalic.ttf");
+        login.setTypeface(typeFace);
+        signup.setTypeface(typeFace);
+        ttext.setTypeface(typeFace);
+        ptext.setTypeface(typeFace);
+        stext.setTypeface(typeFace);
+        member.setTypeface(typeFaceItalic);
+
 
 
         //parent button clicked
@@ -123,12 +143,15 @@ public class Signup extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void result) {
 
-            loginlayout.setVisibility(View.VISIBLE);
-            progressLayout.setVisibility(View.GONE);
+           /* loginlayout.setVisibility(View.VISIBLE);
+            progressLayout.setVisibility(View.GONE);*/
 
             Intent intent=new Intent(Signup.this,Signup1Class.class);
             intent.putExtra("role", Constants.TEACHER);
             startActivity(intent);
+
+            loginlayout.setVisibility(View.VISIBLE);
+            progressLayout.setVisibility(View.GONE);
         }
 
 

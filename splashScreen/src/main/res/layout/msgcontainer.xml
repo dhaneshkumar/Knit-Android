@@ -50,12 +50,7 @@
             android:textSize="18sp"
             android:textStyle="italic|bold" />
 
-        <ProgressBar
-            style="?android:attr/progressBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/progressBar2"
-            android:layout_gravity="right" />
+
     </LinearLayout>
 
 </LinearLayout>

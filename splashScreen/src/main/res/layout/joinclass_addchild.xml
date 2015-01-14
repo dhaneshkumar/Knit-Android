@@ -97,7 +97,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="right"
                             android:layout_marginRight="20dp"
-                            android:src="@drawable/ic_action_help" />
+                            android:src="@drawable/question" />
                     </LinearLayout>
                 
             </LinearLayout>

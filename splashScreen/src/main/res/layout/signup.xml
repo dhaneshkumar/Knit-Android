@@ -8,7 +8,7 @@
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
-        android:background="@color/white"
+        android:background="@color/lightbackgroundcolor"
         android:layout_height="match_parent">
 
         <LinearLayout
@@ -45,13 +45,14 @@
                 android:id="@+id/logoimgview"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="64dp"
                 android:background="@drawable/logo12" />
 
             <TextView
+                android:id="@+id/signup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="12dp"
                 android:textSize="30sp"
                 android:textColor="@color/black"
                 android:text="Sign Up" />
@@ -59,26 +60,20 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="24dp"
-                android:textSize="14sp"
+                android:layout_marginTop="12dp"
+                android:textSize="16sp"
                 android:textColor="@color/buttoncolor"
-                android:text="Please select your" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textSize="24sp"
-                android:textColor="@color/buttoncolor"
-                android:text="ROLE" />
+                android:text="As"
+              />
 
 
             <LinearLayout
                 android:id="@+id/teacherLayout"
                 android:layout_width="@dimen/signup_layout_width"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/signup_layout_height"
                 android:background="@drawable/round_corner_button_color"
                 android:gravity="center"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -90,8 +85,8 @@
                     android:layout_width="@dimen/signup_textview_width"
                     android:layout_height="wrap_content"
                     android:text="TEACHER"
-                    android:textSize="20sp"
-
+                    android:textSize="18sp"
+                    android:id="@+id/ttext"
                     android:textColor="@color/white"
                     android:paddingLeft="32dp"
                     android:paddingRight="32dp" />
@@ -101,10 +96,10 @@
             <LinearLayout
                 android:id="@+id/parent_layout"
                 android:layout_width="@dimen/signup_layout_width"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/signup_layout_height"
                 android:background="@drawable/round_corner_button_color"
                 android:gravity="center"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -116,8 +111,8 @@
                     android:layout_width="@dimen/signup_textview_width"
                     android:layout_height="wrap_content"
                     android:text="PARENT"
-                    android:textSize="20sp"
-
+                    android:textSize="18sp"
+                    android:id="@+id/ptext"
                     android:textColor="@color/white"
                     android:paddingLeft="32dp"
                     android:paddingRight="32dp" />
@@ -127,10 +122,10 @@
             <LinearLayout
                 android:id="@+id/student_layout"
                 android:layout_width="@dimen/signup_layout_width"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/signup_layout_height"
                 android:background="@drawable/round_corner_button_color"
                 android:gravity="center"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -142,7 +137,8 @@
                     android:layout_width="@dimen/signup_textview_width"
                     android:layout_height="wrap_content"
                     android:text="STUDENT"
-                    android:textSize="20sp"
+                    android:textSize="18sp"
+                    android:id="@+id/stext"
                     android:textColor="@color/white"
                     android:paddingLeft="32dp"
                     android:paddingRight="32dp" />
@@ -159,10 +155,12 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="12dp"
+                android:textStyle="italic"
                 android:text="Already a member?"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:id="@+id/member"
+                android:textSize="12sp" />
 
             <TextView
                 android:id="@+id/logiinView"
@@ -170,13 +168,13 @@
                 android:layout_height="wrap_content"
                 android:background="@drawable/round_corner_button_color"
                 android:text="Login"
-                android:textSize="20sp"
-                android:layout_marginTop="16dp"
+                android:textSize="14sp"
+                android:layout_marginTop="12dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingTop="4dp"
+                android:paddingTop="8dp"
                 android:layout_marginBottom="32dp"
-                android:paddingBottom="4dp"
+                android:paddingBottom="8dp"
                 android:textColor="@color/white" />
 
         </LinearLayout>
