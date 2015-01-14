@@ -74,6 +74,11 @@ public class Refresher {
                 Outbox.refreshCountInBackground();
 
         /*
+            Update total count of outbox messages
+         */
+                Outbox.updateOutboxTotalMessages();
+
+        /*
          * Updating created class rooms list
          */
 

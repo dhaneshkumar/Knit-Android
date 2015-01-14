@@ -11,6 +11,7 @@ import com.parse.ParseUser;
 import java.util.HashMap;
 import java.util.List;
 
+import trumplabs.schoolapp.Outbox;
 import utility.Config;
 import utility.Utility;
 
@@ -86,5 +87,8 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
             Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Error in parsecloud function calling maybe");
             e.printStackTrace();
         }
+
+        //update total message count outbox
+        Outbox.updateOutboxTotalMessages();
     }
 }
