@@ -79,8 +79,13 @@ public class SyncMessageDetails {
      */
     public static void fetchLikeConfusedCountInbox(){
         //do this for the first few(=Config.inboxMsgCount) messages in Message Activity's msgs
-        List<ParseObject> msgs = Messages.msgs;
-        if(msgs == null) return;
+
+        List<ParseObject> msgs = new ArrayList<ParseObject>(Messages.msgs);
+        //this is required if Messages.msgs changes in meantime
+
+        List<ParseObject> msgsPinPending = new ArrayList<ParseObject>();
+
+        if(msgs == null || msgs.size() == 0) return;
 
         for(int i=0; i< msgs.size() && i< Config.inboxMsgCount; i++){
             ParseObject msg = msgs.get(i);
@@ -97,14 +102,24 @@ public class SyncMessageDetails {
                         updatedmsg.get(Constants.LIKE_COUNT) +  "/" + updatedmsg.get(Constants.CONFUSED_COUNT));
                 msg.put(Constants.LIKE_COUNT, updatedmsg.get(Constants.LIKE_COUNT));
                 msg.put(Constants.CONFUSED_COUNT, updatedmsg.get(Constants.CONFUSED_COUNT));
-                msg.pinInBackground();
+                msgsPinPending.add(msg);
             }
             catch (ParseException e){
                 e.printStackTrace();
             }
         }
         //messages adapter needs to be notified of dataset changed.
-        //Currently this happens in Inbox asynctask's onpostexecute
+        // This happens in the thread after all subtasks are over
+
+        try{
+            Log.d("DEBUG_FETCH_COUNT", "pinning all at once");
+            ParseObject.pinAll(msgsPinPending);
+            Log.d("DEBUG_FETCH_COUNT", "pinning over successfully");
+        }
+        catch (ParseException e){
+            Log.d("DEBUG_FETCH_COUNT", "pinning all at once error");
+            e.printStackTrace();
+        }
     }
 
     /**

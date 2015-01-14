@@ -155,7 +155,9 @@ public class Outbox extends Fragment {
                     //code to refresh outbox
                     refreshCountInBackground();
 
-                    //start handler for 10 secs.  <to stop refreshbar>
+                    //stop the refresh in refresCountInBackground() method in the view.post
+
+                    /*//start handler for 10 secs.  <to stop refreshbar>
                     final Handler h = new Handler() {
                         @Override
                         public void handleMessage(Message message) {
@@ -163,7 +165,7 @@ public class Outbox extends Fragment {
                             outboxRefreshLayout.setRefreshing(false);
                         }
                     };
-                    h.sendMessageDelayed(new Message(), 10000);
+                    h.sendMessageDelayed(new Message(), 10000);*/
                 } else {
 
                     //start handler for 2 secs.  <to stop refreshbar>
@@ -387,12 +389,13 @@ public class Outbox extends Fragment {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
 
-                    if (outboxRefreshLayout != null) {
+                    /*if (outboxRefreshLayout != null) {
                         runSwipeRefreshLayout(outboxRefreshLayout, 10);
-                    }
-
+                    }*/
+                    outboxRefreshLayout.setRefreshing(true);
                    //update outbox in background
                     refreshCountInBackground();
+                    //stop refreshing in above method inside view.post
 
                 } else {
                     Utility.toast("Check your Internet connection");
@@ -418,6 +421,7 @@ public class Outbox extends Fragment {
                         @Override
                         public void run() {
                             Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Notifying Outbox.myadapter");
+                            outboxRefreshLayout.setRefreshing(false);
                             if(Outbox.myadapter != null){
                                 Outbox.myadapter.notifyDataSetChanged();
                             }
