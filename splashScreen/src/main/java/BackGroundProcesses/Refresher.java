@@ -1,26 +1,22 @@
 package BackGroundProcesses;
 
-import java.util.Date;
-import java.util.List;
-
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Outbox;
-import utility.Queries;
-import utility.SessionManager;
-import utility.Utility;
-
-import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import java.util.Date;
+import java.util.List;
+
+import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.Outbox;
+import utility.SessionManager;
 
 
 public class Refresher {
@@ -112,9 +108,18 @@ public class Refresher {
                 joinClass.execute();
 
                 if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
-                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
-                    OutboxMsgFetch outboxMsgFetch = new OutboxMsgFetch();
-                    outboxMsgFetch.execute();
+                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time in a thread");
+                    Runnable r = new Runnable() {
+                        @Override
+                        public void run(){
+                            Log.d("DEBUG_REFRESHER", "running fetchOutboxMessages");
+                            OutboxMsgFetch.fetchOutboxMessages();
+                        }
+                    };
+
+                    Thread t = new Thread(r);
+                    t.setPriority(Thread.MIN_PRIORITY);
+                    t.start();
                 }
             }
 
