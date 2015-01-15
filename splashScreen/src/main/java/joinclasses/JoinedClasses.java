@@ -247,6 +247,8 @@ public class JoinedClasses extends Fragment {
             classname = (TextView) row.findViewById(R.id.classname);
             TextView classcode = (TextView) row.findViewById(R.id.classcode);
 
+
+
           /*
            * Setting class name, code & child name
            */
@@ -268,21 +270,12 @@ public class JoinedClasses extends Fragment {
            * setting condensed font
            */
 
-
-            final String role = ParseUser.getCurrentUser().getString(Constants.ROLE);
-
-            if(! role.equals(Constants.STUDENT)) {
-                child_textView.setTypeface(typeFace);
+            child_textView.setTypeface(typeFace);
 
 
-                if (joinedGroups.get(position).size() > 2) {
-                    String child = joinedGroups.get(position).get(2).toString().trim();
-                    child_textView.setText("Assigned to : " + child);
-                }
-            }
-            else
-            {
-                child_textView.setVisibility(View.GONE);
+            if (joinedGroups.get(position).size() > 2) {
+                String child = joinedGroups.get(position).get(2).toString().trim();
+                child_textView.setText("Assigned to : " + child);
             }
 
 
@@ -400,11 +393,7 @@ public class JoinedClasses extends Fragment {
 
 
                     /** Adding menu items to the popumenu */
-
-                    if(role.equals(Constants.STUDENT))
-                        popup.getMenuInflater().inflate(R.menu.joined_groups_student_popup, popup.getMenu());
-                    else
-                        popup.getMenuInflater().inflate(R.menu.joined_groups_popup, popup.getMenu());
+                    popup.getMenuInflater().inflate(R.menu.joined_groups_popup, popup.getMenu());
 
                     /** Defining menu item click listener for the popup menu */
                     popup.setOnMenuItemClickListener(new OnMenuItemClickListener() {

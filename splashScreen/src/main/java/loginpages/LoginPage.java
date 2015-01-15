@@ -44,7 +44,6 @@ public class LoginPage extends MyActionBarActivity {
   TextView logText;
   Activity activity;
   boolean signUpFlag = false;
-  Animation animationFadeIn;
   LinearLayout mainLayuot;
 
   public static String emailidtoset = "";
@@ -56,8 +55,6 @@ public class LoginPage extends MyActionBarActivity {
     setContentView(R.layout.loginfirst_layout);
 
     mainLayuot = (LinearLayout) findViewById(R.id.mainLayout);
-    animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
-    mainLayuot.startAnimation(animationFadeIn);
 
     ParseUser user = ParseUser.getCurrentUser();
     if (user != null) {

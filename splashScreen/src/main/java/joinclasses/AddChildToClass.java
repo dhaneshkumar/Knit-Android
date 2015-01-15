@@ -56,7 +56,7 @@ public class AddChildToClass extends MyActionBarActivity {
   public static LinearLayout progressBarLayout;
   public static LinearLayout editProfileLayout;
   private String childName;
-  private Point p;
+  private Point p ;
   private int height;
   private boolean joinFlag = false;
   private boolean classExist = false;

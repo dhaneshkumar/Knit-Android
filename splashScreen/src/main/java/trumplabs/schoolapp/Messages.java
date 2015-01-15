@@ -14,7 +14,6 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -84,7 +83,6 @@ public class Messages extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         layoutinflater = inflater   ;
-
         getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         return inflater.inflate(R.layout.msgcontainer, container, false);
     }
@@ -96,7 +94,6 @@ public class Messages extends Fragment {
 
         listv = (RecyclerView) getActivity().findViewById(R.id.msg_list);
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);
-
 
       /*
       Check for push open
@@ -314,16 +311,6 @@ public class Messages extends Fragment {
             }
         });
     }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Set title
-
-        if(myadapter != null)
-            myadapter.notifyDataSetChanged();
-    }
-
 
     /*
      * LRU Functions *************************************************

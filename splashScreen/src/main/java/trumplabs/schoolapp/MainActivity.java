@@ -38,7 +38,7 @@ import utility.Utility;
  * This Activity shows home page of our app. It contains three fragments outbox, inbox and classrooms.
  */
 public class MainActivity extends MyActionBarActivity implements TabListener {
-    public static ViewPager viewpager;
+    static ViewPager viewpager;
     LinearLayout tabviewer;
     LinearLayout tab1;
     LinearLayout tab2;
@@ -108,6 +108,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         // setting layout params for tab color
         params = (LinearLayout.LayoutParams) tabcolor.getLayoutParams();
+        params.height = getResources().getDimensionPixelSize(R.dimen.dimen4);
         Display mDisplay = this.getWindowManager().getDefaultDisplay();
         screenwidth = mDisplay.getWidth();
         //
@@ -177,6 +178,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
 
                 /*
                 scrolling from one tab to other
@@ -358,12 +360,5 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         tab1Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_grey));
         tab2Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.inbox_grey));
         tab3Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.classroom));
-    }
-
-
-
-
-    public void setActionBarTitle(String title){
-        getSupportActionBar().setTitle(title);
     }
 }

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -47,14 +49,15 @@ import utility.Utility;
  */
 public class Outbox extends Fragment {
     protected LayoutInflater layoutinflater;
-    RecycleAdapter myadapter;
+    public static RecycleAdapter myadapter;
     private RecyclerView outboxListv;
     Queries query;
     List<ParseObject> groupDetails; // List of group messages
     Activity myActivity;
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
-    private SwipeRefreshLayout outboxRefreshLayout;
+    private static SwipeRefreshLayout outboxRefreshLayout;
+    LinearLayout outboxLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -74,9 +77,17 @@ public class Outbox extends Fragment {
         query = new Queries();
         outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_outbox);
         outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
+        outboxLayout = (LinearLayout) getActivity().findViewById(R.id.outboxmsg);
 
         //retrieving lcoally stored outbox messges
         groupDetails = query.getLocalOutbox();
+        if (groupDetails == null) {
+            groupDetails = new ArrayList<ParseObject>();
+            outboxLayout.setVisibility(View.VISIBLE);
+        } else if (groupDetails.size() == 0)
+            outboxLayout.setVisibility(View.VISIBLE);
+        else
+            outboxLayout.setVisibility(View.GONE);
         if (groupDetails == null)
             groupDetails = new ArrayList<ParseObject>();
 
@@ -89,11 +100,19 @@ public class Outbox extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
 
+        getActivity().findViewById(R.id.outboxlink).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                MainActivity.viewpager.setCurrentItem(2);
+            }
+        });
 
      /*
      * On scrolling down the list view display extra messages.
      */
-        outboxListv.setOnScrollListener(new  RecyclerView.OnScrollListener() {
+        outboxListv.setOnScrollListener(new RecyclerView.OnScrollListener() {
             int lastCount = 0;
 
             @Override
@@ -387,12 +406,24 @@ public class Outbox extends Fragment {
 
 
     //update like/confused/seen count for sent messages in a background thread
-    public void refreshCountInBackground(){
+    public static void refreshCountInBackground(){
         Runnable r = new Runnable() {
             @Override
             public void run(){
                 Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
                 SyncMessageDetails.fetchLikeConfusedCountOutbox();
+                //following is the onpostexecute thing
+                if (Outbox.outboxRefreshLayout != null){
+                    Outbox.outboxRefreshLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Notifying Outbox.myadapter");
+                            if(Outbox.myadapter != null){
+                                Outbox.myadapter.notifyDataSetChanged();
+                            }
+                        }
+                    });
+                }
             }
         };
 

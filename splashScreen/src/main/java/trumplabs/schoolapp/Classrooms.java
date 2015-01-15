@@ -18,7 +18,6 @@ import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,7 +53,6 @@ public class Classrooms extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         layoutinflater = inflater;
-
         // getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         View layoutview = inflater.inflate(R.layout.createdclasses_layout, container, false);
         return layoutview;
@@ -107,16 +105,10 @@ public class Classrooms extends Fragment {
      */
     }
 
-
-
-
     @Override
     public void onResume() {
         super.onResume();
-
-
-        if(myadapter != null)
-            myadapter.notifyDataSetChanged();
+        myadapter.notifyDataSetChanged();
     }
 
     @Override
