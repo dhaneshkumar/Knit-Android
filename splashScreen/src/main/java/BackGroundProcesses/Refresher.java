@@ -29,6 +29,7 @@ public class Refresher {
         if (freshUser != null) {
 
 
+            final SessionManager sm = new SessionManager(Application.getAppContext());
       /*
        * Storing current time stamp
        */
@@ -38,8 +39,6 @@ public class Refresher {
                 @Override
                 public void done(ParseException e) {
                     Date currentDate = freshUser.getUpdatedAt();
-
-                    SessionManager sm = new SessionManager(Application.getAppContext());
                     sm.setCurrentTime(currentDate);
                 }
             });
@@ -98,20 +97,22 @@ public class Refresher {
 
             } else {
 
-                SessionManager sm = new SessionManager(Application.getAppContext());
                 sm.setAppOpeningCount();
-
         /*
          * Updating joined group list
          */
                 JoinedClassRooms joinClass = new JoinedClassRooms(true);
                 joinClass.execute();
+            }
 
-                if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
+            //Refresh local outbox data, if not in valid state clear and fetch new.
+            //If already present then no need to fetch outbox messages
+            if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
+                if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
                     Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time in a thread");
                     Runnable r = new Runnable() {
                         @Override
-                        public void run(){
+                        public void run() {
                             Log.d("DEBUG_REFRESHER", "running fetchOutboxMessages");
                             OutboxMsgFetch.fetchOutboxMessages();
                         }
@@ -120,6 +121,9 @@ public class Refresher {
                     Thread t = new Thread(r);
                     t.setPriority(Thread.MIN_PRIORITY);
                     t.start();
+                }
+                else{
+                    Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
                 }
             }
 

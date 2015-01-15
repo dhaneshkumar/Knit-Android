@@ -102,6 +102,8 @@ public class CreateClass extends MyActionBarActivity {
     selectedSchool = school.getSchoolName(user.getString("school"));
     if (selectedSchool != null)
       school_txt.setText(selectedSchool);
+    else
+      selectedSchool ="Other";
     selectedDivison = "...";
     selectedStandard = "...";
 
