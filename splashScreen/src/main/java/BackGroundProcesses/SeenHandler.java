@@ -77,16 +77,11 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
                     msgPinPending.add(msg);
                 }
             }
+            //now pin all at once using pinAll call
+            ParseObject.pinAll(msgPinPending);
+
         }
         catch(ParseException e){
-        }
-
-        //now pin all at once using pinAll call
-        try {
-            ParseObject.pinAll(msgPinPending);
-        }
-        catch (ParseException e){
-            e.printStackTrace();
         }
     }
 
