@@ -13,10 +13,8 @@ public class Config {
   //public static final String CLIENT_KEY = "bmfdNqrZY0olJgsezG5ZRiBN1OPO4TqO1pH46PU9"; // test_raven
 
   public static final String defaultParentGroupCode = "TS29734"; // raven
-  // "TS26620"; //test_raven
   public static final String defaultTeacherGroupCode = "TS49518"; // raven
-  // "TS92462"; //test_raven
-  
+
   
   public static String userId;
   public static String role;
