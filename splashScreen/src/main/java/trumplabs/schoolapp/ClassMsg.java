@@ -745,7 +745,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         if (android.os.Build.MODEL != null)
         {
             String[] models = new String[]{"MI 3W", "MI 3", "MI 3S", "MI 3SW", "MI 4", "MI 4W",
-                    "HM 1SW", "MI 1S", "MI 1SW", "MI 2", "MI 2W", "MI 2S", "MI 2SW", "MI 2A", "MI 2AW"};
+                    "HM 1SW", "MI 1S", "MI 1SW", "MI 2", "MI 2W", "MI 2S", "MI 2SW", "MI 2A", "MI 2AW", "HM 1S"};
 
             if (Arrays.asList(models).contains(android.os.Build.MODEL.trim()))
                 attachView.setVisibility(View.GONE);

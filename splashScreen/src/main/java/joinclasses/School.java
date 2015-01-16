@@ -69,10 +69,13 @@ public class School {
             obj = query.getFirst();
             if (obj != null)
                 return obj.getString("school_name");
+            else
+                return schoolId;
         } catch (ParseException e) {
             e.printStackTrace();
+
         }
-        return null;
+        return schoolId;
 
     }
 

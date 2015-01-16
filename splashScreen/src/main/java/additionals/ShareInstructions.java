@@ -25,7 +25,7 @@ public class ShareInstructions extends MyActionBarActivity{
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     final String grpCode = ClassMsg.groupCode;
-    final String link = " www.textslate.co.in/user.html?" + grpCode;
+    final String link = " www.knitapp.co.in/user.html?" + grpCode;
     TextView shareView = (TextView) findViewById(R.id.share);
     TextView copyView = (TextView) findViewById(R.id.copy);
     TextView classLink = (TextView) findViewById(R.id.classLink);
@@ -46,7 +46,7 @@ public class ShareInstructions extends MyActionBarActivity{
       public void onClick(View v) {
         Intent i=new Intent(android.content.Intent.ACTION_SEND);
         i.setType("text/plain");
-        i.putExtra(android.content.Intent.EXTRA_SUBJECT,"TextSlate");
+        i.putExtra(android.content.Intent.EXTRA_SUBJECT,"Knit");
         i.putExtra(android.content.Intent.EXTRA_TEXT, link);
         startActivity(Intent.createChooser(i,"Share via"));
       }

@@ -105,8 +105,8 @@ public class CreateClass extends MyActionBarActivity {
       school_txt.setText(selectedSchool);
     else
       selectedSchool ="Other";
-    selectedDivison = "...";
-    selectedStandard = "...";
+    selectedDivison = "NA";
+    selectedStandard = "NA";
 
     /*
      * convert typed edit-text letters to upper-case
@@ -129,10 +129,10 @@ public class CreateClass extends MyActionBarActivity {
         if (!UtilString.isBlank(typedtxt)) {
 
 
-            if(!UtilString.isBlank(selectedStandard))
+            if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
                  typedtxt += " "+selectedStandard;
 
-            if(!UtilString.isBlank(selectedDivison))
+            if(!UtilString.isBlank(selectedDivison) && !selectedDivison.equals("NA"))
             typedtxt += selectedDivison;
 
           if (Utility.isInternetOn(activity)) {
@@ -352,10 +352,10 @@ public class CreateClass extends MyActionBarActivity {
             Utility.ls(schoolId);
           }
             
-          if(!selectedDivison.equals("..."))
+          if(!selectedDivison.equals("NA"))
             groupDetails.put("divison", selectedDivison);
           
-          if(!selectedStandard.equals("..."))
+          if(!selectedStandard.equals("NA"))
             groupDetails.put("standard", selectedStandard);
 
 
