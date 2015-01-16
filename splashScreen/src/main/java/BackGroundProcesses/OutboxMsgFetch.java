@@ -96,18 +96,14 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
 
                 newMsgsToPin.add(sentMsg);
             }
-        }
-        catch (ParseException e){
-            Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Error in parsecloud function calling maybe");
-            e.printStackTrace();
-        }
-
-        try {
             ParseObject.pinAll(newMsgsToPin);
             final SessionManager sm = new SessionManager(Application.getAppContext());
             sm.setOutboxLocalState(1, userId); //set the flag locally that outbox data is valid
             Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Pinned all. State changed to 1");
-        } catch (ParseException e2) {
+        }
+        catch (ParseException e){
+            Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Error in parsecloud function calling maybe");
+            e.printStackTrace();
         }
 
         //update total message count outbox
