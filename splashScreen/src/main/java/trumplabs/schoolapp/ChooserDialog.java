@@ -21,6 +21,8 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -84,22 +86,34 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
    * pick images from camera
    */
   private void takePicture() {
+
+    Log.d("camera", "started camera.............");
+
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     Date date = new Date();
     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
     String formattedDate = sdf.format(date);
     capturedimagename = "Capturedimage" + formattedDate + ".jpg";
+
+    Log.d("camera", capturedimagename);
+
     imageFile =
         new File(Utility.getWorkingAppDir() + "/media/", "Capturedimage" + formattedDate + ".jpg");
 
     if (imageFile != null) {
       Uri tempuri = Uri.fromFile(imageFile);
       if (tempuri != null) {
+
+          Log.d("camera", tempuri.toString());
         intent.putExtra(MediaStore.EXTRA_OUTPUT, tempuri);
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 1);
+        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);   //high(1) or low(0) quality images
         startActivityForResult(intent, 100);
       }
+        else
+          Log.d("camera", " tempuri null");
     }
+      else
+        Log.d("camera", " null imagefile ");
   }
 
   /**
@@ -113,11 +127,23 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     if (requestCode == 100) {
       switch (resultCode) {
         case Activity.RESULT_OK:
-          if (imageFile.exists()) {
-            Utility.savePicInAppFolder(Utility.getWorkingAppDir() + "/media/" + capturedimagename);
-            Utility.createThumbnail(getActivity(), capturedimagename);
-            activity.sendImagePic(capturedimagename);
+          if (imageFile != null && imageFile.exists()) {
+              Utility.savePicInAppFolder(Utility.getWorkingAppDir() + "/media/" + capturedimagename);
+              Utility.createThumbnail(getActivity(), capturedimagename);
+              activity.sendImagePic(capturedimagename);
           }
+            else
+          {
+              Log.d("camera", "after activity :   imagefile is null");
+
+              if(capturedimagename != null)
+              {
+                  Log.d("camera", "after activity :   " + capturedimagename);
+              }
+              else
+                  Log.d("camera", "after activity :   capturedimagename is null");
+          }
+
           break;
         case Activity.RESULT_CANCELED:
           break;
@@ -232,13 +258,16 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
                 } catch (FileNotFoundException e) {
                 } catch (IOException e) {
                 }
+                finally {
+                    cursor.close();
+                }
               }
             }
           }
         } else
           flag = true;
 
-        cursor.close();
+
       } else
         flag = true;
 
@@ -264,6 +293,28 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     }
 
   }
+
+
+    /** getResizedBitmap method is used to Resized the Image according to custom width and height
+     * @param image
+     * @param newHeight (new desired height)
+     * @param newWidth (new desired Width)
+     * @return image (new resized image)
+     * */
+    public static Bitmap getResizedBitmap(Bitmap image, int newHeight, int newWidth) {
+        int width = image.getWidth();
+        int height = image.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // create a matrix for the manipulation
+        Matrix matrix = new Matrix();
+        // resize the bit map
+        matrix.postScale(scaleWidth, scaleHeight);
+        // recreate the new Bitmap
+        Bitmap resizedBitmap = Bitmap.createBitmap(image, 0, 0, width, height,
+                matrix, false);
+        return resizedBitmap;
+    }
 
 
 }

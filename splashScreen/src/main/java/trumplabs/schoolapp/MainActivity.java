@@ -108,7 +108,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         // setting layout params for tab color
         params = (LinearLayout.LayoutParams) tabcolor.getLayoutParams();
-        params.height = getResources().getDimensionPixelSize(R.dimen.dimen4);
         Display mDisplay = this.getWindowManager().getDefaultDisplay();
         screenwidth = mDisplay.getWidth();
         //

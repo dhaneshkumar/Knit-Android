@@ -55,6 +55,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -618,13 +619,21 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                         ((ActionBarActivity) myActivity).supportInvalidateOptionsMenu();
                     }
                 } else if (ACTION_MODE_NO == 0) {
-                    ImageView imgframell = (ImageView) view.findViewById(R.id.ccimgmsg);
+                    final ImageView imgframell = (ImageView) view.findViewById(R.id.ccimgmsg);
+
+
+                    imgframell.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
                     if (imgframell.getVisibility() == View.VISIBLE) {
                         Intent imgintent = new Intent();
                         imgintent.setAction(Intent.ACTION_VIEW);
                         imgintent.setDataAndType(Uri.parse("file://" + (String) imgframell.getTag()), "image/*");
                         startActivity(imgintent);
                     }
+                        }
+                    });
                 }
             }
         });
@@ -714,6 +723,22 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
             }
 
         });
+
+
+        /*
+        Current model is MI then hide attachview option
+         */
+
+        if (android.os.Build.MODEL != null)
+        {
+            String[] models = new String[]{"MI 3W", "MI 3", "MI 3S", "MI 3SW", "MI 4", "MI 4W",
+                    "HM 1SW", "MI 1S", "MI 1SW", "MI 2", "MI 2W", "MI 2S", "MI 2SW", "MI 2A", "MI 2AW"};
+
+            if (Arrays.asList(models).contains(android.os.Build.MODEL.trim()))
+                attachView.setVisibility(View.GONE);
+            else
+                Utility.ls(android.os.Build.MODEL);
+        }
 
         attachView.setOnClickListener(new View.OnClickListener() {
 

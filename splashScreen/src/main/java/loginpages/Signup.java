@@ -119,8 +119,10 @@ public class Signup extends ActionBarActivity {
             Intent intent = new Intent(Signup.this, Signup1Class.class);
             intent.putExtra("role", Constants.TEACHER);
             startActivity(intent);
-            loginlayout.setVisibility(View.VISIBLE);
+
             progressLayout.setVisibility(View.GONE);
+            loginlayout.setVisibility(View.VISIBLE);
+
         }
     }
 

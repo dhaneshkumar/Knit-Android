@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/logoimgview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
         android:background="@drawable/knit1" />
 
 </LinearLayout>

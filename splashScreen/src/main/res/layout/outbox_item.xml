@@ -135,7 +135,7 @@
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:layout_marginLeft="0dp"
-                android:src="@drawable/ic_action_like"/>
+                android:src="@drawable/like_light_grey"/>
 
             <TextView
                 android:id="@+id/confusion"
@@ -157,7 +157,7 @@
                 android:layout_height="24dp"
                 android:layout_marginLeft="-4dp"
                 android:layout_gravity="center"
-                android:src="@drawable/ic_action_help"/>
+                android:src="@drawable/confuse_light_grey"/>
 
             <TextView
                 android:id="@+id/seen"

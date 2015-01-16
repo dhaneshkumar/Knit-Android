@@ -21,6 +21,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -322,6 +323,9 @@ public class CreateClass extends MyActionBarActivity {
            * pushing group informations in "group-details table"
            */
 
+
+            Log.d("create class", "creating class .................");
+
           final ParseObject groupDetails = new ParseObject("Codegroup");
           groupDetails.put("code", codevalue);
           groupDetails.put("name", typedtxt);
@@ -351,7 +355,9 @@ public class CreateClass extends MyActionBarActivity {
           
           if(!selectedStandard.equals("..."))
             groupDetails.put("standard", selectedStandard);
-            
+
+
+            Log.d("create class", "saving codegroup table .................");
           groupDetails.saveInBackground(new SaveCallback() {
 
             @Override
@@ -361,7 +367,9 @@ public class CreateClass extends MyActionBarActivity {
                 user.addUnique("Created_groups", Arrays.asList(codevalue, typedtxt));
                 user.saveEventually();
 
-                try {
+                  Log.d("create class", "creation groud  added .................");
+
+                  try {
                   groupDetails.put("userId", userId);
                   groupDetails.pin();
                 } catch (ParseException e1) {

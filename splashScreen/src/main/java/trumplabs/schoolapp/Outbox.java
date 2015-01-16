@@ -1,10 +1,12 @@
 package trumplabs.schoolapp;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -368,6 +370,18 @@ public class Outbox extends Fragment {
 
 
                 }
+
+                holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                            Intent imgintent = new Intent();
+                            imgintent.setAction(Intent.ACTION_VIEW);
+                            imgintent.setDataAndType(Uri.parse("file://" + (String) holder.imgmsgview.getTag()), "image/*");
+                            startActivity(imgintent);
+                    }
+                });
+
+
             } else {
                 holder.imgmsgview.setVisibility(View.GONE);
             }
