@@ -29,6 +29,8 @@ import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -60,6 +62,7 @@ public class Outbox extends Fragment {
     SessionManager session;
     private static SwipeRefreshLayout outboxRefreshLayout;
     LinearLayout outboxLayout;
+    public static int totalOutboxMessages = 15; //total pinned outbox messages(across all classes)
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -106,6 +109,8 @@ public class Outbox extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                getActivity().setTitle("Classrooms"); //set the title explicitly. o/w it shows partial text
+
                 MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
                 MainActivity.viewpager.setCurrentItem(2);
             }
@@ -125,6 +130,12 @@ public class Outbox extends Fragment {
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
                 if(visibleItemCount + pastVisibleItems >= totalItemCount-1){
+                    Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
+                    if(totalItemCount >= totalOutboxMessages){
+                        Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
+                        return; //nothing to do as all messages have been loaded
+                    }
+
                     try {
                         groupDetails = query.getExtraLocalOutbox(groupDetails);
                         myadapter.notifyDataSetChanged();
@@ -471,6 +482,28 @@ stop swipe refreshlayout
             }
         };
         h.sendMessageDelayed(new Message(), seconds * 1000);
+    }
+
+    public static void updateOutboxTotalMessages(){
+
+        Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
+
+        //update Messages.totalInboxMessages
+        ParseUser user = ParseUser.getCurrentUser();
+
+        if (user == null)
+            Utility.logout();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        query.fromLocalDatastore();
+        query.whereEqualTo("userId", user.getUsername());
+        try{
+            totalOutboxMessages = query.count();
+        }
+        catch(ParseException e){
+            e.printStackTrace();
+        }
+        Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
     }
 
 

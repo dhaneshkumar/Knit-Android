@@ -98,10 +98,12 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
     boolean overflow;  // A flag to stop continuous request coming from create msgs on scrolling
     public static int extraMessages; //extra retrieved msgs on scrolling
     // Handler handler = new Handler();;
+    public static int totalClassMessages; //total messages sent from this class
 
     public ClassMsg() {
         groupCode = ClassContainer.classuid;
         grpName = ClassContainer.className;
+        updateTotalClassMessages();
     }
 
     @Override
@@ -564,8 +566,15 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                 int lastInScreen = firstVisibleItem + visibleItemCount;
 
                 int lastCount = groupDetails.size();
+
+
+
                 Utility.ls(totalItemCount - firstVisibleItem+ " : first visible item");
                 if (firstVisibleItem < 2) {
+                    if(lastCount >= totalClassMessages){
+                        Log.d("DEBUG_CLASS_MSG_ONSCROLL", "All loaded, no need to load more. Saving unnecessary query");
+                        return;
+                    }
 
                     try {
 
@@ -583,10 +592,14 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                 Utility.ls(groupDetails.size() + " : new groupDetails size");
 
                                  myadapter.notifyDataSetChanged();
-                                if (lastCount == groupDetails.size()) {
+
+                                //commenting this, as we are fetching outbox messages from server on first launch of app
+                                //and thereafter we won't need to do this
+
+                                /*if (lastCount == groupDetails.size()) {
                                     GetDataFromServer gf = new GetDataFromServer();
                                     gf.execute();
-                                }
+                                }*/
                             }
                         }
 
@@ -906,6 +919,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                     } catch (ParseException e2) {
                     }
 
+                    //update outbox message count
+                    Outbox.updateOutboxTotalMessages();
 
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
                     query.fromLocalDatastore();
@@ -1050,6 +1065,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                 } catch (ParseException e2) {
                                 }
 
+                                //update outbox message count
+                                Outbox.updateOutboxTotalMessages();
+
                 /*
                  * Updating time
                  */
@@ -1083,5 +1101,27 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         });
     }
 
+    public static void updateTotalClassMessages(){
+
+        Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "updating total outbox count");
+
+        //update ClassMsg.totalClassMessages
+        ParseUser user = ParseUser.getCurrentUser();
+
+        if (user == null)
+            Utility.logout();
+
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        query.fromLocalDatastore();
+        query.whereEqualTo("userId", user.getUsername());
+        query.whereEqualTo("code", groupCode);
+        try{
+            totalClassMessages = query.count();
+        }
+        catch(ParseException e){
+            e.printStackTrace();
+        }
+        Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "count is " + totalClassMessages);
+    }
 
 }

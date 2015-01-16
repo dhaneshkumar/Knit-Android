@@ -1,26 +1,22 @@
 package BackGroundProcesses;
 
-import java.util.Date;
-import java.util.List;
-
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Outbox;
-import utility.Queries;
-import utility.SessionManager;
-import utility.Utility;
-
-import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.parse.FindCallback;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import java.util.Date;
+import java.util.List;
+
+import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.Outbox;
+import utility.SessionManager;
 
 
 public class Refresher {
@@ -33,6 +29,7 @@ public class Refresher {
         if (freshUser != null) {
 
 
+            final SessionManager sm = new SessionManager(Application.getAppContext());
       /*
        * Storing current time stamp
        */
@@ -42,8 +39,6 @@ public class Refresher {
                 @Override
                 public void done(ParseException e) {
                     Date currentDate = freshUser.getUpdatedAt();
-
-                    SessionManager sm = new SessionManager(Application.getAppContext());
                     sm.setCurrentTime(currentDate);
                 }
             });
@@ -74,6 +69,11 @@ public class Refresher {
                 Outbox.refreshCountInBackground();
 
         /*
+            Update total count of outbox messages
+         */
+                Outbox.updateOutboxTotalMessages();
+
+        /*
          * Updating created class rooms list
          */
 
@@ -97,19 +97,33 @@ public class Refresher {
 
             } else {
 
-                SessionManager sm = new SessionManager(Application.getAppContext());
                 sm.setAppOpeningCount();
-
         /*
          * Updating joined group list
          */
                 JoinedClassRooms joinClass = new JoinedClassRooms(true);
                 joinClass.execute();
+            }
 
-                if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
-                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
-                    OutboxMsgFetch outboxMsgFetch = new OutboxMsgFetch();
-                    outboxMsgFetch.execute();
+            //Refresh local outbox data, if not in valid state clear and fetch new.
+            //If already present then no need to fetch outbox messages
+            if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
+                if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
+                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time in a thread");
+                    Runnable r = new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d("DEBUG_REFRESHER", "running fetchOutboxMessages");
+                            OutboxMsgFetch.fetchOutboxMessages();
+                        }
+                    };
+
+                    Thread t = new Thread(r);
+                    t.setPriority(Thread.MIN_PRIORITY);
+                    t.start();
+                }
+                else{
+                    Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
                 }
             }
 

@@ -113,6 +113,18 @@ public class SessionManager {
     return openingCount;
   }
 
+
+  //Handle reinstall/relogin to prevent duplicate outbox data
+  // 0 means no local valid data present. So clear local outbox and fetch new messages
+  // 1 means valid data. So no need to download outbox messages
+  public void setOutboxLocalState(int val, String userId){
+    editor.putInt("outbox-" + userId, val);
+    editor.commit();
+  }
+
+  public int getOutboxLocalState(String userId){
+    return pref.getInt("outbox-" + userId, 0);
+  }
   
   /*
    * Checking its sign up or login.
