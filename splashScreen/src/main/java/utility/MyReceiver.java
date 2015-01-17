@@ -96,7 +96,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
 
 
     private void generateNotification(Context context,
-                                      JSONObject json, String contenttext,String groupname) {
+                                         JSONObject json, String contenttext,String groupname) {
 
         Intent intent1 = new Intent(NOTIFICATION_DELETED_ACTION);
         PendingIntent pendintIntent = PendingIntent.getBroadcast(context, 0, intent1, 0);
