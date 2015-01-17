@@ -12,14 +12,32 @@
         android:orientation="vertical"
         android:gravity="center">
 
+        <!-- Adding two extra text views for maintaining same aspect ratio-->
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="2"
             android:textSize="32sp"
-            android:gravity="center"
             android:textColor="@color/black"
-            android:text="No Chaos"
-            />
+            android:text="" />
+
+        <TextView
+            android:id="@+id/heading_no_chaos"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="32sp"
+            android:textColor="@color/black"
+            android:text="No Chaos" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:textSize="32sp"
+            android:textColor="@color/black"
+            android:text="" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -40,7 +58,14 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:orientation="vertical"
-        android:gravity="center"></LinearLayout>
+        android:gravity="center">
+
+        <ImageView
+            android:layout_width="@dimen/dots_width"
+            android:layout_height="@dimen/dots_height"
+            android:background="@drawable/dots2" />
+
+    </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"

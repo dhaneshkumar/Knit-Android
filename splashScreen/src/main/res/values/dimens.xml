@@ -20,4 +20,6 @@
     <dimen name="signup_image_width">40dp</dimen>
     <dimen name="signup_textview_width">150dp</dimen>
     <dimen name="signup_layout_height">48dp</dimen>
+    <dimen name="dots_width">55dp</dimen>
+    <dimen name="dots_height">8dp</dimen>
 </resources>

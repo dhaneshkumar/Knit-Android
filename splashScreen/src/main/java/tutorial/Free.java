@@ -1,6 +1,7 @@
 package tutorial;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -23,6 +24,8 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 
 /**
+ * Fragment showing Secure icon
+ *
  * Created by Dhanesh on 1/17/2015.
  */
 public class Free extends Fragment {
@@ -45,7 +48,12 @@ public class Free extends Fragment {
 
         final String role = getActivity().getIntent().getExtras().getString("role");
 
+        //setting light font
+        TextView heading = (TextView) getActivity().findViewById(R.id.heading_free);
+        Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
+        heading.setTypeface(typeFace);
 
+        //sign up button clicked..
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -38,7 +38,10 @@
                 android:layout_marginLeft="6dp"
                 android:entries="@array/mrchoice"
                 android:prompt="@string/prompt_choice"
-                android:textSize="16sp" />
+                android:textSize="16sp" >
+                <requestFocus />
+
+                </Spinner>
 
             <TextView
                 android:layout_width="1dp"
