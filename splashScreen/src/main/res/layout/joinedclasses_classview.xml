@@ -28,7 +28,7 @@
             android:layout_width="65dp"
             android:layout_height="65dp"
             android:layout_marginRight="10dp"
-            android:background="@drawable/logo"
+            android:background="@drawable/joined_logo"
             android:scaleType="fitCenter" />
 
         <TextView
