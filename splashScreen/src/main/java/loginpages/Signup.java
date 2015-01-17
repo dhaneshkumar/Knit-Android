@@ -18,14 +18,16 @@ import java.util.List;
 
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
+import tutorial.ParentTutorial;
+import tutorial.TeacherTutorial;
 
 /**
  * Created by Dhanesh on 1/12/2015.
  */
 public class Signup extends ActionBarActivity {
-    int backCount = 0;
+    /*int backCount = 0;
     LinearLayout progressLayout;
-    LinearLayout loginlayout;
+    LinearLayout loginlayout;*/
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,8 +39,8 @@ public class Signup extends ActionBarActivity {
         LinearLayout parent = (LinearLayout) findViewById(R.id.parent_layout);
         LinearLayout student = (LinearLayout) findViewById(R.id.student_layout);
         TextView login = (TextView) findViewById(R.id.logiinView);
-        progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
-        loginlayout = (LinearLayout) findViewById(R.id.loginlayout);
+       /* progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
+        loginlayout = (LinearLayout) findViewById(R.id.loginlayout);*/
         TextView signup = (TextView) findViewById(R.id.signup);
         TextView ttext = (TextView) findViewById(R.id.ttext);
         TextView ptext = (TextView) findViewById(R.id.ptext);
@@ -59,7 +61,7 @@ public class Signup extends ActionBarActivity {
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Signup.this, Signup1Class.class);
+                Intent intent = new Intent(Signup.this, ParentTutorial.class);
                 intent.putExtra("role", Constants.PARENT);
                 startActivity(intent);
             }
@@ -68,7 +70,7 @@ public class Signup extends ActionBarActivity {
         student.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Signup.this, Signup1Class.class);
+                Intent intent = new Intent(Signup.this, ParentTutorial.class);
                 intent.putExtra("role", Constants.STUDENT);
                 startActivity(intent);
             }
@@ -77,13 +79,19 @@ public class Signup extends ActionBarActivity {
         teacher.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                backCount = 0;
+
+
+                Intent intent = new Intent(Signup.this, TeacherTutorial.class);
+                intent.putExtra("role", Constants.TEACHER);
+                startActivity(intent);
+
+               /* backCount = 0;
                 loginlayout.setVisibility(View.GONE);
                 progressLayout.setVisibility(View.VISIBLE);
 
                 //loading school list in background
                 GetSchools getSchools = new GetSchools();
-                getSchools.execute();
+                getSchools.execute();*/
             }
         });
 
@@ -96,47 +104,14 @@ public class Signup extends ActionBarActivity {
         });
     }
 
-    /**
-     * Retrieve school list from server
-     */
-    private class GetSchools extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("SCHOOLS");
-            query.orderByAscending("school_name");
-            try {
-                List<ParseObject> schoolList = query.find();
-                if (schoolList != null)
-                    ParseObject.pinAll(schoolList);
-            } catch (ParseException e) {
-            }
-            return null;
-        }
 
-        @Override
-        protected void onPostExecute(Void result) {
-
-            Intent intent = new Intent(Signup.this, Signup1Class.class);
-            intent.putExtra("role", Constants.TEACHER);
-            startActivity(intent);
-
-            progressLayout.setVisibility(View.GONE);
-            loginlayout.setVisibility(View.VISIBLE);
-
-        }
-    }
 
     @Override
     public void onBackPressed() {
-        if (backCount == 1) {
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
-        } else {
-            backCount++;
-            loginlayout.setVisibility(View.VISIBLE);
-            progressLayout.setVisibility(View.GONE);
-        }
+
     }
 }

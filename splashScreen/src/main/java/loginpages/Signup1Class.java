@@ -94,5 +94,12 @@ public class Signup1Class extends MyActionBarActivity {
   };
 
 
+    @Override
+    public void onBackPressed() {
+            Intent intent = new Intent(this, Signup.class);
+            startActivity(intent);
+    }
+
+
 
 }

@@ -73,6 +73,9 @@
         <activity android:name="additionals.InviteParents"></activity>
         <activity android:name="additionals.ClassInstructions"></activity>
         <activity android:name="additionals.ShareInstructions"></activity>
+        <activity android:name="tutorial.TeacherTutorial"></activity>
+        <activity android:name="tutorial.ParentTutorial"></activity>
+
 
         <service android:name="com.parse.PushService" />
 
