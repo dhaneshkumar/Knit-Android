@@ -10,6 +10,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -94,6 +95,41 @@ public class Refresher {
                         updateSuggestions.execute();
                     }
                 }
+
+
+                //Checking for correct channels (It should match to joined groups entries)
+                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+                List<String> channels = installation.getList("channels");
+                if (channels != null) {
+                    List<String> channelList = new ArrayList<String>();
+                    List<List<String>> joinedGroups;
+                    joinedGroups = freshUser.getList("joined_groups");
+
+                    if (joinedGroups != null) {
+                        for (int i = 0; i < joinedGroups.size(); i++) {
+                            channelList.add(joinedGroups.get(i).get(0));
+                        }
+
+                        if (channelList.size() != channels.size()) {
+                            installation.put("channels", channelList);
+
+                            installation.saveEventually();
+                        }
+
+                    }
+                }
+                else {
+                        updateChannels();
+                    }
+
+
+                //Checking for username in parseinstallation entry
+
+                if(installation.getString("username") == null) {
+                    installation.put("username", freshUser.getUsername());
+                    installation.saveEventually();
+                }
+
 
             } else {
 
@@ -210,5 +246,28 @@ public class Refresher {
         }
 
 
+    }
+
+
+
+    private void updateChannels() {
+        List<String> channelList = new ArrayList<String>();
+        List<List<String>> joinedGroups;
+        joinedGroups = freshUser.getList("joined_groups");
+
+        if (joinedGroups != null) {
+            for (int i = 0; i < joinedGroups.size(); i++) {
+                channelList.add(joinedGroups.get(i).get(0));
+            }
+
+            ParseInstallation pi = ParseInstallation.getCurrentInstallation();
+
+            if (pi != null && channelList.size() > 0) {
+                pi.put("channels", channelList);
+                if(pi.getString("username") == null)
+                    pi.put("username", freshUser.getUsername());
+                pi.saveEventually();
+            }
+        }
     }
 }

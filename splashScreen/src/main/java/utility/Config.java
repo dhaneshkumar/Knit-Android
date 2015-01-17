@@ -24,7 +24,7 @@ public class Config {
 
   public static final int inboxMsgCount = 20;
   public static final int createMsgCount = 20;
-    public static  final int outboxMsgCount =20;
+  public static  final int outboxMsgCount =20;
   public static final int createMsgMax = 100;
   public static final int membersCount = 100;
   public static final String creator = "TextSlate";

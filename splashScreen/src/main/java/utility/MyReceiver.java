@@ -111,6 +111,8 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
         mBuilder.setAutoCancel(true);
         mBuilder.setContentTitle("Knit");
         mBuilder.setContentText(count+1 + " new messages");
+        mBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS);
+
         //      mBuilder.setDeleteIntent(contentIntent);
         //   mBuilder.setTicker("New Message Alert!");
         mBuilder.setSmallIcon(R.drawable.notification);
@@ -142,6 +144,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
             mBuilder1.setSmallIcon(R.drawable.notification);
             mBuilder1.setStyle(bigTextStyle);
             mBuilder1.setDeleteIntent(pendintIntent);
+            mBuilder1.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS);
 
 
             ++count;
