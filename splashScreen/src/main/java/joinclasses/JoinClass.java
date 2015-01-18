@@ -41,6 +41,10 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,22 +192,26 @@ public class JoinClass extends Fragment {
         @Override
         protected Void doInBackground(Void... params) {
             if (userId != null && childName != null) {
-/*
-* Retrieving user details
-*/
+
+                /*
+                * Retrieving user details
+                */
                 childName = childName.trim();
                 childName = UtilString.parseString(childName);
-/*
-* Change first letter to caps
-*/
+
+                /*
+                * Change first letter to caps
+                */
                 SessionManager session = new SessionManager(Application.getAppContext());
                 session.addChildName(childName);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null) {
-/********************* < joining class room > *************************/
+
+                    /********************* < joining class room > *************************/
                     joinFlag = false;
                     classExist = false;
-            // check whether group exist or not
+
+                    // check whether group exist or not
                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
                     String grpCode = code;
                     grpCode = grpCode.replace("TS", "");
@@ -223,7 +231,8 @@ public class JoinClass extends Fragment {
                                         schoolId = a.getString("school");
                                         standard = a.getString("standard");
                                         division = a.getString(Constants.DIVISION);
-            // Enable to receive push
+
+                                        // Enable to receive push
                                         pi = ParseInstallation.getCurrentInstallation();
                                         if (pi != null) {
                                             pi.addUnique("channels", code);
@@ -247,7 +256,8 @@ public class JoinClass extends Fragment {
                                             Utility.ls("parse installation -- null");
                                         user.addUnique("joined_groups", Arrays.asList(code, grpName, childName));
                                         user.saveEventually();
-            // Adding this user as member in GroupMembers table
+
+                                        // Adding this user as member in GroupMembers table
                                         final ParseObject groupMembers = new ParseObject("GroupMembers");
                                         groupMembers.put("code", code);
                                         groupMembers.put("name", user.getString("name"));
@@ -271,14 +281,16 @@ public class JoinClass extends Fragment {
                                             }
                                         });
                                     }
-/*
-* Saving locally in Codegroup table
-*/
+
+                                    /*
+                                    * Saving locally in Codegroup table
+                                    */
                                     a.put("userId", userId);
                                     a.pin();
-/*
-* download pic locally
-*/
+
+                                    /*
+                                    * download pic locally
+                                    */
                                     senderId = senderId.replaceAll("@", "");
                                     String filePath =
                                             Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
@@ -288,17 +300,36 @@ public class JoinClass extends Fragment {
                                         if (senderPic != null)
                                             imageQuery.downloadProfileImage(senderId, senderPic);
                                     } else {
-            // Utility.toast("image already exist ");
+
+                                      // Utility.toast("image already exist ");
                                     }
                                     joinFlag = true;
-            // Create our Installation query
+
+                                     // Create our Installation query
                                     ParseQuery pushQuery = ParseInstallation.getQuery();
                                     pushQuery.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
-            // Send push notification to query
+
+                                     // Send push notification to query
                                     ParsePush push = new ParsePush();
                                     push.setQuery(pushQuery);             // Set our Installation query
-                                    push.setMessage(utility.Config.welcomeMsg);
-                                    push.sendInBackground();
+                                    JSONObject data = new JSONObject();
+                                    try {
+                                        data.put("msg", utility.Config.welcomeMsg);
+                                        data.put("title", grpName);
+                                        data.put("flag", 0);
+                                        data.put("sender", a.getString("Creator"));
+                                        data.put("groupName", grpName);
+                                        push.setData(data);
+                                        push.sendInBackground();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+
+
+
+
+
+
                                     final ParseObject localMsg = new ParseObject("LocalMessages");
                                     localMsg.put("Creator", a.getString("Creator"));
                                     localMsg.put("code", code);

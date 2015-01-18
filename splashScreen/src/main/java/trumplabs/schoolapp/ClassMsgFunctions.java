@@ -33,7 +33,7 @@ public class ClassMsgFunctions {
         data.put("alert", msg);*/
       
       if (UtilString.isBlank(groupName))
-        data.put("title", "TextSlate");
+        data.put("title", "Knit");
       else
         data.put("title", groupName);
 
@@ -58,7 +58,7 @@ public class ClassMsgFunctions {
     ParseCloud.callFunctionInBackground("messagecc", params, new FunctionCallback<String>() {
       @Override
       public void done(String result, ParseException e) {
-        // TODO Auto-generated method stub
+
         
       }
     });

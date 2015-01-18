@@ -46,6 +46,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class AddChildToClass extends MyActionBarActivity {
   public static List<String> group;
   private TextView okButton;
@@ -370,10 +373,20 @@ public class AddChildToClass extends MyActionBarActivity {
                   pushQuery.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
                    
                   // Send push notification to query
-                  ParsePush push = new ParsePush();
-                  push.setQuery(pushQuery); // Set our Installation query
-                  push.setMessage(utility.Config.welcomeMsg);
-                  push.sendInBackground();
+                    ParsePush push = new ParsePush();
+                    push.setQuery(pushQuery);             // Set our Installation query
+                    JSONObject data = new JSONObject();
+                    try {
+                        data.put("msg", utility.Config.welcomeMsg);
+                        data.put("title", grpName);
+                        data.put("flag", 0);
+                        data.put("sender", a.getString("Creator"));
+                        data.put("groupName", grpName);
+                        push.setData(data);
+                        push.sendInBackground();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                   
                   final ParseObject localMsg = new ParseObject("LocalMessages");
                   localMsg.put("Creator", a.getString("Creator"));

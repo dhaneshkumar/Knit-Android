@@ -1164,13 +1164,15 @@ public class JoinedClasses extends Fragment {
                     editProfileLayout.setVisibility(View.GONE);
                 } else {
                     popupMessage.dismiss();
-                    Intent intent = new Intent(context, AddChildToClass.class);
-                    intent.putExtra("code", classCode);
-                    intent.putExtra("backFlag", "1");   // if user return from addChildToClass class, then come back to this class rather than joinclass
-                    //startActivity(intent);
+                    if (context != null) {
+                        Intent intent = new Intent(context, AddChildToClass.class);
+                        intent.putExtra("code", classCode);
+                        intent.putExtra("backFlag", "1");   // if user return from addChildToClass class, then come back to this class rather than joinclass
+                        //startActivity(intent);
 
-                    if (context != null)
-                        startActivityForResult(intent, 0);
+
+                        startActivity(intent);
+                    }
 
                 }
             }
