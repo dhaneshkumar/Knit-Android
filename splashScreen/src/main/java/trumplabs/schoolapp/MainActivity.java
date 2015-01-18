@@ -282,7 +282,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             Fragment fragment = null;
             if (role.equals("teacher")) {
-
                 switch (arg0) {
                     case 0:
                         fragment = new Outbox();
