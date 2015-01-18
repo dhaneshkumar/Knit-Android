@@ -68,18 +68,20 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
     //update Messages.totalInboxMessages
     ParseUser user = ParseUser.getCurrentUser();
 
-    if (user == null)
-      Utility.logout();
+    if (user != null) {
 
-    ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
-    query.fromLocalDatastore();
-    query.whereEqualTo("userId", user.getUsername());
-    try{
-      Messages.totalInboxMessages = query.count();
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+        query.fromLocalDatastore();
+        query.whereEqualTo("userId", user.getUsername());
+        try {
+            Messages.totalInboxMessages = query.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
-    catch(ParseException e){
-      e.printStackTrace();
-    }
+      else
+        Utility.logout();
+
     return mStrings;
   }
 

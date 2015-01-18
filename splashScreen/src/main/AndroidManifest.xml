@@ -46,13 +46,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="loginpages.LoginPage"
-            android:label="@string/app_name"
-            android:windowSoftInputMode="adjustPan">
-            <intent-filter>
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+            android:name="loginpages.LoginPage"></activity>
         <activity android:name="trumplabs.schoolapp.CreateClass"></activity>
         <activity
             android:name="trumplabs.schoolapp.ClassContainer"
@@ -73,9 +67,7 @@
         <activity android:name="additionals.InviteParents"></activity>
         <activity android:name="additionals.ClassInstructions"></activity>
         <activity android:name="additionals.ShareInstructions"></activity>
-        <activity android:name="tutorial.TeacherTutorial"></activity>
-        <activity android:name="tutorial.ParentTutorial"></activity>
-
+        <activity android:name="trumplabs.schoolapp.InviteTeacher"></activity>
 
         <service android:name="com.parse.PushService" />
 

@@ -253,6 +253,16 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             case R.id.profile:
                 this.startActivity(new Intent(this, ProfilePage.class));
                 break;
+            case R.id.spread:
+
+                String link = "www.knitapp.co.in";
+                Intent i=new Intent(android.content.Intent.ACTION_SEND);
+                i.setType("text/plain");
+                i.putExtra(android.content.Intent.EXTRA_SUBJECT,"Knit");
+                i.putExtra(android.content.Intent.EXTRA_TEXT, link);
+                startActivity(Intent.createChooser(i,"Share via"));
+
+                break;
 
             default:
                 break;

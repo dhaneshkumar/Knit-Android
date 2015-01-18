@@ -3,7 +3,9 @@
     android:id="@+id/joinLinearLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    android:orientation="vertical"
+    android:descendantFocusability="beforeDescendants"
+    android:focusableInTouchMode="true">
 
     <LinearLayout
         android:id="@+id/progresslayout"
@@ -22,13 +24,14 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fillViewport="true"
         android:background="@color/lightbackgroundcolor" >
 
         <LinearLayout
             android:id="@+id/joinlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical" >
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/loginheadline"
@@ -40,6 +43,7 @@
                 android:text="Join Classroom"
                 android:textColor="@color/txtgrey"
                 android:textSize="22sp" />
+
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -110,72 +114,38 @@
                 android:textColor="@color/white"
                 android:textSize="18sp"
                 android:textStyle="bold" />
-
             <TextView
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
+                android:layout_width="230dp"
+                android:layout_height="1dp"
+                android:layout_marginTop="32dp"
+                android:text=""
+                android:layout_gravity="center"
+                android:background="@color/grey_light" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:text="Don't have a code?\nNo worries!"
+                android:textColor="@color/darkergrey"
+                android:textSize="16sp" />
+
+            <Button
+                android:id="@+id/inviteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
                 android:layout_marginTop="48dp"
-                android:gravity="center_vertical"
-                android:paddingLeft="16dp"
-                android:paddingRight="1dp"
-                android:text="Suggested Classrooms"
-                android:textColor="@color/txtgrey"
-                android:textSize="22sp" />
-
-            <ListView
-                android:id="@+id/listview"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp" >
-            </ListView>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:background="@color/white"
-                android:orientation="horizontal"
-                android:padding="16dp" >
-
-                <ImageView
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_gravity="top|left"
-                    android:layout_marginRight="12dp"
-                    android:background="@color/lightbackgroundcolor" />
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical" >
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="English"
-                        android:textColor="@color/black"
-                        android:textSize="18dp" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Official Classroom"
-                        android:textColor="@color/darkergrey"
-                        android:textSize="14dp" />
-                </LinearLayout>
-
-                <Button
-                    android:layout_width="96dp"
-                    android:layout_height="32dp"
-                    android:layout_gravity="center"
-                    android:background="@color/buttoncolor"
-                    android:text="Join"
-                    android:textColor="@color/white"
-                    android:textSize="16sp" />
-            </LinearLayout>
+                android:background="@drawable/round_corner_button_color"
+                android:text="Invite Teacher"
+                android:textColor="@color/white"
+                android:textSize="18sp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:paddingRight="32dp"
+                android:paddingLeft="32dp"/>
         </LinearLayout>
     </ScrollView>
 

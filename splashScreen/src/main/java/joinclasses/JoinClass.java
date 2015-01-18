@@ -4,6 +4,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.Messages;
 import utility.Popup;
 import utility.Queries;
@@ -86,6 +87,12 @@ public class JoinClass extends Fragment {
         editProfileLayout = (LinearLayout) getActivity().findViewById(R.id.joinlayout);
         memberQuery= new Queries2();
         final ImageView help = (ImageView) getActivity().findViewById(R.id.help);
+
+
+        //removing focus from editText and setting it to parent layout
+        getActivity().findViewById(R.id.joinLinearLayout).requestFocus();
+
+
             // Get the x, y location and store it in the location[] array
             // location[0] = x, location[1] = y.
         ViewTreeObserver vto = help.getViewTreeObserver();
@@ -154,6 +161,15 @@ public class JoinClass extends Fragment {
                         Utility.toast("Check your Internet connection");
                     }
                 }
+            }
+        });
+
+        Button inviteButton = (Button) getActivity().findViewById(R.id.inviteButton);
+        inviteButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), InviteTeacher.class);
+                startActivity(intent);
             }
         });
     }
