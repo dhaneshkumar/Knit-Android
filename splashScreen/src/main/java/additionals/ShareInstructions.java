@@ -25,7 +25,7 @@ public class ShareInstructions extends MyActionBarActivity{
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     final String grpCode = ClassMsg.groupCode;
-    final String link = " www.knitapp.co.in/user.html?" + grpCode;
+    final String link = "www.knitapp.co.in/user.html?" + grpCode;
     TextView shareView = (TextView) findViewById(R.id.share);
     TextView copyView = (TextView) findViewById(R.id.copy);
     TextView classLink = (TextView) findViewById(R.id.classLink);

@@ -20,4 +20,7 @@
     <dimen name="signup_image_width">40dp</dimen>
     <dimen name="signup_textview_width">150dp</dimen>
     <dimen name="signup_layout_height">48dp</dimen>
+    <dimen name="invite_teacher_heading">18dp</dimen>
+    <dimen name="invite_teacher_subheading">15dp</dimen>
+    <dimen name="invite_teacher_margin">4dp</dimen>
 </resources>

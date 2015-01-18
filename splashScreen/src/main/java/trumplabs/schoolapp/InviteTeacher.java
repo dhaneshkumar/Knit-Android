@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -58,6 +60,12 @@ public class InviteTeacher extends MyActionBarActivity {
         phoneEditText = (EditText) findViewById(R.id.phoneEditText);
         emailEditText = (EditText) findViewById(R.id.emailEditText);
         childEditText = (EditText) findViewById(R.id.childEditText);
+        TextView title = (TextView) findViewById(R.id.title);
+
+        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+        title.setTypeface(typeface);
+
+
 
         //submit button click response
         submitButton = (Button) findViewById(R.id.submitButton);
@@ -88,18 +96,6 @@ public class InviteTeacher extends MyActionBarActivity {
 
                     InviteTeacherTask inviteTask = new InviteTeacherTask();
                     inviteTask.execute();
-
-                    /*Intent intent = new Intent(getBaseContext(), Signup1_5Class.class);
-                    intent.putExtra("MR", mrspinner.getSelectedItem().toString());
-
-                    String userName = UtilString.changeFirstToCaps(displayname);
-
-                    intent.putExtra("name", userName.trim());
-
-                    if (role.equals(Constants.TEACHER))
-                        intent.putExtra("school", schoolName.trim());
-                    intent.putExtra("role", role);
-                    startActivity(intent);*/
 
                 }
             }

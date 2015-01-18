@@ -87,6 +87,12 @@ public class JoinClass extends Fragment {
         editProfileLayout = (LinearLayout) getActivity().findViewById(R.id.joinlayout);
         memberQuery= new Queries2();
         final ImageView help = (ImageView) getActivity().findViewById(R.id.help);
+
+
+        //removing focus from editText and setting it to parent layout
+        getActivity().findViewById(R.id.joinLinearLayout).requestFocus();
+
+
             // Get the x, y location and store it in the location[] array
             // location[0] = x, location[1] = y.
         ViewTreeObserver vto = help.getViewTreeObserver();

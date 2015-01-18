@@ -9,6 +9,7 @@ import java.util.Map;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.FontsOverride;
+import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -127,11 +128,15 @@ public class SplashScreen extends MyActionBarActivity {
             {
                 Intent loginIntent = new Intent(getBaseContext(), Signup.class);
                 startActivity(loginIntent);
+                // we override the transition
+                overridePendingTransition(R.anim.transition_in, R.anim.transition_out);
             }
             else
             {
-                Intent loginIntent = new Intent(getBaseContext(), LoginPage.class);
+                Intent loginIntent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(loginIntent);
+                // we override the transition
+                overridePendingTransition(R.anim.transition_in, R.anim.transition_out);
             }
 
 

@@ -25,6 +25,10 @@
         android:id="@+id/profile"
         android:title="Profile &amp; Settings"
         app:showAsAction="never"/>
+    <item
+        android:id="@+id/spread"
+        android:title="Spread the word"
+        app:showAsAction="never"/>
    
 
 </menu>
