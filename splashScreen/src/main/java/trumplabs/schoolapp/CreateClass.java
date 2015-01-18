@@ -415,7 +415,9 @@ public class CreateClass extends MyActionBarActivity {
 
         Classrooms.createdGroups.add(newgroup);
         Classrooms.members = 0;
-        Classrooms.myadapter.notifyDataSetChanged();
+
+        if(Classrooms.myadapter != null)
+            Classrooms.myadapter.notifyDataSetChanged();
 
         // Setting layouts visibility
         codeviewlayout.setVisibility(View.VISIBLE);
