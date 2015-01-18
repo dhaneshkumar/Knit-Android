@@ -117,7 +117,7 @@ public class SplashScreen extends MyActionBarActivity {
       public void run() {
         try {
           // waits for 800ms
-          sleep(1500);
+          sleep(1200);
 
           // start loginpage activity
 
@@ -132,6 +132,9 @@ public class SplashScreen extends MyActionBarActivity {
             {
                 Intent loginIntent = new Intent(getBaseContext(), LoginPage.class);
                 startActivity(loginIntent);
+
+                //overriding the transitions
+                overridePendingTransition(R.anim.transition_in, R.anim.transition_out);
             }
 
 
