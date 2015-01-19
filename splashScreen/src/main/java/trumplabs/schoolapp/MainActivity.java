@@ -25,6 +25,7 @@ import com.parse.ParseUser;
 
 import java.lang.reflect.Field;
 
+import notifications.AlarmTrigger;
 import BackGroundProcesses.Refresher;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -207,6 +208,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             }
         });
+
+        //dummy alarm schedule
+        AlarmTrigger.triggerAlarm(getApplicationContext());
     }
 
     @Override

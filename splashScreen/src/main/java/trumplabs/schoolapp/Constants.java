@@ -67,4 +67,15 @@ public class Constants {
 
     //group members
     public static final String GROUP_MEMBERS = "GroupMembers";
+
+    //time milliseconds
+    public static int MINUTE_MILLISEC = 60 * 1000;
+    public static int HOUR_MILLISEC = 60 * 60 * 1000;
+    public static int DAY_MILLISEC = 24 * 60 * 60 * 60;
+
+    //Default messages details
+    public static String DEFAULT_CREATOR = "Knit Team";
+    public static String DEFAULT_SENDER_ID = "knit@trumplab.com";
+    public static String DEFAULT_NAME = "Knit Updates";
+
 }

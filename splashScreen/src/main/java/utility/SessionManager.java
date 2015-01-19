@@ -113,7 +113,6 @@ public class SessionManager {
     return openingCount;
   }
 
-
   //Handle reinstall/relogin to prevent duplicate outbox data
   // 0 means no local valid data present. So clear local outbox and fetch new messages
   // 1 means valid data. So no need to download outbox messages
@@ -146,7 +145,16 @@ public class SessionManager {
     editor.putBoolean(SIGNUP, false);
     editor.commit();
   }
-  
+
+  public void setAlarmEventState(String eventId, boolean state){
+    editor.putBoolean(eventId, state);
+    editor.commit();
+  }
+
+  public boolean getAlarmEventState(String eventId){
+      return pref.getBoolean(eventId, false);
+  }
+
   /*
    * updating current time
    */

@@ -1,5 +1,6 @@
 package utility;
 
+import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -822,6 +823,20 @@ public class Queries extends MyActivity {
         smsCount = smsQuery.count();
 
         return appCount + smsCount;
+    }
+
+    public ParseObject getClassObject(String groupCode) throws ParseException{
+        ParseQuery query = ParseQuery.getQuery("Codegroup");
+        query.fromLocalDatastore();
+        //query.whereEqualTo("userId", userId); // Not needed as it doesn't matter. All will have same Timestamp
+        query.whereEqualTo("code", groupCode);
+        query.setLimit(1);
+
+        List<ParseObject> objects = query.find();
+        if(objects != null && objects.size() > 0){
+            return objects.get(0);
+        }
+        return null;
     }
 
 

@@ -1,5 +1,6 @@
 package utility;
 
+import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
@@ -15,10 +16,11 @@ public class PushOpen extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        MyReceiver myreceiver = null;
+
         for (int i = 0; i < 10; i++)
-            myreceiver.events[i] = "";
-        myreceiver.count = 0;
+            NotificationGenerator.events[i] = "";
+        NotificationGenerator.count = 0;
+
         Intent i = new Intent(this, MainActivity.class);
 
         ParseUser user = ParseUser.getCurrentUser();
