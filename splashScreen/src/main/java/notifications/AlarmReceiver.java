@@ -35,25 +35,28 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     //event name for different events
     //event id will be <username> + "-" + eventname(above)
-    static String parentNoActivityEvent = "parent_no_activity"; //2 hours since signup
+    static String parentNoActivityEvent = "parent_no_activity"; //5 hours since signup
     static String teacherNoActivityEvent = "teacher_no_activity"; // 1 hour since signup
     static String teacherNoSubEvent = "teacher_no_sub" ; // + <CLASSID> no subscribers 3 days
     static String teacherNoMsgEvent = "teacher_no_msg"; // + <CLASSID> no message 5 days
     static String teacherConfusingMsgEvent = "teacher_confusing_msg"; //+ <MSG_OBJECT_ID> more than 5 confusing
+    static String teacherSendingDailyTip = "teacher_sending_daily_tip";
 
     //messages for different events
-    static String parentNoActivityContent = "You have not joined any classes yet. If you don't have a code, you can invite a teacher";
+    static String parentNoActivityContent = "I was born just a few months ago and a lot of teachers and parents are using Knit since then and trust me they love it. I noticed that you haven’t joined any classroom yet, why? Invite teacher. ";
     static String teacherNoActivityContent = "You haven't created any classes yet. Please create a class and invite parents";
     static String teacherNoSubContent = "You don't have any subscribers yet for class. Please invite parents onboard to class ";
     static String teacherNoMsgContent = "You haven't sent any messages yet to class ";
     static String teacherConfusingMsgContent = /* <confused_count> + */ " parents seem to be confused regarding your recent post in class "; // [class name]
+    static String teacherSendingDailyTipContent = "How’s going so far? Have you tried sending daily tips to parents ? Many of our teachers do that already and parents love it. Give it a try I would say.";
 
 
     //time interval before event is supposed to occur
-    static long parentNoActivityInterval = 2 * Constants.MINUTE_MILLISEC;
-    static long teacherNoActivityInterval = 2 * Constants.MINUTE_MILLISEC;
-    static long teacherNoSubInterval = 5 * Constants.MINUTE_MILLISEC;
-    static long teacherNoMsgInterval = 5 * Constants.MINUTE_MILLISEC;
+    static long parentNoActivityInterval = 5 * Constants.MINUTE_MILLISEC; //5 hours
+    static long teacherNoActivityInterval = 5 * Constants.MINUTE_MILLISEC; //1 hours
+    static long teacherNoSubInterval = 3 * Constants.MINUTE_MILLISEC; //3 days
+    static long teacherNoMsgInterval = 7 * Constants.MINUTE_MILLISEC; //5 days
+    static long teacherSendingDailyTipInterval = 3 * Constants.MINUTE_MILLISEC; //3 days of first classroom creation
 
     ParseUser user;
     Context alarmContext;
@@ -98,6 +101,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             teacherNoSub();
             teacherNoMsg();
             teacherConfusingMessage();
+            teacherSendingDailyTip();
         }
     }
 
@@ -398,6 +402,57 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
         }
     }
+
+    //After 3 days of first classroom creation. Send the message telling sending daily tips to parents
+    public void teacherSendingDailyTip(){
+        String eventid = user.getUsername() + "-" + teacherSendingDailyTip;
+        if(session.getAlarmEventState(eventid)) {
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " already happened");
+            return; //we're done
+        }
+
+        List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+        if(createdGroups == null || createdGroups.size() == 0) return;
+
+        for(int i=0; i<createdGroups.size(); i++){
+            List<String> group = createdGroups.get(i);
+            String groupCode = group.get(0); //0 is code
+
+            ParseObject classroom = null;
+            try{
+                classroom = queryInstance.getClassObject(groupCode);
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+                continue; //can't proceed
+            }
+            if(classroom == null) continue;
+
+            Date classCreationTime = classroom.getCreatedAt();
+            if(classCreationTime == null) continue;
+
+            Date now = null;
+            try{
+                now = session.getCurrentTime();
+            }
+            catch (java.text.ParseException e){
+                e.printStackTrace();
+                continue; //can't proceed further
+            }
+            if(now == null) continue;
+
+            Long interval = now.getTime() - classCreationTime.getTime();
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
+            if(interval > teacherSendingDailyTipInterval){
+                NotificationGenerator.generateNotification(alarmContext, teacherSendingDailyTipContent, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                generateLocalMessage(teacherSendingDailyTipContent, Constants.DEFAULT_NAME);
+                Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " state changed to true");
+                session.setAlarmEventState(eventid, true);
+                return; //if we find even 1 class which is 3 days old or more, we're done
+            }
+        }
+    }
+
 
     private void generateLocalMessage(String content, String code){
         //generate local message

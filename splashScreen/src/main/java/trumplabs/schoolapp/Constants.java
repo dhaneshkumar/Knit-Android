@@ -71,7 +71,7 @@ public class Constants {
     //time milliseconds
     public static int MINUTE_MILLISEC = 60 * 1000;
     public static int HOUR_MILLISEC = 60 * 60 * 1000;
-    public static int DAY_MILLISEC = 24 * 60 * 60 * 60;
+    public static int DAY_MILLISEC = 24 * 60 * 60 * 1000;
 
     //Default messages details
     public static String DEFAULT_CREATOR = "Knit Team";
