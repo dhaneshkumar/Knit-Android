@@ -114,11 +114,12 @@ public class Signup2Class extends ActionBarActivity {
                         user.put("phone", phone);
                         user.put("name", mr + " " + name);
                         user.put("role", role);
+                      /*
                         if (role.equals(Constants.TEACHER)) {
                             String schoolId = School.schoolIdExist(school);
                             if (schoolId != null)
                                 user.put("school", schoolId);
-                        }
+                        }*/
                         if (mr.equals("Mr")) {
                             user.put("sex", "M");
                         } else
@@ -157,12 +158,9 @@ public class Signup2Class extends ActionBarActivity {
                                     Utility.ls("signing up.............1 ...");
                                     try {
                                         if (role.equals(Constants.TEACHER)) {
-                                            String schoolId = School.schoolIdExist(school);
-                                            if (schoolId == null) {
-                                                schoolId = School.getSchoolObjectId(school);
+                                                String schoolId = School.getSchoolObjectId(school);
                                                 if (schoolId != null)
                                                     user.put("school", schoolId);
-                                            }
                                         }
                                     } catch (ParseException e2) {
                                     }

@@ -568,8 +568,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                 int lastCount = groupDetails.size();
 
 
-
-                Utility.ls(totalItemCount - firstVisibleItem+ " : first visible item");
                 if (firstVisibleItem < 2) {
                     if(lastCount >= totalClassMessages){
                         Log.d("DEBUG_CLASS_MSG_ONSCROLL", "All loaded, no need to load more. Saving unnecessary query");
@@ -577,9 +575,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                     }
 
                     try {
-
-
-                        Utility.ls(lastCount + " : groupDetails size");
 
                         if (lastCount >= Config.createMsgCount) {
 
@@ -952,6 +947,17 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                     ClassMsgFunctions.sendMessageAsData(groupCode, typedtxt, 0, sender, grpName);
                     Utility.toast("Notification Sent");
 
+
+                    //updating outbox
+                    Queries outboxQuery = new Queries();
+
+                    List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
+                    if( outboxItems != null)
+                    {
+                        Outbox.groupDetails = outboxItems;
+                        Outbox.myadapter.notifyDataSetChanged();
+                    }
+
                 } else {
                     // message was not sent
                     groupDetails.remove(groupDetails1);
@@ -1068,6 +1074,16 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                 //update outbox message count
                                 Outbox.updateOutboxTotalMessages();
 
+
+                                //updating outbox adapter
+                                Queries outboxQuery = new Queries();
+
+                                List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
+                                if( outboxItems != null)
+                                {
+                                    Outbox.groupDetails = outboxItems;
+                                    Outbox.myadapter.notifyDataSetChanged();
+                                }
                 /*
                  * Updating time
                  */

@@ -75,11 +75,20 @@
                     android:gravity="center"
                     android:layout_height="wrap_content">
 
-                    <ImageView
+                    <TextView
+                        android:id="@+id/tab1Icon"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:gravity="center"
+                        android:text="Classrooms"
+                        android:textColor="@color/buttoncolor" />
+
+                  <!--  <ImageView
                         android:id="@+id/tab1Icon"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:background="@drawable/outbox" />
+                        android:background="@drawable/outbox" />-->
                 </LinearLayout>
 
                 <LinearLayout
@@ -89,11 +98,20 @@
                     android:gravity="center"
                     android:layout_height="wrap_content">
 
-                    <ImageView
+                    <TextView
+                        android:id="@+id/tab2Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="Sent"
+                        android:textColor="@color/buttoncolor" />
+
+
+                    <!--<ImageView
                         android:id="@+id/tab2Icon"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:background="@drawable/inbox_grey" />
+                        android:background="@drawable/inbox_grey" />-->
                 </LinearLayout>
 
                 <LinearLayout
@@ -103,11 +121,19 @@
                     android:gravity="center"
                     android:layout_height="wrap_content">
 
-                    <ImageView
+                    <TextView
+                        android:id="@+id/tab3Icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:text="Received"
+                        android:textColor="@color/buttoncolor" />
+
+                   <!-- <ImageView
                         android:id="@+id/tab3Icon"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:background="@drawable/classroom_grey" />
+                        android:background="@drawable/classroom_grey" />-->
                 </LinearLayout>
 
 

@@ -130,7 +130,6 @@ public class School {
             return obj.getObjectId();
         else {
 
-            schoolName = schoolName.toUpperCase();
             ParseObject school = new ParseObject("SCHOOLS");
             school.put("school_name", schoolName);
             school.save();          //storing on server

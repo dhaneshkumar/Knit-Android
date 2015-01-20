@@ -1,10 +1,18 @@
 package trumplabs.schoolapp;
 
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
@@ -17,8 +25,10 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
+import java.io.IOException;
 import java.util.HashMap;
 
+import additionals.ReadSchoolFile;
 import baseclasses.MyActionBarActivity;
 import joinclasses.School;
 import library.UtilString;
@@ -34,7 +44,7 @@ public class InviteTeacher extends MyActionBarActivity {
     LinearLayout detailsLayout;
     LinearLayout congratsLayout;
     LinearLayout progressBarLayout;
-    EditText schoolEditText;
+    AutoCompleteTextView schoolEditText;
     EditText teacherEditText;
     EditText phoneEditText;
     EditText emailEditText;
@@ -47,6 +57,11 @@ public class InviteTeacher extends MyActionBarActivity {
     static String email;
     static String childName;
 
+    boolean schoolFlag = false;
+    boolean teacherFlag = false;
+    boolean phoneFlag = false;
+    boolean emailFlag = false;
+
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.invite_teacher);
@@ -54,18 +69,31 @@ public class InviteTeacher extends MyActionBarActivity {
         detailsLayout = (LinearLayout) findViewById(R.id.detailsLayout);
         congratsLayout = (LinearLayout) findViewById(R.id.congratsLayout);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
-
-        schoolEditText = (EditText) findViewById(R.id.schoolEditText);
+        schoolEditText = (AutoCompleteTextView) findViewById(R.id.schoolEditText);
         teacherEditText = (EditText) findViewById(R.id.teacherEditText);
         phoneEditText = (EditText) findViewById(R.id.phoneEditText);
         emailEditText = (EditText) findViewById(R.id.emailEditText);
         childEditText = (EditText) findViewById(R.id.childEditText);
-        TextView title = (TextView) findViewById(R.id.title);
-
-        Typeface typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-        title.setTypeface(typeface);
 
 
+
+        ArrayAdapter adapter;
+        try {
+
+            ReadSchoolFile readSchoolFile = new ReadSchoolFile();
+            adapter =
+                    new ArrayAdapter(this, android.R.layout.simple_list_item_1, readSchoolFile.getSchoolsList().toArray());
+            schoolEditText.setAdapter(adapter);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        //Adding home back button
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        //setting title of activity
+        getSupportActionBar().setTitle("Invite Teachers");
 
         //submit button click response
         submitButton = (Button) findViewById(R.id.submitButton);
@@ -100,6 +128,127 @@ public class InviteTeacher extends MyActionBarActivity {
                 }
             }
         });
+
+
+        //setting box color transition for teacher name editText
+        teacherEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Changing sending box color
+                if (s.length() > 0) {
+                    setColor(teacherEditText);
+                    teacherFlag = true;
+                    setButtonColor();
+                }
+                else {
+                    unSetColor(teacherEditText);
+                    teacherFlag = false;
+                    setButtonColor();
+                }
+            }
+        });
+
+        //setting box color transition for school name editText
+        schoolEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Changing sending box color
+                if (s.length() > 0) {
+                    setColor(schoolEditText);
+                    schoolFlag= true;
+                    setButtonColor();
+                }
+                else {
+                    unSetColor(schoolEditText);
+                    schoolFlag = false;
+                    setButtonColor();
+                }
+            }
+        });
+
+        //setting box color transition for child name editText
+        childEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Changing sending box color
+                if (s.length() > 0)
+                    setColor(childEditText);
+                else
+                    unSetColor(childEditText);
+            }
+        });
+
+        //setting box color transition for phone name editText
+        phoneEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Changing sending box color
+                if (s.length() > 0) {
+                    setColor(phoneEditText);
+                    phoneFlag = true;
+                    setButtonColor();
+                }
+                else {
+                    unSetColor(phoneEditText);
+                    phoneFlag = false;
+                    setButtonColor();
+                }
+            }
+        });
+
+        //setting box color transition for email name editText
+        emailEditText.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                //Changing sending box color
+                if (s.length() > 0) {
+                    setColor(emailEditText);
+                    emailFlag = true;
+                    setButtonColor();
+                }
+                else {
+                    unSetColor(emailEditText);
+                    emailFlag = false;
+                    setButtonColor();
+                }
+            }
+        });
+
     };
 
 
@@ -149,7 +298,42 @@ public class InviteTeacher extends MyActionBarActivity {
         protected void onPostExecute(Void result) {
             progressBarLayout.setVisibility(View.GONE);
             if(response == 1) {
-                congratsLayout.setVisibility(View.VISIBLE);
+                String text = "You have successfully invited teacher to create a classroom. You will be the first one to know when they come on-board";
+
+                AlertDialog.Builder alert = new AlertDialog.Builder(InviteTeacher.this);
+
+                alert.setTitle("Hurray!");
+
+                LinearLayout layout = new LinearLayout(InviteTeacher.this);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams params =
+                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+                params.setMargins(50,30,50,30);
+
+                final TextView input = new TextView(InviteTeacher.this);
+                input.setText(text);
+                layout.addView(input, params);
+                alert.setView(layout);
+                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        String value = input.getText().toString();
+
+                        Intent intent = new Intent(InviteTeacher.this, MainActivity.class);
+                        startActivity(intent);
+                    }
+                });
+
+//                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int whichButton) {
+//                        dialog.dismiss();
+//                    }
+//                });
+
+                alert.show();
+
+
+
             }
             else{
                 detailsLayout.setVisibility(View.VISIBLE);
@@ -158,4 +342,61 @@ public class InviteTeacher extends MyActionBarActivity {
         }
     }
 
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+
+    private  void setColor(EditText editText)
+    {
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            editText.setBackgroundDrawable( getResources().getDrawable(R.drawable.button_color_boundry) );
+        } else {
+            editText.setBackground( getResources().getDrawable(R.drawable.button_color_boundry));
+        }
+    }
+
+    private  void unSetColor(EditText editText)
+    {
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            editText.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_grey_color) );
+        } else {
+            editText.setBackground( getResources().getDrawable(R.drawable.round_corner_grey_color));
+        }
+    }
+
+
+    private void setButtonColor()
+    {
+        int sdk = android.os.Build.VERSION.SDK_INT;
+
+        if( (schoolFlag && teacherFlag && phoneFlag)  || (schoolFlag && teacherFlag && emailFlag) )
+        {
+
+            if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                submitButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_button_color) );
+            } else {
+                submitButton.setBackground( getResources().getDrawable(R.drawable.round_corner_button_color));
+            }
+        }
+        else
+        {
+            if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                submitButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_light_button_color) );
+            } else {
+                submitButton.setBackground( getResources().getDrawable(R.drawable.round_corner_light_button_color));
+            }
+        }
+    }
 }

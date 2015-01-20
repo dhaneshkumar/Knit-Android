@@ -61,11 +61,15 @@ public class Free extends Fragment {
                 if(role.equals(Constants.TEACHER))
                 {
 
-                    loginlayout.setVisibility(View.GONE);
+                    Intent intent = new Intent(getActivity(), Signup1Class.class);
+                    intent.putExtra("role", Constants.TEACHER);
+                    startActivity(intent);
+
+                  /*  loginlayout.setVisibility(View.GONE);
                     progressLayout.setVisibility(View.VISIBLE);
 
                     GetSchools getSchools = new GetSchools();
-                    getSchools.execute();
+                    getSchools.execute();*/
                 }
                 else
                 {

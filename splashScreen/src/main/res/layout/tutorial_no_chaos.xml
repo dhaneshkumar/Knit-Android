@@ -77,9 +77,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Every announcement is sent to parents's phone.\n They will never miss."
+            android:text="Everyone can only reply via buttons. So you will never lose track of real information."
             android:textColor="@color/white"
-            android:textSize="19sp"
+            android:textSize="18sp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
             android:gravity="center" />

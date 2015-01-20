@@ -56,7 +56,7 @@ public class Outbox extends Fragment {
     public static RecycleAdapter myadapter;
     private RecyclerView outboxListv;
     Queries query;
-    List<ParseObject> groupDetails; // List of group messages
+    public static List<ParseObject> groupDetails; // List of group messages
     Activity myActivity;
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
@@ -112,7 +112,7 @@ public class Outbox extends Fragment {
                 getActivity().setTitle("Classrooms"); //set the title explicitly. o/w it shows partial text
 
                 MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                MainActivity.viewpager.setCurrentItem(2);
+                MainActivity.viewpager.setCurrentItem(0);
             }
         });
 

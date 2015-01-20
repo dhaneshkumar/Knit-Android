@@ -70,6 +70,7 @@
         <activity android:name="trumplabs.schoolapp.InviteTeacher"></activity>
         <activity android:name="tutorial.ParentTutorial"></activity>
         <activity android:name="tutorial.TeacherTutorial"></activity>
+        <activity android:name="additionals.OpenURL"></activity>
 
         <service android:name="com.parse.PushService" />
 

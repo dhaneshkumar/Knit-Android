@@ -15,8 +15,10 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.io.IOException;
 import java.util.List;
 
+import additionals.ReadSchoolFile;
 import baseclasses.MyActionBarActivity;
 import joinclasses.School;
 import library.UtilString;
@@ -50,14 +52,17 @@ public class Signup1Class extends MyActionBarActivity {
        */
 
         //setting adapter to autocomplete textview
-        School school = new School();
       ArrayAdapter adapter;
-      if (school.getSchoolList() != null && school.getSchoolList().size() > 0) {
-        adapter =
-            new ArrayAdapter(this, android.R.layout.simple_list_item_1, school.getSchoolList().toArray());
+          try {
 
-        schoolNameView.setAdapter(adapter);
-      }
+              ReadSchoolFile readSchoolFile = new ReadSchoolFile();
+              adapter =
+                  new ArrayAdapter(this, android.R.layout.simple_list_item_1, readSchoolFile.getSchoolsList().toArray());
+              schoolNameView.setAdapter(adapter);
+          } catch (IOException e) {
+              e.printStackTrace();
+          }
+
     }
 
       //next button click response

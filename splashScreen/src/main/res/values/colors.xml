@@ -13,6 +13,7 @@
     <color name="lightcolor">#4a79d1</color>
     <!-- <color name="buttoncolor">#0082cc</color>-->
     <color name="buttoncolor">#29B6F6</color>
+    <color name="light_button_color">#999999</color>
     <color name="lightbuttoncolor">#33b5e5</color>
     <color name="presscolor">#1c5ed3</color>
     <color name="shadowcolor">#244f9e</color>

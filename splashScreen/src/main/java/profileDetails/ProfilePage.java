@@ -8,6 +8,7 @@ import java.io.RandomAccessFile;
 import java.util.HashMap;
 import java.util.List;
 
+import additionals.ReadSchoolFile;
 import joinclasses.School;
 import library.UtilString;
 import loginpages.Signup1Class;
@@ -22,6 +23,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -41,6 +43,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import baseclasses.MyActionBarActivity;
 
@@ -73,6 +76,16 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
+
+
+
+        try {
+
+            ReadSchoolFile readSchoolFile = new ReadSchoolFile();
+            readSchoolFile.getSchoolsList();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         name_textView = (TextView) findViewById(R.id.name);
         phone_textView = (TextView) findViewById(R.id.phone);
@@ -538,12 +551,16 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 schoolDialog.setView(schoolLayout);
 
                 ArrayAdapter adapter;
-                if (school1.getSchoolList() != null && school1.getSchoolList().size() > 0) {
-                    adapter =
-                            new ArrayAdapter(this, android.R.layout.simple_list_item_1, school1.getSchoolList().toArray());
 
-                    schoolInput.setAdapter(adapter);
-                }
+                    ReadSchoolFile readSchoolFile = new ReadSchoolFile();
+                    try {
+                        adapter =
+                                new ArrayAdapter(this, android.R.layout.simple_list_item_1, readSchoolFile.getSchoolsList().toArray());
+                                schoolInput.setAdapter(adapter);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
 
 
                 //button responses
@@ -648,7 +665,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     public void done(ParseException e) {
                         if (e == null) {
                             Utility
-                                    .toastLong("Password resetting link with reset instruntions was sent to your Email id.");
+                                    .toastLong("Password resetting link with reset instructions was sent to your Email id.");
                             // An email was successfully sent with reset instructions.
                         } else {
                             Utility.toast("Check your Internet connection");

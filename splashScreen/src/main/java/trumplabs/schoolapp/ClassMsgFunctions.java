@@ -28,19 +28,12 @@ public class ClassMsgFunctions {
       }
         else
           data.put("msg", msg);
-      /*  data.put("alert", "Image");
-      else
-        data.put("alert", msg);*/
-      
+
       if (UtilString.isBlank(groupName))
-        data.put("title", "Knit");
+        data.put("groupName", "Knit");
       else
-        data.put("title", groupName);
+        data.put("groupName", groupName);
 
-
-      data.put("flag", attachmentFlag);
-      data.put("sender", sender);
-      data.put("groupName", groupName);
     } catch (JSONException x) {
       throw new RuntimeException("Something wrong with JSON", x);
     }

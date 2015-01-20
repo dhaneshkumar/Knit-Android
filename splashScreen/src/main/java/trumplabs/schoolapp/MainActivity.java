@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -43,9 +44,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     LinearLayout tab1;
     LinearLayout tab2;
     LinearLayout tab3;
-    private ImageView tab1Icon;
-    private ImageView tab2Icon;
-    private ImageView tab3Icon;
+    private TextView tab1Icon;
+    private TextView tab2Icon;
+    private TextView tab3Icon;
     TextView tabcolor;
     LinearLayout.LayoutParams params;
     int screenwidth;
@@ -66,9 +67,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); //setting animation
         ParseUser parseObject = ParseUser.getCurrentUser();
 
+
+
         //check for current user loggedin
         if (parseObject == null)
             Utility.logout();
+
 
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         editLayout = (LinearLayout) findViewById(R.id.editLayout);
@@ -102,9 +106,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         tab2 = (LinearLayout) findViewById(R.id.tab2);
         tab3 = (LinearLayout) findViewById(R.id.tab3);
         tabcolor = (TextView) findViewById(R.id.tabcolor);
-        tab1Icon = (ImageView) findViewById(R.id.tab1Icon);
-        tab2Icon = (ImageView) findViewById(R.id.tab2Icon);
-        tab3Icon = (ImageView) findViewById(R.id.tab3Icon);
+        tab1Icon = (TextView) findViewById(R.id.tab1Icon);
+        tab2Icon = (TextView) findViewById(R.id.tab2Icon);
+        tab3Icon = (TextView) findViewById(R.id.tab3Icon);
+
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
+        tab1Icon.setTypeface(typeFace);
+        tab2Icon.setTypeface(typeFace);
+        tab3Icon.setTypeface(typeFace);
 
         // setting layout params for tab color
         params = (LinearLayout.LayoutParams) tabcolor.getLayoutParams();
@@ -133,7 +142,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             @Override
             public void onClick(View v) {
-                highLightOutbox();
+                highLightClassrooms();
                 viewpager.setCurrentItem(0);
             }
         });
@@ -141,7 +150,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             @Override
             public void onClick(View v) {
-                highLightInbox();
+                highLightOutbox();
                 viewpager.setCurrentItem(1);
             }
         });
@@ -150,7 +159,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             @Override
             public void onClick(View v) {
-                highLightClassrooms();
+                highLightInbox();
                 viewpager.setCurrentItem(2);
             }
         });
@@ -162,7 +171,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         } else {
             LinearLayout parentLayout = (LinearLayout) findViewById(R.id.tabviewer);
             parentLayout.setVisibility(View.GONE);
-            actionbar.setTitle("Inbox");
+            //actionbar.setTitle("Inbox");
             // params.width = screenwidth;
         }
         params.setMargins(0, 0, 0, 0);
@@ -183,22 +192,23 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 scrolling from one tab to other
                  */
                 if (position == 0) {
-                    setTitle("Outbox");
+                   // setTitle("Outbox");
                     params.setMargins(positionOffsetPixels / 3, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                     tabcolor.setLayoutParams(params);
-                    highLightOutbox();
+                    highLightClassrooms();
                 } else if (position == 1) {
-                    setTitle("Inbox");
+                    //setTitle("Inbox");
 
                     params.setMargins((screenwidth / 3) + (positionOffsetPixels / 3), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                     tabcolor.setLayoutParams(params);
 
-                    highLightInbox();
+                    highLightOutbox();
+
                 } else {
-                    setTitle("Classrooms");
+                    //setTitle("Classrooms");
                     params.setMargins((2 * screenwidth / 3), 0, 0, 0);
                     tabcolor.setLayoutParams(params);
-                    highLightClassrooms();
+                    highLightInbox();
                 }
             }
 
@@ -284,13 +294,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             if (role.equals("teacher")) {
                 switch (arg0) {
                     case 0:
-                        fragment = new Outbox();
+                        fragment = new Classrooms();
                         break;
                     case 1:
-                        fragment = new Messages();
+                        fragment = new Outbox();
                         break;
                     case 2:
-                        fragment = new Classrooms();
+                        fragment = new Messages();
                         break;
                     default:
                         break;
@@ -351,22 +361,22 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     //highlight outbox icon
     private void highLightOutbox() {
-        tab1Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox));
-        tab2Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.inbox_grey));
-        tab3Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.classroom_grey));
+        tab2Icon.setTextColor(getResources().getColor(R.color.buttoncolor));
+        tab1Icon.setTextColor(getResources().getColor(R.color.light_button_color));
+        tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 
     //highlight inbox icon
     private void highLightInbox() {
-        tab1Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_grey));
-        tab2Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.inbox));
-        tab3Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.classroom_grey));
+        tab3Icon.setTextColor(getResources().getColor(R.color.buttoncolor));
+        tab1Icon.setTextColor(getResources().getColor(R.color.light_button_color));
+        tab2Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 
     //highlight classroom icon
     private void highLightClassrooms() {
-        tab1Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_grey));
-        tab2Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.inbox_grey));
-        tab3Icon.setBackgroundDrawable(getResources().getDrawable(R.drawable.classroom));
+        tab1Icon.setTextColor(getResources().getColor(R.color.buttoncolor));
+        tab2Icon.setTextColor(getResources().getColor(R.color.light_button_color));
+        tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 }

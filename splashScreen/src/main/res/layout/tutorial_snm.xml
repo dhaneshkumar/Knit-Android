@@ -22,14 +22,13 @@
             android:text="" />
 
         <TextView
-            android:id="@+id/heading_oneway"
+            android:id="@+id/heading_nm"
             android:layout_width="wrap_content"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:textSize="32sp"
             android:textColor="@color/black"
-            android:text="One Way" />
-
+            android:text="Never miss" />
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="0dp"
@@ -37,7 +36,6 @@
             android:textSize="32sp"
             android:textColor="@color/black"
             android:text="" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -50,7 +48,7 @@
         <ImageView
             android:layout_width="192dp"
             android:layout_height="192dp"
-            android:background="@drawable/oneway" />
+            android:background="@drawable/nm" />
     </LinearLayout>
 
     <LinearLayout
@@ -63,7 +61,7 @@
         <ImageView
             android:layout_width="@dimen/dots_width"
             android:layout_height="@dimen/dots_height"
-            android:background="@drawable/dots1" />
+            android:background="@drawable/dots3" />
     </LinearLayout>
 
     <LinearLayout
@@ -76,7 +74,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="To ensure that you are not spammed with replies we have kept messages one-way only"
+            android:text="Forgot about assignment deadline? \n Don’t worry, Knit is all- mobile. \n You will never miss."
             android:textColor="@color/white"
             android:textSize="18sp"
             android:paddingLeft="16dp"

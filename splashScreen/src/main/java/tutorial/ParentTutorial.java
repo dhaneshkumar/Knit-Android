@@ -8,15 +8,19 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 
+import com.parse.ParseUser;
+
 import trumplab.textslate.R;
 import trumplabs.schoolapp.ClassMembers;
 import trumplabs.schoolapp.ClassMsg;
+import trumplabs.schoolapp.Constants;
 
 /**
  * Created by Dhanesh on 1/17/2015.
  */
 public class ParentTutorial extends ActionBarActivity{
     ViewPager viewpager;
+    String role;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +32,10 @@ public class ParentTutorial extends ActionBarActivity{
 
         getSupportActionBar().hide();
         viewpager.setAdapter(new MyAdapter(getSupportFragmentManager()));
+
+        role = getIntent().getExtras().getString(Constants.ROLE);
+
+
 
     }
 
@@ -50,7 +58,11 @@ public class ParentTutorial extends ActionBarActivity{
                     fragment = new NoChaos();
                     break;
                 case 2:
-                    fragment = new NM();
+
+                    if(role.equals(Constants.PARENT))
+                        fragment = new NM();
+                    else
+                        fragment = new SNM();
                     break;
                 case 3:
                     fragment = new Free();

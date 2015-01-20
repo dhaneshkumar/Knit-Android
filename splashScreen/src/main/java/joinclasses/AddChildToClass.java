@@ -378,9 +378,6 @@ public class AddChildToClass extends MyActionBarActivity {
                     JSONObject data = new JSONObject();
                     try {
                         data.put("msg", utility.Config.welcomeMsg);
-                        data.put("title", grpName);
-                        data.put("flag", 0);
-                        data.put("sender", a.getString("Creator"));
                         data.put("groupName", grpName);
                         push.setData(data);
                         push.sendInBackground();
