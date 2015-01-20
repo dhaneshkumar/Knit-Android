@@ -1,9 +1,11 @@
 package utility;
 
+import additionals.InviteParents;
 import additionals.OpenURL;
 import notifications.AlarmReceiver;
 import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
+import trumplabs.schoolapp.ClassMsg;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
@@ -40,6 +42,14 @@ public class PushOpen extends ActionBarActivity {
         if (type.equals(Constants.TRANSITION_NOTIFICATION)) {
             if(action.equals(Constants.INVITE_TEACHER_ACTION)){
                 i = new Intent(this, InviteTeacher.class);
+            }
+            else if(action.equals(Constants.INVITE_PARENT_ACTION)){
+                i = new Intent(this, InviteParents.class);
+                ClassMsg.groupCode = getIntent().getExtras().getString("grpCode", null);
+                ClassMsg.grpName = getIntent().getExtras().getString("grpName", null);
+                if(ClassMsg.groupCode == null || ClassMsg.grpName == null){ //if null, then just go to main activity
+                    i = new Intent(this, MainActivity.class); //go to main activity
+                }
             }
             else if(action.equals(Constants.CLASSROOMS_ACTION)){
                 i = new Intent(this, MainActivity.class);

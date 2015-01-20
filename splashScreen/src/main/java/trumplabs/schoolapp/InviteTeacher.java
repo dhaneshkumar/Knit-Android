@@ -100,7 +100,19 @@ public class InviteTeacher extends MyActionBarActivity {
                 }
             }
         });
-    };
+    }
+
+    @Override
+    public void onBackPressed() {
+        //check if at root (i.e is the only activity in activity stack)
+        if (isTaskRoot()) {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        } else {
+            super.onBackPressed();
+            // This activity isn't at root of task, so just finish()
+        }
+    }
 
 
     public class InviteTeacherTask extends AsyncTask<Void, Void, Void>{

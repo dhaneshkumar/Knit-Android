@@ -2,6 +2,7 @@ package notifications;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
@@ -41,11 +42,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     static String teacherConfusingMsgEvent = "teacher_confusing_msg"; //+ <MSG_OBJECT_ID> more than 5 confusing
 
     //messages for different events
-    static String parentNoActivityContent = "Invite teacher. You seem not to have joined any classes";
-    static String teacherNoActivityContent = "Please create a class and invite parents";
-    static String teacherNoSubContent = "You don't have any subscribers yet for class. Please invite parents onboard to class";
+    static String parentNoActivityContent = "You have not joined any classes yet. If you don't have a code, you can invite a teacher";
+    static String teacherNoActivityContent = "You haven't created any classes yet. Please create a class and invite parents";
+    static String teacherNoSubContent = "You don't have any subscribers yet for class. Please invite parents onboard to class ";
     static String teacherNoMsgContent = "You haven't sent any messages yet to class ";
-    static String teacherConfusingMsgContent = /* <confused_count> + */ " parents seem to be confused regarding your post of class "; // [class name]
+    static String teacherConfusingMsgContent = /* <confused_count> + */ " parents seem to be confused regarding your recent post in class "; // [class name]
 
 
     //time interval before event is supposed to occur
@@ -255,7 +256,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     className = groupCode;
                 }
 
-                NotificationGenerator.generateNotification(alarmContext, teacherNoSubContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
+                Bundle extras = new Bundle();
+                extras.putString("grpCode", groupCode);
+                extras.putString("grpName", classroom.getString("name"));
+
+                NotificationGenerator.generateNotification(alarmContext, teacherNoSubContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
                 generateLocalMessage(teacherNoSubContent + className, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);

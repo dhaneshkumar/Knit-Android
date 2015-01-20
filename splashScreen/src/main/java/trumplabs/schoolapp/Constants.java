@@ -86,8 +86,11 @@ public class Constants {
 
     //Notification actions
     public static String INBOX_ACTION = "INBOX"; //for normal notification
+
     public static String INVITE_TEACHER_ACTION = "INVITE_TEACHER"; //e.g for transition notification
-    public static String CLASSROOMS_ACTION = "CLASSROOMS";
+    public static String CLASSROOMS_ACTION = "CLASSROOMS"; //e.g for transition notification
+    public static String INVITE_PARENT_ACTION = "INVITE_PARENT"; //e.g for transition notification
+
     public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
     //Note : action corresponding to LINK type will be a url
 

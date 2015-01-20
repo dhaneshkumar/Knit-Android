@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
@@ -43,14 +44,15 @@ public class NotificationGenerator {
     public static int count = 0;
     private NotificationManager notificationManager;
 
-
-
-    public static void generateNotification(Context context, String contentText,String groupName){
-        generateNotification(context, contentText, groupName, null, null);
+    //without extras
+    public static void generateNotification(Context context, String contentText,String groupName,
+                                            String type, String action){
+        generateNotification(context, contentText, groupName, type, action, null);
     }
 
+    //with extra
     public static void generateNotification(Context context, String contentText,String groupName,
-                                            String type, String action) {
+                                            String type, String action, Bundle extras) {
 
         NotificationEntity notEntity = new NotificationEntity(contentText, groupName, type, action);
 
@@ -132,7 +134,22 @@ public class NotificationGenerator {
 
             //add actions
             mBuilder.addAction(R.drawable.tick, "DISMISS", deletePendingIntent);
-            mBuilder.addAction(R.drawable.social_send_now, "ACT", clickPendingIntent);
+            if(notEntity.action.equals(Constants.INVITE_TEACHER_ACTION)){
+                mBuilder.addAction(R.drawable.social_send_now, "INVITE", clickPendingIntent);
+            }
+            else if(notEntity.action.equals(Constants.CLASSROOMS_ACTION)){
+                mBuilder.addAction(R.drawable.social_send_now, "OPEN", clickPendingIntent);
+            }
+            else if(notEntity.action.equals(Constants.INVITE_PARENT_ACTION)){
+                Log.d("DEBUG_NOTIFICATION_GEN", "invite parent action");
+                if(extras != null){
+                    clickIntent.putExtra("grpCode", extras.getString("grpCode"));
+                    clickIntent.putExtra("grpName", extras.getString("grpName"));
+                    PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    mBuilder.setContentIntent(overrideClickPendingIntent);
+                    mBuilder.addAction(R.drawable.social_send_now, "INVITE", overrideClickPendingIntent);
+                }
+            }
 
             notificationManager.notify(TRANSITION_NOTIFICATION_ID, mBuilder.build());
         }
