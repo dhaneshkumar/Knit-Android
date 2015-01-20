@@ -13,10 +13,14 @@ import com.parse.ParseUser;
 import java.util.Date;
 import java.util.List;
 
+import BackGroundProcesses.SeenHandler;
+import BackGroundProcesses.SyncMessageDetails;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.Messages;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
+import utility.Utility;
 
 /**
  * Created by ashish on 18/1/15.
@@ -25,24 +29,24 @@ import utility.SessionManager;
 public class AlarmReceiver extends WakefulBroadcastReceiver {
     SessionManager session;
 
+    static long teacherConfusingMsgThreshold = 5; //how may confused_count to call a post confusing(greater than or equal to)
+    static int teacherConfusingMsgScanCount = 1; //how many messages to look in each classroom for confusing event
+
     //event name for different events
     //event id will be <username> + "-" + eventname(above)
     static String parentNoActivityEvent = "parent_no_activity"; //2 hours since signup
     static String teacherNoActivityEvent = "teacher_no_activity"; // 1 hour since signup
     static String teacherNoSubEvent = "teacher_no_sub" ; // + <CLASSID> no subscribers 3 days
     static String teacherNoMsgEvent = "teacher_no_msg"; // + <CLASSID> no message 5 days
-
-    //notification ids for different events. NOT USED CURRENTLY
-    static int parentNoActivityId = 100;
-    static int teacherNoActivityId = 101;
-    static int teacherNoSubId = 102;
-    static int teacherNoMsgId = 103;
+    static String teacherConfusingMsgEvent = "teacher_confusing_msg"; //+ <MSG_OBJECT_ID> more than 5 confusing
 
     //messages for different events
     static String parentNoActivityContent = "Invite teacher. You seem not to have joined any classes";
     static String teacherNoActivityContent = "Please create a class and invite parents";
     static String teacherNoSubContent = "You don't have any subscribers yet for class. Please invite parents onboard to class";
     static String teacherNoMsgContent = "You haven't sent any messages yet to class ";
+    static String teacherConfusingMsgContent = /* <confused_count> + */ " parents seem to be confused regarding your post of class "; // [class name]
+
 
     //time interval before event is supposed to occur
     static long parentNoActivityInterval = 2 * Constants.MINUTE_MILLISEC;
@@ -62,18 +66,29 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.d("DEBUG_ALARM_RECEIVER", "onReceive");
+        Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning a thread for handling events");
         alarmContext = context;
 
         user = ParseUser.getCurrentUser();
         if(user == null) return;
 
-        session = new SessionManager(context);
+        Runnable r = new Runnable() {
+            @Override
+            public void run(){
+                checkForEvents();
+            }
+        };
 
-        checkForEvents();
+        Thread t = new Thread(r);
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.start();
     }
 
     public void checkForEvents(){
+
+        session = new SessionManager(alarmContext);
+        Utility.updateCurrentTime(user, session);
+
         if(user.getString("role").equalsIgnoreCase("parent")){
             parentNoActivity();
         }
@@ -81,6 +96,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             teacherNoActivity();
             teacherNoSub();
             teacherNoMsg();
+            teacherConfusingMessage();
         }
     }
 
@@ -115,7 +131,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > parentNoActivityInterval){
-            NotificationGenerator.generateNotification(alarmContext, parentNoActivityContent , Constants.DEFAULT_NAME);
+            NotificationGenerator.generateNotification(alarmContext, parentNoActivityContent , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
 
             generateLocalMessage(parentNoActivityContent, Config.defaultParentGroupCode);
 
@@ -156,7 +172,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > teacherNoActivityInterval){
-            NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME);
+            NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
             generateLocalMessage(teacherNoActivityContent, Constants.DEFAULT_NAME);
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
@@ -168,13 +184,16 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
         if(createdGroups == null || createdGroups.size() == 0) return;
 
+        Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() created groups size" + createdGroups.size());
+
         for(int i=0; i<createdGroups.size(); i++){
             List<String> group = createdGroups.get(i);
             String groupCode = group.get(0); //0 is code
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() entered  *" + groupCode + "*");
             String eventid = user.getUsername() + "-" + teacherNoSubEvent + "-" + groupCode;
             if(session.getAlarmEventState(eventid)) {
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " already happened");
-                return; //we're done
+                continue; //we're done
             }
 
 
@@ -184,13 +203,16 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
             catch (ParseException e){
                 e.printStackTrace();
-                return; //can't proceed further
+                Log.d("DEBUG_ALARM_RECEIVER", "exception getting count " + memberCount);
+                continue; //can't proceed further
             }
+
+            Log.d("DEBUG_ALARM_RECEIVER", "member count " + memberCount);
 
             if(memberCount > 0) {
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +" already has subscribers");
                 session.setAlarmEventState(eventid, true);
-                return;
+                continue;
             }
 
             ParseObject classroom = null;
@@ -199,12 +221,18 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
             catch (ParseException e){
                 e.printStackTrace();
-                return; //can't proceed
+                Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() exception");
+                continue; //can't proceed
             }
-            if(classroom == null) return;
+            if(classroom == null) {
+                Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"classroom is null without exception");
+                continue;
+            }
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"1 already has subscribers");
 
             Date classCreationTime = classroom.getCreatedAt();
-            if(classCreationTime == null) return;
+            if(classCreationTime == null) continue;
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"2 already has subscribers");
 
             Date now = null;
             try{
@@ -212,9 +240,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
             catch (java.text.ParseException e){
                 e.printStackTrace();
-                return; //can't proceed further
+                continue; //can't proceed further
             }
-            if(now == null) return;
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"3 already has subscribers");
+            if(now == null) continue;
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"4 already has subscribers");
 
             Long interval = now.getTime() - classCreationTime.getTime();
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
@@ -225,7 +255,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     className = groupCode;
                 }
 
-                NotificationGenerator.generateNotification(alarmContext, teacherNoSubContent + className, Constants.DEFAULT_NAME);
+                NotificationGenerator.generateNotification(alarmContext, teacherNoSubContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
                 generateLocalMessage(teacherNoSubContent + className, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
@@ -238,13 +268,15 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
         if(createdGroups == null || createdGroups.size() == 0) return;
 
+        Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() created groups size" + createdGroups.size());
+
         for(int i=0; i<createdGroups.size(); i++){
             List<String> group = createdGroups.get(i);
             String groupCode = group.get(0); //0 is code
             String eventid = user.getUsername() + "-" + teacherNoMsgEvent + "-" + groupCode;
             if(session.getAlarmEventState(eventid)) {
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " already happened");
-                return; //we're done
+                continue; //we're done
             }
 
 
@@ -261,12 +293,13 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
             catch (ParseException e){
                 e.printStackTrace();
+                continue;
             }
 
             if(numMessagesSent > 0){
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid  +" already has sent messages");
                 session.setAlarmEventState(eventid, true);
-                return;
+                continue;
             }
 
             ParseObject classroom = null;
@@ -275,12 +308,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
             catch (ParseException e){
                 e.printStackTrace();
-                return; //can't proceed
+                continue; //can't proceed
             }
-            if(classroom == null) return;
+            if(classroom == null) continue;
 
             Date classCreationTime = classroom.getCreatedAt();
-            if(classCreationTime == null) return;
+            if(classCreationTime == null) continue;
 
             Date now = null;
             try{
@@ -288,9 +321,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             }
             catch (java.text.ParseException e){
                 e.printStackTrace();
-                return; //can't proceed further
+                continue; //can't proceed further
             }
-            if(now == null) return;
+            if(now == null) continue;
 
             Long interval = now.getTime() - classCreationTime.getTime();
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
@@ -301,10 +334,62 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                     className = groupCode;
                 }
 
-                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className, Constants.DEFAULT_NAME);
+                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
                 generateLocalMessage(teacherNoMsgContent + className, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
+            }
+        }
+    }
+
+    //A latest message in any of the classrooms have confused count >=
+    public void teacherConfusingMessage(){
+        List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+        if(createdGroups == null || createdGroups.size() == 0) return;
+
+        for(int i=0; i<createdGroups.size(); i++){
+            List<String> group = createdGroups.get(i);
+            String groupCode = group.get(0); //0 is code
+
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+            query.fromLocalDatastore();
+            query.orderByDescending("creationTime");
+            query.whereEqualTo("userId", user.getUsername());
+            query.whereEqualTo("code", groupCode);
+            query.setLimit(teacherConfusingMsgScanCount); //We will monitor just these many messages
+
+            List<ParseObject> outMessages = null;
+            try{
+                outMessages = query.find();
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+                continue;
+            }
+
+            if(outMessages == null || outMessages.size() ==0){
+                continue;
+            }
+
+
+            for(int m=0; m<teacherConfusingMsgScanCount; m++){
+                ParseObject msg = outMessages.get(m);
+                String eventid = user.getUsername() + "-" + teacherConfusingMsgEvent + "-" + msg.getString("objectId");
+                if(session.getAlarmEventState(eventid)) {
+                    Log.d("DEBUG_ALARM_RECEIVER", "teacherConfusingMessage() " + eventid + " already happened");
+                    continue; //we're done
+                }
+
+                int confusedCount = Utility.nonNegative(msg.getInt(Constants.CONFUSED_COUNT));
+                Log.d("DEBUG_ALARM_RECEIVER", "teacherConfusingMessage() " + eventid + " confused_count " + confusedCount);
+                if(confusedCount >= teacherConfusingMsgThreshold){
+                    String notificationMessage = confusedCount + teacherConfusingMsgContent + msg.getString("name");
+
+                    NotificationGenerator.generateNotification(alarmContext, notificationMessage, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
+                    generateLocalMessage(notificationMessage, Constants.DEFAULT_NAME);
+                    Log.d("DEBUG_ALARM_RECEIVER", "teacherConfusingMessage() " + eventid + " state changed to true");
+                    session.setAlarmEventState(eventid, true);
+                }
             }
         }
     }

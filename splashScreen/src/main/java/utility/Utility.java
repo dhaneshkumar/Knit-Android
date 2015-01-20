@@ -15,11 +15,13 @@ import java.util.Random;
 
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
+import com.parse.SaveCallback;
 
 import library.UtilString;
 import loginpages.LoginPage;
 
 import loginpages.Signup;
+import notifications.AlarmTrigger;
 import trumplabs.schoolapp.Application;
 import trumplab.textslate.R;
 
@@ -63,6 +65,9 @@ public class Utility extends MyActionBarActivity {
         Context _context = Application.getAppContext();
         // After logout redirect user to Loing Activity
 
+        //cancel all alarms set for notification checking. Very first thing to do
+        AlarmTrigger.cancelAlarm(_context);
+
         SessionManager session = new SessionManager(Application.getAppContext());
         session.reSetAppOpeningCount();
         session.reSetSignUpAccount();
@@ -83,6 +88,7 @@ public class Utility extends MyActionBarActivity {
         List<List<String>> joinedGroups = new ArrayList<List<String>>();
         pi.put("channels", joinedGroups);
         pi.saveInBackground();
+
 
         // Staring Login Activity
         _context.startActivity(i);
@@ -433,5 +439,18 @@ public class Utility extends MyActionBarActivity {
         if(x < 0) return 0;
         return x;
     }
+
+    public static void updateCurrentTime(ParseUser freshUser, SessionManager session){
+        freshUser.put("test", true);
+        try{
+            freshUser.save();
+            Date currentDate = freshUser.getUpdatedAt();
+            session.setCurrentTime(currentDate);
+        }
+        catch (com.parse.ParseException e){
+
+        }
+    }
+
 
 }

@@ -16,6 +16,8 @@ import trumplabs.schoolapp.Constants;
 public class AlarmTrigger {
     static int ALARM_ID = 1; //this is the id for all alarms triggered
 
+    static int INTERVAL = 2 * Constants.MINUTE_MILLISEC;
+
     public static void triggerAlarm(Context context){
 
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -24,8 +26,19 @@ public class AlarmTrigger {
         PendingIntent sender = PendingIntent.getBroadcast(context, ALARM_ID , intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         Calendar cal = Calendar.getInstance();
-		am.setRepeating(AlarmManager.RTC_WAKEUP,cal.getTimeInMillis()+ 2*Constants.MINUTE_MILLISEC,
-                2 * Constants.MINUTE_MILLISEC, sender);
+		am.setRepeating(AlarmManager.RTC_WAKEUP,cal.getTimeInMillis()+ INTERVAL/5,
+                INTERVAL, sender);
         Log.d("DEBUG_ALARM_GENERATOR",  "Scheduling after every 2 minutes");
+    }
+
+    public static void cancelAlarm(Context context){
+
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, AlarmReceiver.class);
+
+        PendingIntent sender = PendingIntent.getBroadcast(context, ALARM_ID , intent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+        am.cancel(sender);
+        Log.d("DEBUG_ALARM_GENERATOR",  "Cancelled all alarms");
     }
 }

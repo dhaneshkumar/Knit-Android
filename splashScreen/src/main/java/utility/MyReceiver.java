@@ -37,11 +37,20 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
 
             if(jsonData != null) {
                 JSONObject json = new JSONObject(jsonData);
-                String contenttext = json.getString("msg");
+                String contentText = json.getString("msg");
 
-                String groupname = json.getString("groupName");
+                String groupName = json.getString("groupName");
+                String type = null;
+                String action = null;
 
-                NotificationGenerator.generateNotification(context, contenttext, groupname);
+                if(json.has("type")){
+                    type = json.getString("type");
+                }
+                if(json.has("action")){
+                    action = json.getString("action");
+                }
+
+                NotificationGenerator.generateNotification(context, contentText, groupName, type, action);
             }
 
         } catch (JSONException e) {

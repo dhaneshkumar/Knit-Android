@@ -279,6 +279,26 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         faq.setOnClickListener(this);
         feedback.setOnClickListener(this);
         signOut.setOnClickListener(this);
+
+        //following handles update app action from profile page
+        if(getIntent().hasExtra("action")){
+            if(getIntent().getStringExtra("action").equals(Constants.PROFILE_PAGE_ACTION)){
+                //go to market
+                Uri uri = Uri.parse("market://details?id=" + getPackageName());
+                Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+                if (Utility.isInternetOn(this)) {
+                    try {
+                        startActivity(myAppLinkToMarket);
+                    } catch (ActivityNotFoundException e) {
+                    }
+                } else {
+                    Utility.toast("Check your Internet Connection.");
+
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
+        }
     }
 
 

@@ -78,4 +78,17 @@ public class Constants {
     public static String DEFAULT_SENDER_ID = "knit@trumplab.com";
     public static String DEFAULT_NAME = "Knit Updates";
 
+    //Notification types
+    public static String NORMAL_NOTIFICATION = "NORMAL";
+    public static String TRANSITION_NOTIFICATION = "TRANSITION";
+    public static String UPDATE_NOTIFICATION = "UPDATE";
+    public static String LINK_NOTIFICATION = "LINK";
+
+    //Notification actions
+    public static String INBOX_ACTION = "INBOX"; //for normal notification
+    public static String INVITE_TEACHER_ACTION = "INVITE_TEACHER"; //e.g for transition notification
+    public static String CLASSROOMS_ACTION = "CLASSROOMS";
+    public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
+    //Note : action corresponding to LINK type will be a url
+
 }

@@ -30,6 +30,7 @@ import BackGroundProcesses.Refresher;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassesContainer;
+import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.SessionManager;
@@ -209,8 +210,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         });
 
-        //dummy alarm schedule
         AlarmTrigger.triggerAlarm(getApplicationContext());
+
+        //testing different notification types generators
+//        NotificationGenerator.generateNotification(getApplicationContext(), "invite teacher" ,
+//                Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
+//        NotificationGenerator.generateNotification(getApplicationContext(), "create class",
+//                Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
+//        NotificationGenerator.generateNotification(getApplicationContext(), "testing normal inbox notification" ,
+//                Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//        NotificationGenerator.generateNotification(getApplicationContext(), "testing normal inbox notification" ,
+//                Constants.DEFAULT_NAME , Constants.UPDATE_NOTIFICATION, Constants.PROFILE_PAGE_ACTION);
+//        NotificationGenerator.generateNotification(getApplicationContext(), "testing normal inbox notification",
+//        Constants.DEFAULT_NAME , Constants.LINK_NOTIFICATION, "http://knitapp.co.in/");
+
+
     }
 
     @Override
