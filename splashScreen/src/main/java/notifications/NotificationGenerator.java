@@ -106,8 +106,8 @@ public class NotificationGenerator {
                 mBuilder.setStyle(bigTextStyle);
 
                 //add actions
-                mBuilder.addAction(R.drawable.tick, "DISMISS", deletePendingIntent);
-                mBuilder.addAction(R.drawable.social_send_now, "INBOX", clickPendingIntent);
+                mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
+                mBuilder.addAction(R.drawable.fwd, "INBOX", clickPendingIntent);
             }
             else{
                 NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
@@ -133,12 +133,12 @@ public class NotificationGenerator {
             mBuilder.setStyle(bigTextStyle);
 
             //add actions
-            mBuilder.addAction(R.drawable.tick, "DISMISS", deletePendingIntent);
+            mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
             if(notEntity.action.equals(Constants.INVITE_TEACHER_ACTION)){
-                mBuilder.addAction(R.drawable.social_send_now, "INVITE", clickPendingIntent);
+                mBuilder.addAction(R.drawable.fwd, "INVITE", clickPendingIntent);
             }
             else if(notEntity.action.equals(Constants.CLASSROOMS_ACTION)){
-                mBuilder.addAction(R.drawable.social_send_now, "OPEN", clickPendingIntent);
+                mBuilder.addAction(R.drawable.fwd, "OPEN", clickPendingIntent);
             }
             else if(notEntity.action.equals(Constants.INVITE_PARENT_ACTION)){
                 Log.d("DEBUG_NOTIFICATION_GEN", "invite parent action");
@@ -147,7 +147,7 @@ public class NotificationGenerator {
                     clickIntent.putExtra("grpName", extras.getString("grpName"));
                     PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                     mBuilder.setContentIntent(overrideClickPendingIntent);
-                    mBuilder.addAction(R.drawable.social_send_now, "INVITE", overrideClickPendingIntent);
+                    mBuilder.addAction(R.drawable.fwd, "INVITE", overrideClickPendingIntent);
                 }
             }
 
@@ -165,8 +165,8 @@ public class NotificationGenerator {
             mBuilder.setStyle(bigTextStyle);
 
             //add actions
-            mBuilder.addAction(R.drawable.tick, "DISMISS", deletePendingIntent);
-            mBuilder.addAction(R.drawable.social_send_now, "UPDATE NOW", clickPendingIntent);
+            mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
+            mBuilder.addAction(R.drawable.update, "UPDATE NOW", clickPendingIntent);
 
             notificationManager.notify(UPDATE_NOTIFICATION_ID, mBuilder.build());
         }
@@ -182,8 +182,8 @@ public class NotificationGenerator {
             mBuilder.setStyle(bigTextStyle);
 
             //add actions
-            mBuilder.addAction(R.drawable.tick, "DISMISS", deletePendingIntent);
-            mBuilder.addAction(R.drawable.social_send_now, "VISIT", clickPendingIntent);
+            mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
+            mBuilder.addAction(R.drawable.update, "VISIT", clickPendingIntent);
 
             notificationManager.notify(LINK_NOTIFICATION_ID, mBuilder.build());
         }

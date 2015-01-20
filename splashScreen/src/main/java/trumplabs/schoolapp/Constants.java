@@ -74,8 +74,10 @@ public class Constants {
     public static int DAY_MILLISEC = 24 * 60 * 60 * 1000;
 
     //Default messages details
-    public static String DEFAULT_CREATOR = "Knit Team";
-    public static String DEFAULT_SENDER_ID = "knit@trumplab.com";
+    public static String DEFAULT_CREATOR = "Mr Kio";
+    public static String DEFAULT_SENDER_ID_TEACHER = "ttextslate@trumplab.com";
+    public static String DEFAULT_SENDER_ID_PARENT = "ptextslate@trumplab.com";
+
     public static String DEFAULT_NAME = "Knit Updates";
 
     //Notification types

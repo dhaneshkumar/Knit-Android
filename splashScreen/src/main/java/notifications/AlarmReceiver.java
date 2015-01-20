@@ -462,7 +462,13 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         localMsg.put("name", Constants.DEFAULT_NAME);
         localMsg.put("title", content);
         localMsg.put("userId", user.getUsername());
-        localMsg.put("senderId", Constants.DEFAULT_SENDER_ID);
+
+        if(user.getString("role").equals("teacher")){
+            localMsg.put("senderId", Constants.DEFAULT_SENDER_ID_TEACHER);
+        }
+        else{ //students/parents
+            localMsg.put("senderId", Constants.DEFAULT_SENDER_ID_PARENT);
+        }
 
         try{
             localMsg.put("creationTime", session.getCurrentTime());
