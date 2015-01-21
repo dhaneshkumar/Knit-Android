@@ -78,6 +78,15 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
+        queryLocal.fromLocalDatastore();
+        queryLocal.whereEqualTo("userId", user.getUsername());
+        try {
+            Messages.totalInboxMessages += queryLocal.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
     }
       else
         Utility.logout();

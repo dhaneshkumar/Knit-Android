@@ -104,6 +104,8 @@
                 <action android:name="NOTIFICATION_DELETED" />
             </intent-filter>
         </receiver>
+        <receiver android:name="notifications.AlarmReceiver" >
+        </receiver>
     </application>
 
 </manifest>

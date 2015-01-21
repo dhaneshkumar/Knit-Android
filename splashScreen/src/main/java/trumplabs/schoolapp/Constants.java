@@ -67,4 +67,37 @@ public class Constants {
 
     //group members
     public static final String GROUP_MEMBERS = "GroupMembers";
+
+    //time milliseconds
+    public static int MINUTE_MILLISEC = 60 * 1000;
+    public static int HOUR_MILLISEC = 60 * 60 * 1000;
+    public static int DAY_MILLISEC = 24 * 60 * 60 * 1000;
+
+    //Default messages details
+    public static String DEFAULT_CREATOR = "Mr Kio";
+    public static String DEFAULT_SENDER_ID_TEACHER = "ttextslate@trumplab.com";
+    public static String DEFAULT_SENDER_ID_PARENT = "ptextslate@trumplab.com";
+
+    public static String DEFAULT_NAME = "Mr Kio";
+
+    public static String WELCOME_MESSAGE_TEACHER = "Hey there! Welcome to my classroom.You can also create your own classroom and start broadcasting messages to all the parents. Don’t forget to share code of your classroom with parents. Without code how will they subscribe to your classroom?";
+    public static String WELCOME_MESSAGE_PARENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your students’ teacher but you will need a class-code. If your students’ teacher haven’t yet started using Knit then invite them";
+    public static String CLASS_CREATION_MESSAGE_TEACHER = "Ola! Your classroom created successfully. Did you know that parents who don’t use android phone can also subscribe to your updates. They just have to send your classroom-code to our number 9243000080. FYI I have already sent you an e-mail to help you with inviting parents";
+
+    //Notification types
+    public static String NORMAL_NOTIFICATION = "NORMAL";
+    public static String TRANSITION_NOTIFICATION = "TRANSITION";
+    public static String UPDATE_NOTIFICATION = "UPDATE";
+    public static String LINK_NOTIFICATION = "LINK";
+
+    //Notification actions
+    public static String INBOX_ACTION = "INBOX"; //for normal notification
+
+    public static String INVITE_TEACHER_ACTION = "INVITE_TEACHER"; //e.g for transition notification
+    public static String CLASSROOMS_ACTION = "CLASSROOMS"; //e.g for transition notification
+    public static String INVITE_PARENT_ACTION = "INVITE_PARENT"; //e.g for transition notification
+
+    public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
+    //Note : action corresponding to LINK type will be a url
+
 }

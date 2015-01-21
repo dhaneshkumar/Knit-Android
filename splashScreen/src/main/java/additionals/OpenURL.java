@@ -30,7 +30,7 @@ public class OpenURL extends ActionBarActivity {
 
         WebView webView = (WebView) findViewById(R.id.webView);
 
-        Uri uri = Uri.parse("market://details?id=" + getPackageName());
+        /*Uri uri = Uri.parse("market://details?id=" + getPackageName());
         Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
 
         if (Utility.isInternetOn(this)) {
@@ -44,14 +44,11 @@ public class OpenURL extends ActionBarActivity {
 
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
-        }
+        }*/
 
-      /*  if( getIntent().getExtras() != null) {
+        if(getIntent().getExtras() != null) {
             String url = getIntent().getExtras().getString("URL");
-
-
-
-            Log.d("OPEN_URL", "url not null..." );
+            Log.d("OPEN_URL", "url not null...");
 
             if(!UtilString.isBlank(url))
             {
@@ -60,9 +57,7 @@ public class OpenURL extends ActionBarActivity {
                 webView.getSettings().setJavaScriptEnabled(true);
                 webView.loadUrl(url);
             }
-
-        }*/
-
+        }
     }
 
     @Override
@@ -80,8 +75,8 @@ public class OpenURL extends ActionBarActivity {
     @Override
     public void onBackPressed() {
 
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 }

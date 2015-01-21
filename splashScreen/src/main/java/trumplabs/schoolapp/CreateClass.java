@@ -7,9 +7,12 @@ import java.util.List;
 
 import joinclasses.School;
 import library.UtilString;
+import notifications.AlarmReceiver;
+import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import utility.Queries;
 import utility.Queries2;
+import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 import additionals.ClassInstructions;
@@ -422,6 +425,11 @@ public class CreateClass extends MyActionBarActivity {
         // Setting layouts visibility
         codeviewlayout.setVisibility(View.VISIBLE);
         progressLayout.setVisibility(View.GONE);
+
+        //create class creation messages and notification
+        SessionManager session = new SessionManager(getApplicationContext());
+        NotificationGenerator.generateNotification(getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+        AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, session);
 
 
       } else if (classNameCheckFlag) {
