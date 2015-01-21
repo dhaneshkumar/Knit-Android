@@ -172,14 +172,19 @@ public class Signup2Class extends ActionBarActivity {
                                     user.put("test", true);
 
                                     //saving in background
-                                    user.saveInBackground(new SaveCallback() {
-                                        @Override
-                                        public void done(ParseException e) {
-                                            Date currentDate = user.getUpdatedAt();
+                                    try{
+                                        user.save();
+                                        Date currentDate = user.getUpdatedAt();
+                                        if(currentDate != null) {
                                             SessionManager sm = new SessionManager(Application.getAppContext());
                                             sm.setCurrentTime(currentDate);
                                         }
-                                    });
+                                    }
+                                    catch (ParseException e1){
+                                        e1.printStackTrace();
+                                    }
+
+
                                     Utility.ls("signing up............1.8..");
 
                                     //storing username in parseInstallation table

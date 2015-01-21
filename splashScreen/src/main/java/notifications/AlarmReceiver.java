@@ -544,9 +544,25 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         }
 
         try{
-            localMsg.put("creationTime", session.getCurrentTime());
+            Date time = session.getCurrentTime();
+            if(time == null){
+                boolean test = user.getBoolean("test");
+                test = !test;
+                user.put("test", test);
+                user.save();
+
+                Date currentDate = user.getUpdatedAt();
+                if(currentDate != null) {
+                    SessionManager sm = new SessionManager(Application.getAppContext());
+                    sm.setCurrentTime(currentDate);
+                }
+            }
+            if(session.getCurrentTime() != null)
+                localMsg.put("creationTime", session.getCurrentTime());
         }
         catch (java.text.ParseException e) {
+            e.printStackTrace();
+        } catch (ParseException e) {
             e.printStackTrace();
         }
 
