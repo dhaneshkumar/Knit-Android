@@ -298,6 +298,8 @@ public class InviteTeacher extends MyActionBarActivity {
         protected void onPostExecute(Void result) {
             progressBarLayout.setVisibility(View.GONE);
             if(response == 1) {
+                detailsLayout.setVisibility(View.VISIBLE);
+
                 String text = "You have successfully invited teacher to create a classroom. You will be the first one to know when they come on-board";
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(InviteTeacher.this);

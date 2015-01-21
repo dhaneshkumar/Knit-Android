@@ -141,8 +141,7 @@ public class Signup2Class extends ActionBarActivity {
 
                                     //Create welcome notification and message
 
-                                    Utility.toast("Signup Successful");
-                                    Utility.ls("signing up.............0......");
+                                   // Utility.toast("Signup Successful");
 
                                     //locally creating session
                                     SessionManager session = new SessionManager(Application.getAppContext());
