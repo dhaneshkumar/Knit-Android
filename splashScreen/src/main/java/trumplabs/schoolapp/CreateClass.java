@@ -298,11 +298,13 @@ public class CreateClass extends MyActionBarActivity {
   private class createGroup extends AsyncTask<Void, Void, String[]> {
 
     String[] mStrings;
+    boolean creationFlag;
 
     @Override
     protected String[] doInBackground(Void... params) {
 
 
+        creationFlag= false;
       if (!query12.checkClassNameExist(typedtxt)) {
 
         codevalue = Utility.generateCode().trim();
@@ -377,6 +379,9 @@ public class CreateClass extends MyActionBarActivity {
                   try {
                   groupDetails.put("userId", userId);
                   groupDetails.pin();
+
+
+                      creationFlag= true;
                 } catch (ParseException e1) {
                 }
 
@@ -405,7 +410,7 @@ public class CreateClass extends MyActionBarActivity {
     protected void onPostExecute(String[] result) {
 
 
-      if (!classNameCheckFlag) {
+      if (!classNameCheckFlag && creationFlag) {
         Utility.toast("Group Creation successful");
 
         List<String> newgroup = new ArrayList<String>();
@@ -438,6 +443,14 @@ public class CreateClass extends MyActionBarActivity {
         Utility.toast("Sorry. Can't create classes with same name");
         classNameCheckFlag = false;
       }
+      else
+      {
+          createclasslayout.setVisibility(View.VISIBLE);
+          progressLayout.setVisibility(View.GONE);
+          Utility.toast("Oops! Something went wrong. Can't create your class");
+          internetFlag = false;
+      }
+
 
       /*
        * else if (internetFlag){ createclasslayout.setVisibility(View.VISIBLE);
@@ -446,13 +459,6 @@ public class CreateClass extends MyActionBarActivity {
        * 
        * }
        */
-      else {
-        createclasslayout.setVisibility(View.VISIBLE);
-        progressLayout.setVisibility(View.GONE);
-        Utility.toast("Check your Internet Connection.");
-        internetFlag = false;
-
-      }
 
       super.onPostExecute(result);
     }

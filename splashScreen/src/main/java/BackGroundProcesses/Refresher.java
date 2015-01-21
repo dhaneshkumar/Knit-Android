@@ -34,6 +34,8 @@ public class Refresher {
       /*
        * Storing current time stamp
        */
+            boolean test = freshUser.getBoolean("test");
+            test = !test;
             freshUser.put("test", true);
             freshUser.saveInBackground(new SaveCallback() {
 

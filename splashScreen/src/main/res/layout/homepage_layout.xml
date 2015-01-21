@@ -82,6 +82,8 @@
                         android:textSize="16sp"
                         android:gravity="center"
                         android:text="Classrooms"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:textColor="@color/buttoncolor" />
 
                   <!--  <ImageView
@@ -100,10 +102,13 @@
 
                     <TextView
                         android:id="@+id/tab2Icon"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
+                        android:gravity="center"
                         android:text="Sent"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:textColor="@color/buttoncolor" />
 
 
@@ -123,10 +128,13 @@
 
                     <TextView
                         android:id="@+id/tab3Icon"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
+                        android:gravity="center"
                         android:text="Received"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:textColor="@color/buttoncolor" />
 
                    <!-- <ImageView
