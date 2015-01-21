@@ -36,7 +36,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     //event name for different events
     //event id will be <username> + "-" + eventname(above)
     static String parentNoActivityEvent = "parent_no_activity"; //5 hours since signup
+    static String parentTip1Event = "parent_tip_1"; //1 hour
     static String teacherNoActivityEvent = "teacher_no_activity"; // 1 hour since signup
+    static String teacherTip1Event = "teacher_tip_1"; //1 hour
     static String teacherNoSubEvent = "teacher_no_sub" ; // + <CLASSID> no subscribers 3 days
     static String teacherNoMsgEvent = "teacher_no_msg"; // + <CLASSID> no message 5 days
     static String teacherConfusingMsgEvent = "teacher_confusing_msg"; //+ <MSG_OBJECT_ID> more than 5 confusing
@@ -44,9 +46,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     //messages for different events
     static String parentNoActivityContent = "I was born just a few months ago and a lot of teachers and parents are using Knit since then and trust me they love it. I noticed that you haven’t joined any classroom yet, why? Invite teacher. ";
+    static String parentTip1Content = "Did you notice that you can respond to messages only via 2 buttons? I know some parents won't like it but to save you and your teacher from a lot of chaos it is very critical. Push \"thumbs-up\" to like the message and \"question-mark\" to let teacher know that you are little confused about this message.";
 
-    static String teacherNoActivityContent = "You haven't created any classes yet. Please create a class and invite parents";
-    static String teacherNoSubContent = "You don't have any subscribers yet for class. Please invite parents onboard to class ";
+    static String teacherNoActivityContent = "Hey! I noticed you haven't created any classroom yet. Let's kick-start using Knit but first create a classroom. ";
+    static String teacherTip1Content = "Did you notice that parents can respond to your messages only via 2 buttons? I know some parents won't like it but to save you and all parents from a lot of chaos it is very critical. They push \"thumbs-up\" to like the message and \"question-mark\" to let you know that they are little confused about this message.";
+    static String teacherNoSubContent = /*Your classroom <classname> + */ " doesn't have any subscribers yet. If you haven't received any instruction e-mail to invite parents then you can always reach me at knit@trumplab.com or once again you can see in the app how to invite parents.";
     static String teacherNoMsgContent = "You haven't sent any messages yet to class ";
     static String teacherConfusingMsgContent = /* <confused_count> + */ " parents seem to be confused regarding your recent post in class "; // [class name]
 
@@ -59,6 +63,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     static long teacherNoSubInterval = 2 * Constants.MINUTE_MILLISEC; //3 days
     static long teacherNoMsgInterval = 7 * Constants.MINUTE_MILLISEC; //5 days
     static long teacherSendingDailyTipInterval = 3 * Constants.MINUTE_MILLISEC; //3 days of first classroom creation
+    static long tip1Interval = 1 * Constants.MINUTE_MILLISEC; //1 hour
 
     ParseUser user;
     Context alarmContext;
@@ -76,7 +81,10 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         alarmContext = context;
 
         user = ParseUser.getCurrentUser();
-        if(user == null) return;
+        if(user == null) {
+            Log.d("DEBUG_ALARM_RECEIVER", "onReceive. parse user null");
+            return;
+        }
 
         Runnable r = new Runnable() {
             @Override
@@ -97,6 +105,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
         if(user.getString("role").equalsIgnoreCase("parent")){
             parentNoActivity();
+            parentTip1();
         }
         if(user.getString("role").equalsIgnoreCase("teacher")){
             teacherNoActivity();
@@ -104,10 +113,39 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             teacherNoMsg();
             teacherConfusingMessage();
             teacherSendingDailyTip();
+            teacherTip1();
         }
     }
 
     //parent hasn't joined any class since he has signed up
+
+    public void parentTip1(){
+        String eventid = user.getUsername() + "-" + parentTip1Event;
+        if(session.getAlarmEventState(eventid)) {
+            Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() " + eventid + " already happened");
+            return; //we're done
+        }
+        Date signupTime = user.getCreatedAt();
+        Date now = null;
+        try{
+            now = session.getCurrentTime();
+        }
+        catch (java.text.ParseException e){
+            e.printStackTrace();
+            return; //can't proceed further
+        }
+        Long interval = now.getTime() - signupTime.getTime();
+        Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
+        if(interval > tip1Interval){
+            NotificationGenerator.generateNotification(alarmContext, parentTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+
+            generateLocalMessage(parentTip1Content, Config.defaultParentGroupCode);
+
+            Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() " + eventid + " state changed to true");
+            session.setAlarmEventState(eventid, true);
+        }
+    }
+
     public void parentNoActivity(){
         String eventid = user.getUsername() + "-" + parentNoActivityEvent;
         if(session.getAlarmEventState(eventid)) {
@@ -140,7 +178,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         if(interval > parentNoActivityInterval){
             NotificationGenerator.generateNotification(alarmContext, parentNoActivityContent , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
 
-            generateLocalMessage(parentNoActivityContent, Config.defaultParentGroupCode);
+            generateLocalMessage(parentNoActivityContent, Constants.DEFAULT_NAME);
 
             Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
@@ -182,6 +220,33 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
             NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
             generateLocalMessage(teacherNoActivityContent, Constants.DEFAULT_NAME);
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() " + eventid + " state changed to true");
+            session.setAlarmEventState(eventid, true);
+        }
+    }
+
+    public void teacherTip1(){
+        String eventid = user.getUsername() + "-" + teacherTip1Event;
+        if(session.getAlarmEventState(eventid)) {
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() " + eventid + " already happened");
+            return; //we're done
+        }
+        Date signupTime = user.getCreatedAt();
+        Date now = null;
+        try{
+            now = session.getCurrentTime();
+        }
+        catch (java.text.ParseException e){
+            e.printStackTrace();
+            return; //can't proceed further
+        }
+        Long interval = now.getTime() - signupTime.getTime();
+        Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
+        if(interval > tip1Interval){
+            NotificationGenerator.generateNotification(alarmContext, teacherTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+
+            generateLocalMessage(teacherTip1Content, Constants.DEFAULT_NAME);
+
+            Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
     }
@@ -266,8 +331,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 extras.putString("grpCode", groupCode);
                 extras.putString("grpName", classroom.getString("name"));
 
-                NotificationGenerator.generateNotification(alarmContext, teacherNoSubContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
-                generateLocalMessage(teacherNoSubContent + className, Constants.DEFAULT_NAME);
+                String text = "Your classroom " + className + teacherNoSubContent;
+                NotificationGenerator.generateNotification(alarmContext, text, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
+                generateLocalMessage(text, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
             }
