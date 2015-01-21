@@ -296,13 +296,6 @@ public class JoinedClasses extends Fragment {
                 option_imageView.setVisibility(View.GONE);
                 classcode.setVisibility(View.GONE);
                 classcreator.setVisibility(View.GONE);
-                RelativeLayout layout = (RelativeLayout) row.findViewById(R.id.joinLayout);
-
-                float alpha = 0.5f;
-                AlphaAnimation alphaUp = new AlphaAnimation(alpha, alpha);
-                alphaUp.setFillAfter(true);
-                layout.startAnimation(alphaUp);
-
 
                 child_textView.setText("Assigned to : " + ParseUser.getCurrentUser().getString("name"));
             }

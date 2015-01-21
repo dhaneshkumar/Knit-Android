@@ -200,7 +200,7 @@ public class Signup2Class extends ActionBarActivity {
                                     Utility.ls("signing up..........4....");
 
                                     //Switching to MainActivity
-                                    Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                                    Intent intent = new Intent(getBaseContext(), LoginPanda.class);
                                     startActivity(intent);
                                 } else {
 

@@ -55,6 +55,8 @@
         <activity android:name="loginpages.Signup"></activity>
         <activity android:name="loginpages.Signup1Class"></activity>
         <activity android:name="loginpages.Signup1_5Class"></activity>
+        <activity android:name="loginpages.LoginPanda"></activity>
+
         <activity android:name="profileDetails.ProfilePage"></activity>
         <activity android:name="profileDetails.FAQs"></activity>
         <activity
