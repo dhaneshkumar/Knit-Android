@@ -44,10 +44,12 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
     //messages for different events
     static String parentNoActivityContent = "I was born just a few months ago and a lot of teachers and parents are using Knit since then and trust me they love it. I noticed that you haven’t joined any classroom yet, why? Invite teacher. ";
+
     static String teacherNoActivityContent = "You haven't created any classes yet. Please create a class and invite parents";
     static String teacherNoSubContent = "You don't have any subscribers yet for class. Please invite parents onboard to class ";
     static String teacherNoMsgContent = "You haven't sent any messages yet to class ";
     static String teacherConfusingMsgContent = /* <confused_count> + */ " parents seem to be confused regarding your recent post in class "; // [class name]
+
     static String teacherSendingDailyTipContent = "How’s going so far? Have you tried sending daily tips to parents ? Many of our teachers do that already and parents love it. Give it a try I would say.";
 
 
@@ -453,8 +455,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         }
     }
 
+    private void generateLocalMessage(String content, String code) {
+        generateLocalMessage(content, code, user, session);
+    }
 
-    private void generateLocalMessage(String content, String code){
+    public static void generateLocalMessage(String content, String code, ParseUser user, SessionManager session){
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
         localMsg.put("Creator", Constants.DEFAULT_CREATOR);

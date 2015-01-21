@@ -27,6 +27,8 @@ import java.util.List;
 import baseclasses.MyActionBarActivity;
 import joinclasses.School;
 import library.UtilString;
+import notifications.AlarmReceiver;
+import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -135,6 +137,9 @@ public class Signup2Class extends ActionBarActivity {
                             public void done(ParseException e) {
 
                                 if (e == null) {
+
+                                    //Create welcome notification and message
+
                                     Utility.toast("Signup Successful");
                                     Utility.ls("signing up.............0......");
 
@@ -200,6 +205,17 @@ public class Signup2Class extends ActionBarActivity {
                                     joinDefaultGroup joinGroup = new joinDefaultGroup();
                                     joinGroup.execute();
                                     Utility.ls("signing up..........4....");
+
+
+                                    //here create welcome notification and message
+                                    if(user.getString("role").equals("teacher")){
+                                        NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                                        AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, session);
+                                    }
+                                    else{
+                                        NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                                        AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, user, session);
+                                    }
 
                                     //Switching to MainActivity
                                     Intent intent = new Intent(getBaseContext(), MainActivity.class);
