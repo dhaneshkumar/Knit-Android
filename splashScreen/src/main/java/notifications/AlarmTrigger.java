@@ -14,7 +14,7 @@ import trumplabs.schoolapp.Constants;
  * Created by ashish on 18/1/15.
  */
 public class AlarmTrigger {
-    static int ALARM_ID = 1; //this is the id for all alarms triggered
+    static int ALARM_ID = 1; //this  is the id for all alarms triggered
 
     static int INTERVAL = 15 * Constants.MINUTE_MILLISEC; //15 minutes
 
