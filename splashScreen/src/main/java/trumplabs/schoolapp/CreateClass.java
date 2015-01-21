@@ -365,36 +365,20 @@ public class CreateClass extends MyActionBarActivity {
 
 
             Log.d("create class", "saving codegroup table .................");
-          groupDetails.saveInBackground(new SaveCallback() {
+            try {
+                groupDetails.save();
 
-            @Override
-            public void done(ParseException e) {
-
-              if (e == null) {
                 user.addUnique("Created_groups", Arrays.asList(codevalue, typedtxt));
                 user.saveEventually();
-
-                  Log.d("create class", "creation groud  added .................");
-
-                  try {
-                  groupDetails.put("userId", userId);
-                  groupDetails.pin();
+                groupDetails.put("userId", userId);
+                groupDetails.pin();
 
 
-                      creationFlag= true;
-                } catch (ParseException e1) {
-                }
+                creationFlag= true;
 
-
-              }
-
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
-          });
-
-          /*
-           * save locally
-           */
-
 
 
         } else
