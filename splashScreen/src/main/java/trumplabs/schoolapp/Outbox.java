@@ -61,7 +61,7 @@ public class Outbox extends Fragment {
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
     private static SwipeRefreshLayout outboxRefreshLayout;
-    LinearLayout outboxLayout;
+    public static LinearLayout outboxLayout;
     public static int totalOutboxMessages = 15; //total pinned outbox messages(across all classes)
 
     @Override

@@ -283,7 +283,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 break;
             case R.id.spread:
 
-                String link = "www.knitapp.co.in";
+                String link = "Hey, You must try this great parent-teacher communication app. https://play.google.com/store/apps/details?id=trumplab.textslate";
                 Intent i=new Intent(android.content.Intent.ACTION_SEND);
                 i.setType("text/plain");
                 i.putExtra(android.content.Intent.EXTRA_SUBJECT,"Knit");

@@ -16,6 +16,7 @@ import java.util.List;
 
 import BackGroundProcesses.SeenHandler;
 import BackGroundProcesses.SyncMessageDetails;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Messages;
 import utility.Config;
@@ -460,7 +461,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public static void generateLocalMessage(String content, String code, ParseUser user, Context context){
-        SessionManager session = new SessionManager(context);
+        SessionManager session = new SessionManager(Application.getAppContext());
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
         localMsg.put("Creator", Constants.DEFAULT_CREATOR);

@@ -101,7 +101,7 @@
             android:paddingRight="16dp"
             android:text="Make sure that your child starts reading poems everyday. This will help greatly in building personality and improving language."
             android:textColor="@color/txtgreyDark"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
 
         <FrameLayout
             android:id="@+id/imagefrmlayout"

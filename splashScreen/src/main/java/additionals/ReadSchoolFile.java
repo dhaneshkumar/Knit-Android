@@ -34,8 +34,6 @@ public class ReadSchoolFile extends ActionBarActivity{
 
                 schoolList.add(line);
 
-                Log.d("FILE_READ", line);
-
                 line = br.readLine();
             }
         } finally {

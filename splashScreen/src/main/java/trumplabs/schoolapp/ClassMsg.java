@@ -955,7 +955,12 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                     if( outboxItems != null)
                     {
                         Outbox.groupDetails = outboxItems;
-                        Outbox.myadapter.notifyDataSetChanged();
+
+                        if( Outbox.myadapter != null)
+                            Outbox.myadapter.notifyDataSetChanged();
+
+                        if(Outbox.outboxLayout != null && Outbox.groupDetails.size()>0)
+                            Outbox.outboxLayout.setVisibility(View.GONE);
                     }
 
                 } else {
@@ -1082,7 +1087,12 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                 if( outboxItems != null)
                                 {
                                     Outbox.groupDetails = outboxItems;
-                                    Outbox.myadapter.notifyDataSetChanged();
+
+                                    if( Outbox.myadapter != null)
+                                        Outbox.myadapter.notifyDataSetChanged();
+
+                                    if(Outbox.outboxLayout != null && Outbox.groupDetails.size()>0)
+                                        Outbox.outboxLayout.setVisibility(View.GONE);
                                 }
                 /*
                  * Updating time

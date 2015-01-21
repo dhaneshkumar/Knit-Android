@@ -82,7 +82,7 @@ public class Constants {
 
     public static String WELCOME_MESSAGE_TEACHER = "Hey there! Welcome to my classroom.You can also create your own classroom and start broadcasting messages to all the parents. Don’t forget to share code of your classroom with parents. Without code how will they subscribe to your classroom?";
     public static String WELCOME_MESSAGE_PARENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your child’s teacher but you will need a class-code. If your child’s teacher haven’t yet started using Knit then invite them";
-    public static String CLASS_CREATION_MESSAGE_TEACHER = "Ola! Your classroom created successfully. Do you know that parents who don’t use android phone can also subscribe to your updates? They just have to send your classroom-code to our number 9243000080. FYI I have already sent you an e-mail to help you with inviting parents";
+    public static String CLASS_CREATION_MESSAGE_TEACHER = "Ola! Your classroom has been created successfully. Do you know that parents who don’t use android phone can also subscribe to your updates? They just have to send your classroom-code to our number 9243000080. FYI I have already sent you an e-mail to help you with inviting parents";
 
     //Notification types
     public static String NORMAL_NOTIFICATION = "NORMAL";
@@ -100,5 +100,10 @@ public class Constants {
 
     public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
     //Note : action corresponding to LINK type will be a url
+
+
+
+
+    public static String WELCOME_MESSAGE_STUDENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your teacher but you will need a class-code. If your teacher haven’t yet started using Knit then invite them";
 
 }

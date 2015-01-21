@@ -209,9 +209,13 @@ public class Signup2Class extends ActionBarActivity {
                                         NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
                                         AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, getApplicationContext());
                                     }
-                                    else{
+                                    else if(user.getString("role").equals("parent")){
                                         NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
                                         AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, user, getApplicationContext());
+                                    }
+                                    else{
+                                        NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                                        AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, user, getApplicationContext());
                                     }
 
                                     //Switching to MainActivity

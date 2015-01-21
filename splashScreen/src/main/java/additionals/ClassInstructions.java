@@ -13,7 +13,11 @@ import android.text.style.ForegroundColorSpan;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.TextView.BufferType;
+
+import com.parse.ParseUser;
+
 import baseclasses.MyActionBarActivity;
+import trumplabs.schoolapp.Constants;
 
 /**
  *  Contain instructions for teacher to invite parents
@@ -44,12 +48,29 @@ public class ClassInstructions extends MyActionBarActivity {
     
     androidCode.setText(Html.fromHtml(andr), TextView.BufferType.SPANNABLE);
     
-    
-    String text = "Send" +
-        " <font color='#0099cc'><b >"+grpCode+ "</b></font>" +
-        "&nbsp&nbsp to&nbsp&nbsp" +
-        " <font color='#0099cc'><b >+91 9243000080</b> </font>" +
-        " and receive reminders on your phone via SMS";
+
+    String role = ParseUser.getCurrentUser().getString(Constants.ROLE);
+      String text = "";
+
+      if(role.equals(Constants.STUDENT))
+    {
+        text = "Send" +
+                " <font color='#0099cc'><b >"+grpCode+ " &lt;SPACE&gt; Your-Name </b></font>" +
+                "&nbsp&nbsp to&nbsp&nbsp" +
+                " <font color='#0099cc'><b >+91 9243000080</b> </font>" +
+                " and receive reminders on your phone via SMS";
+
+    }
+     else
+    {
+        text = "Send" +
+                " <font color='#0099cc'><b >"+grpCode+ " &lt;SPACE&gt; Child-Name </b></font>" +
+                "&nbsp&nbsp to&nbsp&nbsp" +
+                " <font color='#0099cc'><b >+91 9243000080</b> </font>" +
+                " and receive reminders on your phone via SMS";
+    }
+
+
     
         smsCode.setText(Html.fromHtml(text), TextView.BufferType.SPANNABLE);
    

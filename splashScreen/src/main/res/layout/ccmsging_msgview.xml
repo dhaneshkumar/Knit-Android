@@ -103,7 +103,7 @@
             android:layout_height="wrap_content"
             android:text="Make sure that your child starts reading poems everyday."
             android:textColor="#444444"
-            android:textSize="14sp" />
+            android:textSize="15sp" />
 
         <RelativeLayout
             android:id="@+id/likeButton"
