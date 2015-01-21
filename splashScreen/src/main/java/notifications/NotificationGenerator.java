@@ -140,6 +140,9 @@ public class NotificationGenerator {
             else if(notEntity.action.equals(Constants.CLASSROOMS_ACTION)){
                 mBuilder.addAction(R.drawable.fwd, "OPEN", clickPendingIntent);
             }
+            else if(notEntity.action.equals(Constants.OUTBOX_ACTION)){
+                mBuilder.addAction(R.drawable.fwd, "OPEN", clickPendingIntent);
+            }
             else if(notEntity.action.equals(Constants.INVITE_PARENT_ACTION)){
                 Log.d("DEBUG_NOTIFICATION_GEN", "invite parent action");
                 if(extras != null){
