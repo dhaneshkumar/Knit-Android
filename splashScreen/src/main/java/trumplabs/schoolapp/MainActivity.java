@@ -220,6 +220,15 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         });
 
+        //ViewPager.setCurrentItem(int pageIndex, boolean isSmoothScroll);
+
+        if(getIntent() != null && getIntent().getExtras() != null) {
+            int currentItem = getIntent().getExtras().getInt("VIEWPAGERINDEX", -1);
+            if (currentItem != -1) {
+                viewpager.setCurrentItem(currentItem, true);
+            }
+        }
+
         AlarmTrigger.triggerAlarm(getApplicationContext());
 
         //testing different notification types generators

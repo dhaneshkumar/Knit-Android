@@ -56,7 +56,14 @@ public class PushOpen extends ActionBarActivity {
                 i = new Intent(this, MainActivity.class);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
-                    i.putExtra("VIEWPAGERINDEX", 2);
+                    i.putExtra("VIEWPAGERINDEX", 0);
+                i.putExtra("pushOpen", true);
+            }
+            else if(action.equals(Constants.OUTBOX_ACTION)){
+                i = new Intent(this, MainActivity.class);
+                ParseUser user = ParseUser.getCurrentUser();
+                if (user != null && user.getString("role").equals(Constants.TEACHER))
+                    i.putExtra("VIEWPAGERINDEX", 1);
                 i.putExtra("pushOpen", true);
             }
             else if(action.equals(Constants.CREATE_CLASS_ACTION)){
@@ -75,12 +82,12 @@ public class PushOpen extends ActionBarActivity {
             i = new Intent(this, MainActivity.class);
             ParseUser user = ParseUser.getCurrentUser();
             if (user != null && user.getString("role").equals(Constants.TEACHER))
-                i.putExtra("VIEWPAGERINDEX", 1);
+                i.putExtra("VIEWPAGERINDEX", 2);
             i.putExtra("pushOpen", true);
         }
 
         if(i != null) {
-            i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK );
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK );
             this.startActivity(i);
         }
         finish(); //this is required so that this pushOpen activity no longer remains in the activity stack

@@ -463,7 +463,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
                 if(confusedCount >= teacherConfusingMsgThreshold){
                     String notificationMessage = confusedCount + teacherConfusingMsgContent + msg.getString("name");
 
-                    NotificationGenerator.generateNotification(alarmContext, notificationMessage, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
+                    NotificationGenerator.generateNotification(alarmContext, notificationMessage, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
                     generateLocalMessage(notificationMessage, Constants.DEFAULT_NAME);
                     Log.d("DEBUG_ALARM_RECEIVER", "teacherConfusingMessage() " + eventid + " state changed to true");
                     session.setAlarmEventState(eventid, true);

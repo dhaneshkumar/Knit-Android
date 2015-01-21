@@ -95,6 +95,7 @@ public class Constants {
 
     public static String INVITE_TEACHER_ACTION = "INVITE_TEACHER"; //e.g for transition notification
     public static String CLASSROOMS_ACTION = "CLASSROOMS"; //e.g for transition notification
+    public static String OUTBOX_ACTION = "OUTBOX"; //e.g for transition notification
     public static String INVITE_PARENT_ACTION = "INVITE_PARENT"; //e.g for transition notification
     public static String CREATE_CLASS_ACTION = "CREATE_CLASS"; //e.g for transition notification
 
