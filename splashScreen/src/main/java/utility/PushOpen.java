@@ -7,6 +7,7 @@ import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.ClassMsg;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.CreateClass;
 import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
 
@@ -57,6 +58,9 @@ public class PushOpen extends ActionBarActivity {
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
                     i.putExtra("VIEWPAGERINDEX", 2);
                 i.putExtra("pushOpen", true);
+            }
+            else if(action.equals(Constants.CREATE_CLASS_ACTION)){
+                i = new Intent(this, CreateClass.class);
             }
         }
         else if (type.equals(Constants.LINK_NOTIFICATION)) {

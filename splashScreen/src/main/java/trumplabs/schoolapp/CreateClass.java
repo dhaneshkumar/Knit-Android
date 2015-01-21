@@ -429,7 +429,7 @@ public class CreateClass extends MyActionBarActivity {
         //create class creation messages and notification
         SessionManager session = new SessionManager(getApplicationContext());
         NotificationGenerator.generateNotification(getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-        AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, session);
+        AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, getApplicationContext());
 
 
       } else if (classNameCheckFlag) {

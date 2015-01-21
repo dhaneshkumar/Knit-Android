@@ -74,11 +74,11 @@ public class Constants {
     public static int DAY_MILLISEC = 24 * 60 * 60 * 1000;
 
     //Default messages details
-    public static String DEFAULT_CREATOR = "Mr Kio";
+    public static String DEFAULT_CREATOR = "Mr. Kio";
     public static String DEFAULT_SENDER_ID_TEACHER = "ttextslate@trumplab.com";
     public static String DEFAULT_SENDER_ID_PARENT = "ptextslate@trumplab.com";
 
-    public static String DEFAULT_NAME = "Mr Kio";
+    public static String DEFAULT_NAME = "Mr. Kio";
 
     public static String WELCOME_MESSAGE_TEACHER = "Hey there! Welcome to my classroom.You can also create your own classroom and start broadcasting messages to all the parents. Don’t forget to share code of your classroom with parents. Without code how will they subscribe to your classroom?";
     public static String WELCOME_MESSAGE_PARENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your students’ teacher but you will need a class-code. If your students’ teacher haven’t yet started using Knit then invite them";
@@ -96,6 +96,7 @@ public class Constants {
     public static String INVITE_TEACHER_ACTION = "INVITE_TEACHER"; //e.g for transition notification
     public static String CLASSROOMS_ACTION = "CLASSROOMS"; //e.g for transition notification
     public static String INVITE_PARENT_ACTION = "INVITE_PARENT"; //e.g for transition notification
+    public static String CREATE_CLASS_ACTION = "CREATE_CLASS"; //e.g for transition notification
 
     public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
     //Note : action corresponding to LINK type will be a url

@@ -179,7 +179,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > teacherNoActivityInterval){
-            NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
+            NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
             generateLocalMessage(teacherNoActivityContent, Constants.DEFAULT_NAME);
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
@@ -456,10 +456,11 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     private void generateLocalMessage(String content, String code) {
-        generateLocalMessage(content, code, user, session);
+        generateLocalMessage(content, code, user, alarmContext);
     }
 
-    public static void generateLocalMessage(String content, String code, ParseUser user, SessionManager session){
+    public static void generateLocalMessage(String content, String code, ParseUser user, Context context){
+        SessionManager session = new SessionManager(context);
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
         localMsg.put("Creator", Constants.DEFAULT_CREATOR);

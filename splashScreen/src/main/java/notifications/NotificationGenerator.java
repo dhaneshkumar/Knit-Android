@@ -150,6 +150,9 @@ public class NotificationGenerator {
                     mBuilder.addAction(R.drawable.fwd, "INVITE", overrideClickPendingIntent);
                 }
             }
+            else if(notEntity.action.equals(Constants.CREATE_CLASS_ACTION)){
+                mBuilder.addAction(R.drawable.fwd, "CREATE NEW", clickPendingIntent);
+            }
 
             notificationManager.notify(TRANSITION_NOTIFICATION_ID, mBuilder.build());
         }
