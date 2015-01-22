@@ -6,11 +6,11 @@ public class Config {
    * Parse Configurations
    */
   
-  public static final String APP_ID="jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //raven
-  //public static final String APP_ID = "7kuBxdNpJ5ZW5rcyYrpw3vlxsTLuHbuqtTd65ErZ"; // test_raven
+  //public static final String APP_ID="jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //raven
+  public static final String APP_ID = "7kuBxdNpJ5ZW5rcyYrpw3vlxsTLuHbuqtTd65ErZ"; // test_raven
 
-  public static final String CLIENT_KEY= "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // raven
-  //public static final String CLIENT_KEY = "bmfdNqrZY0olJgsezG5ZRiBN1OPO4TqO1pH46PU9"; // test_raven
+  //public static final String CLIENT_KEY= "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // raven
+  public static final String CLIENT_KEY = "bmfdNqrZY0olJgsezG5ZRiBN1OPO4TqO1pH46PU9"; // test_raven
 
   public static final String defaultParentGroupCode = "TS29734"; // raven
   public static final String defaultTeacherGroupCode = "TS49518"; // raven
@@ -37,5 +37,7 @@ public class Config {
   public static final int senderPicUpdationCount = 5; // #appOpening count
 
 
-
+  public static int messageNormalStartTime = 7; //7 AM (7 hours)
+  public static int messageNormalEndTime = 22;  //10 PM(22 hours)
+  public static String messageTimeWarning = "This might not be the right time to send a message.\nSend anyway?";
 }

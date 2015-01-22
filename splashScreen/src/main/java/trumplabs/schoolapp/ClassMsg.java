@@ -17,6 +17,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -56,6 +57,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -815,6 +817,53 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
             @Override
             public void onClick(View v) {
+                int hourOfDay = -1;
+                if(session != null) {
+                    //using local time instead of session.getCurrentTime
+                    //Date now = session.getCurrentTime();
+                    Calendar cal = Calendar.getInstance();
+                    //cal.setTime(now);
+                    hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+                }
+                Log.d("DEBUG_CLASS_MSG", "time hour of day " + hourOfDay);
+                if(hourOfDay != -1){
+                    if(hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime){
+                        //note >= and < respectively because disallowed are [ >= EndTime and < StartTime]
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        LinearLayout warningView = new LinearLayout(getActivity());
+                        warningView.setOrientation(LinearLayout.VERTICAL);
+                        LinearLayout.LayoutParams nameParams =
+                                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
+                                        LinearLayout.LayoutParams.WRAP_CONTENT);
+                        nameParams.setMargins(30, 30, 30, 30);
+
+                        final TextView nameInput = new TextView(getActivity());
+                        nameInput.setTextSize(18);
+                        nameInput.setText(Config.messageTimeWarning);
+                        nameInput.setGravity(Gravity.CENTER_HORIZONTAL);
+                        warningView.addView(nameInput, nameParams);
+                        builder.setView(warningView);
+
+                        builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                sendFunction();
+                            }
+                        });
+                        builder.setNegativeButton("Cancel", null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+                    else{
+                        sendFunction();
+                    }
+                }
+                else{
+                    sendFunction();
+                }
+
+            }
+
+            public void sendFunction(){
                 scrollMyListViewToBottom();
                 typedtxt = typedmsg.getText().toString().trim();
                 if (!Utility.isInternetOn(getActivity())) {
