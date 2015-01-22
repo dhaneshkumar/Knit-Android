@@ -1164,7 +1164,8 @@ public class JoinedClasses extends Fragment {
                         //startActivity(intent);
 
 
-                        startActivity(intent);
+                        if (context != null)
+                            startActivityForResult(intent, 0);
                     }
 
                 }

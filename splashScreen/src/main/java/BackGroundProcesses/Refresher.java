@@ -47,7 +47,6 @@ public class Refresher {
             });
 
 
-            Log.d("splashScreen", "ccc");
             freshUser.fetchInBackground();
 
             if (appOpeningCount > 0) {

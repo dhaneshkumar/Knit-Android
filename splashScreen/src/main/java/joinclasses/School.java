@@ -116,28 +116,27 @@ public class School {
         if (schoolName == null)
             return null;
 
-        //querying locally
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("SCHOOLS");
-        query.fromLocalDatastore();
-        query.whereEqualTo("school_name", schoolName.trim());
 
-        ParseObject obj = null;
-        try {
-            obj = query.getFirst();
-        } catch (ParseException e) {
-        }
-        if (obj != null)
-            return obj.getObjectId();
-        else {
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("SCHOOLS");
+            query.whereEqualTo("school_name", schoolName.trim());
 
-            ParseObject school = new ParseObject("SCHOOLS");
-            school.put("school_name", schoolName);
-            school.save();          //storing on server
-            school.pin();           //storing locally
+            ParseObject obj = query.getFirst();
 
-            if (school != null && school.getObjectId() != null)
-                return school.getObjectId();
-        }
+            if(obj != null)
+            {
+                obj.pin();
+                return obj.getObjectId();
+            }
+            else {
+
+                ParseObject school = new ParseObject("SCHOOLS");
+                school.put("school_name", schoolName.trim());
+                school.save();          //storing on server
+                school.pin();           //storing locally
+
+                if (school != null && school.getObjectId() != null)
+                    return school.getObjectId();
+            }
 
         return null;
     }

@@ -126,6 +126,9 @@ public class Signup2Class extends ActionBarActivity {
                             user.put("sex", "M");
                         } else
                             user.put("sex", "F");
+
+                        user.put("OS", "ANDROID");
+
                         if (android.os.Build.MODEL != null)
                             user.put("MODEL", android.os.Build.MODEL);
                         Utility.ls("signing up..............");
