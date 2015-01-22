@@ -92,7 +92,7 @@ public class AddChildToClass extends MyActionBarActivity {
     ParseUser user = ParseUser.getCurrentUser();
 
     if (user == null)
-      Utility.logout();
+      {Utility.logout(); return;}
 
     memberQuery = new Queries2();
     textQuery = new Queries();

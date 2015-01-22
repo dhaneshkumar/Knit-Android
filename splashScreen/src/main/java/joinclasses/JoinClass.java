@@ -78,7 +78,7 @@ public class JoinClass extends Fragment {
         // retrieving userID
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null)
-            Utility.logout();
+            {Utility.logout(); return;}
         textQuery = new Queries();
         userId = user.getUsername();
         childName = user.getString("name");

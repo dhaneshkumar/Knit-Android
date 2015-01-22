@@ -105,7 +105,7 @@ public class JoinedClasses extends Fragment {
         ParseUser parseObject = ParseUser.getCurrentUser();
 
         if (parseObject == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         userId = parseObject.getUsername();
         progressBarLayout = (LinearLayout) getActivity().findViewById(R.id.progressBarLayout);
@@ -164,7 +164,7 @@ public class JoinedClasses extends Fragment {
             else
                 DefaultClassCode = Config.defaultParentGroupCode;
         } else
-            Utility.logout();
+            {Utility.logout(); return;}
 
         listv = (ExpandableListView) getActivity().findViewById(R.id.joinedclasseslistview);
         suggestionList = (ExpandableListView) getActivity().findViewById(R.id.suggestionclasseslistview);

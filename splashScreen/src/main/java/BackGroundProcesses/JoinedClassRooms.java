@@ -29,7 +29,7 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
     ParseUser user = ParseUser.getCurrentUser();
 
     if (user == null)
-      Utility.logout();
+      {Utility.logout(); return;}
 
     this.userId = user.getUsername();
     this.loginFlag = false;
@@ -39,7 +39,7 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
     ParseUser user = ParseUser.getCurrentUser();
 
     if (user == null)
-      Utility.logout();
+      {Utility.logout(); return;}
 
     this.userId = user.getUsername();
     this.loginFlag = true;

@@ -89,7 +89,7 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
         }
     }
       else
-        Utility.logout();
+        {Utility.logout(); return mStrings;}
 
     return mStrings;
   }

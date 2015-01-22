@@ -117,7 +117,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         userId = user.getUsername();
         String role = user.getString(Constants.ROLE);

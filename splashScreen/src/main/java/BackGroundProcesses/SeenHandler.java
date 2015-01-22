@@ -48,7 +48,7 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         String username = user.getUsername();
 

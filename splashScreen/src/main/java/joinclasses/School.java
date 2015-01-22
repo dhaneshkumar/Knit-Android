@@ -225,7 +225,7 @@ public class School {
                     ProfilePage.profileLayout.setVisibility(View.VISIBLE);
 
                 } else
-                    Utility.logout();
+                    {Utility.logout(); return;}
             }
         }
     }

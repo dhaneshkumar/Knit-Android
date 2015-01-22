@@ -49,7 +49,7 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
         ParseUser parseObject = ParseUser.getCurrentUser();
 
         if (parseObject == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         String userId = parseObject.getUsername();
 

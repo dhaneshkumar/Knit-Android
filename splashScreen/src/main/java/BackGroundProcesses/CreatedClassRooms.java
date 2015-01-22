@@ -29,7 +29,7 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
     ParseUser user = ParseUser.getCurrentUser();
 
     if (user == null)
-      Utility.logout();
+      {Utility.logout(); return;}
 
     this.userId = user.getUsername();
   }

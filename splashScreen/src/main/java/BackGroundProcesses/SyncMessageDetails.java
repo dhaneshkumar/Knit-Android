@@ -32,8 +32,7 @@ public class SyncMessageDetails {
     public static void syncStatus(){
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null) {
-            Utility.logout();
-            return;
+            {Utility.logout(); return;}
         }
 
         String username = user.getUsername();
@@ -130,7 +129,7 @@ public class SyncMessageDetails {
         ParseUser parseObject = ParseUser.getCurrentUser();
 
         if (parseObject == null)
-            Utility.logout();
+            {Utility.logout(); return;}
         if(!parseObject.getString("role").equalsIgnoreCase("teacher")){
             return;
         }
