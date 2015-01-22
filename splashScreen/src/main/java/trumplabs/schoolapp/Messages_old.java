@@ -141,7 +141,7 @@ public class Messages_old extends Fragment implements OnRefreshListener {
         ParseUser parseObject = ParseUser.getCurrentUser();
 
         if (parseObject == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         String userId = parseObject.getUsername();
 

@@ -130,7 +130,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         ParseUser userObject = ParseUser.getCurrentUser();
         myActivity = getActivity();
         if (userObject == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         sender = userObject.getString(Constants.NAME);
         userId = userObject.getUsername();
@@ -290,7 +290,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                 ParseUser user = ParseUser.getCurrentUser();
 
                                 if (user == null)
-                                    Utility.logout();
+                                    {Utility.logout(); return;}
 
 
                                 user.put(Constants.JOINED_GROUPS, Utility.removeItemFromJoinedGroups(user, group));
@@ -359,7 +359,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
                                 ParseUser userObject = ParseUser.getCurrentUser();
                                 if (userObject == null)
-                                    Utility.logout();
+                                    {Utility.logout(); return;}
 
                                 List<String> item = new ArrayList<String>();
                                 item.add(groupCode);
@@ -1135,7 +1135,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
         query.fromLocalDatastore();

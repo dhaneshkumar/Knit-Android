@@ -93,7 +93,7 @@ public class CreateClass extends MyActionBarActivity {
 
 
     if (user == null)
-      Utility.logout();
+      {Utility.logout(); return;}
 
     userId = user.getUsername();
 
@@ -382,7 +382,7 @@ public class CreateClass extends MyActionBarActivity {
 
 
         } else
-          Utility.logout();
+          {Utility.logout(); return mStrings;}
       } else {
         classNameCheckFlag = true;
       }

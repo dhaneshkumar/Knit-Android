@@ -73,7 +73,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         //check for current user loggedin
         if (parseObject == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
 
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);

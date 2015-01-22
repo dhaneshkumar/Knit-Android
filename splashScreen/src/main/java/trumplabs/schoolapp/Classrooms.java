@@ -76,7 +76,7 @@ public class Classrooms extends Fragment {
         ParseUser parseObject = ParseUser.getCurrentUser();
 
         if (parseObject == null)
-            Utility.logout();
+            {Utility.logout(); return;}
 
         userId = parseObject.getUsername();
 

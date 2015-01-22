@@ -642,7 +642,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             case R.id.signOut:
                 if (Utility.isInternetOn(this)) {
 
-                    Utility.logout();
+                    {Utility.logout(); return;}
                 } else {
                     Utility.toast("Check your Internet Connection.");
                 }

@@ -264,7 +264,7 @@ public class InviteTeacher extends MyActionBarActivity {
             ParseUser user = ParseUser.getCurrentUser();
 
             if (user == null)
-                Utility.logout();
+                {Utility.logout(); return null;}
 
             String senderId = user.getUsername();
 
