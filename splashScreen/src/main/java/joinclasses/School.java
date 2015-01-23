@@ -120,7 +120,9 @@ public class School {
             ParseQuery<ParseObject> query = ParseQuery.getQuery("SCHOOLS");
             query.whereEqualTo("school_name", schoolName.trim());
 
-            ParseObject obj = query.getFirst();
+        ParseObject obj = null;
+        try {
+            obj = query.getFirst();
 
             if(obj != null)
             {
@@ -137,6 +139,21 @@ public class School {
                 if (school != null && school.getObjectId() != null)
                     return school.getObjectId();
             }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+
+            ParseObject school = new ParseObject("SCHOOLS");
+            school.put("school_name", schoolName.trim());
+            school.save();          //storing on server
+            school.pin();           //storing locally
+
+            if (school != null && school.getObjectId() != null)
+                return school.getObjectId();
+        }
+
+
 
         return null;
     }

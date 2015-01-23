@@ -190,6 +190,15 @@ public class Signup2Class extends ActionBarActivity {
 
                                     Utility.ls("signing up............1.8..");
 
+
+                                      /*
+                                    * Resetting channels
+                                    */
+                                    Queries query = new Queries();
+                                    query.reSetChannels();
+
+                                    Utility.ls("signing up..........3....");
+
                                     //storing username in parseInstallation table
                                     ParseInstallation installation = ParseInstallation.getCurrentInstallation();
                                     installation.put("username", user.getUsername());
@@ -197,12 +206,10 @@ public class Signup2Class extends ActionBarActivity {
                                         installation.save();
                                     } catch (ParseException e1) {
                                     }
-                                    Queries query = new Queries();
 
-                                    /*
-                                    * Resetting channels
-                                    */
-                                    query.reSetChannels();
+
+                                    Utility.ls("signing up..........2....");
+
 
                                     /*
                                     * Joining default groups
@@ -239,6 +246,8 @@ public class Signup2Class extends ActionBarActivity {
                                     try {
                                         if (Queries.isEmailExist(emailid)) {
                                             result = "Email-id already exists";
+
+
                                         }
                                     } catch (ParseException e1) {
                                     }
