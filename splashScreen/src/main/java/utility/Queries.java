@@ -23,7 +23,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-public class Queries extends MyActivity {
+public class Queries {
     String userId;
     List<ParseObject> msgs;
     int messageCount = Config.inboxMsgCount;

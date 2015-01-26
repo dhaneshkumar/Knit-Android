@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -91,11 +92,25 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             session.setAppOpeningCount();
 
             if (!session.getSignUpAccount()) {
+                Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress bar");
                 progressBarLayout.setVisibility(View.VISIBLE);
                 editLayout.setVisibility(View.GONE);
-                new Refresher(0);
+
             }
         }
+
+        //call refresher always
+        Log.d("MAINACTIVITY_CALLING_REFRESHER", "calling refresher");
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                new Refresher(2);
+            }
+        };
+        Thread t = new Thread(r);
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.start();
+
 
         String userId = parseObject.getUsername();
         role = parseObject.getString(Constants.ROLE);

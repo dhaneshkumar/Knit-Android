@@ -12,6 +12,7 @@ import com.parse.ParseUser;
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.Main;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
 import utility.Config;
@@ -33,83 +34,95 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
     this.msgs = msgs;
     query = new Queries();
   }
-  
-  @Override
-  protected String[] doInBackground(Void... params) {
 
-    Utility.ls("inbox running....");
-    int initialSize = -1;
-    if(msgs != null)
-    {
-      initialSize =  msgs.size();
-    }
-    
-    
-    newMsgs = query.getServerInboxMsgs();
-    
-    if(newMsgs != null)
-    {
-      if(newMsgs.size()- initialSize == 0)
+  public void doInBackgroundCore(){
+      Utility.ls("inbox running....");
+      int initialSize = -1;
+      if(msgs != null)
       {
-        newDataStatus = true;
+          initialSize =  msgs.size();
       }
-      
+
+
+      newMsgs = query.getServerInboxMsgs();
+
+      if(newMsgs != null)
+      {
+          if(newMsgs.size()- initialSize == 0)
+          {
+              newDataStatus = true;
+          }
+
       /*
        * Deleting extra element from list
        */
-      while(newMsgs.size() > Config.inboxMsgCount)
-      {
-        newMsgs.remove(newMsgs.size()-1);
+          while(newMsgs.size() > Config.inboxMsgCount)
+          {
+              newMsgs.remove(newMsgs.size()-1);
+          }
+
+          Messages.msgs = newMsgs;
       }
-      
-      Messages.msgs = newMsgs;
-    }
-    
-    //update Messages.totalInboxMessages
-    ParseUser user = ParseUser.getCurrentUser();
 
-    if (user != null) {
+      //update Messages.totalInboxMessages
+      ParseUser user = ParseUser.getCurrentUser();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
-        query.fromLocalDatastore();
-        query.whereEqualTo("userId", user.getUsername());
-        try {
-            Messages.totalInboxMessages = query.count();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+      if (user != null) {
 
-        ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
-        queryLocal.fromLocalDatastore();
-        queryLocal.whereEqualTo("userId", user.getUsername());
-        try {
-            Messages.totalInboxMessages += queryLocal.count();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
+          ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+          query.fromLocalDatastore();
+          query.whereEqualTo("userId", user.getUsername());
+          try {
+              Messages.totalInboxMessages = query.count();
+          } catch (ParseException e) {
+              e.printStackTrace();
+          }
+
+          ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
+          queryLocal.fromLocalDatastore();
+          queryLocal.whereEqualTo("userId", user.getUsername());
+          try {
+              Messages.totalInboxMessages += queryLocal.count();
+          } catch (ParseException e) {
+              e.printStackTrace();
+          }
+      }
       else
-        {Utility.logout(); return mStrings;}
-
-    return mStrings;
+      {Utility.logout(); return;}
   }
 
   @Override
-  protected void onPostExecute(String[] result) {
-    Constants.updatedTimestamp = false;
-    
-    if(MainActivity.mHeaderProgressBar != null)
-      MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
-    if(Messages.myadapter != null)
-      Messages.myadapter.notifyDataSetChanged();
-    if(Messages.mPullToRefreshLayout != null)
-      Messages.mPullToRefreshLayout.setRefreshing(false);
+  protected String[] doInBackground(Void... params) {
+    doInBackgroundCore();
+    return mStrings;
+  }
 
-    if(newDataStatus)
-    {
-      //Utility.toast("No new messages to show");
-      newDataStatus = false;
-    }
+  public void onPostExecuteHelper(){
+      if(MainActivity.mHeaderProgressBar!=null){
+          MainActivity.mHeaderProgressBar.post(new Runnable() {
+              @Override
+              public void run() {
+                  onPostExecuteCore();
+              }
+          });
+      }
+  }
+
+  public void onPostExecuteCore(){
+      Constants.updatedTimestamp = false;
+
+      if(MainActivity.mHeaderProgressBar != null)
+          MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+      if(Messages.myadapter != null)
+          Messages.myadapter.notifyDataSetChanged();
+      if(Messages.mPullToRefreshLayout != null)
+          Messages.mPullToRefreshLayout.setRefreshing(false);
+
+      if(newDataStatus)
+      {
+          //Utility.toast("No new messages to show");
+          newDataStatus = false;
+      }
 
 
     /* Handle 'seen' of messages. Assume for now that since app is opened, user would have
@@ -128,10 +141,10 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
                   Messages.mPullToRefreshLayout.post(new Runnable() {
                       @Override
                       public void run() {
-                        Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
-                        if(Messages.myadapter != null){
-                            Messages.myadapter.notifyDataSetChanged();
-                        }
+                          Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
+                          if(Messages.myadapter != null){
+                              Messages.myadapter.notifyDataSetChanged();
+                          }
                       }
                   });
               }
@@ -141,6 +154,11 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       Thread t = new Thread(r);
       t.setPriority(Thread.MIN_PRIORITY);
       t.start();
+  }
+
+  @Override
+  protected void onPostExecute(String[] result) {
+      onPostExecuteCore();
       super.onPostExecute(result);
   }
 }

@@ -13,6 +13,7 @@ import com.parse.ParseUser;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
+import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 
 import BackGroundProcesses.Inbox;
@@ -359,12 +360,21 @@ public class Tools {
    * Setting counter to update
    */
   public static void updateMsgs() {
-    final Handler handler = new Handler();
+//    final Handler handler = new Handler();
     Timer timer = new Timer();
     TimerTask doAsynchronousTask = new TimerTask() {
       @Override
       public void run() {
-        handler.post(new Runnable() {
+          Runnable r = new Runnable() {
+              @Override
+              public void run() {
+                  new Refresher(2);
+              }
+          };
+          Thread t = new Thread(r);
+          t.setPriority(Thread.MIN_PRIORITY);
+          t.start();
+        /*handler.post(new Runnable() {
           public void run() {
             try {
 
@@ -372,10 +382,13 @@ public class Tools {
             } catch (Exception e) {
             }
           }
-        });
+        });*/
       }
     };
-    timer.schedule(doAsynchronousTask, 0, 900000); // execute in every 15min
+    timer.schedule(doAsynchronousTask, 15 * Constants.MINUTE_MILLISEC, 15 * Constants.MINUTE_MILLISEC); // execute in every 15min
+     //first execution after 15 minutes.
+     // The immediate execution of Refresher should be from main activity. Because if first timer task is scheduled 0 seconds after invocation here
+     // during first login, two instances of Refresher would be running : one due to MainActivity.onCreate and other due to this timer task
   }
 
 

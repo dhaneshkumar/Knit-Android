@@ -48,109 +48,125 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
 
   @Override
   protected String[] doInBackground(Void... params) {
-    ParseUser user = ParseUser.getCurrentUser();
+    doInBackgroundCore();
+    return mString;
+  }
 
-    Utility.ls("joined classrooms running....");
-    if (user != null) {
-      joinedGroups = user.getList(Constants.JOINED_GROUPS);
+  public void doInBackgroundCore(){
+      ParseUser user = ParseUser.getCurrentUser();
 
-      if (joinedGroups == null) {
-        joinedGroups = new ArrayList<List<String>>();
+      Utility.ls("joined classrooms running....");
+      if (user != null) {
+          joinedGroups = user.getList(Constants.JOINED_GROUPS);
 
-      } else {
+          if (joinedGroups == null) {
+              joinedGroups = new ArrayList<List<String>>();
+
+          } else {
 
 
         /*
          * Adding new joined list
          */
-        for (int i = 0; i < joinedGroups.size(); i++) {
+              for (int i = 0; i < joinedGroups.size(); i++) {
 
-          String grpCode = joinedGroups.get(i).get(0).trim();
+                  String grpCode = joinedGroups.get(i).get(0).trim();
 
           /*
            * Log.d("joined"," updated joined grouos --------------------------");
-           * 
+           *
            * if(user1.getJoined_groups()!= null) Log.d("joined", user1.getJoined_groups()); else
            * Log.d("joined", "empty after refreshing");
            */
 
-          Queries2 joinQuery = new Queries2();
-          try {
-            if (!joinQuery.isCodegroupExist(grpCode, userId)) {
-              joinQuery.storeCodegroup(grpCode, userId);
+                  Queries2 joinQuery = new Queries2();
+                  try {
+                      if (!joinQuery.isCodegroupExist(grpCode, userId)) {
+                          joinQuery.storeCodegroup(grpCode, userId);
 
-            } else {
-              SessionManager session = new SessionManager(Application.getAppContext());
-              int sessionCount = session.getAppOpeningCount();
+                      } else {
+                          SessionManager session = new SessionManager(Application.getAppContext());
+                          int sessionCount = session.getAppOpeningCount();
 
-              if (sessionCount % Config.senderPicUpdationCount == 0)
-              {
-                joinQuery.updateProfileImage(grpCode, userId);
-                
-              }
-            }
+                          if (sessionCount % Config.senderPicUpdationCount == 0)
+                          {
+                              joinQuery.updateProfileImage(grpCode, userId);
 
-           
+                          }
+                      }
 
-          } catch (ParseException e) {
-            e.printStackTrace();
-          }
 
-          // System.out.println("code : " + grpCode);
 
-          try {
-            if (!joinQuery.isGroupMemberExist(grpCode, userId)) {
-              joinQuery.storeGroupMember(grpCode, userId, true);
-            } else {
-            }
+                  } catch (ParseException e) {
+                      e.printStackTrace();
+                  }
 
-          } catch (ParseException e) {
+                  // System.out.println("code : " + grpCode);
+
+                  try {
+                      if (!joinQuery.isGroupMemberExist(grpCode, userId)) {
+                          joinQuery.storeGroupMember(grpCode, userId, true);
+                      } else {
+                      }
+
+                  } catch (ParseException e) {
 
             /*
              * First time there wont be any GroupMember class. So, It will through exception in that
              * case.
              */
-            try {
-              joinQuery.storeGroupMember(grpCode, userId, false);
-            } catch (ParseException e1) {
-            }
+                      try {
+                          joinQuery.storeGroupMember(grpCode, userId, false);
+                      } catch (ParseException e1) {
+                      }
+                  }
+              }
           }
-        }
       }
-    }
-    return mString;
   }
 
+  public void onPostExecuteHelper(){
+      if(JoinedClasses.mHeaderProgressBar != null){
+          JoinedClasses.mHeaderProgressBar.post(new Runnable() {
+              @Override
+              public void run() {
+                onPostExecuteCore();
+              }
+          });
+      }
+  }
 
+  public void onPostExecuteCore(){
+      JoinedClasses.joinedGroups = joinedGroups;
+      if (JoinedClasses.joinedadapter != null)
+          JoinedClasses.joinedadapter.notifyDataSetChanged();
+
+
+      if (JoinedClasses.mHeaderProgressBar != null)
+          JoinedClasses.mHeaderProgressBar.setVisibility(View.GONE);
+  }
 
   @Override
   protected void onPostExecute(String[] result) {
+    onPostExecuteCore();
 
-    JoinedClasses.joinedGroups = joinedGroups;
-    if (JoinedClasses.joinedadapter != null)
-      JoinedClasses.joinedadapter.notifyDataSetChanged();
-
-
-    if (JoinedClasses.mHeaderProgressBar != null)
-      JoinedClasses.mHeaderProgressBar.setVisibility(View.GONE);
-
-    if (loginFlag) {
-      /*
-       * Updating inbox msgs
-       */
-
-      Inbox newInboxMsg = new Inbox(null);
-      newInboxMsg.execute();
-
-
-
-      /*
-       * Updating created class rooms list
-       */
-
-      CreatedClassRooms createdClassList = new CreatedClassRooms();
-      createdClassList.execute();
-    }
+//    if (loginFlag) {
+//      /*
+//       * Updating inbox msgs
+//       */
+//
+//      Inbox newInboxMsg = new Inbox(null);
+//      newInboxMsg.execute();
+//
+//
+//
+//      /*
+//       * Updating created class rooms list
+//       */
+//
+//      CreatedClassRooms createdClassList = new CreatedClassRooms();
+//      createdClassList.execute();
+//    }
 
 
     // Utility.toast("joined grp refreshed");
