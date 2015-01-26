@@ -203,6 +203,7 @@ public class Refresher {
             }
 
         } else {
+            Log.d("DEBUG_REFRESHER", "User NULL");
             SessionManager session = new SessionManager(Application.getAppContext());
             session.reSetAppOpeningCount();
         }

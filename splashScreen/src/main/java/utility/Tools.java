@@ -385,10 +385,9 @@ public class Tools {
         });*/
       }
     };
-    timer.schedule(doAsynchronousTask, 15 * Constants.MINUTE_MILLISEC, 15 * Constants.MINUTE_MILLISEC); // execute in every 15min
-     //first execution after 15 minutes.
-     // The immediate execution of Refresher should be from main activity. Because if first timer task is scheduled 0 seconds after invocation here
-     // during first login, two instances of Refresher would be running : one due to MainActivity.onCreate and other due to this timer task
+    Log.d("SPLASH_SCREEN_CALLING_REFRESHER", "calling refresher");
+    timer.schedule(doAsynchronousTask, 0, 15 * Constants.MINUTE_MILLISEC); // execute in every 15min starting right now
+
   }
 
 

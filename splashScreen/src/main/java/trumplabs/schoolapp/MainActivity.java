@@ -92,24 +92,24 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             session.setAppOpeningCount();
 
             if (!session.getSignUpAccount()) {
-                Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress bar");
+                Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress");
                 progressBarLayout.setVisibility(View.VISIBLE);
                 editLayout.setVisibility(View.GONE);
 
+                //call refresher
+                Runnable r = new Runnable() {
+                    @Override
+                    public void run() {
+                        new Refresher(2);
+                    }
+                };
+                Thread t = new Thread(r);
+                t.setPriority(Thread.MIN_PRIORITY);
+                t.start();
             }
         }
 
-        //call refresher always
-        Log.d("MAINACTIVITY_CALLING_REFRESHER", "calling refresher");
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                new Refresher(2);
-            }
-        };
-        Thread t = new Thread(r);
-        t.setPriority(Thread.MIN_PRIORITY);
-        t.start();
+
 
 
         String userId = parseObject.getUsername();
