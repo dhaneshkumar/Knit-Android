@@ -526,13 +526,17 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         generateLocalMessage(content, code, user, alarmContext);
     }
 
-    public static void generateLocalMessage(String content, String code, ParseUser user, Context context){
+    public static void generateLocalMessage(String content, String code, ParseUser user, Context context) {
+        generateLocalMessage(content, code, Constants.DEFAULT_CREATOR, Constants.DEFAULT_NAME, user, context);
+    }
+
+        public static void generateLocalMessage(String content, String code, String creator, String grpName, ParseUser user, Context context){
         SessionManager session = new SessionManager(Application.getAppContext());
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
-        localMsg.put("Creator", Constants.DEFAULT_CREATOR);
+        localMsg.put("Creator", creator);
         localMsg.put("code", code);
-        localMsg.put("name", Constants.DEFAULT_NAME);
+        localMsg.put("name", grpName);
         localMsg.put("title", content);
         localMsg.put("userId", user.getUsername());
 

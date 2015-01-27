@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 
 import library.UtilString;
+import notifications.AlarmReceiver;
+import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -369,7 +371,7 @@ public class AddChildToClass extends MyActionBarActivity {
                   
                   
                // Create our Installation query
-                  ParseQuery pushQuery = ParseInstallation.getQuery();
+                /*  ParseQuery pushQuery = ParseInstallation.getQuery();
                   pushQuery.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
                    
                   // Send push notification to query
@@ -383,51 +385,14 @@ public class AddChildToClass extends MyActionBarActivity {
                         push.sendInBackground();
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }
-                  
-                  final ParseObject localMsg = new ParseObject("LocalMessages");
-                  localMsg.put("Creator", a.getString("Creator"));
-                  localMsg.put("code", code);
-                  localMsg.put("name", grpName);
-                  localMsg.put("title", utility.Config.welcomeMsg);
-                  localMsg.put("userId", userId);
-                  localMsg.put("senderId", grpSenderId);
-                  
-                  try {
-                    
-                    if(session.getCurrentTime() == null)
-                    {
-                        boolean test = user.getBoolean("test");
-                        test = !test;
-                        user.put("test", test);
-                      user.put("test", true);
-                        try {
-                            user.save();
+                    }*/
 
-                            Date currentDate = user.getUpdatedAt();
 
-                            SessionManager sm = new SessionManager(Application.getAppContext());
-                            sm.setCurrentTime(currentDate);
+                    //locally generating joiining notification and inbox msg
+                    NotificationGenerator.generateNotification(getApplicationContext(), utility.Config.welcomeMsg, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                    AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, code, a.getString("Creator"), grpName, user, getApplicationContext());
 
-                            if(currentDate != null) {
-                                localMsg.put(Constants.TIMESTAMP, currentDate);
-                                localMsg.put("creationTime", currentDate);
-                            }
-                                localMsg.pin();
 
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    else
-                    {
-                      localMsg.put(Constants.TIMESTAMP, session.getCurrentTime());
-                      localMsg.put("creationTime", session.getCurrentTime());
-                      localMsg.pin();
-                    }
-                  } catch (java.text.ParseException e) {
-                  }
-                  
                   /*
                   Retrieve suggestion classes and  store them in locally
                    */
