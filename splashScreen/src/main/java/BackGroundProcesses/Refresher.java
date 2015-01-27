@@ -46,21 +46,23 @@ public class Refresher {
             boolean test = freshUser.getBoolean("test");
             test = !test;
             freshUser.put("test", true);
-            freshUser.saveInBackground(new SaveCallback() {
 
-                @Override
-                public void done(ParseException e) {
-                    Date currentDate = freshUser.getUpdatedAt();
-                    sm.setCurrentTime(currentDate);
-                }
-            });
+            try{
+                freshUser.save();
+                Date currentDate = freshUser.getUpdatedAt();
+                sm.setCurrentTime(currentDate);
+                Log.d("splashScreen", "ccc");
+                freshUser.fetch();
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+                Log.d("DEBUG_REFRESHER",  "fresh user save failed !!");
+            }
 
-
-            Log.d("splashScreen", "ccc");
-            freshUser.fetchInBackground();
+            Log.d("DEBUG_REFRESHER",  "app opening count " + appOpeningCount);
 
             if (appOpeningCount > 0) {
-
+                Log.d("DEBUG_REFRESHER",  "calling background tasks");
         /*
          * Updating joined group list
          */
@@ -76,12 +78,13 @@ public class Refresher {
                 Inbox newInboxMsg = new Inbox(null);
                 newInboxMsg.doInBackgroundCore();
                 newInboxMsg.onPostExecuteHelper(); //done
+                newInboxMsg.syncOtherInboxDetails();
 
        /*
         *   Updating counts for outbox messages
         *
         */
-                Outbox.refreshCountInBackground(); //TODO to remove new thread within this refreshCountInBackground() fn
+                Outbox.refreshCountCore(); //simple function
 
         /*
             Update total count of outbox messages
@@ -141,6 +144,7 @@ public class Refresher {
                 Inbox newInboxMsg = new Inbox(null);
                 newInboxMsg.doInBackgroundCore();
                 newInboxMsg.onPostExecuteHelper(); //done
+                newInboxMsg.syncOtherInboxDetails();
 
                 //call created classrooms
                 CreatedClassRooms createdClassList = new CreatedClassRooms();

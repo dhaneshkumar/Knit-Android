@@ -5,25 +5,23 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.HashMap;
 import java.util.List;
+
+import additionals.SchoolAutoComplete;
 
 import additionals.ReadSchoolFile;
 import joinclasses.School;
 import library.UtilString;
-import loginpages.Signup1Class;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
-import utility.SessionManager;
 import utility.Utility;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -37,13 +35,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import baseclasses.MyActionBarActivity;
 
@@ -558,8 +554,10 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
           /*
           Setting Autocomplete textview in popup and its adapter to it
            */
-                final AutoCompleteTextView schoolInput = new AutoCompleteTextView(this);
+//                final AutoCompleteTextView schoolInput = new AutoCompleteTextView(this);
+                final SchoolAutoComplete.DelayAutoCompleteTextView schoolInput = new SchoolAutoComplete.DelayAutoCompleteTextView(this, null);
                 schoolInput.setThreshold(1);
+                schoolInput.setAdapter(new SchoolAutoComplete.PlacesAutoCompleteAdapter(this, R.layout.school_autocomplete_list_item, R.id.school_location));
 
                 String schoolName = school1.getSchoolName(school);
                 if (schoolName != null) {
@@ -570,7 +568,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 schoolLayout.addView(schoolInput, schoolParmas);
                 schoolDialog.setView(schoolLayout);
 
-                ArrayAdapter adapter;
+                /*ArrayAdapter adapter;
 
                     ReadSchoolFile readSchoolFile = new ReadSchoolFile();
                     try {
@@ -580,7 +578,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
+                    }*/
 
 
                 //button responses

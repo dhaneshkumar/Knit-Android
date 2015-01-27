@@ -69,6 +69,8 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
       if (user != null) {
 
+          Log.d("DEBUG_INBOX_UPDATING_INBOX_COUNT", "updating total inbox count");
+
           ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
           query.fromLocalDatastore();
           query.whereEqualTo("userId", user.getUsername());
@@ -89,6 +91,7 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       }
       else
       {Utility.logout(); return;}
+      Log.d("DEBUG_INBOX_UPDATING_INBOX_COUNT", "updated " + Messages.totalInboxMessages);
   }
 
   @Override
@@ -123,42 +126,45 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
           //Utility.toast("No new messages to show");
           newDataStatus = false;
       }
+  }
 
+  public void syncOtherInboxDetails(){
+      Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
+      SeenHandler seenHandler = new SeenHandler();
+      seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
 
-    /* Handle 'seen' of messages. Assume for now that since app is opened, user would have
-    seen the new messages. Do this in a seperate thread */
-      Runnable r = new Runnable() {
-          @Override
-          public void run(){
-              Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
-              SeenHandler seenHandler = new SeenHandler();
-              seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
+      SyncMessageDetails.syncStatus();
+      SyncMessageDetails.fetchLikeConfusedCountInbox();
 
-              SyncMessageDetails.syncStatus();
-              SyncMessageDetails.fetchLikeConfusedCountInbox();
-
-              if(Messages.mPullToRefreshLayout != null){
-                  Messages.mPullToRefreshLayout.post(new Runnable() {
-                      @Override
-                      public void run() {
-                          Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
-                          if(Messages.myadapter != null){
-                              Messages.myadapter.notifyDataSetChanged();
-                          }
-                      }
-                  });
+      if(Messages.mPullToRefreshLayout != null){
+          Messages.mPullToRefreshLayout.post(new Runnable() {
+              @Override
+              public void run() {
+                  Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
+                  if(Messages.myadapter != null){
+                      Messages.myadapter.notifyDataSetChanged();
+                  }
               }
-          }
-      };
-
-      Thread t = new Thread(r);
-      t.setPriority(Thread.MIN_PRIORITY);
-      t.start();
+          });
+      }
   }
 
   @Override
   protected void onPostExecute(String[] result) {
       onPostExecuteCore();
       super.onPostExecute(result);
+
+      /* Handle 'seen' of messages. Assume for now that since app is opened, user would have
+    seen the new messages. Do this in a seperate thread */
+      Runnable r = new Runnable() {
+          @Override
+          public void run(){
+            syncOtherInboxDetails();
+          }
+      };
+
+      Thread t = new Thread(r);
+      t.setPriority(Thread.MIN_PRIORITY);
+      t.start();
   }
 }

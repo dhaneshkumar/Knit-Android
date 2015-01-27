@@ -12,6 +12,7 @@ import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
 import utility.Utility;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import com.parse.ParseException;
@@ -91,6 +92,7 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
      */
       ParseUser user = ParseUser.getCurrentUser();
       if (user != null) {
+          Log.d("DEBUG_CREATED_CLASSROOMS", "onPostExecute() - updating memberlist using asynctask START");
           List<List<String>> createdGroupList = user.getList(Constants.CREATED_GROUPS);
 
           if (createdGroupList != null) {
@@ -114,12 +116,9 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
                       MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, false);
                       memberList.execute();
                   }
-
-          /*
-           * Retriving class msgs
-           */
               }
           }
+          Log.d("DEBUG_CREATED_CLASSROOMS", "onPostExecute() - updating memberlist OVER");
       }
   }
 
