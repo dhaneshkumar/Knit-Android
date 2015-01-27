@@ -441,16 +441,16 @@ public class Utility extends MyActionBarActivity {
     }
 
     public static void updateCurrentTime(ParseUser freshUser, SessionManager session){
-        freshUser.put("test", true);
+        boolean test = freshUser.getBoolean("test");
+        test = !test;
+        freshUser.put("test", test);
         try{
             freshUser.save();
             Date currentDate = freshUser.getUpdatedAt();
             session.setCurrentTime(currentDate);
         }
         catch (com.parse.ParseException e){
-
+            e.printStackTrace();
         }
     }
-
-
 }

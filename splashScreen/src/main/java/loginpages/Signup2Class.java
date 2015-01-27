@@ -172,7 +172,10 @@ public class Signup2Class extends ActionBarActivity {
                                     } catch (ParseException e2) {
                                     }
                                     Utility.ls("signing up............1.5..");
-                                    user.put("test", true);
+
+                                    boolean test = user.getBoolean("test");
+                                    test = !test;
+                                    user.put("test", test);
 
                                     //saving in background
                                     try{

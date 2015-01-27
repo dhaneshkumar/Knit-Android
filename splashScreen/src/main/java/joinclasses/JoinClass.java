@@ -337,7 +337,10 @@ public class JoinClass extends Fragment {
                                     try {
                                         if(session.getCurrentTime() == null)
                                         {
-                                            user.put("test", true);
+
+                                            boolean test = user.getBoolean("test");
+                                            test = !test;
+                                            user.put("test", test);
                                             try {
                                                 user.save();
                                                 Date currentDate = user.getUpdatedAt();

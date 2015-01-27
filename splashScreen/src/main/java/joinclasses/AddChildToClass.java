@@ -397,7 +397,9 @@ public class AddChildToClass extends MyActionBarActivity {
                     
                     if(session.getCurrentTime() == null)
                     {
-                      
+                        boolean test = user.getBoolean("test");
+                        test = !test;
+                        user.put("test", test);
                       user.put("test", true);
                         try {
                             user.save();

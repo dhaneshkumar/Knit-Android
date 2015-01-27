@@ -36,7 +36,7 @@ public class Refresher {
        */
             boolean test = freshUser.getBoolean("test");
             test = !test;
-            freshUser.put("test", true);
+            freshUser.put("test", test);
             freshUser.saveInBackground(new SaveCallback() {
 
                 @Override
