@@ -64,34 +64,38 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       
       Messages.msgs = newMsgs;
     }
-    
-    //update Messages.totalInboxMessages
-    ParseUser user = ParseUser.getCurrentUser();
 
-    if (user != null) {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
-        query.fromLocalDatastore();
-        query.whereEqualTo("userId", user.getUsername());
-        try {
-            Messages.totalInboxMessages = query.count();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
-        queryLocal.fromLocalDatastore();
-        queryLocal.whereEqualTo("userId", user.getUsername());
-        try {
-            Messages.totalInboxMessages += queryLocal.count();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-      else
-        {Utility.logout(); return mStrings;}
+    updateInboxMessageCount();
 
     return mStrings;
+  }
+
+  public static void updateInboxMessageCount(){
+      //update Messages.totalInboxMessages
+      ParseUser user = ParseUser.getCurrentUser();
+
+      if (user != null) {
+
+          ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+          query.fromLocalDatastore();
+          query.whereEqualTo("userId", user.getUsername());
+          try {
+              Messages.totalInboxMessages = query.count();
+          } catch (ParseException e) {
+              e.printStackTrace();
+          }
+
+          ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
+          queryLocal.fromLocalDatastore();
+          queryLocal.whereEqualTo("userId", user.getUsername());
+          try {
+              Messages.totalInboxMessages += queryLocal.count();
+          } catch (ParseException e) {
+              e.printStackTrace();
+          }
+      }
+      else
+      {Utility.logout(); return;}
   }
 
   @Override
@@ -119,10 +123,10 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
           public void run(){
               Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
               SeenHandler seenHandler = new SeenHandler();
-              seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
+              seenHandler.syncSeenJob(); //cloud function //don't run as async task as already this is in a background thread.
 
-              SyncMessageDetails.syncStatus();
-              SyncMessageDetails.fetchLikeConfusedCountInbox();
+              SyncMessageDetails.syncStatus(); //cloud function
+              SyncMessageDetails.fetchLikeConfusedCountInbox(); //cloud function
 
               if(Messages.mPullToRefreshLayout != null){
                   Messages.mPullToRefreshLayout.post(new Runnable() {

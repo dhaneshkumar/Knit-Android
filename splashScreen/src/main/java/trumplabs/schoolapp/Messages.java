@@ -167,6 +167,7 @@ public class Messages extends Fragment {
         query = new Queries();
         try {
             msgs = query.getLocalInboxMsgs();
+            Inbox.updateInboxMessageCount();
         } catch (ParseException e) {
         }
 
