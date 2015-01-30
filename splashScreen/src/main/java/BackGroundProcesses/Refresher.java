@@ -41,8 +41,10 @@ public class Refresher {
 
                 @Override
                 public void done(ParseException e) {
-                    Date currentDate = freshUser.getUpdatedAt();
-                    sm.setCurrentTime(currentDate);
+                    if(e == null) {
+                        Date currentDate = freshUser.getUpdatedAt();
+                        sm.setCurrentTime(currentDate);
+                    }
                 }
             });
 
