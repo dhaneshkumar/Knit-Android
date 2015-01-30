@@ -10,6 +10,9 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Filter;
 import android.widget.Filterable;
 
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +24,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by ashish on 24/1/15.
@@ -37,52 +42,39 @@ public class SchoolAutoComplete {
 
     private static final String API_KEY = "AIzaSyCZ5_QxsDDJMaiCUCHDZp2A-OA_AnTYm74";
 
-    private static ArrayList<String> autocomplete(String input) {
-        ArrayList<String> resultList = null;
+    private static ArrayList<String> areaAutoComplete(String input) {
+        ArrayList<String> resultList = new ArrayList<>();
+        HashMap<String, String> parameters = new HashMap<String, String>();
 
-        HttpURLConnection conn = null;
-        StringBuilder jsonResults = new StringBuilder();
+        parameters.put("partialAreaName", input);
         try {
-            StringBuilder sb = new StringBuilder(PLACES_API_BASE + TYPE_AUTOCOMPLETE + OUT_JSON);
-            sb.append("?key=" + API_KEY);
-            sb.append("&input=" + URLEncoder.encode(input, "utf8"));
-            sb.append("&types="+LOCATION_TYPE);
-
-            Log.d(LOG_TAG, "calling location api autocomplete request");
-            URL url = new URL(sb.toString());
-            conn = (HttpURLConnection) url.openConnection();
-            InputStreamReader in = new InputStreamReader(conn.getInputStream());
-
-            // Load the results into a StringBuilder
-            int read;
-            char[] buff = new char[1024];
-            while ((read = in.read(buff)) != -1) {
-                jsonResults.append(buff, 0, read);
-            }
-        } catch (MalformedURLException e) {
-            Log.e(LOG_TAG, "Error processing Places API URL", e);
-            return resultList;
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "Error connecting to Places API", e);
-            return resultList;
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
+            ArrayList<String> updatedmsg = ParseCloud.callFunction("areaAutoComplete", parameters);
+            return  updatedmsg;
+        }
+        catch (ParseException e){
+            e.printStackTrace();
         }
 
-        try {
-            // Create a JSON object hierarchy from the results
-            JSONObject jsonObj = new JSONObject(jsonResults.toString());
-            JSONArray predsJsonArray = jsonObj.getJSONArray("predictions");
+        return resultList;
+    }
 
-            // Extract the Place descriptions from the results
-            resultList = new ArrayList<String>(predsJsonArray.length());
-            for (int i = 0; i < predsJsonArray.length(); i++) {
-                resultList.add(predsJsonArray.getJSONObject(i).getString("description"));
+    public static ArrayList<String> schoolsNearby(String input) {
+        ArrayList<String> resultList = new ArrayList<>();
+        HashMap<String, String> parameters = new HashMap<String, String>();
+
+        parameters.put("areaName", input);
+        try {
+            Log.d("DEBUG_SCHOOL_AUTOCOMPLETE", "calling schoolsNearby() with " + input);
+            ArrayList<String> schools = ParseCloud.callFunction("schoolsNearby", parameters);
+            Log.d("DEBUG_SCHOOL_AUTOCOMPLETE", "No of schools fetched " + schools.size());
+            for(int i=0; i<schools.size(); i++){
+                Log.d("DEBUG_SCHOOL_AUTOCOMPLETE", "school " + i + " " + schools.get(i));
             }
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "Cannot process JSON results", e);
+            return  schools;
+        }
+
+        catch (ParseException e){
+            e.printStackTrace();
         }
 
         return resultList;
@@ -113,7 +105,7 @@ public class SchoolAutoComplete {
                     FilterResults filterResults = new Filter.FilterResults();
                     if (constraint != null) {
                         // Retrieve the autocomplete results.
-                        resultList = autocomplete(constraint.toString());
+                        resultList = areaAutoComplete(constraint.toString());
 
                         // Assign the data to the FilterResults
                         filterResults.values = resultList;
