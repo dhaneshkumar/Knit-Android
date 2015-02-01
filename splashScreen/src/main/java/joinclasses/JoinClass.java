@@ -310,8 +310,8 @@ public class JoinClass extends Fragment {
 
 
                                     //locally generating joiining notification and inbox msg
-                                    NotificationGenerator.generateNotification(getActivity().getApplicationContext(), utility.Config.welcomeMsg, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                                    AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, code, a.getString("Creator"), grpName, user, getActivity().getApplicationContext());
+                                    NotificationGenerator.generateNotification(getActivity().getApplicationContext(), utility.Config.welcomeMsg, grpName, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                                    AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, code, a.getString("Creator"), a.getString("senderId"), grpName, user);
 
 
 

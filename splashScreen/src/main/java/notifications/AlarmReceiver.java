@@ -523,14 +523,21 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     private void generateLocalMessage(String content, String code) {
-        generateLocalMessage(content, code, user, alarmContext);
+        generateLocalMessage(content, code, user);
     }
 
-    public static void generateLocalMessage(String content, String code, ParseUser user, Context context) {
-        generateLocalMessage(content, code, Constants.DEFAULT_CREATOR, Constants.DEFAULT_NAME, user, context);
+    public static void generateLocalMessage(String content, String code, ParseUser user) {
+        String senderId = null;
+        if(user.getString("role").equals("teacher")){
+            senderId = Constants.DEFAULT_SENDER_ID_TEACHER;
+        }
+        else{ //students/parents
+            senderId = Constants.DEFAULT_SENDER_ID_PARENT;
+        }
+        generateLocalMessage(content, code, Constants.DEFAULT_CREATOR, senderId, Constants.DEFAULT_NAME, user);
     }
 
-        public static void generateLocalMessage(String content, String code, String creator, String grpName, ParseUser user, Context context){
+        public static void generateLocalMessage(String content, String code, String creator, String senderId, String grpName, ParseUser user){
         SessionManager session = new SessionManager(Application.getAppContext());
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
@@ -539,13 +546,8 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         localMsg.put("name", grpName);
         localMsg.put("title", content);
         localMsg.put("userId", user.getUsername());
+        localMsg.put("senderId", senderId);
 
-        if(user.getString("role").equals("teacher")){
-            localMsg.put("senderId", Constants.DEFAULT_SENDER_ID_TEACHER);
-        }
-        else{ //students/parents
-            localMsg.put("senderId", Constants.DEFAULT_SENDER_ID_PARENT);
-        }
 
         try{
             Date time = session.getCurrentTime();
