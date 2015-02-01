@@ -880,8 +880,11 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
                     SessionManager sm = new SessionManager(Application.getAppContext());
 
-                    if (groupDetails1.getUpdatedAt() != null)
+                    if (groupDetails1.getUpdatedAt() != null) {
                         sm.setCurrentTime(groupDetails1.getUpdatedAt());
+
+                        Log.d("INBOX", "local set time : " + groupDetails1.getUpdatedAt().toString());
+                    }
 
                     // pushing notification to this group
                     ClassMsgFunctions.sendMessageAsData(groupCode, typedtxt, 0, sender, grpName);

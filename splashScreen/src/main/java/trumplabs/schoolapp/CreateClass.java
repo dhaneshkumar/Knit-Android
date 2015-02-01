@@ -3,6 +3,7 @@ package trumplabs.schoolapp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import joinclasses.School;
@@ -37,6 +38,8 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import baseclasses.MyActionBarActivity;
 
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -52,11 +55,9 @@ public class CreateClass extends MyActionBarActivity {
   private LinearLayout codeviewlayout;
   private EditText classnameview;
   private String typedtxt;
-  private Queries query12;
   private String userId;
   private String codevalue;
   private boolean classNameCheckFlag = false;
-  private boolean internetFlag = false;
   Activity activity;
   private ParseUser user;
   private LinearLayout schoolButton;
@@ -74,7 +75,6 @@ public class CreateClass extends MyActionBarActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.create_class_new);
 
-    query12 = new Queries();
     actionbar = getSupportActionBar();
     actionbar.setDisplayHomeAsUpEnabled(true);
     createclasslayout = (ScrollView) findViewById(R.id.createclasslayout);
@@ -121,22 +121,12 @@ public class CreateClass extends MyActionBarActivity {
       @Override
       public void onClick(View v) {
 
+        //typed class name
         typedtxt = classnameview.getText().toString().trim();
-        typedtxt = typedtxt.replaceAll("'", " ");
-        typedtxt = typedtxt.replaceAll("`", " ");
-        typedtxt = typedtxt.replaceAll("\"", " ");
-
-
-
 
         if (!UtilString.isBlank(typedtxt)) {
 
 
-            if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
-                 typedtxt += " "+selectedStandard;
-
-            if(!UtilString.isBlank(selectedDivison) && !selectedDivison.equals("NA"))
-            typedtxt += selectedDivison;
 
           if (Utility.isInternetOn(activity)) {
             createGroup jg = new createGroup();
@@ -295,106 +285,90 @@ public class CreateClass extends MyActionBarActivity {
     Utility.isInternetOn(this);
   }
 
-  private class createGroup extends AsyncTask<Void, Void, String[]> {
+  private class createGroup extends AsyncTask<Void, Void, Boolean> {
 
-    String[] mStrings;
-    boolean creationFlag;
 
     @Override
-    protected String[] doInBackground(Void... params) {
+    protected Boolean doInBackground(Void... param) {
+
+        //setting parameters
+        HashMap<String, Object> params = new HashMap<String, Object>();
+
+        //setting schoolId, classname, standard and division
+        String schoolId = user.getString("school");
+        if (!selectedSchool.trim().equals("Other"))
+            params.put("schoolId", schoolId);
+
+        params.put("divis(on", selectedDivison);
+        params.put("standard", selectedStandard);
+        params.put("classname", typedtxt);
+
+        ParseObject codeGroupObject = null;
 
 
-        creationFlag= false;
-      if (!query12.checkClassNameExist(typedtxt)) {
+        Log.d("CREATE", "calling parse cloud function....");
 
-        codevalue = Utility.generateCode().trim();
-
+        //calling parse cloud function to create class
         try {
-          while (Queries.isGroupExist(codevalue)) {
-            codevalue = Utility.generateCode().trim();
-          }
-        } catch (ParseException e2) {
+            codeGroupObject = ParseCloud.callFunction("createnewclass3", params);
+
+            Log.d("CREATE", "successfully retrieved....");
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+            Log.d("CREATE", "got error....");
+
+            return false;
         }
 
-        codetxtview.setText(codevalue);
 
-        /*
-         * Pushing newly created entry to users table in "Created_groups" columns
-         */
-        user = ParseUser.getCurrentUser();
-        
-        
-        if (user != null) {
+        if (codeGroupObject == null)
+        {
+            Log.d("CREATE", "got null object....");
+            return false;
+        }
+        else {
+            Log.d("CREATE", "got  good one....");
+            //successfully created your class
 
-          /*
-           * pushing group informations in "group-details table"
-           */
-
-
-            Log.d("create class", "creating class .................");
-
-          final ParseObject groupDetails = new ParseObject("Codegroup");
-          groupDetails.put("code", codevalue);
-          groupDetails.put("name", typedtxt);
-          groupDetails.put("Creator", user.get("name").toString());
-          groupDetails.put("senderId", userId);
-
-          if (user.getString("sex") != null)
-            groupDetails.put("sex", user.getString("sex"));
-
-          if (ParseUser.getCurrentUser().get("picName") != null)
-            groupDetails.put("picName", ParseUser.getCurrentUser().get("picName"));
-
-          if (ParseUser.getCurrentUser().get("pid") != null)
-            groupDetails.put("senderPic", ParseUser.getCurrentUser().getParseFile("pid"));
-
-          groupDetails.put("classExist", true);
-          
-          String schoolId = user.getString("school");
-          if(! selectedSchool.trim().equals("Other"))
-          {
-            groupDetails.put("school", schoolId);
-            Utility.ls(schoolId);
-          }
-            
-          if(!selectedDivison.equals("NA"))
-            groupDetails.put("divison", selectedDivison);
-          
-          if(!selectedStandard.equals("NA"))
-            groupDetails.put("standard", selectedStandard);
-
-
-            Log.d("create class", "saving codegroup table .................");
+            //locally saving codegroup entry corresponding to that class
+            codeGroupObject.put("userId", userId);
             try {
-                groupDetails.save();
-
-                user.addUnique("Created_groups", Arrays.asList(codevalue, typedtxt));
-                user.saveEventually();
-                groupDetails.put("userId", userId);
-                groupDetails.pin();
-
-
-                creationFlag= true;
-
+                codeGroupObject.pin();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
+            //retrieving class-code
+            codevalue = codeGroupObject.getString("code");
 
-        } else
-          {Utility.logout(); return mStrings;}
-      } else {
-        classNameCheckFlag = true;
-      }
+            //setting class-code to instruction view
+            codetxtview.setText(codevalue);
 
-      return mStrings;
+            //retrieving class name
+            typedtxt = codeGroupObject.getString("name");
+
+            //Adding in user
+            //user.addUnique("Created_groups", Arrays.asList(codevalue, classname));
+            //user.saveEventually();
+
+
+            //fetching changes made to created groups of user
+            try {
+                user.fetchIfNeeded();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
     }
 
     @Override
-    protected void onPostExecute(String[] result) {
+    protected void onPostExecute(Boolean result) {
 
 
-      if (!classNameCheckFlag && creationFlag) {
+      if (result) {
         Utility.toast("Group Creation successful");
 
         List<String> newgroup = new ArrayList<String>();
@@ -421,18 +395,17 @@ public class CreateClass extends MyActionBarActivity {
         AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, getApplicationContext());
 
 
-      } else if (classNameCheckFlag) {
+      } /*else if (classNameCheckFlag) {
         createclasslayout.setVisibility(View.VISIBLE);
         progressLayout.setVisibility(View.GONE);
         Utility.toast("Sorry. Can't create classes with same name");
         classNameCheckFlag = false;
-      }
+      }*/
       else
       {
           createclasslayout.setVisibility(View.VISIBLE);
           progressLayout.setVisibility(View.GONE);
           Utility.toast("Oops! Something went wrong. Can't create your class");
-          internetFlag = false;
       }
 
 

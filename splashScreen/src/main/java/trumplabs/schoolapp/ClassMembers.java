@@ -47,25 +47,33 @@ import com.parse.ParseUser;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
+/**
+ * Show subscriber list of a particular class
+ */
 public class ClassMembers extends Fragment {
-    Activity getactivity;
-    ListView listv;
+    private Activity getactivity;
+    private ListView listv;
     protected LayoutInflater layoutinflater;
     public static BaseAdapter myadapter;
     public static List<MemberDetails> memberDetails;
-    String groupCode = ClassContainer.classuid;
-    Queries query;
+    private String groupCode = ClassContainer.classuid;
+    private Queries query;
     boolean getDataFromServer = false; // fetch data from local
     public static SmoothProgressBar mHeaderProgressBar;
-
-    Context context;
+    private Context context;
     public static LinearLayout progressBarLayout;
     public static LinearLayout editProfileLayout;
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        layoutinflater = inflater;
+        View layoutview = inflater.inflate(R.layout.classmembers_layout, container, false);
+        return layoutview;
+    }
 
     /*
-     * Initializing variables required for calling background process
-     */
+    * Initializing variables required for calling background process
+    */
     public void intializeBackgroundParameters() {
         query = new Queries();
 
@@ -81,17 +89,13 @@ public class ClassMembers extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        layoutinflater = inflater;
-        View layoutview = inflater.inflate(R.layout.classmembers_layout, container, false);
-        return layoutview;
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
         intializeBackgroundParameters();
 
         getactivity = getActivity();
+
+        //intializing variables
         listv = (ListView) getactivity.findViewById(R.id.memberslistview);
         mHeaderProgressBar = (SmoothProgressBar) getActivity().findViewById(R.id.ptr_progress);
         progressBarLayout = (LinearLayout) getActivity().findViewById(R.id.progressBarLayout);
@@ -101,16 +105,8 @@ public class ClassMembers extends Fragment {
         listv.setAdapter(myadapter);
         super.onActivityCreated(savedInstanceState);
 
-        // refresh function
-    /*
-     * if (Utility.isInternetOn()) { getDataFromServer=true; GetDataFromServer gf = new
-     * GetDataFromServer(); gf.execute(); } else { Utility.toast("Check your Internet connection");
-     * }
-     */
-
-
+        //moving to invite parent activity
         LinearLayout inviteLayout = (LinearLayout) getActivity().findViewById(R.id.inviteLayout);
-
         inviteLayout.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -141,10 +137,12 @@ public class ClassMembers extends Fragment {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
 
+                    //showing progress bar
                     if (mHeaderProgressBar != null) {
                         Tools.runSmoothProgressBar(mHeaderProgressBar, 15);
                     }
 
+                    //refreshing member list in background
                     getDataFromServer = true;
                     MemberList memberList = new MemberList(groupCode, false, false);
                     memberList.execute();
@@ -158,6 +156,9 @@ public class ClassMembers extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    Adapter to show member list
+     */
     class myBaseAdapter extends BaseAdapter {
 
         @Override
@@ -221,9 +222,9 @@ public class ClassMembers extends Fragment {
                             switch (item.getItemId()) {
                                 case R.id.action1:
 
-                      /*
-                        Remove this child from group
-                       */
+                                  /*
+                                    Remove this child from group
+                                   */
                                     if (context != null) {
                                         showRemoveChildPopUp(popView, context, memberDetails.get(position));
                                     }

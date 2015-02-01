@@ -107,10 +107,12 @@ public class Classrooms extends Fragment {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
 
+                    //showing refreshing bar
                     if (MainActivity.mHeaderProgressBar != null) {
                         Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
                     }
 
+                    //refreshing class-list in background
                     CreatedClassRooms createdClassList = new CreatedClassRooms();
                     createdClassList.execute();
                 } else {
@@ -201,6 +203,10 @@ public class Classrooms extends Fragment {
 
     public void initialiseListViewMethods() {
 
+
+        /**
+         * setting long pressed list item functionality
+         */
         listv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
@@ -236,6 +242,9 @@ public class Classrooms extends Fragment {
         });
 
 
+        /**
+         * setting list item clicked functionality
+         */
         listv.setOnItemClickListener(new OnItemClickListener() {
 
             @Override

@@ -38,9 +38,6 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
   protected String[] doInBackground(Void... params) {
     ParseUser user = ParseUser.getCurrentUser();
 
-    Utility.ls("created classroooms running....");
-
-
     if (user != null) {
 
       try {
@@ -95,9 +92,6 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
             memberList.execute();
           }
 
-          /*
-           * Retriving class msgs
-           */
         }
       }
     }

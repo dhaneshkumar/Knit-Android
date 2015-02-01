@@ -55,6 +55,7 @@ import trumplab.textslate.R;
 import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
 import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import utility.Queries;
+import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 
@@ -460,7 +461,6 @@ public class Messages extends Fragment {
 
                 holder.confused.setText(newConfusedCount + "");
 
-
                 msgObject.put(Constants.CONFUSED_COUNT, newConfusedCount);
             }
 
@@ -654,8 +654,15 @@ public class Messages extends Fragment {
             try
 
             {
-                if (msgObject.getCreatedAt() != null)
+                if (msgObject.getCreatedAt() != null) {
                     holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
+
+                    SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                    Log.d("INBOX", "message : " + msgObject.getString("title"));
+                    Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
+                    Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
+
+                }
                 else if (msgObject.get("creationTime") != null)
                     holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
             } catch (
