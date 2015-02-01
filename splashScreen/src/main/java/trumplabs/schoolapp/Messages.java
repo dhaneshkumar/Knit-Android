@@ -90,8 +90,11 @@ public class Messages extends Fragment {
       Check for push open
        */
         if (getActivity().getIntent().getExtras() != null) {
+            Intent intent = getActivity().getIntent();
             boolean pushOpen = getActivity().getIntent().getExtras().getBoolean("pushOpen", false);
             if (pushOpen) {
+                intent.putExtra("pushOpen", false);
+                getActivity().setIntent(intent);
 
                 if (Utility.isInternetOn(getActivity())) {
                     if (mPullToRefreshLayout != null) {
@@ -102,6 +105,9 @@ public class Messages extends Fragment {
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
                 }
+            }
+            else{
+                Log.d("DEBUG_MESSAGES","pushOpen flag false");
             }
         }
 
