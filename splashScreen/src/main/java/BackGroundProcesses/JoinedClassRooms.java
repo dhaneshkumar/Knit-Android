@@ -1,6 +1,7 @@
 package BackGroundProcesses;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import com.parse.ParseException;
@@ -138,6 +139,7 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
        * Updating inbox msgs
        */
 
+        Log.d("DEBUG_JOINED_CLASSROOMS", "calling Inbox execute()");
       Inbox newInboxMsg = new Inbox(null);
       newInboxMsg.execute();
 

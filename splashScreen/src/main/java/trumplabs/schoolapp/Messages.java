@@ -98,6 +98,7 @@ public class Messages extends Fragment {
                         runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                     }
 
+                    Log.d("DEBUG_MESSAGES", "calling Inbox execute() on activity created");
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
                 }
@@ -274,6 +275,8 @@ public class Messages extends Fragment {
 
 
                     Utility.ls(" inbox has to sstart ... ");
+                    Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
+
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
 
@@ -822,6 +825,7 @@ public class Messages extends Fragment {
                     else
                         Utility.ls(" option selected  ...null ");
 
+                    Log.d("DEBUG_MESSAGES", "calling Inbox execute() on refresh option click");
 
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();

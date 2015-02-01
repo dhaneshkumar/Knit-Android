@@ -49,6 +49,7 @@ public class Refresher {
         /*
          * Updating inbox msgs
          */
+                Log.d("DEBUG_REFRESHER", "calling Inbox execute()");
 
                 Inbox newInboxMsg = new Inbox(null);
                 newInboxMsg.execute();
