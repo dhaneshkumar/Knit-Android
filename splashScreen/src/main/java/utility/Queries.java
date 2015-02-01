@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import library.UtilString;
 
@@ -17,6 +18,7 @@ import android.util.Log;
 import baseclasses.MyActivity;
 
 import com.parse.Parse;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -171,10 +173,8 @@ public class Queries extends MyActivity {
     }
 
 
+    //fetch messages from server
     public List<ParseObject> getServerInboxMsgs() {
-        // Setting latest and old time stamp
-
-
         List<ParseObject> msgList = null;
         try {
             msgList = getLocalInboxMsgs();
@@ -186,22 +186,76 @@ public class Queries extends MyActivity {
         if (msgList == null)
             msgList = new ArrayList<ParseObject>();
 
-        user = ParseUser.getCurrentUser();
 
-        if (user == null)
-            Utility.logout();
-        else {
+        //newTimeStamp has been set in getLocalInboxMessages() method
+        //if newTimeStamp is null this means that there are no local messages and we're fetching old+new messages
+        //if newTimeStamp is NOT null, fetch all new messages with timestamp > newTimeStamp
+
+        if(newTimeStamp == null){
+            HashMap<String, Integer> parameters = new HashMap<String, Integer>();
+
+            parameters.put("limit", 50);
+            try {
+                List<ParseObject> allMessages= ParseCloud.callFunction("showallclassesmessageswithlimit", parameters);
+
+                //since old messages, need to update their MessageState(like_status, confused_status)
+                if(allMessages != null) {
+                    for (int i=0; i< allMessages.size(); i++) {
+                        ParseObject msg = allMessages.get(i);
+                        ParseQuery msgStateQuery = new ParseQuery("MessageState");
+
+                        msgStateQuery.whereMatches(Constants.USERNAME, userId);
+                        msgStateQuery.whereMatches(Constants.MESSAGE_ID, msg.getObjectId());
+                        //object id won't be null as it was fetched from parse
+                        ParseObject msgState = msgStateQuery.getFirst();
+                        if(msgState != null) {
+                            msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
+                            msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
+                        }
+                        else{
+                            //default state 0 0
+                            msg.put(Constants.LIKE, false);
+                            msg.put(Constants.CONFUSING, false);
+                        }
+                    }
+                    ParseObject.pinAll(allMessages); //pin all the messages
+                    msgList.addAll(0, allMessages);
+                }
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+            }
+        }
+        else{
+            //fetch messages greater than newTimeStamp
+            HashMap<String, Date> parameters = new HashMap<String, Date>();
+
+            parameters.put("date", newTimeStamp);
 
             try {
-                user.fetchIfNeeded();
-            } catch (ParseException e2) {
+                //just fetch, set default state(like, confused = false, false)
+                List<ParseObject> allMessages= ParseCloud.callFunction("showallclassesmessageswithtime", parameters);
+                if(allMessages != null) {
+                    for(int i=0; i<allMessages.size(); i++){
+                        ParseObject msg = allMessages.get(i);
+                        msg.put(Constants.LIKE, false);
+                        msg.put(Constants.CONFUSING, false);
+                    }
+                    ParseObject.pinAll(allMessages); //pin all the messages
+                    msgList.addAll(0, allMessages); //in the beginning so that [newMessages ... followed by ... original_msgList]
+                }
             }
+            catch (ParseException e){
+                e.printStackTrace();
+            }
+        }
+
+        return msgList;
 
 
-
-      /*
+     /* *//*
        * Retrieving new msgs...
-       */
+       *//*
             List<List<String>> joinedGroups = user.getList("joined_groups");
 
             if (joinedGroups == null)
@@ -236,13 +290,13 @@ public class Queries extends MyActivity {
                         }
                     }
 
-                    /*
+                    *//*
                     newTimeStamp : most recent messages timestamp
                     joinedTime : group joining timestamp of that member
 
                     in case of new installation  :  joinedTime not locally stored, so firstly store that.
                     other cases : compare newTimeStamp & joinedTime, and pick the latest one for query
-                     */
+                     *//*
                     if (joinedTime != null) {
                         //                      Utility.ls(joinedGroups.get(i).get(0) + " joined time : " + joinedTime);
                         SessionManager session = new SessionManager(Application.getAppContext());
@@ -316,6 +370,7 @@ public class Queries extends MyActivity {
             }
         }
         return msgList;
+        */
     }
 
 
