@@ -2,8 +2,6 @@ package loginpages.test;
 
 import android.test.InstrumentationTestCase;
 
-import static junit.framework.Assert.assertEquals;
-
 /**
  * Created by Dhanesh on 1/4/2015.
  */

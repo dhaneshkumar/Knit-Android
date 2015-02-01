@@ -1,9 +1,5 @@
 package loginpages;
 
-import library.UtilString;
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
-import utility.Utility;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +7,11 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
+
+import library.UtilString;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Constants;
+import utility.Utility;
 
 public class Signup1_5Class extends ActionBarActivity {
 

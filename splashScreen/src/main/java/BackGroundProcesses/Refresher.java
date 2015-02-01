@@ -8,16 +8,15 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
 import utility.SessionManager;
+import utility.Utility;
 
 
 public class Refresher {
@@ -34,19 +33,7 @@ public class Refresher {
       /*
        * Storing current time stamp
        */
-            boolean test = freshUser.getBoolean("test");
-            test = !test;
-            freshUser.put("test", test);
-            freshUser.saveInBackground(new SaveCallback() {
-
-                @Override
-                public void done(ParseException e) {
-                    if(e == null) {
-                        Date currentDate = freshUser.getUpdatedAt();
-                        sm.setCurrentTime(currentDate);
-                    }
-                }
-            });
+            Utility.updateCurrentTimeInBackground(freshUser);
 
 
             freshUser.fetchInBackground();

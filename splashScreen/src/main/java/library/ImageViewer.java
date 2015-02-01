@@ -1,9 +1,10 @@
 package library;
 
-import trumplab.textslate.R;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.widget.ImageView;
+
+import trumplab.textslate.R;
 
 public class ImageViewer extends ActionBarActivity{
   

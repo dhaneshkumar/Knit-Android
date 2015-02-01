@@ -1,11 +1,37 @@
 package joinclasses;
 
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Point;
+import android.graphics.Typeface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewTreeObserver;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseInstallation;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
+import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import notifications.AlarmReceiver;
 import notifications.NotificationGenerator;
@@ -18,38 +44,6 @@ import utility.Queries;
 import utility.Queries2;
 import utility.SessionManager;
 import utility.Utility;
-import android.content.Context;
-import android.content.Intent;
-import android.graphics.Bitmap.Config;
-import android.graphics.Point;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewTreeObserver;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import baseclasses.MyActionBarActivity;
-
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseInstallation;
-import com.parse.ParseObject;
-import com.parse.ParsePush;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class AddChildToClass extends MyActionBarActivity {
   public static List<String> group;

@@ -1,21 +1,5 @@
 package trumplabs.schoolapp;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
-import org.apache.commons.lang3.RandomStringUtils;
-
-import trumplab.textslate.R;
-import utility.Utility;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,6 +17,23 @@ import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
+
+import org.apache.commons.lang3.RandomStringUtils;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import trumplab.textslate.R;
+import utility.Utility;
 
 public class ChooserDialog extends DialogFragment implements OnClickListener {
   File imageFile;

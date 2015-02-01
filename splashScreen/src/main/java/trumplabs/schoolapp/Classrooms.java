@@ -1,15 +1,5 @@
 package trumplabs.schoolapp;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import library.UtilString;
-import trumplab.textslate.R;
-import utility.Queries;
-import utility.Tools;
-import utility.Utility;
-import BackGroundProcesses.CreatedClassRooms;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -20,8 +10,6 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -36,6 +24,16 @@ import android.widget.TextView;
 
 import com.parse.ParseException;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import BackGroundProcesses.CreatedClassRooms;
+import library.UtilString;
+import trumplab.textslate.R;
+import utility.Queries;
+import utility.Tools;
+import utility.Utility;
 
 public class Classrooms extends Fragment {
     private Activity getactivity;

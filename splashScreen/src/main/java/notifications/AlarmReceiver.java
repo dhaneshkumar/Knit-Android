@@ -14,11 +14,8 @@ import com.parse.ParseUser;
 import java.util.Date;
 import java.util.List;
 
-import BackGroundProcesses.SeenHandler;
-import BackGroundProcesses.SyncMessageDetails;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Messages;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
@@ -80,6 +77,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning a thread for handling events");
         alarmContext = context;
+        session = new SessionManager(Application.getAppContext());
 
         user = ParseUser.getCurrentUser();
         if(user == null) {
@@ -100,9 +98,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public void checkForEvents(){
-
-        session = new SessionManager(alarmContext);
-        Utility.updateCurrentTime(user, session);
 
         if(user.getString("role").equalsIgnoreCase("parent")){
             parentNoActivity();
@@ -537,7 +532,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
         generateLocalMessage(content, code, Constants.DEFAULT_CREATOR, senderId, Constants.DEFAULT_NAME, user);
     }
 
-        public static void generateLocalMessage(String content, String code, String creator, String senderId, String grpName, ParseUser user){
+    public static void generateLocalMessage(String content, String code, String creator, String senderId, String grpName, ParseUser user){
         SessionManager session = new SessionManager(Application.getAppContext());
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
@@ -550,25 +545,9 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
 
 
         try{
-            Date time = session.getCurrentTime();
-            if(time == null){
-                boolean test = user.getBoolean("test");
-                test = !test;
-                user.put("test", test);
-                user.save();
-
-                Date currentDate = user.getUpdatedAt();
-                if(currentDate != null) {
-                    SessionManager sm = new SessionManager(Application.getAppContext());
-                    sm.setCurrentTime(currentDate);
-                }
-            }
-            if(session.getCurrentTime() != null)
-                localMsg.put("creationTime", session.getCurrentTime());
+            localMsg.put("creationTime", session.getCurrentTime());
         }
         catch (java.text.ParseException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
             e.printStackTrace();
         }
 

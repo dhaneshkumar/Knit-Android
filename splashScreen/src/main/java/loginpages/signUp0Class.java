@@ -1,6 +1,5 @@
 package loginpages;
 
-import trumplab.textslate.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
@@ -9,6 +8,8 @@ import android.support.v4.app.DialogFragment;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
+
+import trumplab.textslate.R;
 
 public class signUp0Class extends DialogFragment{
 	

@@ -2,19 +2,10 @@ package loginpages;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.os.AsyncTask;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import java.util.List;
 
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;

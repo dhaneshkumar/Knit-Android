@@ -4,10 +4,7 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.List;
 
@@ -43,17 +40,17 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
     {
       initialSize =  msgs.size();
     }
-    
-    
+
+
     newMsgs = query.getServerInboxMsgs();
-    
+
     if(newMsgs != null)
     {
       if(newMsgs.size()- initialSize == 0)
       {
         newDataStatus = true;
       }
-      
+
       /*
        * Deleting extra element from list
        */
@@ -61,38 +58,16 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       {
         newMsgs.remove(newMsgs.size()-1);
       }
-      
+
       Messages.msgs = newMsgs;
     }
-    
-    //update Messages.totalInboxMessages
-    ParseUser user = ParseUser.getCurrentUser();
 
-    if (user != null) {
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
-        query.fromLocalDatastore();
-        query.whereEqualTo("userId", user.getUsername());
-        try {
-            Messages.totalInboxMessages = query.count();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
-        queryLocal.fromLocalDatastore();
-        queryLocal.whereEqualTo("userId", user.getUsername());
-        try {
-            Messages.totalInboxMessages += queryLocal.count();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
-      else
-        {Utility.logout(); return mStrings;}
+    Messages.updateInboxTotalCount();
 
     return mStrings;
   }
+
+
 
   @Override
   protected void onPostExecute(String[] result) {

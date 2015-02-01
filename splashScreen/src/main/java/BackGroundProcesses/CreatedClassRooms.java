@@ -1,5 +1,11 @@
 package BackGroundProcesses;
 
+import android.os.AsyncTask;
+import android.view.View;
+
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,11 +16,6 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
 import utility.Utility;
-import android.os.AsyncTask;
-import android.view.View;
-
-import com.parse.ParseException;
-import com.parse.ParseUser;
 
 /*
  * Retrieve created class list in background and save it locally

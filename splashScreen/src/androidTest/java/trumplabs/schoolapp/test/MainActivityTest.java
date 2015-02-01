@@ -1,7 +1,6 @@
 package trumplabs.schoolapp.test;
 
 import android.test.ActivityInstrumentationTestCase2;
-import android.test.InstrumentationTestCase;
 
 import trumplabs.schoolapp.MainActivity;
 

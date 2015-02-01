@@ -3,13 +3,10 @@ package trumplabs.schoolapp;
 import android.os.AsyncTask;
 
 import com.parse.FunctionCallback;
-import com.parse.GetCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.SaveCallback;
 
 import java.util.HashMap;
 

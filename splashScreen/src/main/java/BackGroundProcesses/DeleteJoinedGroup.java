@@ -1,9 +1,5 @@
 package BackGroundProcesses;
 
-import java.util.List;
-
-import joinclasses.JoinedClasses;
-import utility.Utility;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +11,11 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.List;
+
+import joinclasses.JoinedClasses;
+import utility.Utility;
 
 public class DeleteJoinedGroup extends AsyncTask<Void, Void, String[]> {
   private String userId;

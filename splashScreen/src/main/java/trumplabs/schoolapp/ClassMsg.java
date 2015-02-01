@@ -987,11 +987,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                     }
 
 
-                    SessionManager sm = new SessionManager(Application.getAppContext());
-
-                    if (groupDetails1.getUpdatedAt() != null)
-                        sm.setCurrentTime(groupDetails1.getUpdatedAt());
-
                     // pushing notification to this group
                     ClassMsgFunctions.sendMessageAsData(groupCode, typedtxt, 0, sender, grpName);
                     Utility.toast("Notification Sent");
@@ -1143,13 +1138,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                     if(Outbox.outboxLayout != null && Outbox.groupDetails.size()>0)
                                         Outbox.outboxLayout.setVisibility(View.GONE);
                                 }
-                /*
-                 * Updating time
-                 */
-                                SessionManager sm = new SessionManager(Application.getAppContext());
-                                if (groupDetails1.getUpdatedAt() != null)
-                                    sm.setCurrentTime(groupDetails1.getUpdatedAt());
-
                             }
                         }
                     });

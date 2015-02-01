@@ -1,14 +1,12 @@
 package BackGroundProcesses;
 
 import android.os.AsyncTask;
-import android.view.View;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +15,6 @@ import joinclasses.JoinedClasses;
 import joinclasses.JoinedHelper;
 import joinclasses.School;
 import library.UtilString;
-import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Constants;
 import utility.Config;
 import utility.Utility;

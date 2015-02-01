@@ -1,19 +1,16 @@
 package trumplabs.schoolapp;
 
-import java.util.HashMap;
-
-import library.UtilString;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.Activity;
-import android.app.AlertDialog;
-
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParsePush;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+
+import library.UtilString;
 
 public class ClassMsgFunctions {
   

@@ -1,21 +1,5 @@
 package trumplabs.schoolapp;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import BackGroundProcesses.DeleteJoinedGroup;
-import joinclasses.AddChildToClass;
-import library.UtilString;
-import trumplab.textslate.R;
-import utility.Config;
-import utility.Queries;
-import utility.SessionManager;
-import utility.Tools;
-import utility.Utility;
-import BackGroundProcesses.MemberList;
-import BackGroundProcesses.SyncMemberList;
-import additionals.InviteParents;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -45,7 +29,18 @@ import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import BackGroundProcesses.MemberList;
+import additionals.InviteParents;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import library.UtilString;
+import trumplab.textslate.R;
+import utility.Config;
+import utility.Queries;
+import utility.Tools;
+import utility.Utility;
 
 public class ClassMembers extends Fragment {
     Activity getactivity;

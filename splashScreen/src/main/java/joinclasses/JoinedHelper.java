@@ -10,7 +10,6 @@ import java.util.List;
 
 import library.UtilString;
 import trumplabs.schoolapp.Constants;
-import utility.Utility;
 
 /**
  * Contains helper functions for joined class

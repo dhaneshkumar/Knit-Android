@@ -18,15 +18,12 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import baseclasses.MyActionBarActivity;
 import joinclasses.School;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -34,7 +31,6 @@ import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.Queries;
 import utility.Queries2;
@@ -231,22 +227,7 @@ public class Signup2Class extends ActionBarActivity {
             }
 
 
-            boolean test = user.getBoolean("test");
-            test = !test;
-            user.put("test", test);
-
-
-            try{
-                user.save();
-                Date currentDate = user.getUpdatedAt();
-                if(currentDate != null) {
-                    SessionManager sm = new SessionManager(Application.getAppContext());
-                    sm.setCurrentTime(currentDate);
-                }
-            }
-            catch (ParseException e1){
-                e1.printStackTrace();
-            }
+            Utility.updateCurrentTime(user);
 
 
             //storing username in parseInstallation table

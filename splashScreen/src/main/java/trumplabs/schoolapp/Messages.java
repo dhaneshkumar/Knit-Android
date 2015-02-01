@@ -1,13 +1,11 @@
 package trumplabs.schoolapp;
 
-import android.R.color;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -22,14 +20,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -52,10 +46,7 @@ import BackGroundProcesses.Inbox;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import trumplab.textslate.R;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
 import utility.Queries;
-import utility.Tools;
 import utility.Utility;
 
 
@@ -167,6 +158,7 @@ public class Messages extends Fragment {
         query = new Queries();
         try {
             msgs = query.getLocalInboxMsgs();
+            updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
         } catch (ParseException e) {
         }
 
@@ -918,5 +910,37 @@ public class Messages extends Fragment {
         h.sendMessageDelayed(new Message(), seconds * 1000);
     }
 
+    //update total number of messages in inbox (normal + locally generated)
+    //update Messages.totalInboxMessages
+    public static void updateInboxTotalCount(){
+        ParseUser user = ParseUser.getCurrentUser();
+
+        if (user != null) {
+            int totalMessages = 0;
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+            query.fromLocalDatastore();
+            query.whereEqualTo("userId", user.getUsername());
+            try {
+                totalMessages += query.count();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
+            queryLocal.fromLocalDatastore();
+            queryLocal.whereEqualTo("userId", user.getUsername());
+            try {
+                totalMessages += queryLocal.count();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return;
+            }
+
+            Messages.totalInboxMessages = totalMessages;
+        }
+        else
+        {Utility.logout(); return;}
+    }
 
 }

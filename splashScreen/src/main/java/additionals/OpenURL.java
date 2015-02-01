@@ -1,19 +1,15 @@
 package additionals;
 
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebView;
-import android.widget.Toast;
 
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.MainActivity;
-import utility.Utility;
 
 /**
  * Created by dhanesh on 19/1/15.

@@ -1,7 +1,24 @@
 package loginpages;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.support.v4.app.FragmentManager;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
 import java.util.List;
 
+import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
@@ -11,27 +28,6 @@ import utility.Queries;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
-import android.app.Activity;
-import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v4.app.FragmentManager;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import baseclasses.MyActionBarActivity;
-
-import com.parse.LogInCallback;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 public class LoginPage extends MyActionBarActivity {
   EditText username_etxt;
@@ -101,7 +97,10 @@ public class LoginPage extends MyActionBarActivity {
 
           ParseUser.logInInBackground(email, passwd, new LogInCallback() {
             public void done(ParseUser user, ParseException e) {
-              if (user != null) {
+              if (e == null && user != null) {
+
+                //update current server time
+                Utility.updateCurrentTime(user);
 
                 /*
                  * Adding channels & storing group member data locally

@@ -1,30 +1,5 @@
 package utility;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
-
-import com.parse.ParseInstallation;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
-
-import library.UtilString;
-import loginpages.LoginPage;
-
-import loginpages.Signup;
-import notifications.AlarmTrigger;
-import trumplabs.schoolapp.Application;
-import trumplab.textslate.R;
-
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
@@ -37,8 +12,7 @@ import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
-import android.provider.SyncStateContract.Constants;
-import android.util.TypedValue;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -48,7 +22,28 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.ParseInstallation;
+import com.parse.ParseUser;
+import com.parse.SaveCallback;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
 import baseclasses.MyActionBarActivity;
+import library.UtilString;
+import loginpages.Signup;
+import notifications.AlarmTrigger;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
 
 public class Utility extends MyActionBarActivity {
 
@@ -440,7 +435,9 @@ public class Utility extends MyActionBarActivity {
         return x;
     }
 
-    public static void updateCurrentTime(ParseUser freshUser, SessionManager session){
+    //update current time(sync with server now - needed for first time e.g login, signup)
+    public static void updateCurrentTime(ParseUser freshUser){
+        SessionManager session = new SessionManager(Application.getAppContext());
         boolean test = freshUser.getBoolean("test");
         test = !test;
         freshUser.put("test", test);
@@ -452,5 +449,26 @@ public class Utility extends MyActionBarActivity {
         catch (com.parse.ParseException e){
             e.printStackTrace();
         }
+    }
+
+    //update current time (but in background as not urgent)
+    public static void updateCurrentTimeInBackground(final ParseUser freshUser){
+        final SessionManager session = new SessionManager(Application.getAppContext());
+        boolean test = freshUser.getBoolean("test");
+        test = !test;
+        freshUser.put("test", test);
+        freshUser.saveInBackground(new SaveCallback() {
+
+            @Override
+            public void done(com.parse.ParseException e) {
+                if(e == null) {
+                    Date currentDate = freshUser.getUpdatedAt();
+                    session.setCurrentTime(currentDate);
+                }
+                else{
+                    Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "freshUser saveInBackground failed");
+                }
+            }
+        });
     }
 }

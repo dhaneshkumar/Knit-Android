@@ -1,9 +1,10 @@
 package additionals;
 
-import trumplab.textslate.R;
 import android.os.Bundle;
 import android.view.MenuItem;
+
 import baseclasses.MyActionBarActivity;
+import trumplab.textslate.R;
 
 public class Instructions extends MyActionBarActivity 
 {

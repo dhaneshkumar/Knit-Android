@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.TextView;
 
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 
 /**

@@ -1,7 +1,6 @@
 package trumplabs.schoolapp.test;
 
 import android.test.AndroidTestCase;
-import android.test.InstrumentationTestCase;
 
 import trumplabs.schoolapp.MessagesHelper;
 

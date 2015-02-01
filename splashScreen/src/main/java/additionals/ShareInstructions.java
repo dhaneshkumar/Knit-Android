@@ -1,19 +1,20 @@
 package additionals;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import trumplab.textslate.R;
-import trumplabs.schoolapp.ClassMsg;
-import utility.Utility;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-import baseclasses.MyActionBarActivity;
 
 import com.parse.ParseAnalytics;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import baseclasses.MyActionBarActivity;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.ClassMsg;
+import utility.Utility;
 
 public class ShareInstructions extends MyActionBarActivity{
 
