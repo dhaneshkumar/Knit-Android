@@ -1,9 +1,10 @@
 package baseclasses;
 
-import trumplabs.schoolapp.Application;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+
+import trumplabs.schoolapp.Application;
 
 public class MyActivity extends Activity {
     protected Application mMyApp;

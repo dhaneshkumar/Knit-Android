@@ -1,5 +1,10 @@
 package profileDetails;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,11 +12,6 @@ import joinclasses.JoinedClasses;
 import library.UtilString;
 import trumplabs.schoolapp.Constants;
 import utility.Utility;
-
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 /*
  * Adding child to a new joined group

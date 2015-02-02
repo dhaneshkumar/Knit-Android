@@ -1,34 +1,27 @@
 package utility;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import com.parse.ParseUser;
-
-import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
-
-import BackGroundProcesses.Inbox;
-import BackGroundProcesses.Refresher;
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ProgressBar;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import BackGroundProcesses.Refresher;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import trumplabs.schoolapp.Constants;
 
 public class Tools {
 

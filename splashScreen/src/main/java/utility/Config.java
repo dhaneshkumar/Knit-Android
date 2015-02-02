@@ -27,7 +27,7 @@ public class Config {
   public static  final int outboxMsgCount =20;
   public static final int createMsgMax = 100;
   public static final int membersCount = 100;
-  public static final String creator = "TextSlate";
+  //public static final String creator = "Knit";
   public static final String welcomeMsg =
       "Congratulations! You have successfully joined my classroom. I will use this app to send important reminders and announcements related to my subject.";
 

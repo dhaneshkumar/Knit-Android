@@ -1,12 +1,5 @@
 package profileDetails;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
-import utility.Queries;
-import utility.Utility;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.AsyncTask;
@@ -15,21 +8,26 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
-import baseclasses.MyActionBarActivity;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import baseclasses.MyActionBarActivity;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Constants;
+import utility.Queries;
+import utility.Utility;
 
 public class FAQs extends MyActionBarActivity {
 

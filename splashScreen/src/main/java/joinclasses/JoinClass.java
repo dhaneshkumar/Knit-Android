@@ -1,25 +1,11 @@
 package joinclasses;
 
-import library.UtilString;
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.InviteTeacher;
-import trumplabs.schoolapp.Messages;
-import utility.Popup;
-import utility.Queries;
-import utility.Queries2;
-import utility.SessionManager;
-import utility.Tools;
-import utility.Utility;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,23 +19,34 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
+
+import library.UtilString;
+import notifications.AlarmReceiver;
+import notifications.NotificationGenerator;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.InviteTeacher;
+import trumplabs.schoolapp.Messages;
+import utility.Popup;
+import utility.Queries;
+import utility.Queries2;
+import utility.SessionManager;
+import utility.Tools;
+import utility.Utility;
 public class JoinClass extends Fragment {
     private EditText classCode;
     private String groupName = "";
@@ -305,61 +302,14 @@ public class JoinClass extends Fragment {
                                     }
                                     joinFlag = true;
 
-                                     // Create our Installation query
-                                    ParseQuery pushQuery = ParseInstallation.getQuery();
-                                    pushQuery.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
 
-                                     // Send push notification to query
-                                    ParsePush push = new ParsePush();
-                                    push.setQuery(pushQuery);             // Set our Installation query
-                                    JSONObject data = new JSONObject();
-                                    try {
-                                        data.put("msg", utility.Config.welcomeMsg);
-                                        data.put("groupName", grpName);
-                                        push.setData(data);
-                                        push.sendInBackground();
-                                    } catch (JSONException e) {
-                                        e.printStackTrace();
-                                    }
+
+                                    //locally generating joiining notification and inbox msg
+                                    NotificationGenerator.generateNotification(getActivity().getApplicationContext(), utility.Config.welcomeMsg, grpName, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                                    AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, code, a.getString("Creator"), a.getString("senderId"), grpName, user);
 
 
 
-
-
-
-                                    final ParseObject localMsg = new ParseObject("LocalMessages");
-                                    localMsg.put("Creator", a.getString("Creator"));
-                                    localMsg.put("code", code);
-                                    localMsg.put("name", grpName);
-                                    localMsg.put("title", utility.Config.welcomeMsg);
-                                    localMsg.put("userId", userId);
-                                    localMsg.put("senderId", grpSenderId);
-                                    try {
-                                        if(session.getCurrentTime() == null)
-                                        {
-                                            user.put("test", true);
-                                            try {
-                                                user.save();
-                                                Date currentDate = user.getUpdatedAt();
-                                                SessionManager sm = new SessionManager(Application.getAppContext());
-                                                sm.setCurrentTime(currentDate);
-                                                if(currentDate != null) {
-                                                    localMsg.put(Constants.TIMESTAMP, currentDate);
-                                                    localMsg.put("creationTime", currentDate);
-                                                }
-                                                localMsg.pin();
-                                            } catch (ParseException e) {
-                                                e.printStackTrace();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            localMsg.put(Constants.TIMESTAMP, session.getCurrentTime());
-                                            localMsg.put("creationTime", session.getCurrentTime());
-                                            localMsg.pin();
-                                        }
-                                    } catch (java.text.ParseException e) {
-                                    }
 /*
 Retrieve suggestion classes and store them in locally
 */

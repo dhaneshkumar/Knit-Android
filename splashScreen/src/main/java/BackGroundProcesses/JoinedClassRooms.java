@@ -1,5 +1,12 @@
 package BackGroundProcesses;
 
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -10,13 +17,6 @@ import utility.Config;
 import utility.Queries2;
 import utility.SessionManager;
 import utility.Utility;
-import android.os.AsyncTask;
-import android.view.View;
-
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
 
@@ -141,7 +141,6 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
       if (JoinedClasses.joinedadapter != null)
           JoinedClasses.joinedadapter.notifyDataSetChanged();
 
-
       if (JoinedClasses.mHeaderProgressBar != null)
           JoinedClasses.mHeaderProgressBar.setVisibility(View.GONE);
   }
@@ -149,25 +148,6 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   @Override
   protected void onPostExecute(String[] result) {
     onPostExecuteCore();
-
-//    if (loginFlag) {
-//      /*
-//       * Updating inbox msgs
-//       */
-//
-//      Inbox newInboxMsg = new Inbox(null);
-//      newInboxMsg.execute();
-//
-//
-//
-//      /*
-//       * Updating created class rooms list
-//       */
-//
-//      CreatedClassRooms createdClassList = new CreatedClassRooms();
-//      createdClassList.execute();
-//    }
-
 
     // Utility.toast("joined grp refreshed");
     super.onPostExecute(result);

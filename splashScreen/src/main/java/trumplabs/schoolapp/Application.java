@@ -1,7 +1,6 @@
 package trumplabs.schoolapp;
 
 
-import utility.Config;
 import android.app.Activity;
 import android.content.Context;
 
@@ -9,6 +8,8 @@ import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseInstallation;
 import com.parse.PushService;
+
+import utility.Config;
 
 public class Application extends android.app.Application {
 	

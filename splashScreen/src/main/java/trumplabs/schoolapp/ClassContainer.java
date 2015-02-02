@@ -1,8 +1,5 @@
 package trumplabs.schoolapp;
 
-import trumplab.textslate.R;
-import utility.Utility;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,7 +7,10 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+
 import baseclasses.MyActionBarActivity;
+import trumplab.textslate.R;
+import utility.Utility;
 
 public class ClassContainer extends MyActionBarActivity {
 	android.support.v7.app.ActionBar actionbar;

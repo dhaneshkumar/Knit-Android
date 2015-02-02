@@ -2,7 +2,7 @@ Anjuman-I-Islam Baduruddin Tyabji High School, C.S.T. Mumbai
 Activity High School, Peddar Road, South Mumbai 
 Air India Modern High School 
 Apeejay School, Nerul, Navi Mumbai 
-Apostolic Carmel High School &amp; Junior College, Bandra 
+Apostolic Carmel High School & Junior College, Bandra
 Aspee Nutan Vidhya Mandir High School, Malad 
 Auxilium Convent, Pali Hill, Bandra 
 Auxilium Convent, Wadala 
@@ -41,7 +41,7 @@ Euroschool, Airoli, Navi Mumbai
 Fatima School Sewri 
 Gandhi vidya mandir english and hindi High School, Kandivali, Mumbai 
 G.D, Somani Memorial School, Cuffe Parade, Mumbai 
-Gloria Convent, Byculla 
+Gloria Convent High School, Byculla
 Gopi Birla Memorial School, Mumbai 
 Greenlawns High School, Breach Candy 
 Greenlawns High School, Worli 
@@ -193,4 +193,21 @@ Vidya Vikasini I.C.S.E. School, Vasai(E)
 Vibgyor High International school 
 Victoria High School, Sitladevi, Mahim 
 Villa Theresa High School, Peddar Road 
-Yogiraj shree krishna vidyalaya, Sakinaka 
+Yogiraj shree krishna vidyalaya, Sakinaka
+knit school
+textslate school
+Lokhandwala Foundation School
+IIT Bombay
+Smt. Sulochanadevi Singhania School, Thane
+EAGER BEAVERS PRESCHOOL-Eager for Life
+Kidzee Tulips
+Medhaam Preschool
+Bhagyalaxmi Sarla Gurusahani Memorial School
+NES International School, Mumbai
+Vibgyor High School
+Nalanda Public School
+Anandi Public School
+Alpha Kids
+Little Haven Pre-school
+Emerald heights
+R N Gandhi high school

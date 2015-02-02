@@ -1,15 +1,15 @@
 package BackGroundProcesses;
 
+import android.os.Handler;
+import android.os.Message;
+import android.view.View;
+
 import java.util.List;
 
 import trumplabs.schoolapp.ClassMembers;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.MemberDetails;
 import utility.Queries;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.view.View;
 
 public class SyncMemberList {
 

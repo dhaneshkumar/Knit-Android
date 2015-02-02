@@ -1,8 +1,5 @@
 package loginpages;
 
-import library.UtilString;
-import trumplab.textslate.R;
-import utility.Utility;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -15,6 +12,10 @@ import android.widget.TextView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
+
+import library.UtilString;
+import trumplab.textslate.R;
+import utility.Utility;
 
 public class ForgotPassword extends DialogFragment {
   Dialog dialog;

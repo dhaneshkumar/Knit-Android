@@ -18,7 +18,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +26,11 @@ import com.parse.ParseUser;
 
 import java.lang.reflect.Field;
 
-import notifications.AlarmTrigger;
 import BackGroundProcesses.Refresher;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassesContainer;
-import notifications.NotificationGenerator;
+import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.SessionManager;
@@ -61,6 +59,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static LinearLayout editLayout;
     public static SmoothProgressBar mHeaderProgressBar;
 
+    static boolean isAlarmTriggered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -244,20 +243,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         }
 
-        AlarmTrigger.triggerAlarm(getApplicationContext());
-
-        //testing different notification types generators
-//        NotificationGenerator.generateNotification(getApplicationContext(), "invite teacher" ,
-//                Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
-//        NotificationGenerator.generateNotification(getApplicationContext(), "create class",
-//                Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
-//        NotificationGenerator.generateNotification(getApplicationContext(), "testing normal inbox notification" ,
-//                Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-//        NotificationGenerator.generateNotification(getApplicationContext(), "testing normal inbox notification" ,
-//                Constants.DEFAULT_NAME , Constants.UPDATE_NOTIFICATION, Constants.PROFILE_PAGE_ACTION);
-//        NotificationGenerator.generateNotification(getApplicationContext(), "testing normal inbox notification",
-//        Constants.DEFAULT_NAME , Constants.LINK_NOTIFICATION, "http://knitapp.co.in/");
-
+        if(!isAlarmTriggered){
+            Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "triggering alarm on app opening");
+            AlarmTrigger.triggerAlarm(getApplicationContext());
+            isAlarmTriggered = true;
+        }
+        else{
+            Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "alarm already triggered");
+        }
 
     }
 

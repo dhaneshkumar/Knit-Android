@@ -6,11 +6,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
-import android.view.View;
 
 import trumplab.textslate.R;
-import trumplabs.schoolapp.ClassMembers;
-import trumplabs.schoolapp.ClassMsg;
 
 /**
  * Created by Dhanesh on 1/17/2015.

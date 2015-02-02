@@ -1,6 +1,9 @@
 package BackGroundProcesses;
 
-import java.util.ArrayList;
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
 import java.util.List;
 
 import trumplabs.schoolapp.ClassMembers;
@@ -8,11 +11,6 @@ import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.MemberDetails;
 import utility.Queries;
 import utility.Utility;
-import android.os.AsyncTask;
-import android.util.Log;
-import android.view.View;
-
-import com.parse.ParseObject;
 
 
 public class MemberList extends AsyncTask<Void, Void, String[]> {

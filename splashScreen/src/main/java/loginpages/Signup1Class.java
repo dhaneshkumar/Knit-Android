@@ -1,8 +1,6 @@
 package loginpages;
 
 import android.content.Intent;
-import android.os.AsyncTask;
-import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -11,16 +9,10 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
 import java.io.IOException;
-import java.util.List;
 
 import additionals.ReadSchoolFile;
 import baseclasses.MyActionBarActivity;
-import joinclasses.School;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;

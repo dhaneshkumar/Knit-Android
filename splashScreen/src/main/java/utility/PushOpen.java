@@ -1,17 +1,5 @@
 package utility;
 
-import additionals.InviteParents;
-import additionals.OpenURL;
-import notifications.AlarmReceiver;
-import notifications.NotificationGenerator;
-import profileDetails.ProfilePage;
-import trumplabs.schoolapp.ClassMsg;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.CreateClass;
-import trumplabs.schoolapp.InviteTeacher;
-import trumplabs.schoolapp.MainActivity;
-
-import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
@@ -20,6 +8,16 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import com.parse.ParseUser;
+
+import additionals.InviteParents;
+import additionals.OpenURL;
+import notifications.NotificationGenerator;
+import profileDetails.ProfilePage;
+import trumplabs.schoolapp.ClassMsg;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.CreateClass;
+import trumplabs.schoolapp.InviteTeacher;
+import trumplabs.schoolapp.MainActivity;
 
 public class PushOpen extends ActionBarActivity {
     String type;

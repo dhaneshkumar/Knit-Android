@@ -1,25 +1,5 @@
 package trumplabs.schoolapp;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
-import joinclasses.JoinClassesContainer;
-import library.UtilString;
-import trumplab.textslate.R;
-import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
-import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
-import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
-import utility.Queries;
-import utility.Queries2;
-import utility.Tools;
-import utility.Utility;
-import BackGroundProcesses.Inbox;
-
 import android.R.color;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -32,7 +12,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.util.LruCache;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -55,6 +34,25 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import BackGroundProcesses.Inbox;
+import joinclasses.JoinClassesContainer;
+import library.UtilString;
+import trumplab.textslate.R;
+import uk.co.senab.actionbarpulltorefresh.library.ActionBarPullToRefresh;
+import uk.co.senab.actionbarpulltorefresh.library.PullToRefreshLayout;
+import uk.co.senab.actionbarpulltorefresh.library.listeners.OnRefreshListener;
+import utility.Queries;
+import utility.Tools;
+import utility.Utility;
 
 public class Messages_old extends Fragment implements OnRefreshListener {
     public static List<ParseObject> msgs;

@@ -8,7 +8,6 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +18,7 @@ import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
 import utility.SessionManager;
+import utility.Utility;
 
 
 public class Refresher {
@@ -43,9 +43,7 @@ public class Refresher {
       /*
        * Storing current time stamp
        */
-            boolean test = freshUser.getBoolean("test");
-            test = !test;
-            freshUser.put("test", true);
+            Utility.updateCurrentTimeInBackground(freshUser);
 
             try{
                 freshUser.save();
@@ -60,6 +58,7 @@ public class Refresher {
             }
 
             Log.d("DEBUG_REFRESHER",  "app opening count " + appOpeningCount);
+            freshUser.fetchInBackground();
 
             if (appOpeningCount > 0) {
                 Log.d("DEBUG_REFRESHER",  "calling background tasks");
@@ -74,6 +73,7 @@ public class Refresher {
         /*
          * Updating inbox msgs
          */
+                Log.d("DEBUG_REFRESHER", "calling Inbox execute()");
 
                 Inbox newInboxMsg = new Inbox(null);
                 newInboxMsg.doInBackgroundCore();

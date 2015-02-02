@@ -14,11 +14,8 @@ import com.parse.ParseUser;
 import java.util.Date;
 import java.util.List;
 
-import BackGroundProcesses.SeenHandler;
-import BackGroundProcesses.SyncMessageDetails;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Messages;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
@@ -80,6 +77,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning a thread for handling events");
         alarmContext = context;
+        session = new SessionManager(Application.getAppContext());
 
         user = ParseUser.getCurrentUser();
         if(user == null) {
@@ -100,9 +98,6 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public void checkForEvents(){
-
-        session = new SessionManager(alarmContext);
-        Utility.updateCurrentTime(user, session);
 
         if(user.getString("role").equalsIgnoreCase("parent")){
             parentNoActivity();
@@ -523,46 +518,36 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     private void generateLocalMessage(String content, String code) {
-        generateLocalMessage(content, code, user, alarmContext);
+        generateLocalMessage(content, code, user);
     }
 
-    public static void generateLocalMessage(String content, String code, ParseUser user, Context context){
+    public static void generateLocalMessage(String content, String code, ParseUser user) {
+        String senderId = null;
+        if(user.getString("role").equals("teacher")){
+            senderId = Constants.DEFAULT_SENDER_ID_TEACHER;
+        }
+        else{ //students/parents
+            senderId = Constants.DEFAULT_SENDER_ID_PARENT;
+        }
+        generateLocalMessage(content, code, Constants.DEFAULT_CREATOR, senderId, Constants.DEFAULT_NAME, user);
+    }
+
+    public static void generateLocalMessage(String content, String code, String creator, String senderId, String grpName, ParseUser user){
         SessionManager session = new SessionManager(Application.getAppContext());
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
-        localMsg.put("Creator", Constants.DEFAULT_CREATOR);
+        localMsg.put("Creator", creator);
         localMsg.put("code", code);
-        localMsg.put("name", Constants.DEFAULT_NAME);
+        localMsg.put("name", grpName);
         localMsg.put("title", content);
         localMsg.put("userId", user.getUsername());
+        localMsg.put("senderId", senderId);
 
-        if(user.getString("role").equals("teacher")){
-            localMsg.put("senderId", Constants.DEFAULT_SENDER_ID_TEACHER);
-        }
-        else{ //students/parents
-            localMsg.put("senderId", Constants.DEFAULT_SENDER_ID_PARENT);
-        }
 
         try{
-            Date time = session.getCurrentTime();
-            if(time == null){
-                boolean test = user.getBoolean("test");
-                test = !test;
-                user.put("test", test);
-                user.save();
-
-                Date currentDate = user.getUpdatedAt();
-                if(currentDate != null) {
-                    SessionManager sm = new SessionManager(Application.getAppContext());
-                    sm.setCurrentTime(currentDate);
-                }
-            }
-            if(session.getCurrentTime() != null)
-                localMsg.put("creationTime", session.getCurrentTime());
+            localMsg.put("creationTime", session.getCurrentTime());
         }
         catch (java.text.ParseException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
             e.printStackTrace();
         }
 

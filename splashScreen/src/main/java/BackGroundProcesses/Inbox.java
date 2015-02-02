@@ -4,15 +4,11 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
-import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Main;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
 import utility.Config;
@@ -43,7 +39,6 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
           initialSize =  msgs.size();
       }
 
-
       newMsgs = query.getServerInboxMsgs();
 
       if(newMsgs != null)
@@ -63,35 +58,7 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
           Messages.msgs = newMsgs;
       }
-
-      //update Messages.totalInboxMessages
-      ParseUser user = ParseUser.getCurrentUser();
-
-      if (user != null) {
-
-          Log.d("DEBUG_INBOX_UPDATING_INBOX_COUNT", "updating total inbox count");
-
-          ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
-          query.fromLocalDatastore();
-          query.whereEqualTo("userId", user.getUsername());
-          try {
-              Messages.totalInboxMessages = query.count();
-          } catch (ParseException e) {
-              e.printStackTrace();
-          }
-
-          ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
-          queryLocal.fromLocalDatastore();
-          queryLocal.whereEqualTo("userId", user.getUsername());
-          try {
-              Messages.totalInboxMessages += queryLocal.count();
-          } catch (ParseException e) {
-              e.printStackTrace();
-          }
-      }
-      else
-      {Utility.logout(); return;}
-      Log.d("DEBUG_INBOX_UPDATING_INBOX_COUNT", "updated " + Messages.totalInboxMessages);
+      Messages.updateInboxTotalCount();
   }
 
   @Override

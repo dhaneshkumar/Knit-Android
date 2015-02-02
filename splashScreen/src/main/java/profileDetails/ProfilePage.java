@@ -1,24 +1,5 @@
 package profileDetails;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.ArrayList;
-import java.util.List;
-
-import additionals.SchoolAutoComplete;
-
-import additionals.ReadSchoolFile;
-import joinclasses.School;
-import library.UtilString;
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.FeedBackClass;
-import trumplabs.schoolapp.MainActivity;
-import utility.Utility;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
@@ -37,7 +18,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -47,11 +27,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import baseclasses.MyActionBarActivity;
 
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -62,6 +39,25 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.parse.SaveCallback;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
+
+import additionals.ReadSchoolFile;
+import additionals.SchoolAutoComplete;
+import baseclasses.MyActionBarActivity;
+import joinclasses.School;
+import library.UtilString;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.FeedBackClass;
+import trumplabs.schoolapp.MainActivity;
+import utility.Utility;
 
 public class ProfilePage extends MyActionBarActivity implements OnClickListener {
     private ImageView profileimgview;

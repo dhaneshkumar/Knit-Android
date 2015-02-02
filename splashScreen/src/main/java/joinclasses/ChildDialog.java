@@ -1,8 +1,6 @@
 package joinclasses;
 
 
-import trumplab.textslate.R;
-import utility.Utility;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
@@ -17,6 +15,9 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import trumplab.textslate.R;
+import utility.Utility;
 
 public class ChildDialog extends DialogFragment {
 

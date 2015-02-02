@@ -1,14 +1,15 @@
 package trumplabs.schoolapp;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Intent;
 import android.util.Log;
-import baseclasses.MyActivity;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import baseclasses.MyActivity;
 
 public class ReceiveMsg extends MyActivity{
 

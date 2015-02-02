@@ -1,7 +1,7 @@
 package notifications;
 
-import android.app.NotificationManager;
 import android.app.Notification;
+import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,12 +11,9 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
-import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import utility.PushOpen;

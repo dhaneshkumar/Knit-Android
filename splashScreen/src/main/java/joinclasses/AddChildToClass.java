@@ -1,29 +1,11 @@
 package joinclasses;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-
-import library.UtilString;
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Messages;
-import utility.Popup;
-import utility.Queries;
-import utility.Queries2;
-import utility.SessionManager;
-import utility.Utility;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap.Config;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -35,19 +17,33 @@ import android.widget.AutoCompleteTextView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import baseclasses.MyActionBarActivity;
 
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import baseclasses.MyActionBarActivity;
+import library.UtilString;
+import notifications.AlarmReceiver;
+import notifications.NotificationGenerator;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.Messages;
+import utility.Popup;
+import utility.Queries;
+import utility.Queries2;
+import utility.SessionManager;
+import utility.Utility;
 
 public class AddChildToClass extends MyActionBarActivity {
   public static List<String> group;
@@ -369,7 +365,7 @@ public class AddChildToClass extends MyActionBarActivity {
                   
                   
                // Create our Installation query
-                  ParseQuery pushQuery = ParseInstallation.getQuery();
+                /*  ParseQuery pushQuery = ParseInstallation.getQuery();
                   pushQuery.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
                    
                   // Send push notification to query
@@ -383,49 +379,14 @@ public class AddChildToClass extends MyActionBarActivity {
                         push.sendInBackground();
                     } catch (JSONException e) {
                         e.printStackTrace();
-                    }
-                  
-                  final ParseObject localMsg = new ParseObject("LocalMessages");
-                  localMsg.put("Creator", a.getString("Creator"));
-                  localMsg.put("code", code);
-                  localMsg.put("name", grpName);
-                  localMsg.put("title", utility.Config.welcomeMsg);
-                  localMsg.put("userId", userId);
-                  localMsg.put("senderId", grpSenderId);
-                  
-                  try {
-                    
-                    if(session.getCurrentTime() == null)
-                    {
-                      
-                      user.put("test", true);
-                        try {
-                            user.save();
+                    }*/
 
-                            Date currentDate = user.getUpdatedAt();
 
-                            SessionManager sm = new SessionManager(Application.getAppContext());
-                            sm.setCurrentTime(currentDate);
+                    //locally generating joiining notification and inbox msg
+                    NotificationGenerator.generateNotification(getApplicationContext(), utility.Config.welcomeMsg, grpName, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                    AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, code, a.getString("Creator"), a.getString("senderId"), grpName, user);
 
-                            if(currentDate != null) {
-                                localMsg.put(Constants.TIMESTAMP, currentDate);
-                                localMsg.put("creationTime", currentDate);
-                            }
-                                localMsg.pin();
 
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    else
-                    {
-                      localMsg.put(Constants.TIMESTAMP, session.getCurrentTime());
-                      localMsg.put("creationTime", session.getCurrentTime());
-                      localMsg.pin();
-                    }
-                  } catch (java.text.ParseException e) {
-                  }
-                  
                   /*
                   Retrieve suggestion classes and  store them in locally
                    */
