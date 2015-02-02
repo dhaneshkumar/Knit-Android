@@ -1,19 +1,18 @@
 package joinclasses;
 
-import joinclasses.JoinedClasses.ViewPagerCommunicator;
-import trumplab.textslate.R;
-import trumplabs.schoolapp.MainActivity;
-import trumplabs.schoolapp.Messages;
-import utility.Utility;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.MenuItem;
+
 import baseclasses.MyActionBarActivity;
+import joinclasses.JoinedClasses.ViewPagerCommunicator;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.MainActivity;
+import utility.Utility;
 
 public class JoinClassesContainer extends MyActionBarActivity implements ViewPagerCommunicator {
   android.support.v7.app.ActionBar actionbar;

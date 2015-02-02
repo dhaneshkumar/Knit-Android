@@ -1,24 +1,8 @@
 package trumplabs.schoolapp;
 
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
-import joinclasses.School;
-import library.UtilString;
-import notifications.AlarmReceiver;
-import notifications.NotificationGenerator;
-import trumplab.textslate.R;
-import utility.Queries;
-import utility.Queries2;
-import utility.SessionManager;
-import utility.Tools;
-import utility.Utility;
-import additionals.ClassInstructions;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,18 +14,30 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import baseclasses.MyActionBarActivity;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import additionals.ClassInstructions;
+import baseclasses.MyActionBarActivity;
+import joinclasses.School;
+import library.UtilString;
+import notifications.AlarmReceiver;
+import notifications.NotificationGenerator;
+import trumplab.textslate.R;
+import utility.Queries;
+import utility.SessionManager;
+import utility.Tools;
+import utility.Utility;
 
 public class CreateClass extends MyActionBarActivity {
   private android.support.v7.app.ActionBar actionbar;
@@ -418,7 +414,7 @@ public class CreateClass extends MyActionBarActivity {
         //create class creation messages and notification
         SessionManager session = new SessionManager(getApplicationContext());
         NotificationGenerator.generateNotification(getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-        AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, getApplicationContext());
+        AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
 
 
       } else if (classNameCheckFlag) {

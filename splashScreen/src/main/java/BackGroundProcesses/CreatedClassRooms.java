@@ -1,5 +1,12 @@
 package BackGroundProcesses;
 
+import android.os.AsyncTask;
+import android.util.Log;
+import android.view.View;
+
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,14 +14,10 @@ import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.ClassMembers;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.Main;
 import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
 import utility.Utility;
-import android.os.AsyncTask;
-import android.view.View;
-
-import com.parse.ParseException;
-import com.parse.ParseUser;
 
 /*
  * Retrieve created class list in background and save it locally
@@ -34,81 +37,97 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
     this.userId = user.getUsername();
   }
 
+  public void doInBackgroundCore(){
+      ParseUser user = ParseUser.getCurrentUser();
+
+      Utility.ls("created classroooms running....");
+
+
+      if (user != null) {
+
+          try {
+              user.fetchIfNeeded();
+          } catch (ParseException e) {
+          }
+
+          createdGroups = user.getList(Constants.CREATED_GROUPS);
+
+          if (createdGroups == null) {
+              createdGroups = new ArrayList<List<String>>();
+          }
+      }
+  }
+
   @Override
   protected String[] doInBackground(Void... params) {
-    ParseUser user = ParseUser.getCurrentUser();
-
-    Utility.ls("created classroooms running....");
-
-
-    if (user != null) {
-
-      try {
-        user.fetchIfNeeded();
-      } catch (ParseException e) {
-      }
-
-      createdGroups = user.getList(Constants.CREATED_GROUPS);
-
-      if (createdGroups == null) {
-        createdGroups = new ArrayList<List<String>>();
-      }
-    }
+    doInBackgroundCore();
     return mString;
   }
 
+  public void onPostExecuteCoreHelper(){
+      if(MainActivity.mHeaderProgressBar != null){
+          MainActivity.mHeaderProgressBar.post(new Runnable() {
+              @Override
+              public void run() {
+                  onPostExecuteCore();
+              }
+          });
+      }
+  }
 
-  @Override
-  protected void onPostExecute(String[] result) {
+  public void onPostExecuteCore(){
+      Classrooms.createdGroups = createdGroups;
+      if (Classrooms.myadapter != null)
+          Classrooms.myadapter.notifyDataSetChanged();
 
-    Classrooms.createdGroups = createdGroups;
-    if (Classrooms.myadapter != null)
-      Classrooms.myadapter.notifyDataSetChanged();
+      if (MainActivity.mHeaderProgressBar != null)
+          MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
-    /*
+      if (MainActivity.progressBarLayout != null)
+          MainActivity.progressBarLayout.setVisibility(View.GONE);
+      if (MainActivity.editLayout != null)
+          MainActivity.editLayout.setVisibility(View.VISIBLE);
+
+      //TODO See if background alternative to following
+     /*
      * Updating member list
      */
+      ParseUser user = ParseUser.getCurrentUser();
+      if (user != null) {
+          Log.d("DEBUG_CREATED_CLASSROOMS", "onPostExecute() - updating memberlist using asynctask START");
+          List<List<String>> createdGroupList = user.getList(Constants.CREATED_GROUPS);
 
-    ParseUser user = ParseUser.getCurrentUser();
-    if (user != null) {
-      List<List<String>> createdGroupList = user.getList(Constants.CREATED_GROUPS);
+          if (createdGroupList != null) {
+              ClassMembers classMembers = new ClassMembers();
+              classMembers.intializeBackgroundParameters();
 
-      if (createdGroupList != null) {
-        ClassMembers classMembers = new ClassMembers();
-        classMembers.intializeBackgroundParameters();
-
-        for (int i = 0; i < createdGroupList.size(); i++) {
+              for (int i = 0; i < createdGroupList.size(); i++) {
           /*
            * updating member list
            */
 
-          SessionManager session = new SessionManager(Application.getAppContext());
-          int count = session.getAppOpeningCount();
+                  SessionManager session = new SessionManager(Application.getAppContext());
+                  int count = session.getAppOpeningCount();
 
-          if (count % 5 == 0) {
-            MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, true);
-            memberList.execute();
+                  if (count % 5 == 0) {
+                      MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, true);
+                      memberList.execute();
+                  }
+                  else
+                  {
+                      MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, false);
+                      memberList.execute();
+                  }
+              }
           }
-          else
-          {
-            MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, false);
-            memberList.execute();
-          }
-
-          /*
-           * Retriving class msgs
-           */
-        }
+          Log.d("DEBUG_CREATED_CLASSROOMS", "onPostExecute() - updating memberlist deployment OVER");
       }
-    }
+  }
 
-    if (MainActivity.mHeaderProgressBar != null)
-      MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+  @Override
+  protected void onPostExecute(String[] result) {
 
-    if (MainActivity.progressBarLayout != null)
-      MainActivity.progressBarLayout.setVisibility(View.GONE);
-    if (MainActivity.editLayout != null)
-      MainActivity.editLayout.setVisibility(View.VISIBLE);
+    onPostExecuteCore();
     super.onPostExecute(result);
   }
 }

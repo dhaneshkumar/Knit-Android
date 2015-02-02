@@ -1,22 +1,14 @@
 package additionals;
 
-import trumplabs.schoolapp.ClassMsg;
-import trumplab.textslate.R;
-import android.content.res.Resources;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Html;
-import android.text.SpannableString;
-import android.text.SpannableStringBuilder;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
 import android.view.MenuItem;
 import android.widget.TextView;
-import android.widget.TextView.BufferType;
 
 import com.parse.ParseUser;
 
 import baseclasses.MyActionBarActivity;
+import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 
 /**

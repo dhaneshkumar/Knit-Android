@@ -1,14 +1,13 @@
 package BackGroundProcesses;
 
+import android.graphics.Paint;
 import android.os.AsyncTask;
-import android.view.View;
 
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -17,7 +16,6 @@ import joinclasses.JoinedClasses;
 import joinclasses.JoinedHelper;
 import joinclasses.School;
 import library.UtilString;
-import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Constants;
 import utility.Config;
 import utility.Utility;
@@ -28,9 +26,8 @@ import utility.Utility;
  * Created by Dhanesh on 12/25/2014.
  */
 public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
-    @Override
-    protected String doInBackground(Void... params) {
 
+    public String doInBackgroundCore(){
 
         Utility.ls("update suggestion running....");
         ParseUser user = ParseUser.getCurrentUser();
@@ -75,7 +72,7 @@ public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
                                 temp = school + "~" + standard + "~" + division;
                                 stringList.add(temp);
 
-                              //  Utility.ls(temp);
+                                //  Utility.ls(temp);
                             }
                         }
 
@@ -98,7 +95,7 @@ public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
                         String standard = itemList[1];
                         String division = itemList[2];
 
-                    //    Utility.ls("refresh : " + school + " " + standard + " " + division);
+                        //    Utility.ls("refresh : " + school + " " + standard + " " + division);
 
                         School.storeSuggestions(school, standard, division, userId);
                     }
@@ -111,10 +108,25 @@ public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
         return userId;
     }
 
-
     @Override
-    protected void onPostExecute(String userId) {
+    protected String doInBackground(Void... params) {
+        String userId = doInBackgroundCore();
+        return userId;
+    }
 
+
+    public void onPostExecuteHelper(final String userId){
+        if(JoinedClasses.mHeaderProgressBar != null){
+            JoinedClasses.mHeaderProgressBar.post(new Runnable() {
+                @Override
+                public void run() {
+                    onPostExecuteCore(userId);
+                }
+            });
+        }
+    }
+
+    public void onPostExecuteCore(String userId){
 
         if (userId != null && JoinedHelper.getSuggestionList(userId) != null) {
             JoinedClasses.suggestedGroups = JoinedHelper.getSuggestionList(userId);
@@ -122,5 +134,10 @@ public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
             if(JoinedClasses.suggestionAdapter != null)
                 JoinedClasses.suggestionAdapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    protected void onPostExecute(String userId) {
+        onPostExecuteCore(userId);
     }
 }

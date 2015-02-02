@@ -1,29 +1,9 @@
 package profileDetails;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.RandomAccessFile;
-import java.util.HashMap;
-import java.util.List;
-
-import additionals.ReadSchoolFile;
-import joinclasses.School;
-import library.UtilString;
-import loginpages.Signup1Class;
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.FeedBackClass;
-import trumplabs.schoolapp.MainActivity;
-import utility.SessionManager;
-import utility.Utility;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -31,21 +11,24 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import baseclasses.MyActionBarActivity;
 
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -56,6 +39,25 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.RequestPasswordResetCallback;
 import com.parse.SaveCallback;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.util.ArrayList;
+import java.util.List;
+
+import additionals.ReadSchoolFile;
+import additionals.SchoolAutoComplete;
+import baseclasses.MyActionBarActivity;
+import joinclasses.School;
+import library.UtilString;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.FeedBackClass;
+import trumplabs.schoolapp.MainActivity;
+import utility.Utility;
 
 public class ProfilePage extends MyActionBarActivity implements OnClickListener {
     private ImageView profileimgview;
@@ -71,12 +73,14 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     private School school1;
     public static LinearLayout progressBarLayout;
     public static LinearLayout profileLayout;
+    private ArrayAdapter schoolsAdapter;
+    private Context actcontext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
-
+        actcontext = this;
 
 
         try {
@@ -548,6 +552,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                 schoolDialog.setTitle("Update School Name");
 
+                /*//put everything in scrollView
+                ScrollView scrollView = new ScrollView(this);
+*/
                 LinearLayout schoolLayout = new LinearLayout(this);
                 schoolLayout.setOrientation(LinearLayout.VERTICAL);
                 LinearLayout.LayoutParams schoolParmas =
@@ -558,36 +565,95 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
           /*
           Setting Autocomplete textview in popup and its adapter to it
            */
+                //location input
+                final SchoolAutoComplete.DelayAutoCompleteTextView locationInput = new SchoolAutoComplete.DelayAutoCompleteTextView(this, null);
+
+                locationInput.setThreshold(1);
+                locationInput.setHint("Your Location");
+                locationInput.setAdapter(new SchoolAutoComplete.PlacesAutoCompleteAdapter(this, R.layout.school_autocomplete_list_item, R.id.school_location));
+
+                /*String schoolName = school1.getSchoolName(school);
+                if (schoolName != null) {
+                    locationInput.setText(schoolName);
+                } else
+                    school_textView.setText("");*/
+
+
+                //progress bar
+                final ProgressBar progressBar = new ProgressBar(this);
+                progressBar.setVisibility(View.GONE);
+
+
+                //school input
                 final AutoCompleteTextView schoolInput = new AutoCompleteTextView(this);
                 schoolInput.setThreshold(1);
 
-                String schoolName = school1.getSchoolName(school);
-                if (schoolName != null) {
-                    schoolInput.setText(schoolName);
-                } else
-                    school_textView.setText("");
-
-                schoolLayout.addView(schoolInput, schoolParmas);
-                schoolDialog.setView(schoolLayout);
-
-                ArrayAdapter adapter;
 
                     ReadSchoolFile readSchoolFile = new ReadSchoolFile();
                     try {
-                        adapter =
+                        schoolsAdapter =
                                 new ArrayAdapter(this, android.R.layout.simple_list_item_1, readSchoolFile.getSchoolsList().toArray());
-                                schoolInput.setAdapter(adapter);
+                                schoolInput.setAdapter(schoolsAdapter);
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                schoolInput.setVisibility(View.GONE);
+
+                locationInput.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        final String value = (String) parent.getItemAtPosition(position);
+                        Log.d("DEBUG_PROFILE_PAGE", "item clicked "  + value);
+                        schoolInput.setVisibility(View.GONE);
+                        progressBar.setVisibility(View.VISIBLE);
+
+                        new AsyncTask<Void, Void, Void>() {
+                            ArrayList<String> schools;
+                            @Override
+                            protected Void doInBackground( Void... voids ) {
+                                 schools = SchoolAutoComplete.schoolsNearby(value);
+                                return null;
+                            }
+                            @Override
+                            protected void onPostExecute(Void result){
+                                schoolsAdapter =
+                                        new ArrayAdapter(actcontext, android.R.layout.simple_list_item_1, schools);
+                                schoolInput.setAdapter(schoolsAdapter);
+
+                                progressBar.setVisibility(View.GONE);
+                                schoolInput.setVisibility(View.VISIBLE);
+                                return;
+                            }
+                        }.execute();
+
+                    }
+                });
+                schoolInput.setHint("School name");
+//                schoolInput.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
+                schoolInput.setDropDownHeight(200);
+
+
+
+
+
+                schoolLayout.addView(schoolInput, schoolParmas);
+                schoolLayout.addView(progressBar, schoolParmas);
+                schoolLayout.addView(locationInput, schoolParmas);
+
+//                scrollView.addView(schoolLayout);
+
+                schoolDialog.setView(schoolLayout);
 
 
                 //button responses
                 schoolDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String value = schoolInput.getText().toString();
-
+                        if(value.isEmpty()) {
+                            showToast("please fill school name");
+                            return;
+                        }
                         if (!UtilString.isBlank(value)) {
                             value = value.trim();
                             if (Utility.isInternetOn(ProfilePage.this)) {
@@ -622,7 +688,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     }
                 });
 
-                schoolDialog.show();
+                AlertDialog dialog = schoolDialog.create();
+                dialog.show();
+                Button okButton = (Button) dialog.getButton(DialogInterface.BUTTON_POSITIVE);
 
                 break;
 
@@ -827,6 +895,10 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         } else {
             Utility.toast("Profile Pic Not Updated!!");
         }
+    }
+
+    public void showToast(String text){
+        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 
     public void onBackPressed() {

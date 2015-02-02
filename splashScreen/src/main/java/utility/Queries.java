@@ -1,23 +1,7 @@
 package utility;
 
-import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import library.UtilString;
-
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MemberDetails;
-
 import android.util.Log;
 
-import baseclasses.MyActivity;
-
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -25,7 +9,16 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-public class Queries extends MyActivity {
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+
+import library.UtilString;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MemberDetails;
+
+public class Queries {
     String userId;
     List<ParseObject> msgs;
     int messageCount = Config.inboxMsgCount;

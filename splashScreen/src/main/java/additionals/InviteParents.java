@@ -1,15 +1,16 @@
 
 package additionals;
 
-import trumplab.textslate.R;
-import trumplabs.schoolapp.ClassMsg;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
+
 import baseclasses.MyActionBarActivity;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.ClassMsg;
 
 public class InviteParents extends MyActionBarActivity{
   

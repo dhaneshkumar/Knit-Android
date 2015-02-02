@@ -1,10 +1,11 @@
 package baseclasses;
 
-import trumplabs.schoolapp.Application;
 import android.app.Activity;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+
+import trumplabs.schoolapp.Application;
 
 public class MyActionBarActivity extends ActionBarActivity{
 	protected Application mMyApp;

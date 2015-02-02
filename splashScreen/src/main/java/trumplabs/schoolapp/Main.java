@@ -1,9 +1,9 @@
 package trumplabs.schoolapp;
 
-import trumplab.textslate.R;
 import android.os.Bundle;
+
 import baseclasses.MyActionBarActivity;
-import baseclasses.MyActivity;
+import trumplab.textslate.R;
 
 public class Main extends MyActionBarActivity{
 

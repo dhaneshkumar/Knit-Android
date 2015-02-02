@@ -14,12 +14,10 @@ import android.widget.TextView;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
-import com.parse.ParseUser;
 
 import java.util.List;
 
 import loginpages.Signup1Class;
-import loginpages.signUp0Class;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 

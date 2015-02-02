@@ -8,22 +8,31 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import joinclasses.JoinedClasses;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
 import utility.SessionManager;
+import utility.Utility;
 
 
 public class Refresher {
     ParseUser freshUser;
 
     public Refresher(int appOpeningCount) {
+        Log.d("DEBUG_REFRESHER", "Entering Refresher Thread");
+        /* just trying to see if sleeping blocks ui
+        try{
+            Thread.sleep(1*Constants.MINUTE_MILLISEC);
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }*/
 
         freshUser = ParseUser.getCurrentUser();
 
@@ -34,54 +43,61 @@ public class Refresher {
       /*
        * Storing current time stamp
        */
-            boolean test = freshUser.getBoolean("test");
-            test = !test;
-            freshUser.put("test", true);
-            freshUser.saveInBackground(new SaveCallback() {
+            Utility.updateCurrentTimeInBackground(freshUser);
 
-                @Override
-                public void done(ParseException e) {
-                    Date currentDate = freshUser.getUpdatedAt();
-                    sm.setCurrentTime(currentDate);
-                }
-            });
+            try{
+                freshUser.save();
+                Date currentDate = freshUser.getUpdatedAt();
+                sm.setCurrentTime(currentDate);
+                Log.d("splashScreen", "ccc");
+                freshUser.fetch();
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+                Log.d("DEBUG_REFRESHER",  "fresh user save failed !!");
+            }
 
-
+            Log.d("DEBUG_REFRESHER",  "app opening count " + appOpeningCount);
             freshUser.fetchInBackground();
 
             if (appOpeningCount > 0) {
-
+                Log.d("DEBUG_REFRESHER",  "calling background tasks");
         /*
          * Updating joined group list
          */
-                JoinedClassRooms joinClass = new JoinedClassRooms();
-                joinClass.execute();
+                final JoinedClassRooms joinClass = new JoinedClassRooms();
+                joinClass.doInBackgroundCore();
+                joinClass.onPostExecuteHelper(); //done
+
 
         /*
          * Updating inbox msgs
          */
+                Log.d("DEBUG_REFRESHER", "calling Inbox execute()");
 
                 Inbox newInboxMsg = new Inbox(null);
-                newInboxMsg.execute();
+                newInboxMsg.doInBackgroundCore();
+                newInboxMsg.onPostExecuteHelper(); //done
+                newInboxMsg.syncOtherInboxDetails();
 
        /*
         *   Updating counts for outbox messages
         *
         */
-                Outbox.refreshCountInBackground();
+                Outbox.refreshCountCore(); //simple function
 
         /*
             Update total count of outbox messages
          */
-                Outbox.updateOutboxTotalMessages();
+                Outbox.updateOutboxTotalMessages(); //simple function
 
         /*
          * Updating created class rooms list
          */
 
                 CreatedClassRooms createdClassList = new CreatedClassRooms();
-                createdClassList.execute();
-
+                createdClassList.doInBackgroundCore();
+                createdClassList.onPostExecuteCoreHelper(); //done
 
                 /*
                 If its new user then refresh on evry app openingtime,
@@ -89,40 +105,22 @@ public class Refresher {
                  */
                 if (appOpeningCount <= 50) {
                     UpdateSuggestions updateSuggestions = new UpdateSuggestions();
-                    updateSuggestions.execute();
+                    String userId = updateSuggestions.doInBackgroundCore();
+                    updateSuggestions.onPostExecuteHelper(userId);
                 } else {
                     if (appOpeningCount % 10 == 0) {
                         UpdateSuggestions updateSuggestions = new UpdateSuggestions();
-                        updateSuggestions.execute();
+                        String userId = updateSuggestions.doInBackgroundCore();
+                        updateSuggestions.onPostExecuteHelper(userId);
                     }
                 }
 
 
                 //Checking for correct channels (It should match to joined groups entries)
                 ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                List<String> channels = installation.getList("channels");
-                if (channels != null) {
-                    List<String> channelList = new ArrayList<String>();
-                    List<List<String>> joinedGroups;
-                    joinedGroups = freshUser.getList("joined_groups");
 
-                    if (joinedGroups != null) {
-                        for (int i = 0; i < joinedGroups.size(); i++) {
-                            channelList.add(joinedGroups.get(i).get(0));
-                        }
-
-                        if (channelList.size() != channels.size()) {
-                            installation.put("channels", channelList);
-
-                            installation.saveEventually();
-                        }
-
-                    }
-                }
-                else {
-                        updateChannels();
-                    }
-
+                //update channels
+                updateChannels();
 
                 //Checking for username in parseinstallation entry
 
@@ -131,15 +129,28 @@ public class Refresher {
                     installation.saveEventually();
                 }
 
-
             } else {
 
                 sm.setAppOpeningCount();
+                //sequentially execute following
         /*
          * Updating joined group list
          */
                 JoinedClassRooms joinClass = new JoinedClassRooms(true);
-                joinClass.execute();
+                joinClass.doInBackgroundCore();
+                joinClass.onPostExecuteHelper(); //done
+
+                //call inbox
+                Inbox newInboxMsg = new Inbox(null);
+                newInboxMsg.doInBackgroundCore();
+                newInboxMsg.onPostExecuteHelper(); //done
+                newInboxMsg.syncOtherInboxDetails();
+
+                //call created classrooms
+                CreatedClassRooms createdClassList = new CreatedClassRooms();
+                createdClassList.doInBackgroundCore();
+                createdClassList.onPostExecuteCoreHelper(); //done
+
             }
 
             //Refresh local outbox data, if not in valid state clear and fetch new.
@@ -147,7 +158,7 @@ public class Refresher {
             if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
                 if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
                     Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time in a thread");
-                    Runnable r = new Runnable() {
+                    /*Runnable r = new Runnable() {
                         @Override
                         public void run() {
                             Log.d("DEBUG_REFRESHER", "running fetchOutboxMessages");
@@ -157,7 +168,10 @@ public class Refresher {
 
                     Thread t = new Thread(r);
                     t.setPriority(Thread.MIN_PRIORITY);
-                    t.start();
+                    t.start();*/
+
+                    //no need to do in seperate thread. Already this is running in a background thread
+                    OutboxMsgFetch.fetchOutboxMessages();
                 }
                 else{
                     Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
@@ -167,8 +181,7 @@ public class Refresher {
 
             if (appOpeningCount % utility.Config.faqRefreshingcount == 0) {
                 getServerFAQs faqs = new getServerFAQs(freshUser.getString("role"));
-                faqs.execute();
-
+                faqs.doInBackgroundCore(); //no on-post-execute in this
 
         /*
          * saving user's mobile model no.
@@ -194,10 +207,12 @@ public class Refresher {
             }
 
         } else {
+            Log.d("DEBUG_REFRESHER", "User NULL");
             SessionManager session = new SessionManager(Application.getAppContext());
             session.reSetAppOpeningCount();
         }
 
+        Log.d("DEBUG_REFRESHER", "Leaving Refresher Thread");
     }
 
 
@@ -214,8 +229,7 @@ public class Refresher {
             this.role = role;
         }
 
-        @Override
-        protected String[] doInBackground(Void... params) {
+        public void doInBackgroundCore(){
             ParseQuery<ParseObject> query = ParseQuery.getQuery("FAQs");
             query.orderByAscending(Constants.TIMESTAMP);
 
@@ -243,10 +257,14 @@ public class Refresher {
                 }
             }
 
-            return null;
+            return;
         }
 
-
+        @Override
+        protected String[] doInBackground(Void... params) {
+            doInBackgroundCore();
+            return  null;
+        }
     }
 
 

@@ -1,22 +1,23 @@
 package utility;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.Build;
+import android.util.Log;
 
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import library.UtilString;
 import trumplabs.schoolapp.Constants;
@@ -41,6 +42,7 @@ public class SessionManager {
   public static final String SIGNUP = "signUP";
   public static final String CHILD_NAME_LIST ="childNameList";
   public static final String DEFAULT_CLASS_EXIST = "defaultClasExist";
+  public static final String TIME_DELTA = "time_delta";
 
   public SessionManager() {}
 
@@ -157,31 +159,34 @@ public class SessionManager {
 
   /*
    * updating current time
+   * We will store delta instead of server time.
+   * So next time we need time on server, server_time = local_time + delta
    */
-  
-  public void setCurrentTime(Date time) {
-    SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
 
-    String currentDate = df.format(time);
+    public void setCurrentTime(Date time) {
+        Calendar now = Calendar.getInstance();
+        long deviceTime = now.getTimeInMillis();
+        long serverTime = time.getTime();
 
-    editor.putString(CURRENT_TIME, currentDate);
-    // commit changes
-    editor.commit();
+        long delta = serverTime - deviceTime;
+        Log.d("DEBUG_SESSION_MANAGER", "setCurrentTime delta is " + serverTime + "-" + deviceTime + "= " + delta);
+        editor.putLong(TIME_DELTA, delta);
+        editor.commit();
+    }
 
-  }
 
+    /*
+      server_time = local_time + delta(stored in shared prefs)
+     */
+    public Date getCurrentTime() throws ParseException {
+        long delta = pref.getLong(TIME_DELTA, 0);
 
-  public Date getCurrentTime() throws ParseException {
-    SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+        Calendar now = Calendar.getInstance();
+        now.add(Calendar.MILLISECOND, (int)delta);
+//    Log.d("DEBUG_SESSION_MANAGER", "server time is " + now.getTimeInMillis());
 
-    String time = pref.getString(CURRENT_TIME, null);
-
-    if (time == null)
-      return null;
-
-    Date date = df.parse(time);
-    return date;
-  }
+        return now.getTime();
+    }
   
   /*
    * Check whether default group exist or not

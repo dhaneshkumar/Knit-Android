@@ -1,24 +1,19 @@
 package trumplabs.schoolapp;
 
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.parse.ParseCloud;
@@ -30,9 +25,7 @@ import java.util.HashMap;
 
 import additionals.ReadSchoolFile;
 import baseclasses.MyActionBarActivity;
-import joinclasses.School;
 import library.UtilString;
-import loginpages.Signup1_5Class;
 import trumplab.textslate.R;
 import utility.Utility;
 

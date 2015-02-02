@@ -2,6 +2,8 @@ package loginpages;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
@@ -16,15 +18,12 @@ import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 import com.parse.SignUpCallback;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
-import baseclasses.MyActionBarActivity;
 import joinclasses.School;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -32,7 +31,6 @@ import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.Queries;
 import utility.Queries2;
@@ -129,8 +127,25 @@ public class Signup2Class extends ActionBarActivity {
 
                         user.put("OS", "ANDROID");
 
+                        //storing model no of mobile
                         if (android.os.Build.MODEL != null)
                             user.put("MODEL", android.os.Build.MODEL);
+
+                        //storing app version
+                        PackageInfo pInfo = null;
+                        try {
+                            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+
+                            if(pInfo != null) {
+                                String version = pInfo.versionName;
+                                if(!UtilString.isBlank(version))
+                                    user.put("version", version);
+                            }
+                        } catch (PackageManager.NameNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+
                         Utility.ls("signing up..............");
                         userId = emailid;
                         childName = mr + " " + name;
@@ -159,83 +174,15 @@ public class Signup2Class extends ActionBarActivity {
                                         code = Config.defaultParentGroupCode;
                                     }
 
-                                    /*
-                                    * Storing current time stamp
-                                    */
-                                    Utility.ls("signing up.............1 ...");
-                                    try {
-                                        if (role.equals(Constants.TEACHER)) {
-                                                String schoolId = School.getSchoolObjectId(school);
-                                                if (schoolId != null)
-                                                    user.put("school", schoolId);
-                                        }
-                                    } catch (ParseException e2) {
-                                    }
-                                    Utility.ls("signing up............1.5..");
-                                    user.put("test", true);
-
-                                    //saving in background
-                                    try{
-                                        user.save();
-                                        Date currentDate = user.getUpdatedAt();
-                                        if(currentDate != null) {
-                                            SessionManager sm = new SessionManager(Application.getAppContext());
-                                            sm.setCurrentTime(currentDate);
-                                        }
-                                    }
-                                    catch (ParseException e1){
-                                        e1.printStackTrace();
-                                    }
+                                    StoreSchoolInBackground storeSchoolInBackground = new StoreSchoolInBackground();
+                                    storeSchoolInBackground.execute();
 
 
-                                    Utility.ls("signing up............1.8..");
 
-
-                                      /*
-                                    * Resetting channels
-                                    */
-                                    Queries query = new Queries();
-                                    query.reSetChannels();
-
-                                    Utility.ls("signing up..........3....");
-
-                                    //storing username in parseInstallation table
-                                    ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-                                    installation.put("username", user.getUsername());
-                                    try {
-                                        installation.save();
-                                    } catch (ParseException e1) {
-                                    }
-
-
-                                    Utility.ls("signing up..........2....");
-
-
-                                    /*
-                                    * Joining default groups
-                                    */
-                                    joinDefaultGroup joinGroup = new joinDefaultGroup();
-                                    joinGroup.execute();
                                     Utility.ls("signing up..........4....");
 
 
-                                    //here create welcome notification and message
-                                    if(user.getString("role").equals("teacher")){
-                                        NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                                        AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user, getApplicationContext());
-                                    }
-                                    else if(user.getString("role").equals("parent")){
-                                        NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                                        AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, user, getApplicationContext());
-                                    }
-                                    else{
-                                        NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                                        AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, user, getApplicationContext());
-                                    }
 
-                                    //Switching to MainActivity
-                                    Intent intent = new Intent(getBaseContext(), LoginPanda.class);
-                                    startActivity(intent);
                                 } else {
 
                                     // Sign up didn't succeed. Look at the ParseException
@@ -261,9 +208,72 @@ public class Signup2Class extends ActionBarActivity {
                 }
             }
         });
-    }
+    };
 
-    ;
+
+    class StoreSchoolInBackground extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            //storing school on database server
+            try {
+                if (role.equals(Constants.TEACHER)) {
+                    String schoolId = School.getSchoolObjectId(school);
+                    if (schoolId != null)
+                        user.put("school", schoolId);
+                }
+            } catch (ParseException e2) {
+            }
+
+
+            Utility.updateCurrentTime(user);
+
+
+            //storing username in parseInstallation table
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            installation.put("username", user.getUsername());
+            List<String> channelList = new ArrayList<String>();
+            installation.put("channels", channelList);
+            try {
+                installation.save();
+            } catch (ParseException e1) {
+            }
+
+              /*
+                                    * Joining default groups
+                                    */
+            joinDefaultGroup joinGroup = new joinDefaultGroup();
+            joinGroup.execute();
+
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+
+            //here create welcome notification and message
+            if(user.getString("role").equals("teacher")){
+                NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
+            }
+            else if(user.getString("role").equals("parent")){
+                NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, user);
+            }
+            else{
+                NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, user);
+            }
+
+            //Switching to MainActivity
+            Intent intent = new Intent(getBaseContext(), LoginPanda.class);
+            startActivity(intent);
+        }
+    }
 
     class joinDefaultGroup extends AsyncTask<Void, Void, Void> {
         @Override

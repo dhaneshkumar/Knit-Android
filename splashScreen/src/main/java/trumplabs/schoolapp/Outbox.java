@@ -40,7 +40,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import BackGroundProcesses.SeenHandler;
 import BackGroundProcesses.SyncMessageDetails;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -433,26 +432,30 @@ public class Outbox extends Fragment {
     }
 
 
+    public static void refreshCountCore(){
+        Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
+        SyncMessageDetails.fetchLikeConfusedCountOutbox();
+        //following is the onpostexecute thing
+        if (Outbox.outboxRefreshLayout != null){
+            Outbox.outboxRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Notifying Outbox.myadapter");
+                    outboxRefreshLayout.setRefreshing(false);
+                    if(Outbox.myadapter != null){
+                        Outbox.myadapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
+    }
+
     //update like/confused/seen count for sent messages in a background thread
     public static void refreshCountInBackground(){
         Runnable r = new Runnable() {
             @Override
             public void run(){
-                Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
-                SyncMessageDetails.fetchLikeConfusedCountOutbox();
-                //following is the onpostexecute thing
-                if (Outbox.outboxRefreshLayout != null){
-                    Outbox.outboxRefreshLayout.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Notifying Outbox.myadapter");
-                            outboxRefreshLayout.setRefreshing(false);
-                            if(Outbox.myadapter != null){
-                                Outbox.myadapter.notifyDataSetChanged();
-                            }
-                        }
-                    });
-                }
+                refreshCountCore();
             }
         };
 
@@ -488,7 +491,7 @@ stop swipe refreshlayout
 
         Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
 
-        //update Messages.totalInboxMessages
+        //update totalOutboxMessages
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null)

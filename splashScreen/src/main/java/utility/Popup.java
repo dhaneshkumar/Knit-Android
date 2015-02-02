@@ -1,6 +1,5 @@
 package utility;
 
-import trumplab.textslate.R;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
@@ -11,11 +10,11 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import trumplab.textslate.R;
 
 
 public class Popup {

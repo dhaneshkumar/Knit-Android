@@ -1,18 +1,5 @@
 package loginpages;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.FontsOverride;
-import trumplabs.schoolapp.MainActivity;
-import utility.SessionManager;
-import utility.Tools;
-import utility.Utility;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,10 +7,23 @@ import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
-import baseclasses.MyActionBarActivity;
 
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import baseclasses.MyActionBarActivity;
+import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.FontsOverride;
+import trumplabs.schoolapp.MainActivity;
+import utility.SessionManager;
+import utility.Tools;
 
 /**
  * Used to display splash screen on opening the app. It also start a background process to update

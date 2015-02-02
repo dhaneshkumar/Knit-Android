@@ -1,5 +1,11 @@
 package utility;
 
+import com.parse.GetDataCallback;
+import com.parse.ParseException;
+import com.parse.ParseFile;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,17 +16,6 @@ import java.util.List;
 import library.UtilString;
 import trumplabs.schoolapp.ClassMembers;
 import trumplabs.schoolapp.Classrooms;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Messages;
-
-import com.parse.GetCallback;
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 public class Queries2 {
 
