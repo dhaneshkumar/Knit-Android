@@ -707,6 +707,7 @@ public class JoinedClasses extends Fragment {
                                     if (pi != null) {
                                         pi.addUnique("channels", code);
                                         pi.saveEventually();
+
                                     }
 
 
