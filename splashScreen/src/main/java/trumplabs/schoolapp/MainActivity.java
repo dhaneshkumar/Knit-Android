@@ -66,7 +66,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
         signInFlag = false;
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); //setting animation
+       // overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); //setting animation
         ParseUser parseObject = ParseUser.getCurrentUser();
 
 

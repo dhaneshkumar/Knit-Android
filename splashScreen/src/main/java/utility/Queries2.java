@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
@@ -15,6 +16,7 @@ import trumplabs.schoolapp.Messages;
 
 import com.parse.GetCallback;
 import com.parse.GetDataCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
@@ -50,30 +52,34 @@ public class Queries2 {
         return false;
     }
 
+    /**
+     * Update profile image of teacher
+     * @param code
+     * @param userId
+     * @throws ParseException
+     */
     public void updateProfileImage(String code, String userId) throws ParseException {
     /*
-     * Retrieving updated pic name
+     * fetching updated codegroup entry from server
      */
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
+        query.fromLocalDatastore();
         query.whereEqualTo("code", code);
 
         ParseObject obj = query.getFirst();
-
         if (obj != null) {
+
+            obj.fetchIfNeeded();    //fetching from server
+
+            //retrieving server pic name
             String newPic = obj.getString("picName");
-
-            if (newPic != null)
-                Utility.ls("new pic :" + newPic);
-
-
             String senderId = obj.getString("senderId");
-            // senderId = senderId.replaceAll("\\.", "");
             senderId = senderId.replaceAll("@", "");
             ParseFile senderPic = obj.getParseFile("senderPic");
 
-      /*
-       * Retrieving local pic name
-       */
+          /*
+           * Retrieving local pic name
+           */
             ParseQuery<ParseObject> query1 = ParseQuery.getQuery("Codegroup");
             query1.fromLocalDatastore();
             query1.whereEqualTo("code", code);
@@ -131,14 +137,12 @@ public class Queries2 {
 
     }
 
-
+    /**
+     * Downloading image from server and storing it locally
+     * @param senderId
+     * @param senderImagefile
+     */
     public static void downloadProfileImage(final String senderId, ParseFile senderImagefile) {
-
-        // System.out.println("start downloading");
-        // System.out.println(senderImagefile);
-        // System.out.println(senderId);
-
-        // Utility.toast(senderId);
 
         if (senderImagefile != null && (!UtilString.isBlank(senderId))) {
             senderImagefile.getDataInBackground(new GetDataCallback() {
@@ -166,11 +170,6 @@ public class Queries2 {
                             e2.printStackTrace();
                         }
 
-            /*
-             * Bitmap mynewBitmap = BitmapFactory.decodeFile(senderThumbnailFile.getAbsolutePath());
-             * classimg.setImageBitmap(mynewBitmap);
-             */
-
                         // Might be a problem when net is too slow :/
                         System.out.println("Profile Image Downloaded"); // ************************************
                     } else {
@@ -184,33 +183,40 @@ public class Queries2 {
 
     }
 
+    /**
+     * Locally storing codegroup entry corresponding to given class-code
+     * @param code
+     * @param userId
+     */
     public void storeCodegroup(String code, String userId) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-        query.whereEqualTo("code", code);
 
-        ParseObject obj = null;
+        //setting parameters
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("classcode", code);
+
+        ParseObject codeGroupObject = null;
+
+        //calling parse cloud function to create class
         try {
-            obj = query.getFirst();
+            codeGroupObject = ParseCloud.callFunction("getCodegroup", params);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        if (obj != null) {
-
-
-            obj.put("userId", userId);
+        if (codeGroupObject != null)
+        {
+            codeGroupObject.put("userId", userId);
             try {
-                obj.pin();
+                codeGroupObject.pin();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-
-            String senderId = obj.getString("senderId");
-            // senderId = senderId.replaceAll("\\.", "");
+            //Downloading profile pic of teacher
+            String senderId = codeGroupObject.getString("senderId");
             senderId = senderId.replaceAll("@", "");
 
-            downloadProfileImage(senderId, obj.getParseFile("senderPic"));
+            downloadProfileImage(senderId, codeGroupObject.getParseFile("senderPic"));
         }
     }
 

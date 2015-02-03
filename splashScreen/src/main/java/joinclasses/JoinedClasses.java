@@ -71,6 +71,9 @@ import com.parse.ParseUser;
 
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 
+/**
+ * Displays list of all joined classes and suggested classes
+ */
 public class JoinedClasses extends Fragment {
 
     private LayoutInflater layoutinflater;
@@ -128,9 +131,9 @@ public class JoinedClasses extends Fragment {
         if (joinedadapter == null)
             joinedadapter = new myBaseAdapter();
 
-          /*
-          Fetching suggestion list
-           */
+      /*
+      Fetching suggestion list
+       */
         suggestedGroups = JoinedHelper.getSuggestionList(userId);
 
         if (suggestedGroups == null)
@@ -144,12 +147,6 @@ public class JoinedClasses extends Fragment {
         if (suggestionAdapter == null)
             suggestionAdapter = new suggestionAdapter();
 
-
-
-        /*
-         * SessionManager session = new SessionManager(Application.getAppContext()); int appOpeningCount
-         * = session.getAppOpeningCount(); Utility.toast(appOpeningCount + "");
-         */
         /*
          * Check whether it has default group or not
          */
@@ -192,10 +189,12 @@ public class JoinedClasses extends Fragment {
                         Tools.runSmoothProgressBar(mHeaderProgressBar, 10);
                     }
 
+                    //refreshing join clases
                     JoinedClassRooms joinClass = new JoinedClassRooms();
                     joinClass.execute();
 
-                    UpdateSuggestions updateSuggestions = new UpdateSuggestions();
+                    //refreshing classroom suggestions
+                    UpdateSuggestions updateSuggestions = new UpdateSuggestions(true);
                     updateSuggestions.execute();
                 } else {
                     Utility.toast("Check your Internet connection");
@@ -269,8 +268,8 @@ public class JoinedClasses extends Fragment {
           /*
            * setting condensed font
            */
-
             final String role = ParseUser.getCurrentUser().getString(Constants.ROLE);
+
             if(! role.equals(Constants.STUDENT)) {
                 child_textView.setTypeface(typeFace);
                 if (joinedGroups.get(position).size() > 2) {
@@ -282,10 +281,6 @@ public class JoinedClasses extends Fragment {
             {
                 child_textView.setVisibility(View.GONE);
             }
-
-
-
-
 
 
           /*

@@ -52,6 +52,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+
+/**
+ * This fragment show layout to enter the class-code
+ */
 public class JoinClass extends Fragment {
     private EditText classCode;
     private String groupName = "";
@@ -81,6 +85,8 @@ public class JoinClass extends Fragment {
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null)
             {Utility.logout(); return;}
+
+        //initializing variables
         textQuery = new Queries();
         userId = user.getUsername();
         childName = user.getString("name");
@@ -99,8 +105,8 @@ public class JoinClass extends Fragment {
         getActivity().findViewById(R.id.joinLinearLayout).requestFocus();
 
 
-            // Get the x, y location and store it in the location[] array
-            // location[0] = x, location[1] = y.
+        // Get the x, y location and store it in the location[] array
+        // location[0] = x, location[1] = y.
         ViewTreeObserver vto = help.getViewTreeObserver();
         vto.addOnGlobalLayoutListener(new OnGlobalLayoutListener() {
             @Override
@@ -108,17 +114,22 @@ public class JoinClass extends Fragment {
                 int[] location = new int[2];
                 help.getLocationOnScreen(location);
                 height = help.getHeight();
-            // Initialize the Point with x, and y positions
+
+                // Initialize the Point with x, and y positions
                 p = new Point();
                 p.x = location[0];
                 p.y = location[1];
             }
         });
 
+        //changing button's text depending on user's role
         if(role.equals(Constants.STUDENT))
             join_btn.setText("Join");
+
         final String txt =
                 "You need a class-code to join the class-room. If you don't have any, ask to teacher for it.";
+
+        //setting help button clicked functionality
         help.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -127,7 +138,8 @@ public class JoinClass extends Fragment {
                     popup.showPopup(getActivity(), p, true, -300, txt, height, 15, 400);
                     InputMethodManager inputMethodManager =
                             (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            // inputMethodManager.showSoftInput(viewToEdit, 0);
+
+                    //hiding keyboard
                     if (getActivity().getCurrentFocus() != null) {
                         inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus()
                                 .getApplicationWindowToken(), 0);
@@ -136,27 +148,40 @@ public class JoinClass extends Fragment {
             }
         });
 
+        //Setting join button clicked button functionality
         join_btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!UtilString.isBlank(classCode.getText().toString())) {
+
                     code = classCode.getText().toString().trim();
-                    if (code.length() != 5) {
+
+                    //validating code format
+                    if (code.length() != 7) {
                         Utility.toast("Enter Correct Class Code");
                         return;
                     }
-            // subscribe user to this group.
+
+                    //hiding keyboard
                     Tools.hideKeyboard(getActivity());
-                    Utility.ls("ready to subscrible");
+
+                    //checking for internet connection
                     if (Utility.isInternetOn(getActivity())) {
+
+                        /*
+                        If user is not a student then it will goto next activity to take input child-name else
+                        It will directly join this classroom.
+                         */
                         if(! role.equals(Constants.STUDENT)) {
+                            //going to next activity
                             Intent intent = new Intent(getActivity(), AddChildToClass.class);
                             intent.putExtra("code", code);
-            //startActivity(intent);
                             getActivity().overridePendingTransition(R.anim.animation_leave, R.anim.animation_enter);
                             startActivityForResult(intent, 0);
                         }
                         else {
+
+                            //joining this class, since user is a student
                             AddChild_Background rcb = new AddChild_Background();
                             rcb.execute();
                             progressBarLayout.setVisibility(View.VISIBLE);
@@ -170,29 +195,27 @@ public class JoinClass extends Fragment {
             }
         });
 
+        //Setting invite button functionality
         Button inviteButton = (Button) getActivity().findViewById(R.id.inviteButton);
         inviteButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //go to invite teacher activity
                 Intent intent = new Intent(getActivity(), InviteTeacher.class);
                 startActivity(intent);
             }
         });
     }
 
+    /**
+     * joining class using code in background
+     */
+    class AddChild_Background extends AsyncTask<Void, Void, Boolean> {
+        boolean classExist; //flag to test whether class already added in user's joined-group or not
 
-
-
-    class AddChild_Background extends AsyncTask<Void, Void, Void> {
-        boolean joinFlag;
-        boolean classExist;
-        String grpName;
-        String schoolId;
-        String division;
-        String standard;
-        ParseInstallation pi;
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
             if (userId != null && childName != null) {
 
                 /*
@@ -201,6 +224,7 @@ public class JoinClass extends Fragment {
                 childName = childName.trim();
                 childName = UtilString.parseString(childName);
 
+                classExist = false; //setting flag initially false
                 /*
                 * Change first letter to caps
                 */
@@ -209,130 +233,27 @@ public class JoinClass extends Fragment {
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null) {
 
-                    /********************* < joining class room > *************************/
-                    joinFlag = false;
-                    classExist = false;
-
-                    // check whether group exist or not
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-                    String grpCode = code;
-                    grpCode = grpCode.replace("TS", "");
-                    code = "TS" + grpCode.trim();
-                    query.whereEqualTo("code", code);
-                    if (!textQuery.isJoinedClassExist(code)) {
-                        ParseObject a;
-                        try {
-                            a = query.getFirst();
-                            if (a != null) {
-                                if (a.get("name") != null && a.getBoolean("classExist")) {
-                                    String senderId = a.getString("senderId");
-                                    final String grpSenderId = senderId;
-                                    ParseFile senderPic = a.getParseFile("senderPic");
-                                    if (!UtilString.isBlank(a.get("name").toString())) {
-                                        grpName = a.get("name").toString();
-                                        schoolId = a.getString("school");
-                                        standard = a.getString("standard");
-                                        division = a.getString(Constants.DIVISION);
-
-                                        // Enable to receive push
-                                        pi = ParseInstallation.getCurrentInstallation();
-                                        if (pi != null) {
-                                            pi.addUnique("channels", code);
-                                            pi.saveInBackground(new SaveCallback() {
-                                                @Override
-                                                public void done(ParseException e) {
-                                                    if(e != null)
-                                                    {
-                                                        pi.saveEventually();
-                                                        Utility.ls("saved not installation in back");
-                                                        e.printStackTrace();
-                                                    }
-                                                    else
-                                                    {
-                                                        Utility.ls("saved installation in back");
-                                                    }
-                                                }
-                                            });
-                                        }
-                                        else
-                                            Utility.ls("parse installation -- null");
-                                        user.addUnique("joined_groups", Arrays.asList(code, grpName, childName));
-                                        user.saveEventually();
-
-                                        // Adding this user as member in GroupMembers table
-                                        final ParseObject groupMembers = new ParseObject("GroupMembers");
-                                        groupMembers.put("code", code);
-                                        groupMembers.put("name", user.getString("name"));
-                                        List<String> boys = new ArrayList<String>();
-                                        boys.add(childName.trim());
-                                        groupMembers.put("children_names", boys);
-                                        if (user.getEmail() != null)
-                                            groupMembers.put("emailId", user.getEmail());
-                                        groupMembers.saveInBackground(new SaveCallback() {
-                                            @Override
-                                            public void done(ParseException e) {
-                                                if(e == null)
-                                                {
-                                                    try {
-                                                        memberQuery.storeGroupMember(code, userId, true);
-                                                    } catch(ParseException e1)
-                                                    {
-                                                        e1.printStackTrace();
-                                                    }
-                                                }
-                                            }
-                                        });
-                                    }
-
-                                    /*
-                                    * Saving locally in Codegroup table
-                                    */
-                                    a.put("userId", userId);
-                                    a.pin();
-
-                                    /*
-                                    * download pic locally
-                                    */
-                                    senderId = senderId.replaceAll("@", "");
-                                    String filePath =
-                                            Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
-                                    final File senderThumbnailFile = new File(filePath);
-                                    if (!senderThumbnailFile.exists()) {
-                                        Queries2 imageQuery = new Queries2();
-                                        if (senderPic != null)
-                                            imageQuery.downloadProfileImage(senderId, senderPic);
-                                    } else {
-
-                                      // Utility.toast("image already exist ");
-                                    }
-                                    joinFlag = true;
+                    int result = JoinedHelper.joinClass(code, childName, false);
 
 
-
-                                    //locally generating joiining notification and inbox msg
-                                    NotificationGenerator.generateNotification(getActivity().getApplicationContext(), utility.Config.welcomeMsg, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                                    AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, code, a.getString("Creator"), grpName, user, getActivity().getApplicationContext());
-
-
-
-/*
-Retrieve suggestion classes and store them in locally
-*/
-                                    School.storeSuggestions(schoolId, standard, division, userId);
-                                }
-                            }
-                        } catch (ParseException e) {
-                            joinFlag = false;
-                        }
+                    if (result == 1)
+                        return true;      //successfully joined class
+                    else if (result == 2) {
+                        classExist = true;    //already joined
+                        return false;
                     } else
-                        classExist = true;
-                }
+                        return false;       //failed to join
+
+                } else
+                    return false;
             }
-            return null;
+
+            return false;
         }
         @Override
-        protected void onPostExecute(Void result) {
-            if (joinFlag) {
+        protected void onPostExecute(Boolean result) {
+
+            if (result) {
                 Utility.toast("ClassRoom Added.");
                 if( Messages.myadapter != null)
                     Messages.myadapter.notifyDataSetChanged();

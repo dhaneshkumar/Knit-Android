@@ -135,22 +135,6 @@ public class Signup2Class extends ActionBarActivity {
                         if (android.os.Build.MODEL != null)
                             user.put("MODEL", android.os.Build.MODEL);
 
-                        //storing app version
-                        PackageInfo pInfo = null;
-                        try {
-                            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
-
-                            if(pInfo != null) {
-                                String version = pInfo.versionName;
-                                if(!UtilString.isBlank(version))
-                                    user.put("version", version);
-                            }
-                        } catch (PackageManager.NameNotFoundException e) {
-                            e.printStackTrace();
-                        }
-
-
-                        Utility.ls("signing up..............");
                         userId = emailid;
                         childName = mr + " " + name;
 

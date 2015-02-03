@@ -1,14 +1,17 @@
 package BackGroundProcesses;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -18,8 +21,10 @@ import joinclasses.JoinedHelper;
 import joinclasses.School;
 import library.UtilString;
 import profileDetails.ProfilePage;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import utility.Config;
+import utility.SessionManager;
 import utility.Utility;
 
 /**
@@ -28,86 +33,72 @@ import utility.Utility;
  * Created by Dhanesh on 12/25/2014.
  */
 public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
+    private boolean refreshFlag;    //true : means calling from joinedGroup refreshing function; false : normal refresher calling
+
+    public UpdateSuggestions()
+    {
+        this.refreshFlag= false;
+    }
+    public UpdateSuggestions(boolean refreshFlag)
+    {
+        this.refreshFlag= refreshFlag;
+    }
+
     @Override
-    protected String doInBackground(Void... params) {
+    protected String doInBackground(Void... param) {
 
 
-        Utility.ls("update suggestion running....");
+        Utility.ls("update suggestion running in background....");
         ParseUser user = ParseUser.getCurrentUser();
 
+        //validating user
         if (user == null)
+        {
+            Utility.logout();
             return null;
+        }
         String userId = user.getUsername();
 
-        List<List<String>> suggestions = user.getList(Constants.JOINED_GROUPS);
-        String role = user.getString(Constants.ROLE);
 
-        String defaultCode = null;
-        if (role.equals(Constants.TEACHER))
-            defaultCode = Config.defaultTeacherGroupCode;
+        if(refreshFlag );
         else
-            defaultCode = Config.defaultParentGroupCode;
+        {
+            SessionManager sessionManager = new SessionManager(Application.getAppContext());
 
-        if (suggestions != null) {
-            Set<String> stringList = new HashSet<String>();
-
-            //removing default group from list
-            for (int i = 0; i < suggestions.size(); i++) {
-                if (suggestions.get(i).get(0).equals(defaultCode))
-                    continue;
-                else {
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
-                    query.fromLocalDatastore();
-                    query.whereEqualTo("code", suggestions.get(i).get(0));
-
-                    Utility.ls(suggestions.get(i).get(0));
-                    try {
-                        ParseObject obj = query.getFirst();
-
-                        if (obj != null) {
-                            String temp = "";
-
-                            String school = obj.getString("school");
-                            String standard = obj.getString("standard");
-                            String division = obj.getString(Constants.DIVISION);
-
-                            if (!UtilString.isBlank(school) && !UtilString.isBlank(standard) && !UtilString.isBlank(division)) {
-                                temp = school + "~" + standard + "~" + division;
-                                stringList.add(temp);
-
-                              //  Utility.ls(temp);
-                            }
-                        }
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-
-
-            if (stringList != null && stringList.size() > 0) {
-                for (String item : stringList) {
-                    String[] itemList = item.split("~");
-
-                    if (itemList == null)
-                        continue;
-
-                    if (itemList.length == 3) {
-                        String school = itemList[0];
-                        String standard = itemList[1];
-                        String division = itemList[2];
-
-                    //    Utility.ls("refresh : " + school + " " + standard + " " + division);
-
-                        School.storeSuggestions(school, standard, division, userId);
-                    }
-
-
-                }
-            }
-
+            /*
+            Update suggestions occasionally ,if app opening count is greater than specified limit.
+            Since there wont be any suggestions after 2 weeks.
+            else update every time.
+             */
+            if((sessionManager.getAppOpeningCount() > Config.updateSuggestionLimit) &&
+                    (sessionManager.getAppOpeningCount() % Config.updateSuggestionInterval!=0))
+                return userId;
         }
+
+        List<ParseObject> codeGroupObjectList = null;
+        try {
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            codeGroupObjectList = ParseCloud.callFunction("getAllClassroomSuggestions", params);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        //storing list locally
+        if(codeGroupObjectList != null)
+        {
+            for(int i=0; i < codeGroupObjectList.size(); i++)
+            {
+                ParseObject obj = codeGroupObjectList.get(i);
+                obj.put("userId", userId);
+                try {
+                    obj.pin();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         return userId;
     }
 

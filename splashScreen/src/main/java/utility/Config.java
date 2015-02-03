@@ -40,4 +40,7 @@ public class Config {
   public static int messageNormalStartTime = 7; //7 AM (7 hours)
   public static int messageNormalEndTime = 22;  //10 PM(22 hours)
   public static String messageTimeWarning = "This might not be the right time to send a message.\nSend anyway?";
+
+  public static int updateSuggestionLimit =70;
+  public static int updateSuggestionInterval =20;
 }

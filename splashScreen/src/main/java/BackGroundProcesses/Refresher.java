@@ -138,7 +138,7 @@ public class Refresher {
         /*
          * Updating joined group list
          */
-                JoinedClassRooms joinClass = new JoinedClassRooms(true);
+                JoinedClassRooms joinClass = new JoinedClassRooms();
                 joinClass.execute();
             }
 

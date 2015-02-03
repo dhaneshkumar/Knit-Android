@@ -512,7 +512,6 @@ public class Queries extends MyActivity {
             if (createdGroups != null)
                 for (int i = 0; i < createdGroups.size(); i++) {
                     if (className.equals(createdGroups.get(i).get(1).toString())) {
-                        Log.d("create class", "group exist already");
                         return true;
                     }
                 }
@@ -883,7 +882,7 @@ public class Queries extends MyActivity {
    * Searches for given class in joined classrooms
    */
 
-    public boolean isJoinedClassExist(String classname) {
+    public static boolean isJoinedClassExist(String classCode) {
         ParseUser user = ParseUser.getCurrentUser();
         List<List<String>> joinedGroups;
 
@@ -893,7 +892,7 @@ public class Queries extends MyActivity {
             if (joinedGroups != null) {
                 for (int i = 0; i < joinedGroups.size(); i++) {
 
-                    if (classname.equals(joinedGroups.get(i).get(0)))
+                    if (classCode.equals(joinedGroups.get(i).get(0)))
                         return true;
                 }
             }

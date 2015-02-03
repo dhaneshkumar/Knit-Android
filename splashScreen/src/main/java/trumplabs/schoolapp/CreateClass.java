@@ -69,6 +69,7 @@ public class CreateClass extends MyActionBarActivity {
   private String selectedSchool;
   private String selectedStandard;
   private String selectedDivison;
+  private Queries query12;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +91,7 @@ public class CreateClass extends MyActionBarActivity {
     division_txt = (TextView) findViewById(R.id.division);
     user = ParseUser.getCurrentUser();
     activity = this;
+    query12 = new Queries();
 
 
     if (user == null)
@@ -108,8 +110,10 @@ public class CreateClass extends MyActionBarActivity {
       school_txt.setText(selectedSchool);
     else
       selectedSchool ="Other";
+
     selectedDivison = "NA";
     selectedStandard = "NA";
+
 
     /*
      * convert typed edit-text letters to upper-case
@@ -124,14 +128,30 @@ public class CreateClass extends MyActionBarActivity {
         //typed class name
         typedtxt = classnameview.getText().toString().trim();
 
+
+
+
+
         if (!UtilString.isBlank(typedtxt)) {
 
+            //Checking whether this class already exist locally or not
+            String className = typedtxt;
+            if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
+                className += " "+selectedStandard;
 
+            if(!UtilString.isBlank(selectedDivison) && !selectedDivison.equals("NA"))
+                className += selectedDivison;
+
+
+          if(query12.checkClassNameExist(className))
+          {
+              Utility.toast(className + " class already exist");
+              return;
+          }
 
           if (Utility.isInternetOn(activity)) {
             createGroup jg = new createGroup();
             jg.execute();
-
 
 
             /*
@@ -299,36 +319,25 @@ public class CreateClass extends MyActionBarActivity {
         if (!selectedSchool.trim().equals("Other"))
             params.put("schoolId", schoolId);
 
-        params.put("divis(on", selectedDivison);
+        params.put("divison", selectedDivison);
         params.put("standard", selectedStandard);
         params.put("classname", typedtxt);
 
         ParseObject codeGroupObject = null;
 
 
-        Log.d("CREATE", "calling parse cloud function....");
-
         //calling parse cloud function to create class
         try {
             codeGroupObject = ParseCloud.callFunction("createnewclass3", params);
-
-            Log.d("CREATE", "successfully retrieved....");
         } catch (ParseException e) {
             e.printStackTrace();
-
-            Log.d("CREATE", "got error....");
-
             return false;
         }
 
 
         if (codeGroupObject == null)
-        {
-            Log.d("CREATE", "got null object....");
             return false;
-        }
         else {
-            Log.d("CREATE", "got  good one....");
             //successfully created your class
 
             //locally saving codegroup entry corresponding to that class
@@ -348,14 +357,10 @@ public class CreateClass extends MyActionBarActivity {
             //retrieving class name
             typedtxt = codeGroupObject.getString("name");
 
-            //Adding in user
-            //user.addUnique("Created_groups", Arrays.asList(codevalue, classname));
-            //user.saveEventually();
-
 
             //fetching changes made to created groups of user
             try {
-                user.fetchIfNeeded();
+                user.fetch();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
