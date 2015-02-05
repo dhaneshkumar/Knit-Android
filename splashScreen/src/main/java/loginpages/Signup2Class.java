@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import baseclasses.MyActionBarActivity;
+import joinclasses.JoinedHelper;
 import joinclasses.School;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -281,87 +282,15 @@ public class Signup2Class extends ActionBarActivity {
     class joinDefaultGroup extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
-            if (userId != null && childName != null) {
-/*
-* Retrieving user details
-*/
+            if (ParseUser.getCurrentUser() != null && childName != null) {
+
                 childName = childName.trim();
                 childName = UtilString.parseString(childName);
-                ParseUser user = ParseUser.getCurrentUser();
-                if (user != null) {
-/********************* < joining class room > *************************/
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-                    query.whereEqualTo("code", code);
-                    ParseObject a;
-                    try {
-                        a = query.getFirst();
-                        if (a != null) {
-                            if (a.get("name") != null && a.getBoolean("classExist")) {
-                                String senderId = a.getString("senderId");
-                                ParseFile senderPic = a.getParseFile("senderPic");
-                                if (!UtilString.isBlank(a.get("name").toString())) {
-                                    grpName = a.get("name").toString();
 
-                                    // Enable to receive push
-                                    ParseInstallation pi = ParseInstallation.getCurrentInstallation();
-                                    if (pi != null) {
-                                        pi.addUnique("channels", code);
-                                        pi.saveEventually();
-                                    }
-                                    List<List<String>> oldList = user.getList("joined_groups");
-                                    if (oldList == null)
-                                        oldList = new ArrayList<List<String>>();
-                                    List<String> list = new ArrayList<String>();
-                                    list.add(code);
-                                    list.add(grpName);
-                                    list.add(childName);
-                                    oldList.add(0, list);
-                                    user.put("joined_groups", oldList);
-                                    user.saveEventually();
+                String childName = ParseUser.getCurrentUser().getString("name");
+                childName = UtilString.parseString(childName);
 
-                                    // Adding this user as member in GroupMembers table
-                                    final ParseObject groupMembers = new ParseObject("GroupMembers");
-                                    groupMembers.put("code", code);
-                                    groupMembers.put("name", user.getString("name"));
-                                    List<String> boys = new ArrayList<String>();
-                                    boys.add(childName.trim());
-                                    groupMembers.put("children_names", boys);
-                                    if (user.getEmail() != null)
-                                        groupMembers.put("emailId", user.getEmail());
-                                    groupMembers.saveEventually();
-                                    groupMembers.pin();
-                                    SessionManager session = new SessionManager(Application.getAppContext());
-                                    session.setDefaultClassExtst();
-                                    Queries2 memberQuery = new Queries2();
-                                    try {
-                                        memberQuery.storeGroupMember(code, userId, true);
-                                    } catch (ParseException e1) {
-                                    }
-                                }
-
-                                /*
-                                * Saving locally in Codegroup table
-                                */
-                                a.put("userId", userId);
-                                a.pin();
-
-                                /*
-                                * download pic locally
-                                */
-                                senderId = senderId.replaceAll("@", "");
-                                String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
-                                final File senderThumbnailFile = new File(filePath);
-                                if (!senderThumbnailFile.exists()) {
-                                    Queries2 imageQuery = new Queries2();
-                                    if (senderPic != null)
-                                        imageQuery.downloadProfileImage(senderId, senderPic);
-                                } else {
-                                }
-                            }
-                        }
-                    } catch (ParseException e) {
-                    }
-                }
+                JoinedHelper.joinClass(code, childName, true);
             }
             return null;
         }
