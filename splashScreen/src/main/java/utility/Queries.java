@@ -530,7 +530,7 @@ public class Queries extends MyActivity {
         // Retriving local messages from groupmembers locally
         ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupMembers");
         query.fromLocalDatastore();
-        query.whereEqualTo("userId", userId);
+        query.whereEqualTo("emailId", userId);
         query.whereEqualTo("code", groupCode);
 
         try {
