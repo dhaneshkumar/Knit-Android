@@ -437,6 +437,7 @@ public class Utility extends MyActionBarActivity {
 
     //update current time(sync with server now - needed for first time e.g login, signup)
     public static void updateCurrentTime(ParseUser freshUser){
+        Log.d("DEBUG_UTILITY", "using updateCurrentTime() during login/signup");
         SessionManager session = new SessionManager(Application.getAppContext());
         boolean test = freshUser.getBoolean("test");
         test = !test;
@@ -453,6 +454,7 @@ public class Utility extends MyActionBarActivity {
 
     //update current time (but in background as not urgent)
     public static void updateCurrentTimeInBackground(final ParseUser freshUser){
+        Log.d("DEBUG_UTILITY", "using updateCurrentTimeInBackground()");
         final SessionManager session = new SessionManager(Application.getAppContext());
         boolean test = freshUser.getBoolean("test");
         test = !test;

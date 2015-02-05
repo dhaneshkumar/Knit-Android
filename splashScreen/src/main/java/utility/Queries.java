@@ -185,6 +185,7 @@ public class Queries {
         //if newTimeStamp is NOT null, fetch all new messages with timestamp > newTimeStamp
 
         if(newTimeStamp == null){
+            Log.d("DEBUG_QUERIES_SERVER_MSGS", "timestamp null. So no messages stored. Fetching first batch of messages");
             HashMap<String, Integer> parameters = new HashMap<String, Integer>();
 
             parameters.put("limit", 50);
@@ -193,6 +194,7 @@ public class Queries {
 
                 //since old messages, need to update their MessageState(like_status, confused_status)
                 if(allMessages != null) {
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "fetched " + allMessages.size());
                     for (int i=0; i< allMessages.size(); i++) {
                         ParseObject msg = allMessages.get(i);
                         ParseQuery msgStateQuery = new ParseQuery("MessageState");
@@ -200,17 +202,28 @@ public class Queries {
                         msgStateQuery.whereMatches(Constants.USERNAME, userId);
                         msgStateQuery.whereMatches(Constants.MESSAGE_ID, msg.getObjectId());
                         //object id won't be null as it was fetched from parse
-                        ParseObject msgState = msgStateQuery.getFirst();
-                        if(msgState != null) {
-                            msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
-                            msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
+                        try {
+                            ParseObject msgState = msgStateQuery.getFirst();
+                            if (msgState != null) {
+                                msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
+                                msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
+                            } else {
+                                //default state 0 0
+                                msg.put(Constants.LIKE, false);
+                                msg.put(Constants.CONFUSING, false);
+                            }
                         }
-                        else{
-                            //default state 0 0
+                        catch (ParseException e){
+                            //no entry for it in MessageState table
+                            //use default state 0 0
                             msg.put(Constants.LIKE, false);
                             msg.put(Constants.CONFUSING, false);
                         }
+                        msg.put(Constants.USER_ID, userId);
+                        msg.put(Constants.DIRTY_BIT, false);
+                        msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages);
                 }
@@ -220,6 +233,7 @@ public class Queries {
             }
         }
         else{
+            Log.d("DEBUG_QUERIES_SERVER_MSGS", "fetch messages greater than newTimeStamp");
             //fetch messages greater than newTimeStamp
             HashMap<String, Date> parameters = new HashMap<String, Date>();
 
@@ -233,6 +247,10 @@ public class Queries {
                         ParseObject msg = allMessages.get(i);
                         msg.put(Constants.LIKE, false);
                         msg.put(Constants.CONFUSING, false);
+
+                        msg.put(Constants.USER_ID, userId);
+                        msg.put(Constants.DIRTY_BIT, false);
+                        msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages); //in the beginning so that [newMessages ... followed by ... original_msgList]

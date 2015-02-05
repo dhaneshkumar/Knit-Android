@@ -31,6 +31,7 @@ import utility.Utility;
 
 /**
  * Created by ashish on 17/1/15.
+ * Invite teacher to join the platform by filling out details of the teacher
  */
 
 public class InviteTeacher extends MyActionBarActivity {
@@ -277,12 +278,6 @@ public class InviteTeacher extends MyActionBarActivity {
                 e.printStackTrace();
             }
 
-            /*try{
-                Thread.sleep(5000);
-            }
-            catch (InterruptedException e){
-                e.printStackTrace();
-            }*/
             Log.d("DEBUG_INVITE_TEACHER", "invitation over. Showing congrats view");
             return null;
         }
@@ -319,15 +314,7 @@ public class InviteTeacher extends MyActionBarActivity {
                     }
                 });
 
-//                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int whichButton) {
-//                        dialog.dismiss();
-//                    }
-//                });
-
                 alert.show();
-
-
 
             }
             else{
