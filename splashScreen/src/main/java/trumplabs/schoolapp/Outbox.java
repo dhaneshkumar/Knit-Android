@@ -129,7 +129,7 @@ public class Outbox extends Fragment {
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
                 if(visibleItemCount + pastVisibleItems >= totalItemCount-1){
-                    Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
+                    //Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
                     if(totalItemCount >= totalOutboxMessages){
                         Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded

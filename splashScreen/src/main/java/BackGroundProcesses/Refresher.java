@@ -45,19 +45,7 @@ public class Refresher {
        */
             Utility.updateCurrentTimeInBackground(freshUser);
 
-            try{
-                freshUser.save();
-                Date currentDate = freshUser.getUpdatedAt();
-                sm.setCurrentTime(currentDate);
-                Log.d("splashScreen", "ccc");
-                freshUser.fetch();
-            }
-            catch (ParseException e){
-                e.printStackTrace();
-                Log.d("DEBUG_REFRESHER",  "fresh user save failed !!");
-            }
 
-            Log.d("DEBUG_REFRESHER",  "app opening count " + appOpeningCount);
             freshUser.fetchInBackground();
 
             if (appOpeningCount > 0) {

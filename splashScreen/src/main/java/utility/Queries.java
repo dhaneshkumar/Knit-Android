@@ -194,7 +194,7 @@ public class Queries {
 
                 //since old messages, need to update their MessageState(like_status, confused_status)
                 if(allMessages != null) {
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "fetched " + allMessages.size());
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] : fetched " + allMessages.size());
                     for (int i=0; i< allMessages.size(); i++) {
                         ParseObject msg = allMessages.get(i);
                         ParseQuery msgStateQuery = new ParseQuery("MessageState");
@@ -223,7 +223,7 @@ public class Queries {
                         msg.put(Constants.DIRTY_BIT, false);
                         msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "pinning all together");
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages);
                 }
@@ -243,6 +243,7 @@ public class Queries {
                 //just fetch, set default state(like, confused = false, false)
                 List<ParseObject> allMessages= ParseCloud.callFunction("showallclassesmessageswithtime", parameters);
                 if(allMessages != null) {
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
                     for(int i=0; i<allMessages.size(); i++){
                         ParseObject msg = allMessages.get(i);
                         msg.put(Constants.LIKE, false);
@@ -252,6 +253,7 @@ public class Queries {
                         msg.put(Constants.DIRTY_BIT, false);
                         msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[time] pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages); //in the beginning so that [newMessages ... followed by ... original_msgList]
                 }
