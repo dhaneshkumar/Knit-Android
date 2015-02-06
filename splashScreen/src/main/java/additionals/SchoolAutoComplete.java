@@ -65,12 +65,14 @@ public class SchoolAutoComplete {
         parameters.put("areaName", input);
         try {
             Log.d("DEBUG_SCHOOL_AUTOCOMPLETE", "calling schoolsNearby() with " + input);
-            ArrayList<String> schools = ParseCloud.callFunction("schoolsNearby", parameters);
+            ArrayList<ArrayList<String>> schools = ParseCloud.callFunction("schoolsNearby", parameters);
             Log.d("DEBUG_SCHOOL_AUTOCOMPLETE", "No of schools fetched " + schools.size());
             for(int i=0; i<schools.size(); i++){
-                Log.d("DEBUG_SCHOOL_AUTOCOMPLETE", "school " + i + " " + schools.get(i));
+                String schoolFullAddress = schools.get(i).get(0) + " " + schools.get(i).get(1);
+                Log.d("DEBUG_SCHOOL_AUTOCOMPLETE", "school " + i + " " + schoolFullAddress);
+                resultList.add(schoolFullAddress);
             }
-            return  schools;
+            return resultList;
         }
 
         catch (ParseException e){

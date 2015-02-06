@@ -572,6 +572,7 @@ public class Messages extends Fragment {
             senderId = senderId.replaceAll("@", "");
             String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
 
+            //Log.d("DEBUG_MESSAGES_DISPLAYING", "profile pic " + filePath);
             File senderThumbnailFile = new File(filePath);
 
             // ///////////////////////////////////////////////////////////

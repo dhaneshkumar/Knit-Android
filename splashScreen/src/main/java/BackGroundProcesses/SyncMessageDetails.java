@@ -83,7 +83,7 @@ public class SyncMessageDetails {
 
         if(msgs == null || msgs.size() == 0) return;
 
-        for(int i=0; i< msgs.size() && i< Config.inboxMsgCount; i++){
+        for(int i=0; i< msgs.size() && i< Config.inboxMsgRefreshTotal; i++){
             ParseObject msg = msgs.get(i);
 
             HashMap<String, String> parameters = new HashMap<String, String>();
@@ -104,11 +104,10 @@ public class SyncMessageDetails {
                 e.printStackTrace();
             }
         }
-        //messages adapter needs to be notified of dataset changed.
-        // This happens in the thread after all subtasks are over
+        // messages adapter needs to be notified of data-set changed.
+        // This happens in the thread running syncOtherInboxDetails() after all sub-tasks in it are over
 
         try{
-            Log.d("DEBUG_FETCH_COUNT", "pinning all at once");
             ParseObject.pinAll(msgsPinPending);
             Log.d("DEBUG_FETCH_COUNT", "pinning over successfully");
         }

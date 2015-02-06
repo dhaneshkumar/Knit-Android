@@ -552,9 +552,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                 schoolDialog.setTitle("Update School Name");
 
-                /*//put everything in scrollView
-                ScrollView scrollView = new ScrollView(this);
-*/
                 LinearLayout schoolLayout = new LinearLayout(this);
                 schoolLayout.setOrientation(LinearLayout.VERTICAL);
                 LinearLayout.LayoutParams schoolParmas =
@@ -579,17 +576,18 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     school_textView.setText("");*/
 
 
-                //progress bar
+                //progress bar. Hidden by default
                 final ProgressBar progressBar = new ProgressBar(this);
                 progressBar.setVisibility(View.GONE);
 
 
-                //school input
+                //school input. Hidden by default
                 final AutoCompleteTextView schoolInput = new AutoCompleteTextView(this);
-                schoolInput.setThreshold(1);
+                schoolInput.setVisibility(View.GONE);
+                schoolInput.setThreshold(1); //show suggestions on typing atleast one letter
 
 
-                    ReadSchoolFile readSchoolFile = new ReadSchoolFile();
+                    /*ReadSchoolFile readSchoolFile = new ReadSchoolFile();
                     try {
                         schoolsAdapter =
                                 new ArrayAdapter(this, android.R.layout.simple_list_item_1, readSchoolFile.getSchoolsList().toArray());
@@ -597,8 +595,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                     } catch (IOException e) {
                         e.printStackTrace();
-                    }
-                schoolInput.setVisibility(View.GONE);
+                    }*/
+
 
                 locationInput.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
@@ -606,7 +604,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                         final String value = (String) parent.getItemAtPosition(position);
                         Log.d("DEBUG_PROFILE_PAGE", "item clicked "  + value);
                         schoolInput.setVisibility(View.GONE);
-                        progressBar.setVisibility(View.VISIBLE);
+                        progressBar.setVisibility(View.VISIBLE); //show progress bar
 
                         new AsyncTask<Void, Void, Void>() {
                             ArrayList<String> schools;
@@ -621,8 +619,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                         new ArrayAdapter(actcontext, android.R.layout.simple_list_item_1, schools);
                                 schoolInput.setAdapter(schoolsAdapter);
 
-                                progressBar.setVisibility(View.GONE);
-                                schoolInput.setVisibility(View.VISIBLE);
+                                progressBar.setVisibility(View.GONE); //hide progress bar
+                                schoolInput.setVisibility(View.VISIBLE); //finally show school list box
                                 return;
                             }
                         }.execute();
@@ -633,15 +631,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 //                schoolInput.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
                 schoolInput.setDropDownHeight(200);
 
-
-
-
-
                 schoolLayout.addView(schoolInput, schoolParmas);
                 schoolLayout.addView(progressBar, schoolParmas);
-                schoolLayout.addView(locationInput, schoolParmas);
-
-//                scrollView.addView(schoolLayout);
+                schoolLayout.addView(locationInput, schoolParmas);;
 
                 schoolDialog.setView(schoolLayout);
 

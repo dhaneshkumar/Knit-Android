@@ -22,7 +22,9 @@ public class Config {
                                                         //be updated for like/confused/seen count
   public static final int outboxMsgMaxFetchCount = 100; //max how many outbox messages to fetch on first time app is opened
 
-  public static final int inboxMsgCount = 20;
+    public static final int inboxMsgRefreshTotal= 10; //how many of the latest inbox messages(total) will
+                                                 //be updated(periodically in Refresher) for like/confused
+    public static final int inboxMsgCount = 20;
   public static final int createMsgCount = 20;
   public static  final int outboxMsgCount =20;
   public static final int createMsgMax = 100;
