@@ -65,6 +65,35 @@
                 android:textSize="16sp" />
         </LinearLayout>
 
+        <library.DelayAutoCompleteTextView
+            android:id="@+id/school_location"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="@color/white"
+            android:hint="School Location"
+            android:paddingBottom="@dimen/signupPaddingTop"
+            android:paddingLeft="16dp"
+            android:completionThreshold="1"
+            android:paddingRight="3dp"
+            android:paddingTop="@dimen/signupPaddingTop"
+            android:textColor="@color/black"
+            android:selectAllOnFocus="true"
+            android:textSize="16sp" />
+
+        <ProgressBar
+            android:id="@+id/loading_schools"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:background="@color/white"
+            android:paddingBottom="@dimen/signupPaddingTop"
+            android:paddingLeft="16dp"
+            android:completionThreshold="1"
+            android:paddingRight="3dp"
+            android:paddingTop="@dimen/signupPaddingTop"
+            android:visibility="visible"/>
+
         <AutoCompleteTextView
             android:id="@+id/schoolName"
             android:layout_width="match_parent"
@@ -78,7 +107,8 @@
             android:paddingRight="3dp"
             android:paddingTop="@dimen/signupPaddingTop"
             android:textColor="@color/black"
-            android:textSize="16sp" >
+            android:textSize="16sp"
+            android:visibility="gone">
 
         </AutoCompleteTextView>
 

@@ -52,6 +52,7 @@ import additionals.ReadSchoolFile;
 import additionals.SchoolAutoComplete;
 import baseclasses.MyActionBarActivity;
 import joinclasses.School;
+import library.DelayAutoCompleteTextView;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
@@ -563,7 +564,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
           Setting Autocomplete textview in popup and its adapter to it
            */
                 //location input
-                final SchoolAutoComplete.DelayAutoCompleteTextView locationInput = new SchoolAutoComplete.DelayAutoCompleteTextView(this, null);
+                final DelayAutoCompleteTextView locationInput = new DelayAutoCompleteTextView(this, null);
 
                 locationInput.setThreshold(1);
                 locationInput.setHint("Your Location");
@@ -598,6 +599,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     }*/
 
 
+                locationInput.setSelectAllOnFocus(true);
                 locationInput.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -618,7 +620,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                 schoolsAdapter =
                                         new ArrayAdapter(actcontext, android.R.layout.simple_list_item_1, schools);
                                 schoolInput.setAdapter(schoolsAdapter);
-
+                                schoolInput.setText("");
                                 progressBar.setVisibility(View.GONE); //hide progress bar
                                 schoolInput.setVisibility(View.VISIBLE); //finally show school list box
                                 return;
