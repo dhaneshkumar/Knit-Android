@@ -71,10 +71,7 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
               int sessionCount = session.getAppOpeningCount();
 
                 //updating profile image of teacher
-              if (sessionCount % Config.senderPicUpdationCount == 0)
-              {
                 joinQuery.updateProfileImage(grpCode, userId);
-              }
             }
           } catch (ParseException e) {
             e.printStackTrace();

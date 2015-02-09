@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -39,16 +38,18 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.parse.DeleteCallback;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,7 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
@@ -97,12 +98,15 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
     private boolean createMsgFlag; // A flag to stop continuous request coming from create msgs in background on scrolling
     private SessionManager session;
     public static int totalClassMessages; //total messages sent from this class
+    public static LinearLayout progressbarLayout;
+    public static LinearLayout contentLayout;
+    public static Activity currentActivity;
 
     //calling constructor to refresh class-code and group name.
     public ClassMsg() {
         groupCode = ClassContainer.classuid;
         grpName = ClassContainer.className;
-        updateTotalClassMessages();
+        ClassMsgFunctions.updateTotalClassMessages(groupCode);
     }
 
     @Override
@@ -120,10 +124,12 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         myadapter = new myBaseAdapter();
         ACTION_MODE_NO = 0;
         query = new Queries();
-
+        currentActivity=getActivity();
 
         listv = (ListView) getActivity().findViewById(R.id.classmsglistview);   //list view
         listv.setStackFromBottom(true);         //show message from bottom
+        progressbarLayout = (LinearLayout) getActivity().findViewById(R.id.progressLayout);
+        contentLayout = (LinearLayout) getActivity().findViewById(R.id.contentLayout);
 
         progressLayout = (LinearLayout) getActivity().findViewById(R.id.progressBarLayout);
         session = new SessionManager(Application.getAppContext());
@@ -192,9 +198,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
      * openchooser.show(fm, "Chooser Dialog"); break;
      */
 
-            case R.id.deletebin:
-                menuDeleteBinMethod();
-                break;
             case R.id.copyicon:
                 String txtcont = selectedlistitems.get(0).getString("title");
                 Utility.copyToClipBoard(getActivity(), "label", txtcont);
@@ -229,94 +232,17 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                     Utility.toast("No internet!! Can't delete!");
                                     return;
                                 }
-                                sendTxtMsgtoSubscribers("Your Class " + grpName
-                                        + " has been deleted by the Creator " + sender);
 
-                                List<String> group = new ArrayList<String>();
-                                group.add(groupCode);
-                                group.add(grpName);
+                                //showing progress bar
+                                contentLayout.setVisibility(View.GONE);
+                                progressbarLayout.setVisibility(View.VISIBLE);
 
-                                ParseUser user = ParseUser.getCurrentUser();
+                                //calling background function to delete class
 
-                                if (user == null)
-                                    {Utility.logout(); return;}
+                                String[] params = new String[]{groupCode};
+                                ClassMsgFunctions.deleteCreatedClass deleteCreatedClass = new ClassMsgFunctions.deleteCreatedClass();
+                                deleteCreatedClass.execute(params);
 
-
-                               // user.put(Constants.JOINED_GROUPS, Utility.removeItemFromJoinedGroups(user, group));
-                              //  ParseUser.getCurrentUser().saveEventually();
-
-                                ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>("Codegroup");
-                                delquery1.whereEqualTo("code", groupCode);
-                                delquery1.getFirstInBackground(new GetCallback<ParseObject>() {
-                                    public void done(ParseObject object, ParseException e) {
-                                        if (object == null) {
-                                        } else {
-
-                                            object.put("classExist", false);
-                                            object.saveInBackground();
-                                        }
-                                    }
-                                });
-
-                              /*  ParseQuery<ParseObject> delquery11 = new ParseQuery<ParseObject>("Codegroup");
-                                delquery11.whereEqualTo("code", groupCode);
-                                delquery11.fromLocalDatastore();
-                                try {
-                                    ParseObject.unpinAll(delquery11.find());
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }*/
-
-                             /*   ParseQuery<ParseObject> delquery22 = new ParseQuery<ParseObject>("GroupDetails");
-                                delquery22.whereEqualTo("code", groupCode);
-                                delquery22.whereEqualTo("name", grpName);
-                                delquery22.fromLocalDatastore();
-                                try {
-                                    ParseObject.unpinAll(delquery22.find());
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-*/
-                                ParseQuery<ParseObject> delquery3 = new ParseQuery<ParseObject>("GroupMembers");
-                                delquery3.whereEqualTo("code", groupCode);
-                                delquery3.findInBackground(new FindCallback<ParseObject>() {
-
-                                    @Override
-                                    public void done(List<ParseObject> objects, ParseException e) {
-                                        if (e == null) {
-                                            ParseObject.deleteAllInBackground(objects, new DeleteCallback() {
-
-                                                @Override
-                                                public void done(ParseException e) {
-                                                    if (e == null)
-                                                        Log.d("textslate", "Query3 success!!");
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-
-                                ParseQuery<ParseObject> delquery33 = new ParseQuery<ParseObject>("GroupMembers");
-                                delquery33.whereEqualTo("code", groupCode);
-                                delquery33.fromLocalDatastore();
-                                try {
-                                    ParseObject.unpinAll(delquery33.find());
-                                    Log.d("textslate", "Local Query3 success!!");
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-
-                                ParseUser userObject = ParseUser.getCurrentUser();
-
-
-                                /*
-                                locally remove sent messages
-                                 */
-
-                                userObject.getList(Constants.CREATED_GROUPS).remove(group);
-                                userObject.saveEventually();
-                                Classrooms.createdGroups.remove(group);
-                                getActivity().finish();
                             }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -582,37 +508,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         });
     }
 
-    // delete the messages
-    public void menuDeleteBinMethod() {
-        ACTION_MODE_NO = 0;
-
-        if (myActivity != null) {
-            ((ActionBarActivity) myActivity).supportInvalidateOptionsMenu();
-            Iterator<ParseObject> it = selectedlistitems.iterator();
-            Integer count = 0;
-
-
-            //write parse cloud function to delete selected msg, if needed
-          /*  ParseQuery<ParseObject> query4 = ParseQuery.getQuery("GroupDetails");
-            query4.whereEqualTo("code", groupCode);
-            while (it.hasNext()) {
-                final ParseObject object = (ParseObject) it.next();
-                object.unpinInBackground();
-                object.deleteInBackground(new DeleteCallback() {
-
-                    @Override
-                    public void done(ParseException e) {
-                        object.deleteEventually();
-                    }
-                });
-                groupDetails.remove(object);
-                count += 1;
-            }
-            Utility.toast("Deleted " + count + " messages");
-            selectedlistitems.clear();
-            myadapter.notifyDataSetChanged();*/
-        }
-    }
 
     private void sendMsgMethod() {
         // Initializing all the views related to sending message view
@@ -640,14 +535,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         typedmsg.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+            public void onTextChanged(CharSequence s, int start, int before, int count){}
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -808,6 +698,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
 
+        //adding item to the listview
         final ParseObject groupDetails1 = new ParseObject("GroupDetails");
         groupDetails1.put("code", groupCode);
         groupDetails1.put("title", typedtxt);
@@ -820,98 +711,104 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         myadapter.notifyDataSetChanged();
         updProgressBar.setVisibility(View.VISIBLE);
 
-        groupDetails1.saveInBackground(new SaveCallback() {
 
+        //sending message using parse cloud function
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("code", groupCode);
+        params.put("classname", grpName);
+        params.put("message", typedtxt);
+        params.put("name", sender);
+        params.put("email", userId);
+
+        ParseCloud.callFunctionInBackground("sendtextmessage", params, new FunctionCallback<JSONObject>() {
             @Override
-            public void done(ParseException e) {
+            public void done(JSONObject obj, ParseException e) {
+
                 if (e == null) {
-                    // message was sent successfully
-                    updProgressBar.setVisibility(View.GONE);
+                    if (obj != null) {
 
-          /*
-           * storing locally
-           */
-                    ParseObject sentMsg = new ParseObject("SentMessages");
-                    sentMsg.put("objectId", groupDetails1.getObjectId());
-                    sentMsg.put("Creator", groupDetails1.getString("Creator"));
-                    sentMsg.put("code", groupDetails1.getString("code"));
-                    sentMsg.put("title", groupDetails1.getString("title"));
-                    sentMsg.put("name", groupDetails1.getString("name"));
-                    sentMsg.put("creationTime", groupDetails1.getCreatedAt());
-                    sentMsg.put("senderId", groupDetails1.getString("senderId"));
-                    sentMsg.put("userId", userId);
 
-                    if (groupDetails1.get("attachment") != null)
-                        sentMsg.put("attachment", groupDetails1.get("attachment"));
-                    if (groupDetails1.getString("attachment_name") != null)
-                        sentMsg.put("attachment_name", groupDetails1.getString("attachment_name"));
-                    if (groupDetails1.get("senderpic") != null)
-                        sentMsg.put("senderpic", groupDetails1.get("senderpic"));
+                        try {
+                            Date cratedAt = (Date) obj.get("cratedAt");
+                            String objectId = (String) obj.get("objectId");
 
-                    try {
-                        sentMsg.pin();
+                            updProgressBar.setVisibility(View.GONE);
 
-                    } catch (ParseException e2) {
-                    }
-
-                    //update outbox message count
-                    Outbox.updateOutboxTotalMessages();
-
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
-                    query.fromLocalDatastore();
-                    query.orderByDescending("creationTime");
-                    query.whereEqualTo("userId", userId);
-                    query.whereEqualTo("code", groupCode);
-
-                    List<ParseObject> msgList1;
-                    try {
-                        msgList1 = query.find();
-
-                        groupDetails.clear();
-                        if (msgList1 != null) {
-                            for (int i = 0; i < msgList1.size(); i++) {
-
-                                groupDetails.add(0, msgList1.get(i));
+                            ParseObject sentMsg = new ParseObject("SentMessages");
+                            sentMsg.put("objectId", objectId);
+                            sentMsg.put("Creator", groupDetails1.getString("Creator"));
+                            sentMsg.put("code", groupDetails1.getString("code"));
+                            sentMsg.put("title", groupDetails1.getString("title"));
+                            sentMsg.put("name", groupDetails1.getString("name"));
+                            sentMsg.put("creationTime", cratedAt);
+                            sentMsg.put("senderId", userId);
+                            sentMsg.put("userId", userId);
+                            try {
+                                sentMsg.pin();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
                             }
+
+
+                            //update outbox message count
+                            Outbox.updateOutboxTotalMessages();
+
+                            ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+                            query.fromLocalDatastore();
+                            query.orderByDescending("creationTime");
+                            query.whereEqualTo("userId", userId);
+                            query.whereEqualTo("code", groupCode);
+
+                            List<ParseObject> msgList1;
+                            try {
+                                msgList1 = query.find();
+
+                                groupDetails.clear();
+                                if (msgList1 != null) {
+                                    for (int i = 0; i < msgList1.size(); i++) {
+                                        groupDetails.add(0, msgList1.get(i));
+                                    }
+                                }
+                            } catch (ParseException e1) {
+                            }
+
+                            //updating local time
+                            SessionManager sm = new SessionManager(Application.getAppContext());
+                            if (cratedAt != null) {
+                                sm.setCurrentTime(cratedAt);
+                            }
+
+                            //showing popup
+                            Utility.toast("Notification Sent");
+
+
+                            //updating outbox
+                            Queries outboxQuery = new Queries();
+
+                            List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
+                            if (outboxItems != null) {
+                                Outbox.groupDetails = outboxItems;
+
+                                if (Outbox.myadapter != null)
+                                    Outbox.myadapter.notifyDataSetChanged();
+
+                                if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
+                                    Outbox.outboxLayout.setVisibility(View.GONE);
+                            }
+
+                        } catch (JSONException e1) {
+                            e1.printStackTrace();
                         }
-                    } catch (ParseException e1) {
+
+
                     }
-
-
-                    SessionManager sm = new SessionManager(Application.getAppContext());
-
-                    if (groupDetails1.getUpdatedAt() != null) {
-                        sm.setCurrentTime(groupDetails1.getUpdatedAt());
-
-                        Log.d("INBOX", "local set time : " + groupDetails1.getUpdatedAt().toString());
-                    }
-
-                    // pushing notification to this group
-                    ClassMsgFunctions.sendMessageAsData(groupCode, typedtxt, 0, sender, grpName);
-                    Utility.toast("Notification Sent");
-
-
-                    //updating outbox
-                    Queries outboxQuery = new Queries();
-
-                    List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-                    if( outboxItems != null)
-                    {
-                        Outbox.groupDetails = outboxItems;
-
-                        if( Outbox.myadapter != null)
-                            Outbox.myadapter.notifyDataSetChanged();
-
-                        if(Outbox.outboxLayout != null && Outbox.groupDetails.size()>0)
-                            Outbox.outboxLayout.setVisibility(View.GONE);
-                    }
-
                 } else {
                     // message was not sent
-                    groupDetails.remove(groupDetails1);
+                    groupDetails.remove(groupDetails1); //removing entry from list view
                     myadapter.notifyDataSetChanged();
                     Utility.toast("Message wasn't sent! Check Internet!");
                     updProgressBar.setVisibility(View.GONE);
+
                 }
             }
         });
@@ -925,7 +822,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         sendimgpreview.setTag(Utility.getWorkingAppDir() + "/media/" + imgname);
         File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imgname);
 
-        // Utility.toast(Utility.getWorkingAppDir() + "/thumbnail/" + imgname);
         // The thumbnail is already created
         Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
         sendimgview.setImageBitmap(myBitmap);
@@ -936,8 +832,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
         // /Creating ParseFile (Not yet uploaded)
         int slashindex = ((String) sendimgpreview.getTag()).lastIndexOf("/");
-        String fileName = ((String) sendimgpreview.getTag()).substring(slashindex + 1);// image file //
-        // name
+        final String fileName = ((String) sendimgpreview.getTag()).substring(slashindex + 1);// image file //
 
         RandomAccessFile f = new RandomAccessFile(filepath, "r");
         byte[] data = new byte[(int) f.length()];
@@ -947,6 +842,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         // /saving the sent image message details on App//////////////////////
         final ParseObject groupDetails1 = new ParseObject("GroupDetails");
 
+        //Adding this object to list view
         groupDetails1.put("code", groupCode);
         groupDetails1.put("title", txtmsg);
         groupDetails1.put("Creator", sender);
@@ -964,89 +860,123 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
             public void done(ParseException e) {
 
                 if (e == null) {
+                    //file uploading completed
                     updProgressBar.setVisibility(View.GONE);
-                    // Utility.toast("uploading completed");
 
-                    // //sending the message details to server since file is uploaded
+                    //sending the message details to server since file is uploaded
                     int index = groupDetails.indexOf(groupDetails1);
-                    groupDetails1.put("attachment", file);// updating the
-
                     if (index >= 0)
                         groupDetails.set(index, groupDetails1);// replacing with the
 
-                    groupDetails1.saveInBackground(new SaveCallback() {
+
+                    //sending message using parse cloud function
+                    HashMap<String, JSONObject> params = new HashMap<String, JSONObject>();
+
+                    JSONObject msg = new JSONObject();
+                    try {
+                        msg.put("code", groupCode);
+                        msg.put("classname", grpName);
+                        msg.put("message", typedtxt);
+                        msg.put("name", sender);
+                        msg.put("email", userId);
+                        msg.put("filename", fileName);
+                        msg.put("parsefile", file);
+
+
+                    ParseCloud.callFunctionInBackground("sendphototextmessage", params, new FunctionCallback<JSONObject>() {
                         @Override
-                        public void done(ParseException e) {
+                        public void done(JSONObject obj, ParseException e) {
+
                             if (e == null) {
-                                Utility.toast("Notification Sent");
+                                if (obj != null) {
 
 
+                                    try {
+                                        Date cratedAt = (Date) obj.get("cratedAt");
+                                        String objectId = (String) obj.get("objectId");
 
-                /*
-                 * Sending notification and storing locally
-                 */
-                                ClassMsgFunctions.sendMessageAsData(groupCode, groupDetails1.getString("title"), 0,
-                                        sender, grpName);
+                                        updProgressBar.setVisibility(View.GONE);
 
-                                // Removing old object and replacing it with new
-                                groupDetails.remove(groupDetails1);
+                                        ParseObject sentMsg = new ParseObject("SentMessages");
+                                        sentMsg.put("objectId", objectId);
+                                        sentMsg.put("Creator", groupDetails1.getString("Creator"));
+                                        sentMsg.put("code", groupDetails1.getString("code"));
+                                        sentMsg.put("title", groupDetails1.getString("title"));
+                                        sentMsg.put("name", groupDetails1.getString("name"));
+                                        sentMsg.put("creationTime", cratedAt);
+                                        sentMsg.put("senderId", userId);
+                                        sentMsg.put("userId", userId);
+                                        if (file != null)
+                                            sentMsg.put("attachment", file);
+                                        if (fileName != null)
+                                            sentMsg.put("attachment_name", fileName);
 
+                                        //saving locally
+                                        try {
+                                            sentMsg.pin();
+                                        } catch (ParseException e1) {
+                                            e1.printStackTrace();
+                                        }
 
-                /*
-                 * storing locally
-                 */
-                                ParseObject sentMsg = new ParseObject("SentMessages");
-                                sentMsg.put("objectId", groupDetails1.getObjectId());
-                                sentMsg.put("Creator", groupDetails1.getString("Creator"));
-                                sentMsg.put("code", groupDetails1.getString("code"));
-                                sentMsg.put("title", groupDetails1.getString("title"));
-                                sentMsg.put("name", groupDetails1.getString("name"));
-                                sentMsg.put("creationTime", groupDetails1.getCreatedAt());
-                                sentMsg.put("senderId", groupDetails1.getString("senderId"));
-                                sentMsg.put("userId", userId);
+                                        // Removing old object
+                                        groupDetails.remove(groupDetails1);
 
-                                if (groupDetails1.get("attachment") != null)
-                                    sentMsg.put("attachment", groupDetails1.get("attachment"));
-                                if (groupDetails1.getString("attachment_name") != null)
-                                    sentMsg.put("attachment_name", groupDetails1.getString("attachment_name"));
-                                if (groupDetails1.get("senderpic") != null)
-                                    sentMsg.put("senderpic", groupDetails1.get("senderpic"));
+                                        //update outbox message count
+                                        Outbox.updateOutboxTotalMessages();
 
-                                try {
-                                    sentMsg.pin();
-                                    groupDetails.add(groupDetails1);
-                                    myadapter.notifyDataSetChanged();
-                                } catch (ParseException e2) {
+                                        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+                                        query.fromLocalDatastore();
+                                        query.orderByDescending("creationTime");
+                                        query.whereEqualTo("userId", userId);
+                                        query.whereEqualTo("code", groupCode);
+
+                                        List<ParseObject> msgList1;
+                                        try {
+                                            msgList1 = query.find();
+
+                                            groupDetails.clear();
+                                            if (msgList1 != null) {
+                                                for (int i = 0; i < msgList1.size(); i++) {
+                                                    groupDetails.add(0, msgList1.get(i));
+                                                }
+                                            }
+                                        } catch (ParseException e1) {
+                                        }
+
+                                        //updating local time
+                                        SessionManager sm = new SessionManager(Application.getAppContext());
+                                        if (cratedAt != null) {
+                                            sm.setCurrentTime(cratedAt);
+                                        }
+
+                                        //showing popup
+                                        Utility.toast("Notification Sent");
+
+                                        //updating outbox
+                                        Queries outboxQuery = new Queries();
+
+                                        List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
+                                        if (outboxItems != null) {
+                                            Outbox.groupDetails = outboxItems;
+
+                                            if (Outbox.myadapter != null)
+                                                Outbox.myadapter.notifyDataSetChanged();
+
+                                            if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
+                                                Outbox.outboxLayout.setVisibility(View.GONE);
+                                        }
+
+                                    } catch (JSONException e1) {
+                                        e1.printStackTrace();
+                                    }
                                 }
-
-                                //update outbox message count
-                                Outbox.updateOutboxTotalMessages();
-
-
-                                //updating outbox adapter
-                                Queries outboxQuery = new Queries();
-
-                                List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-                                if( outboxItems != null)
-                                {
-                                    Outbox.groupDetails = outboxItems;
-
-                                    if( Outbox.myadapter != null)
-                                        Outbox.myadapter.notifyDataSetChanged();
-
-                                    if(Outbox.outboxLayout != null && Outbox.groupDetails.size()>0)
-                                        Outbox.outboxLayout.setVisibility(View.GONE);
-                                }
-                /*
-                 * Updating time
-                 */
-                                SessionManager sm = new SessionManager(Application.getAppContext());
-                                if (groupDetails1.getUpdatedAt() != null)
-                                    sm.setCurrentTime(groupDetails1.getUpdatedAt());
-
                             }
                         }
                     });
+                    } catch (JSONException e1) {
+                        e1.printStackTrace();
+                    }
+
                 } else {
                     updProgressBar.setVisibility(View.GONE);
                     Utility.toast("uploading failed");
@@ -1070,28 +1000,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         });
     }
 
-    //Updating total sent messages count of this class
-    public static void updateTotalClassMessages(){
 
-        Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "updating total outbox count");
 
-        //update ClassMsg.totalClassMessages
-        ParseUser user = ParseUser.getCurrentUser();
 
-        if (user == null)
-            {Utility.logout(); return;}
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
-        query.fromLocalDatastore();
-        query.whereEqualTo("userId", user.getUsername());
-        query.whereEqualTo("code", groupCode);
-        try{
-            totalClassMessages = query.count();
-        }
-        catch(ParseException e){
-            e.printStackTrace();
-        }
-        Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "count is " + totalClassMessages);
-    }
 
 }

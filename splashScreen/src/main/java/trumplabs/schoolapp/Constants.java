@@ -106,5 +106,6 @@ public class Constants {
 
     public static String APP_MEMBER_VERSION = "app_member_version";
     public static String SMS_MEMBER_VERSION= "sms_member_version";
+    public static String SENT_MESSAGE_TABLE = "SentMessages";
 
 }
