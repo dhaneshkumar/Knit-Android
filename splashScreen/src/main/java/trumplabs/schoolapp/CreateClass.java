@@ -317,7 +317,7 @@ public class CreateClass extends MyActionBarActivity {
         //setting schoolId, classname, standard and division
         String schoolId = user.getString("school");
         if (!selectedSchool.trim().equals("Other"))
-            params.put("schoolId", schoolId);
+            params.put("school", schoolId);
 
         params.put("divison", selectedDivison);
         params.put("standard", selectedStandard);

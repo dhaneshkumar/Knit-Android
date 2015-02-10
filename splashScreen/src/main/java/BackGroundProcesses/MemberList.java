@@ -33,9 +33,6 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
   private boolean reminder;
 
 
-  
-  
-  
   public MemberList(String groupCode, boolean openingFlag, boolean reminder) {
     this.groupCode = groupCode;
     this.query = new Queries();

@@ -1,10 +1,14 @@
 package joinclasses;
 
+import android.graphics.Paint;
+import android.os.AsyncTask;
 import android.util.Log;
+import android.view.View;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
@@ -59,6 +63,7 @@ public class JoinedHelper {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("classcode", classcode);
         params.put("childname", childname);
+        params.put("installationId", ParseInstallation.getCurrentInstallation().getObjectId());
 
         ParseObject codeGroupObject = null;
         try {
@@ -232,6 +237,74 @@ public class JoinedHelper {
 
         return null;
     }
+
+
+    /**
+     * background class to update associated name
+     */
+    public static class UpdateAssociatedName extends AsyncTask<String, Void, Boolean>
+    {
+
+        @Override
+        protected Boolean doInBackground(String... params) {
+
+            String classcode = params[0];
+            String childName = params[1];
+
+            childName = childName.trim();
+            childName = UtilString.parseString(childName);
+            childName = UtilString.changeFirstToCaps(childName);    //changing first letter to caps
+
+            //calling parse cloud function to update associated name
+            HashMap<String, Object> param = new HashMap<String, Object>();
+            param.put("childname", childName);
+            param.put("classcode", classcode);
+
+            boolean isNameUpdate = false;
+            try {
+
+                isNameUpdate = ParseCloud.callFunction("changeAssociateName", param);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+
+            if(isNameUpdate) {
+                try {
+                    ParseUser.getCurrentUser().fetch();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean aBoolean) {
+
+            if(aBoolean)
+            {
+                Utility.toast("Udpated Associated Name");
+
+                JoinedClasses.joinedGroups = ParseUser.getCurrentUser().getList("joined_groups");
+
+                if (JoinedClasses.joinedadapter != null)
+                    JoinedClasses.joinedadapter.notifyDataSetChanged();
+            }
+            else
+                Utility.toast("Sorry, Couldn't Update Associated name");
+
+            JoinedClasses.progressBarLayout.setVisibility(View.GONE);
+            JoinedClasses.editProfileLayout.setVisibility(View.VISIBLE);
+
+            super.onPostExecute(aBoolean);
+        }
+    }
+
+
 
 
 }

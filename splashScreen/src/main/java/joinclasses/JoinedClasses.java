@@ -423,7 +423,7 @@ public class JoinedClasses extends Fragment {
                                         if (joinedGroups.get(position).size() > 2) {
                                             child = joinedGroups.get(position).get(2).toString().trim();
                                         }
-                                        showPopUp(popView, context, child, group, position);
+                                        showPopUp(popView, context, child, joinedGroups.get(position).get(0));
                                     }
                                     break;
                                 case R.id.action2:
@@ -732,7 +732,7 @@ public class JoinedClasses extends Fragment {
      */
     @SuppressLint("NewApi")
     private void showPopUp(final View popupView, Context context, String hint,
-                           final List<String> group, final int position) {
+                           final String classcode) {
 
 
         /*
@@ -871,7 +871,7 @@ public class JoinedClasses extends Fragment {
 
 
         /*
-         * Setting button click listner
+         * Setting button click listener
          */
         ok.setOnClickListener(new OnClickListener() {
 
@@ -881,9 +881,13 @@ public class JoinedClasses extends Fragment {
 
                 if (!UtilString.isBlank(value)) {
 
-                    profileDetails.AddChild_Background acb =
-                            new profileDetails.AddChild_Background(userId, value, group, position);
-                    acb.execute();
+                    //showing progress bar
+                    progressBarLayout.setVisibility(View.VISIBLE);
+                    editProfileLayout.setVisibility(View.GONE);
+
+                    JoinedHelper.UpdateAssociatedName updateAssociatedName = new JoinedHelper.UpdateAssociatedName();
+                    String[] params = new String[]{classcode, value};
+                    updateAssociatedName.execute(params);
 
                     popupMessage.dismiss();
                 }

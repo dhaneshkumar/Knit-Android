@@ -714,23 +714,21 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
         //sending message using parse cloud function
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("code", groupCode);
+        params.put("classcode", groupCode);
         params.put("classname", grpName);
         params.put("message", typedtxt);
         params.put("name", sender);
         params.put("email", userId);
 
-        ParseCloud.callFunctionInBackground("sendtextmessage", params, new FunctionCallback<JSONObject>() {
+        ParseCloud.callFunctionInBackground("sendtextmessage", params, new FunctionCallback<HashMap>() {
             @Override
-            public void done(JSONObject obj, ParseException e) {
+            public void done(HashMap obj, ParseException e) {
 
                 if (e == null) {
                     if (obj != null) {
 
-
-                        try {
-                            Date cratedAt = (Date) obj.get("cratedAt");
-                            String objectId = (String) obj.get("objectId");
+                            Date createdAt = (Date) obj.get("createdAt");
+                            String objectId = (String) obj.get("messageId");
 
                             updProgressBar.setVisibility(View.GONE);
 
@@ -740,7 +738,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                             sentMsg.put("code", groupDetails1.getString("code"));
                             sentMsg.put("title", groupDetails1.getString("title"));
                             sentMsg.put("name", groupDetails1.getString("name"));
-                            sentMsg.put("creationTime", cratedAt);
+                            sentMsg.put("creationTime", createdAt);
                             sentMsg.put("senderId", userId);
                             sentMsg.put("userId", userId);
                             try {
@@ -774,8 +772,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
                             //updating local time
                             SessionManager sm = new SessionManager(Application.getAppContext());
-                            if (cratedAt != null) {
-                                sm.setCurrentTime(cratedAt);
+                            if (createdAt != null) {
+                                sm.setCurrentTime(createdAt);
                             }
 
                             //showing popup
@@ -795,11 +793,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                 if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
                                     Outbox.outboxLayout.setVisibility(View.GONE);
                             }
-
-                        } catch (JSONException e1) {
-                            e1.printStackTrace();
-                        }
-
 
                     }
                 } else {
@@ -870,11 +863,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
 
                     //sending message using parse cloud function
-                    HashMap<String, JSONObject> params = new HashMap<String, JSONObject>();
-
-                    JSONObject msg = new JSONObject();
-                    try {
-                        msg.put("code", groupCode);
+                    HashMap<String, Object> msg = new HashMap<String, Object>();
+                        msg.put("classcode", groupCode);
                         msg.put("classname", grpName);
                         msg.put("message", typedtxt);
                         msg.put("name", sender);
@@ -883,17 +873,15 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                         msg.put("parsefile", file);
 
 
-                    ParseCloud.callFunctionInBackground("sendphototextmessage", params, new FunctionCallback<JSONObject>() {
+                    ParseCloud.callFunctionInBackground("sendphototextmessage", msg, new FunctionCallback<HashMap>() {
                         @Override
-                        public void done(JSONObject obj, ParseException e) {
+                        public void done(HashMap obj, ParseException e) {
 
                             if (e == null) {
                                 if (obj != null) {
 
-
-                                    try {
-                                        Date cratedAt = (Date) obj.get("cratedAt");
-                                        String objectId = (String) obj.get("objectId");
+                                        Date createdAt = (Date) obj.get("createdAt");
+                                        String objectId = (String) obj.get("messageId");
 
                                         updProgressBar.setVisibility(View.GONE);
 
@@ -903,7 +891,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                         sentMsg.put("code", groupDetails1.getString("code"));
                                         sentMsg.put("title", groupDetails1.getString("title"));
                                         sentMsg.put("name", groupDetails1.getString("name"));
-                                        sentMsg.put("creationTime", cratedAt);
+                                        sentMsg.put("creationTime", createdAt);
                                         sentMsg.put("senderId", userId);
                                         sentMsg.put("userId", userId);
                                         if (file != null)
@@ -945,8 +933,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
                                         //updating local time
                                         SessionManager sm = new SessionManager(Application.getAppContext());
-                                        if (cratedAt != null) {
-                                            sm.setCurrentTime(cratedAt);
+                                        if (createdAt != null) {
+                                            sm.setCurrentTime(createdAt);
                                         }
 
                                         //showing popup
@@ -966,20 +954,15 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                                 Outbox.outboxLayout.setVisibility(View.GONE);
                                         }
 
-                                    } catch (JSONException e1) {
-                                        e1.printStackTrace();
-                                    }
                                 }
                             }
                         }
                     });
-                    } catch (JSONException e1) {
-                        e1.printStackTrace();
-                    }
+
 
                 } else {
                     updProgressBar.setVisibility(View.GONE);
-                    Utility.toast("uploading failed");
+                    Utility.toast("Sorry, Can't sent this image.");
                     groupDetails.remove(groupDetails1);
                     myadapter.notifyDataSetChanged();
                 }
