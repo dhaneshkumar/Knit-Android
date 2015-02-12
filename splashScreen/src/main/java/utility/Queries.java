@@ -532,6 +532,8 @@ public class Queries extends MyActivity {
         query.fromLocalDatastore();
         query.whereEqualTo("emailId", userId);
         query.whereEqualTo("code", groupCode);
+        query.whereNotEqualTo("status", "LEAVE");
+        query.whereNotEqualTo("status", "DELETE");
 
         try {
             List<ParseObject> appMembers = query.find();
@@ -572,8 +574,10 @@ public class Queries extends MyActivity {
         ParseQuery<ParseObject> smsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
         smsQuery.fromLocalDatastore();
         smsQuery.addAscendingOrder("subscriber");
-        query.whereEqualTo("userId", userId);
+        smsQuery.whereEqualTo("userId", userId);
         smsQuery.whereEqualTo("cod", groupCode); // "cod" - as written in table
+        smsQuery.whereNotEqualTo("status", "LEAVE");
+        smsQuery.whereNotEqualTo("status", "DELETE");
 
         List<ParseObject> smsUsersList = null;
         try {

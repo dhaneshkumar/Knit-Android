@@ -1,27 +1,17 @@
 package utility;
 
-import library.UtilString;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.parse.ParsePushBroadcastReceiver;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import notifications.NotificationGenerator;
-import trumplab.textslate.R;
-import trumplabs.schoolapp.Messages;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.Bundle;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
-import android.util.Log;
-
-import com.parse.ParsePushBroadcastReceiver;
 
 public class MyReceiver extends ParsePushBroadcastReceiver {
 
@@ -80,4 +70,3 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
         }
     }
 }
-

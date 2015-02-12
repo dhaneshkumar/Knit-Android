@@ -58,7 +58,7 @@ public class ClassMembers extends Fragment {
     public static List<MemberDetails> memberDetails;
     private String groupCode = ClassContainer.classuid;
     private Queries query;
-    boolean getDataFromServer = false; // fetch data from local
+    //boolean getDataFromServer = false; // fetch data from local
     public static SmoothProgressBar mHeaderProgressBar;
     private Context context;
     public static LinearLayout progressBarLayout;
@@ -139,12 +139,11 @@ public class ClassMembers extends Fragment {
 
                     //showing progress bar
                     if (mHeaderProgressBar != null) {
-                        Tools.runSmoothProgressBar(mHeaderProgressBar, 15);
+                        Tools.runSmoothProgressBar(mHeaderProgressBar, 10);
                     }
 
                     //refreshing member list in background
-                    getDataFromServer = true;
-                    MemberList memberList = new MemberList(groupCode, false, false);
+                    MemberList memberList = new MemberList(groupCode);
                     memberList.execute();
                 } else {
                     Utility.toast("Check your Internet connection");

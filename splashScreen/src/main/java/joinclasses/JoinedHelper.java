@@ -65,6 +65,19 @@ public class JoinedHelper {
         params.put("childname", childname);
         params.put("installationId", ParseInstallation.getCurrentInstallation().getObjectId());
 
+        if(ParseInstallation.getCurrentInstallation() != null)
+        {
+            if(ParseInstallation.getCurrentInstallation().getObjectId() != null)
+                Log.d("JOIN", ParseInstallation.getCurrentInstallation().getObjectId());
+            else {
+                Log.d("JOIN", "object id : null ");
+
+                Log.d("JOIN",ParseInstallation.getCurrentInstallation().getInstallationId());
+            }
+        }
+        else
+            Log.d("JOIN", "parseInstallation : null");
+
         ParseObject codeGroupObject = null;
         try {
             codeGroupObject = ParseCloud.callFunction("joinnewclass2", params);

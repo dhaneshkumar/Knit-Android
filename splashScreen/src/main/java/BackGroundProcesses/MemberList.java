@@ -1,17 +1,5 @@
 package BackGroundProcesses;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.ClassMembers;
-import trumplabs.schoolapp.Classrooms;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MemberDetails;
-import utility.Queries;
-import utility.SessionManager;
-import utility.Utility;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -22,157 +10,203 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
+import trumplabs.schoolapp.ClassMembers;
+import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MemberDetails;
+import utility.Queries;
+
+/**
+ * Fetch updated group members from server in background
+ * @param-groupCode
+ */
 public class MemberList extends AsyncTask<Void, Void, String[]> {
 
-  private String groupCode;
-  private List<MemberDetails> memberDetails;
-  private Queries query;
-  private String[] mString;
-  private boolean openingFlag;
-  private boolean reminder;
+    private String groupCode;
+    private Queries queries;
+
+    public MemberList(String groupCode) {
+        this.groupCode = groupCode;
+        this.queries = new Queries();
+    }
+
+    @Override
+    protected String[] doInBackground(Void... params) {
+
+        Date updatedTime = null;  //last updated time of members
+        ParseUser user = ParseUser.getCurrentUser();
 
 
-  public MemberList(String groupCode, boolean openingFlag, boolean reminder) {
-    this.groupCode = groupCode;
-    this.query = new Queries();
-    this.openingFlag =openingFlag;
-    this.reminder =reminder;
-  }
+        //retrieving last updated time of app members
+        ParseQuery<ParseObject> appQuery = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
+        appQuery.fromLocalDatastore();
+        appQuery.whereEqualTo("code", groupCode);
+        appQuery.whereEqualTo("emailId", user.getUsername());
+        appQuery.orderByDescending("updatedAt");
 
-  @Override
-  protected String[] doInBackground(Void... params) {
-
-      ParseUser user = ParseUser.getCurrentUser();
-      final SessionManager sessionManager = new SessionManager(Application.getAppContext());
-      final int appVersion = sessionManager.getAppMemberVersion();
-      final int smsVersion = sessionManager.getSmsMemberVersion();
-
-      //retrieving codegroup entry of given class
-      ParseQuery<ParseObject> codeQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
-      codeQuery.fromLocalDatastore();
-      codeQuery.whereEqualTo("code", groupCode);
-      codeQuery.whereEqualTo("userId", user.getUsername());
-
-      ParseObject obj = null;
-      try {
-          obj = codeQuery.getFirst();
-      } catch (ParseException e) {
-          e.printStackTrace();
-      }
-
-      if (obj != null) {
-          //fetching codegroup object from server
-          try {
-              obj.fetchIfNeeded();
-          } catch (ParseException e) {
-              e.printStackTrace();
-          }
-
-          final int currentAppVersion = obj.getInt(Constants.APP_MEMBER_VERSION);
-          final int currentSmsVersion = obj.getInt(Constants.SMS_MEMBER_VERSION);
-
-
-          Runnable r = new Runnable() {
-              @Override
-              public void run() {
-
-                  if (currentAppVersion != appVersion) {
-                      storeAppMembers(groupCode);
-                      sessionManager.setAppMemberVersion(currentAppVersion);
-                  }
-
-                  if (currentSmsVersion != smsVersion) {
-                      storeSmsMembers(groupCode);
-                      sessionManager.setSmsMemberVersion(currentAppVersion);
-                  }
-
-
-                  if (Classrooms.listv != null) {
-                      Classrooms.listv.post(new Runnable() {
-                          @Override
-                          public void run() {
-                              Log.d("DEBUG_AFTER_MEMBER_LIST_REFRESH", "Notifying ClassMembers.myadapter & Classrooms.myadapter");
-
-                              if (memberDetails != null) {
-                                  ClassMembers.memberDetails = memberDetails;
-                              }
-
-                              if (ClassMembers.mHeaderProgressBar != null)
-                                  ClassMembers.mHeaderProgressBar.setVisibility(View.GONE);
-
-                              if (ClassMembers.myadapter != null)
-                                  ClassMembers.myadapter.notifyDataSetChanged();
-
-                              if (Classrooms.myadapter != null)
-                                  Classrooms.myadapter.notifyDataSetChanged();
-                          }
-                      });
-                  }
-              }
-
-          };
-
-          Thread t = new Thread(r);
-          t.setPriority(Thread.MIN_PRIORITY);
-          t.start();
-      }
-
-      return null;
-  }
-
-
-
-
-  private void storeAppMembers(String code)
-  {
-      HashMap<String, String> param = new HashMap<String, String>();
-      param.put("classcode", code);
-
-      List<ParseObject> memberList = null;
-      try {
-          memberList = ParseCloud.callFunction("showappsubscribers", param);
-      } catch (ParseException e) {
-          e.printStackTrace();
-      }
-
-      if(memberList != null)
-      {
-          try {
-              ParseObject.pinAll(memberList);
-          } catch (ParseException e) {
-              e.printStackTrace();
-          }
-      }
-  }
-
-    private void storeSmsMembers(String code)
-    {
-        HashMap<String, String> param = new HashMap<String, String>();
-        param.put("classcode", code);
-
-        List<ParseObject> memberList = null;
+        ParseObject appMember = null;
         try {
-            memberList = ParseCloud.callFunction("showsmssubscribers", param);
+            appMember = appQuery.getFirst();
+
+            if (appMember != null)
+                updatedTime = appMember.getUpdatedAt();
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        if(memberList != null)
-        {
+        Log.d("MEMBER", "updating member.....");
+        if(updatedTime != null)
+            Log.d("MEMBER", "APP :  " + updatedTime.toString());
+        else
+            Log.d("MEMBER", "App time null");
+        //retrieving last updated time of sms members
+        ParseQuery<ParseObject> smsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
+        appQuery.fromLocalDatastore();
+        appQuery.whereEqualTo("cod", groupCode);
+        appQuery.whereEqualTo("userId", user.getUsername());
+        appQuery.orderByDescending("updatedAt");
 
-            for(int i=0 ; i < memberList.size(); i++)
-            {
-                ParseObject member = memberList.get(i);
-                member.put("userId", ParseUser.getCurrentUser().getUsername());
+        ParseObject smsMember = null;
+        try {
+            smsMember = smsQuery.getFirst();
+
+            if (appMember != null) {
+                if (updatedTime == null)
+                    updatedTime = smsMember.getUpdatedAt();
+                else {
+                    Date smsUpdatedTime = smsMember.getUpdatedAt();
+
+                    if (smsUpdatedTime != null) {
+                        if (updatedTime.compareTo(smsUpdatedTime) < 0)
+                            updatedTime = smsUpdatedTime;  //updated last updated time
+                    }
+                }
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("MEMBER", "updating member.....");
+        if(updatedTime != null)
+            Log.d("MEMBER", "SMS :  " + updatedTime.toString());
+        else
+            Log.d("MEMBER", "SMS time null");
+
+      /*
+      Checking whether updatedTime is null or not.
+      If it's null then set it to createdAt of this codegroup entry
+       */
+        if (updatedTime == null) {
+            //retrieving codegroup entry of given class
+            ParseQuery<ParseObject> codeQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
+            codeQuery.fromLocalDatastore();
+            codeQuery.whereEqualTo("code", groupCode);
+            codeQuery.whereEqualTo("userId", user.getUsername());
+
+            ParseObject obj = null;
+            try {
+                obj = codeQuery.getFirst();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if (obj != null) {
+                updatedTime = obj.getCreatedAt();
+            }
+
+
+            Log.d("MEMBER", "updating member.....");
+            if(updatedTime != null)
+                Log.d("MEMBER", "CODE :  " + updatedTime.toString());
+            else
+                Log.d("MEMBER", "CODE time null");
+        }
+
+
+
+
+        //calling parse cloud functions to fetch new member updates
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("classcode", groupCode);
+
+        if (updatedTime != null)
+            param.put("date", updatedTime);
+
+        HashMap<String, Object> memberList = null;
+
+        try {
+            memberList = ParseCloud.callFunction("showSubscribers", param);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        Log.d("MEMBER", "memberLis.....");
+
+        // storing updated members locally
+        if (memberList != null) {
+            List<ParseObject> appMembersList = (List<ParseObject>) memberList.get("app");
+            List<ParseObject> smsMembersList = (List<ParseObject>) memberList.get("sms");
+
+            Log.d("MEMBER", "memberList no tnull.....");
+
+
+            //storing app members
+            if (appMembersList != null) {
+                Log.d("MEMBER", "APP memberList no tnull.....");
                 try {
-                    member.pin();
+                    ParseObject.pinAll(appMembersList);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //storing sms members locally
+
+            if (smsMembersList != null) {
+                Log.d("MEMBER", "sms memberList no tnull.....");
+                for (int i = 0; i < smsMembersList.size(); i++) {
+                    ParseObject smsMembers = smsMembersList.get(i);
+                    smsMembers.put("userId", user.getUsername());
+                    Log.d("MEMBER", "members " + smsMembers.getString("number") );
+                }
+                try {
+                    ParseObject.pinAll(smsMembersList);
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }
         }
+
+        return null;
     }
 
 
+    @Override
+    protected void onPostExecute(String[] strings) {
+
+        //updating listview items of member list.
+        List<MemberDetails> updatedLocalMemberList = queries.getLocalClassMembers(groupCode);
+        if (updatedLocalMemberList != null) {
+            ClassMembers.memberDetails = updatedLocalMemberList;
+        }
+
+        if (ClassMembers.mHeaderProgressBar != null)
+            ClassMembers.mHeaderProgressBar.setVisibility(View.GONE);
+
+        if (ClassMembers.myadapter != null)
+            ClassMembers.myadapter.notifyDataSetChanged();
+
+        if (Classrooms.myadapter != null)
+            Classrooms.myadapter.notifyDataSetChanged();
+
+        super.onPostExecute(strings);
+    }
 }
+
+
+

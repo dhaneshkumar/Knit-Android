@@ -83,12 +83,12 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
           int count = session.getAppOpeningCount();
 
           if (count % 5 == 0) {
-            MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, true);
+            MemberList memberList = new MemberList(createdGroupList.get(i).get(0));
             memberList.execute();
           }
           else
           {
-            MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, false);
+            MemberList memberList = new MemberList(createdGroupList.get(i).get(0));
             memberList.execute();
           }
 

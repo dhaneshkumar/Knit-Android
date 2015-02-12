@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -240,8 +241,18 @@ public class Signup2Class extends ActionBarActivity {
             List<String> channelList = new ArrayList<String>();
             installation.put("channels", channelList);
             try {
+                if(user.getUsername() != null)
+                    Log.d("Install", user.getUsername());
+                else
+                    Log.d("Install", "username null");
+
+
                 installation.save();
             } catch (ParseException e1) {
+                System.out.println("Installfailed not saved");
+                e1.getCode();
+                e1.getMessage();
+                e1.printStackTrace();
             }
 
               /*
