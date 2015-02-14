@@ -10,10 +10,15 @@ import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import java.util.HashMap;
+import java.util.List;
 
 import trumplab.textslate.R;
 import utility.Utility;
@@ -47,6 +52,22 @@ public class FeedBackClass extends DialogFragment {
         if (content.equals(""))
           Utility.toast("Please type some feedback");
         else {
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
+
+            parameters.put("feed", content);
+            ParseCloud.callFunctionInBackground("feedback", parameters, new FunctionCallback<String>() {
+                @Override
+                public void done(String result, ParseException e) {
+                    if(e == null) {
+                        Utility.toast("Thanks for the feedback! :)");
+                    }
+                    else{
+                        Utility.toast("Oops, could not submit your feedback !");
+                        e.printStackTrace();
+                    }
+                }
+            });
+          /*
           final ParseObject feedbacks = new ParseObject("Feedbacks");
           feedbacks.put("content", content);
           feedbacks.put("emailId", ParseUser.getCurrentUser().getEmail());
@@ -59,6 +80,7 @@ public class FeedBackClass extends DialogFragment {
               Utility.toast("Thanks for the feedback! :)");
             }
           });
+          */
           getDialog().dismiss();
         }
       }

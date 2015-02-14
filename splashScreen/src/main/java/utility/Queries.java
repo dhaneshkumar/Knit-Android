@@ -186,16 +186,38 @@ public class Queries {
 
         if(newTimeStamp == null){
             Log.d("DEBUG_QUERIES_SERVER_MSGS", "timestamp null. So no messages stored. Fetching first batch of messages");
-            HashMap<String, Integer> parameters = new HashMap<String, Integer>();
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("limit", 50);
+            parameters.put("classtype", "j");
             try {
-                List<ParseObject> allMessages= ParseCloud.callFunction("showallclassesmessageswithlimit", parameters);
+                HashMap<String, List<ParseObject> > resultMap = ParseCloud.callFunction("showAllClassesMessagesWithlLimit", parameters);
+                List<ParseObject> allMessages = resultMap.get("message");
+                List<ParseObject> allStates = resultMap.get("states");
 
                 //since old messages, need to update their MessageState(like_status, confused_status)
                 if(allMessages != null) {
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] : fetched " + allMessages.size());
-                    for (int i=0; i< allMessages.size(); i++) {
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] : fetched msgs " + allMessages.size());
+                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] : fetched states " + allStates.size());
+                    //use allStates to set appropriate state for the each received message
+                    for(int m=0; m < allMessages.size(); m++){
+                        ParseObject msg = allMessages.get(m);
+                        for(int s=0; s < allStates.size(); s++){
+                            ParseObject msgState = allStates.get(s);
+                            if(msgState.getString("message_id").equals(msg.getObjectId())){
+                                msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
+                                msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
+                                break;
+                            }
+                            //default
+                            msg.put(Constants.LIKE, false);
+                            msg.put(Constants.CONFUSING, false);
+                        }
+                        msg.put(Constants.USER_ID, userId);
+                        msg.put(Constants.DIRTY_BIT, false);
+                        msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
+                    }
+                    /*for (int i=0; i< allMessages.size(); i++) {
                         ParseObject msg = allMessages.get(i);
                         ParseQuery msgStateQuery = new ParseQuery("MessageState");
 
@@ -222,7 +244,7 @@ public class Queries {
                         msg.put(Constants.USER_ID, userId);
                         msg.put(Constants.DIRTY_BIT, false);
                         msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
-                    }
+                    }*/
                     Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages);
@@ -241,7 +263,7 @@ public class Queries {
 
             try {
                 //just fetch, set default state(like, confused = false, false)
-                List<ParseObject> allMessages= ParseCloud.callFunction("showallclassesmessageswithtime", parameters);
+                List<ParseObject> allMessages= ParseCloud.callFunction("showAllClassesMessagesWithTime", parameters);
                 if(allMessages != null) {
                     Log.d("DEBUG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
                     for(int i=0; i<allMessages.size(); i++){
