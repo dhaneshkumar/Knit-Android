@@ -584,7 +584,10 @@ public class Messages extends Fragment {
        * Setting group name and sender name
        */
 
-            String Str = msgObject.getString("name").toUpperCase();
+            String Str = null;
+
+            if(!UtilString.isBlank(msgObject.getString("name")))
+                 Str = msgObject.getString("name").toUpperCase();
             holder.groupName.setText(Str);
 
             Str = msgObject.getString("Creator");

@@ -27,7 +27,10 @@ public class UtilString {
     
     for(int i=0; i<nameList.length;i++)
     {
-      userName += nameList[i].substring(0, 1).toUpperCase() + nameList[i].substring(1) +" " ;
+        String str = nameList[i].trim();
+
+        if(!UtilString.isBlank(str))
+            userName += str.substring(0, 1).toUpperCase() + str.substring(1) +" " ;
     }
    
     return userName;

@@ -4,8 +4,8 @@ public class MemberDetails {
   private String objectId;
   private String type;  // sms_member or app_member
   private String childName;
-  public static final String SMS_MEMBER= "smsMember";
-  public static final String APP_MEMBER = "appMember";
+  public static final String SMS_MEMBER= "SMS";
+  public static final String APP_MEMBER = "APP";
 
   public MemberDetails(String objectId, String type, String childName) {
     super();

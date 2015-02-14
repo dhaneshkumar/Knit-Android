@@ -98,7 +98,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
     private boolean createMsgFlag; // A flag to stop continuous request coming from create msgs in background on scrolling
     private SessionManager session;
     public static int totalClassMessages; //total messages sent from this class
-    public static LinearLayout progressbarLayout;
     public static LinearLayout contentLayout;
     public static Activity currentActivity;
 
@@ -128,10 +127,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
         listv = (ListView) getActivity().findViewById(R.id.classmsglistview);   //list view
         listv.setStackFromBottom(true);         //show message from bottom
-        progressbarLayout = (LinearLayout) getActivity().findViewById(R.id.progressLayout);
         contentLayout = (LinearLayout) getActivity().findViewById(R.id.contentLayout);
 
-        progressLayout = (LinearLayout) getActivity().findViewById(R.id.progressBarLayout);
+        progressLayout = (LinearLayout) getActivity().findViewById(R.id.progresslayout);
         session = new SessionManager(Application.getAppContext());
 
         ParseUser userObject = ParseUser.getCurrentUser();
@@ -235,7 +233,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
                                 //showing progress bar
                                 contentLayout.setVisibility(View.GONE);
-                                progressbarLayout.setVisibility(View.VISIBLE);
+                                progressLayout.setVisibility(View.VISIBLE);
 
                                 //calling background function to delete class
 

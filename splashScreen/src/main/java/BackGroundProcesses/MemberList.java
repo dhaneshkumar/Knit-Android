@@ -45,7 +45,7 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
         ParseQuery<ParseObject> appQuery = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
         appQuery.fromLocalDatastore();
         appQuery.whereEqualTo("code", groupCode);
-        appQuery.whereEqualTo("emailId", user.getUsername());
+        appQuery.whereEqualTo("userId", user.getUsername());
         appQuery.orderByDescending("updatedAt");
 
         ParseObject appMember = null;
@@ -58,11 +58,6 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             e.printStackTrace();
         }
 
-        Log.d("MEMBER", "updating member.....");
-        if(updatedTime != null)
-            Log.d("MEMBER", "APP :  " + updatedTime.toString());
-        else
-            Log.d("MEMBER", "App time null");
         //retrieving last updated time of sms members
         ParseQuery<ParseObject> smsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
         appQuery.fromLocalDatastore();
@@ -91,12 +86,6 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             e.printStackTrace();
         }
 
-        Log.d("MEMBER", "updating member.....");
-        if(updatedTime != null)
-            Log.d("MEMBER", "SMS :  " + updatedTime.toString());
-        else
-            Log.d("MEMBER", "SMS time null");
-
       /*
       Checking whether updatedTime is null or not.
       If it's null then set it to createdAt of this codegroup entry
@@ -120,15 +109,10 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             }
 
 
-            Log.d("MEMBER", "updating member.....");
-            if(updatedTime != null)
-                Log.d("MEMBER", "CODE :  " + updatedTime.toString());
-            else
-                Log.d("MEMBER", "CODE time null");
         }
 
 
-
+        Log.d("MEMBER", "members " + updatedTime.toString());
 
         //calling parse cloud functions to fetch new member updates
         HashMap<String, Object> param = new HashMap<String, Object>();
@@ -145,21 +129,26 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             e.printStackTrace();
         }
 
-        Log.d("MEMBER", "memberLis.....");
 
         // storing updated members locally
         if (memberList != null) {
             List<ParseObject> appMembersList = (List<ParseObject>) memberList.get("app");
             List<ParseObject> smsMembersList = (List<ParseObject>) memberList.get("sms");
 
-            Log.d("MEMBER", "memberList no tnull.....");
-
 
             //storing app members
             if (appMembersList != null) {
-                Log.d("MEMBER", "APP memberList no tnull.....");
+
+                Log.d("MEMBER", "members " + appMembersList.size() );
+
+                for (int i = 0; i < appMembersList.size(); i++) {
+                    ParseObject appMembers = appMembersList.get(i);
+                    appMembers.put("userId", user.getUsername());
+                    Log.d("MEMBER", "members " + appMembers.getString("name") + "  :  " + appMembers.getString("status") );
+                }
                 try {
                     ParseObject.pinAll(appMembersList);
+
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -168,11 +157,9 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             //storing sms members locally
 
             if (smsMembersList != null) {
-                Log.d("MEMBER", "sms memberList no tnull.....");
                 for (int i = 0; i < smsMembersList.size(); i++) {
                     ParseObject smsMembers = smsMembersList.get(i);
                     smsMembers.put("userId", user.getUsername());
-                    Log.d("MEMBER", "members " + smsMembers.getString("number") );
                 }
                 try {
                     ParseObject.pinAll(smsMembersList);

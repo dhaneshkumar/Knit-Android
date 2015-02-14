@@ -1,5 +1,7 @@
 package utility;
 
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -26,6 +28,12 @@ import com.parse.SaveCallback;
 
 public class Queries2 {
 
+    /**
+     * Tell whether given class exist locally or not
+     * @param code
+     * @param userId
+     * @return
+     */
     public boolean isCodegroupExist(String code, String userId) {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
         query.fromLocalDatastore();
@@ -38,8 +46,6 @@ public class Queries2 {
             obj = query.getFirst();
 
             if (obj != null) {
-
-                Utility.ls("object extidtrd ================================");
                 return true;
             }
 
@@ -65,52 +71,40 @@ public class Queries2 {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
         query.fromLocalDatastore();
         query.whereEqualTo("code", code);
+        query.whereEqualTo("userId", userId);
+
+
+        Log.d("JOIN", "old pic,,,,ppp ");
 
         ParseObject obj = query.getFirst();
         if (obj != null) {
 
-            obj.fetchIfNeeded();    //fetching from server
+            String oldPic = obj.getString("picName");
+
+            obj.fetch();    //fetching from server
 
             //retrieving server pic name
             String newPic = obj.getString("picName");
             String senderId = obj.getString("senderId");
             senderId = senderId.replaceAll("@", "");
             ParseFile senderPic = obj.getParseFile("senderPic");
-
-          /*
-           * Retrieving local pic name
-           */
-            ParseQuery<ParseObject> query1 = ParseQuery.getQuery("Codegroup");
-            query1.fromLocalDatastore();
-            query1.whereEqualTo("code", code);
-            query1.whereEqualTo("userId", userId);
-
-            ParseObject localObj = query1.getFirst();
-
-            String oldPic = null;
-            if (localObj != null)
-                oldPic = localObj.getString("picName");
-
+            Log.d("JOIN", "old pic : " + oldPic);
+            Log.d("JOIN", "old pic : ---");
 
             if (UtilString.isBlank(oldPic)) {
 
+                //no image locally then download it
+                if(!UtilString.isBlank(newPic))
+                    downloadProfileImage(senderId, senderPic);
 
-                if (newPic != null)
-                    localObj.put("picName", newPic);
+                Log.d("JOIN", "newpic : " + newPic);
 
-                if (senderPic != null)
-                    localObj.put("senderPic", senderPic);
-
-                localObj.pin();
-
-                downloadProfileImage(senderId, senderPic);
             } else if ((!UtilString.isBlank(oldPic)) && (!UtilString.isBlank(newPic))) {
 
-                if (!oldPic.equals(newPic)) {
-                    localObj.put("picName", newPic);
-                    localObj.put("senderPic", senderPic);
-                    localObj.pin();
+                Log.d("JOIN", "old pic : " + oldPic);
+                Log.d("JOIN", "new pic : " + newPic);
 
+                if (!oldPic.equals(newPic)) {
 
                     downloadProfileImage(senderId, senderPic);
                 } else {
@@ -132,6 +126,10 @@ public class Queries2 {
                 }
             }
 
+        }
+        else
+        {
+            Log.d("JOIN", "obj... null ");
         }
 
 

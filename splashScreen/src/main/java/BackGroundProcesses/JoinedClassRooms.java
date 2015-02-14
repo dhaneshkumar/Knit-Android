@@ -11,6 +11,7 @@ import utility.Queries2;
 import utility.SessionManager;
 import utility.Utility;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import com.parse.ParseException;
@@ -67,9 +68,8 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
               joinQuery.storeCodegroup(grpCode, userId);    //fetching from server and storing locally
 
             } else {
-              SessionManager session = new SessionManager(Application.getAppContext());
-              int sessionCount = session.getAppOpeningCount();
 
+                Log.d("JOIN", "updating profile...");
                 //updating profile image of teacher
                 joinQuery.updateProfileImage(grpCode, userId);
             }

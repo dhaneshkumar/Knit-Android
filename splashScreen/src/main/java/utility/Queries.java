@@ -527,13 +527,14 @@ public class Queries extends MyActivity {
 
         List<MemberDetails> memberList = new ArrayList<MemberDetails>();
 
-        // Retriving local messages from groupmembers locally
+        // Retrieving local messages from group members locally
         ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupMembers");
         query.fromLocalDatastore();
-        query.whereEqualTo("emailId", userId);
+        query.whereEqualTo("userId", userId);
         query.whereEqualTo("code", groupCode);
         query.whereNotEqualTo("status", "LEAVE");
-        query.whereNotEqualTo("status", "DELETE");
+        query.whereNotEqualTo("status", "REMOVED");
+
 
         try {
             List<ParseObject> appMembers = query.find();
@@ -541,6 +542,12 @@ public class Queries extends MyActivity {
             if (appMembers != null && appMembers.size() > 0) {
                 for (int i = 0; i < appMembers.size(); i++) {
                     ParseObject members = appMembers.get(i);
+
+                    if(members.getString("status") != null)
+                        Log.d("STATUS",members.getObjectId() + "  " + members.getString("status"));
+                    else
+                        Log.d("STATUS", members.getObjectId() + "  :  null status");
+
 
                     List<String> childList = members.getList("children_names");
                     if (childList != null && childList.size() > 0) {
@@ -577,7 +584,7 @@ public class Queries extends MyActivity {
         smsQuery.whereEqualTo("userId", userId);
         smsQuery.whereEqualTo("cod", groupCode); // "cod" - as written in table
         smsQuery.whereNotEqualTo("status", "LEAVE");
-        smsQuery.whereNotEqualTo("status", "DELETE");
+        smsQuery.whereNotEqualTo("status", "REMOVED");
 
         List<ParseObject> smsUsersList = null;
         try {
@@ -609,167 +616,6 @@ public class Queries extends MyActivity {
         return sortMemberList(memberList);
     }
 
-    /**
-     * Retrieves memberlist of a particular group
-     *
-     * @param groupCode
-     * @return List<ParseObjct>
-     */
-    public List<MemberDetails> getServerClassMembers(String groupCode, boolean openingFlag,
-                                                     boolean reminder5) {
-
-        List<MemberDetails> memberList = new ArrayList<MemberDetails>();
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupMembers");
-        query.orderByDescending(Constants.TIMESTAMP);
-        query.whereEqualTo("code", groupCode);
-
-
-        List<ParseObject> msgList = null;
-        try {
-            msgList = query.find();
-
-            if (msgList != null) {
-                // memberList.addAll(0, msgList);
-                // System.out.println(msgList.size() + " app list size -------------");
-        /*
-         * Delete previous member list
-         */
-                int newSize = msgList.size();
-
-                boolean flag = false;
-
-                if (openingFlag && newSize < 10) {
-                    flag = true;
-                } else if (openingFlag && reminder5) {
-                    flag = true;
-                } else if (!openingFlag) {
-                    flag = true;
-                }
-
-
-        /*
-         * ParseQuery<ParseObject> query1 = ParseQuery.getQuery("GroupMembers");
-         * query1.whereEqualTo("code", groupCode); query1.fromLocalDatastore();
-         * query1.whereEqualTo("userId", userId); List<ParseObject> oldMemberList = query1.find();
-         * if (oldMemberList != null) { // ParseObject.deleteAll(oldMemberList);
-         * ParseObject.unpinAll(oldMemberList); }
-         */
-
-                // Storing new entries
-
-                if (flag) {
-                    for (int i = 0; i < msgList.size(); i++) {
-                        if (userId != null) {
-                            ParseObject members = msgList.get(i);
-                            if (members != null) {
-                                members.put("userId", userId);
-                                members.pinInBackground();
-
-
-                                List<String> childList = members.getList("children_names");
-                                if (childList != null && childList.size() > 0) {
-
-                                    for (int j = 0; j < childList.size(); j++) {
-                                        String child = childList.get(j);
-
-                                        if (!UtilString.isBlank(child)) {
-                                            MemberDetails member =
-                                                    new MemberDetails(members.getObjectId(), MemberDetails.APP_MEMBER, child);
-                                            memberList.add(member);
-                                        }
-                                    }
-                                } else {
-
-                                    String parent = members.getString("name");
-                                    MemberDetails member =
-                                            new MemberDetails(members.getObjectId(), MemberDetails.APP_MEMBER, parent);
-                                    memberList.add(member);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (ParseException e) {
-        }
-
-
-    /*
-     * Retrieve sms subscribed users list
-     */
-        ParseQuery<ParseObject> smsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
-        smsQuery.addAscendingOrder("subscriber");
-        smsQuery.whereEqualTo("cod", groupCode); // "cod" - as written in table
-
-        List<ParseObject> smsUsersList = null;
-        try {
-            smsUsersList = smsQuery.find();
-
-            if (smsUsersList != null) {
-
-                // System.out.println(smsUsersList.size() + " sms list size -------------");
-        /*
-         * Delete previous member list
-         */
-
-        /*
-         * ParseQuery<ParseObject> localSmsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
-         * localSmsQuery.whereEqualTo("cod", groupCode); localSmsQuery.fromLocalDatastore();
-         * localSmsQuery.whereEqualTo("userId", userId); List<ParseObject> oldsmsList =
-         * localSmsQuery.find(); if (oldsmsList != null) { // delete all old entries
-         * ParseObject.unpinAll(oldsmsList); }
-         */
-
-        /*
-         * Storing new entries locally
-         */
-
-                boolean flag = false;
-
-                if (openingFlag && smsUsersList.size() < 5) {
-                    flag = true;
-                } else if (openingFlag && reminder5) {
-                    flag = true;
-                } else if (!openingFlag) {
-                    flag = true;
-                }
-
-
-                if (flag) {
-                    for (int i = 0; i < smsUsersList.size(); i++) {
-
-                        System.out.println("44444444444444");
-                        if (userId != null) {
-                            ParseObject smsMembers = smsUsersList.get(i);
-
-                            if (smsMembers != null) {
-                                smsMembers.put("userId", userId);
-                                smsMembers.pinInBackground();
-
-
-                /*
-                 * Adding members in memberlist
-                 */
-                                String child = smsMembers.getString("subscriber");
-                                if (!UtilString.isBlank(child)) {
-                                    MemberDetails member =
-                                            new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child);
-                                    memberList.add(member);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } catch (ParseException e) {
-        }
-
-
-        System.out.println(memberList.size() + "  list size -------------");
-
-        return sortMemberList(memberList);
-    }
 
     /**
      * Sorting memberlist in alphabetical order
@@ -811,18 +657,28 @@ public class Queries extends MyActivity {
         return sortedList;
     }
 
+    /**
+     * Gives member count of a class
+     * @param groupCode
+     * @return total member count (app + sms members)
+     * @throws ParseException
+     */
     public int getMemberCount(String groupCode) throws ParseException {
         int appCount = 0, smsCount = 0;
         ParseQuery<ParseObject> query1 = ParseQuery.getQuery("GroupMembers");
         query1.fromLocalDatastore();
         query1.whereEqualTo("code", groupCode);
         query1.whereEqualTo("userId", userId);
+        query1.whereNotEqualTo("status", "LEAVE");
+        query1.whereNotEqualTo("status", "REMOVED");
         appCount = query1.count();
 
         ParseQuery<ParseObject> smsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
         smsQuery.fromLocalDatastore();
         smsQuery.whereEqualTo("userId", userId);
         smsQuery.whereEqualTo("cod", groupCode);
+        smsQuery.whereNotEqualTo("status", "LEAVE");
+        smsQuery.whereNotEqualTo("status", "REMOVED");
         smsCount = smsQuery.count();
 
         return appCount + smsCount;

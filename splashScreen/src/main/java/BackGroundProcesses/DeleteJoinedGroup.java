@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import joinclasses.JoinedClasses;
+import trumplabs.schoolapp.Constants;
 import utility.Utility;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -18,6 +19,9 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+/**
+ *  leave joined classroom in background.
+ */
 public class DeleteJoinedGroup extends AsyncTask<Void, Void, Boolean> {
   private String userId;
   private String groupCode;
@@ -45,11 +49,12 @@ public class DeleteJoinedGroup extends AsyncTask<Void, Void, Boolean> {
 
         //setting parameters
         HashMap<String, Object> param = new HashMap<String, Object>();
-        param.put("classCode", groupCode);
+        param.put("classcode", groupCode);
+        param.put("installationObjectId", ParseInstallation.getCurrentInstallation().getObjectId());
 
         boolean unsubscribeClass = false;
         try {
-            unsubscribeClass = ParseCloud.callFunction("UnsubscribeClass", param);
+            unsubscribeClass = ParseCloud.callFunction("leaveclass", param);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -58,8 +63,10 @@ public class DeleteJoinedGroup extends AsyncTask<Void, Void, Boolean> {
         //If class if subscribed successfully
         if(unsubscribeClass)
         {
+
             try {
                 user.fetch();
+
             } catch (ParseException e) {
                 e.printStackTrace();
             }

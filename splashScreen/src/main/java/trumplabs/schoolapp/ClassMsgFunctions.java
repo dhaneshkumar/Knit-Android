@@ -82,7 +82,7 @@ public class ClassMsgFunctions {
             //calling parse cloud function to delete class
             boolean isClassDeleted = false;
             try {
-                isClassDeleted = ParseCloud.callFunction("deleteCreatedClass", params);
+                isClassDeleted = ParseCloud.callFunction("deleteclass", params);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -112,6 +112,7 @@ public class ClassMsgFunctions {
                 //locally removing all members of that group
                 ParseQuery<ParseObject> delquery33 = new ParseQuery<ParseObject>("GroupMembers");
                 delquery33.whereEqualTo("code", groupCode);
+                delquery33.whereEqualTo("userId", user.getUsername());
                 delquery33.fromLocalDatastore();
                 try {
                     ParseObject.unpinAll(delquery33.find());
@@ -131,13 +132,19 @@ public class ClassMsgFunctions {
         @Override
         protected void onPostExecute(Boolean result) {
 
-            ClassMsg.progressbarLayout.setVisibility(View.GONE);
+            ClassMsg.progressLayout.setVisibility(View.GONE);
             ClassMsg.contentLayout.setVisibility(View.VISIBLE);
 
             if(result  &&  ClassMsg.currentActivity!= null)
             {
+
+                Classrooms.createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+
+                if(Classrooms.myadapter != null)
+                    Classrooms.myadapter.notifyDataSetChanged();
                 //finishing the current activity
                 ClassMsg.currentActivity.finish();
+
             }
 
             super.onPostExecute(result);

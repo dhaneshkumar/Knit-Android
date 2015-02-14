@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import BackGroundProcesses.DeleteJoinedGroup;
@@ -38,6 +39,7 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -58,7 +60,6 @@ public class ClassMembers extends Fragment {
     public static List<MemberDetails> memberDetails;
     private String groupCode = ClassContainer.classuid;
     private Queries query;
-    //boolean getDataFromServer = false; // fetch data from local
     public static SmoothProgressBar mHeaderProgressBar;
     private Context context;
     public static LinearLayout progressBarLayout;
@@ -449,27 +450,25 @@ public class ClassMembers extends Fragment {
     }
 
 
-    class RemoveChild extends AsyncTask<Void, Void, Void> {
-        private boolean flag;
+    class RemoveChild extends AsyncTask<Void, Void, Boolean> {
         private MemberDetails member;
 
         RemoveChild(MemberDetails member) {
-            this.flag = false;
             this.member = member;
 
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
 
-            Utility.ls("starting background....");
+            Utility.ls("remove child starting in background....");
 
             //Steps :
             //remove groupCode from member's joined group
             // unsubscribe this channel from member's channels
+            //remove entry of that class from subscriber's joined group
             // send notification to user about removing from this group
-            // remove entry from table memberlist
-            //remove locally from memberlist
+            // set status to "REMOVED" table entry of memberlist
 
             if (member != null) {
                 String type = member.getType();
@@ -479,103 +478,28 @@ public class ClassMembers extends Fragment {
 
                 if (type.equals(MemberDetails.APP_MEMBER)) {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
+                    query.fromLocalDatastore();
                     query.whereEqualTo("objectId", objectId);
+                    query.whereEqualTo("userId", ParseUser.getCurrentUser());
                     ParseObject obj = null;
 
                     try {
 
                         obj = query.getFirst();
-
-
                         if (obj != null) {
                             memberId = obj.getString("emailId");
                             groupCode = obj.getString("code");
 
-                            obj.deleteEventually();
-                            Utility.ls("child entry removed from group member table from server");
-/*
+                            boolean isRemoved = false;
 
-                            // Retriving local messages from groupmembers locally
-                            ParseQuery<ParseObject> localQuery = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
-                            localQuery.fromLocalDatastore();
-                            localQuery.whereEqualTo("objectId", objectId);
+                            HashMap<String, String> param = new HashMap<String, String>();
+                            param.put("classcode", groupCode);
+                            param.put("emailId", memberId);
+                            param.put("type", "APP");
+                            isRemoved = ParseCloud.callFunction("removechild", param);
 
-                            ParseObject localObj = localQuery.getFirst();
-                            if (localObj != null) {
-                                localObj.unpin();
-                                Utility.ls("child entry removed from group member table from locally");
-
-                            }
-*/
-
-
-                                /*
-                                Sending notification to member regarding removing from class && unsubscriber this member from this class
-                                 */
-
-                            Utility.ls("memberId : " + memberId);
-                            Utility.ls("code : " + groupCode);
-
-
-                            if (!UtilString.isBlank(memberId) && !UtilString.isBlank(groupCode)) {
-                                // Create our Installation query
-                                ParseQuery pushQuery = ParseInstallation.getQuery();
-                                pushQuery.whereEqualTo("username", memberId);
-
-                                Utility.ls("ener34444444----------");
-
-                                // Send push notification to query
-                                ParsePush push = new ParsePush();
-                                push.setQuery(pushQuery); // Set our Installation query
-                                push.setMessage(Config.RemoveMsg);
-                                Utility.ls("ener34444444---55-------");
-                                push.send();
-
-                                Utility.ls("removal notification sent to member");
-
-                                ParseObject install = pushQuery.getFirst();
-                                if (install != null) {
-                                    List<String> channelList = install.getList("channels");
-                                    if (channelList != null) {
-                                        channelList.remove(groupCode);
-
-                                        install.put("channels", channelList);
-                                        install.saveEventually();
-
-                                        Utility.ls("channel unsubscribed");
-                                    }
-                                }
-                            }
-
-                                    /*
-                                    Removing this class from member's joinedGroup list
-                                     */
-
-                            ParseQuery userQuery = ParseUser.getQuery();
-                            userQuery.whereEqualTo("username", memberId);
-
-                            ParseObject memberObj = userQuery.getFirst();
-                            if (memberObj != null) {
-                                List<List<String>> joinedList = memberObj.getList(Constants.JOINED_GROUPS);
-                                if (joinedList != null) {
-
-                                    for (int i = 0; i < joinedList.size(); i++) {
-                                        if (joinedList.get(i).get(0).equals(groupCode)) {
-                                            joinedList.remove(i);
-
-                                            memberObj.put(Constants.JOINED_GROUPS, joinedList);
-                                            memberObj.saveEventually();
-                                            Utility.ls("group code removed from member's joined group list");
-                                            break;
-                                        }
-
-                                    }
-                                }
-
-                            }
-
-
-                            flag = true;  // to escape from internet slow issues
+                            if(isRemoved)
+                                return true;
 
                         }
                     } catch (ParseException e) {
@@ -583,14 +507,45 @@ public class ClassMembers extends Fragment {
                     }
 
                 }
+                else
+                {
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
+                        query.fromLocalDatastore();
+                        query.whereEqualTo("objectId", objectId);
+                        query.whereEqualTo("userId", ParseUser.getCurrentUser());
+                        ParseObject obj = null;
+
+                        try {
+
+                            obj = query.getFirst();
+                            if (obj != null) {
+                                memberId = obj.getString("number");
+                                groupCode = obj.getString("code");
+
+                                boolean isRemoved = false;
+
+                                HashMap<String, String> param = new HashMap<String, String>();
+                                param.put("classcode", groupCode);
+                                param.put("emailId", memberId);
+                                param.put("type", "SMS");
+                                isRemoved = ParseCloud.callFunction("removechild", param);
+
+                                if(isRemoved)
+                                    return true;
+
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                }
             }
 
-            return null;
+            return false;
         }
 
         @Override
-        protected void onPostExecute(Void result) {
-            if (flag) {
+        protected void onPostExecute(Boolean result) {
+            if (result) {
                 memberDetails.remove(member);
                 myadapter.notifyDataSetChanged();
             }
