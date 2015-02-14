@@ -87,6 +87,9 @@ public class Refresher {
                 createdClassList.doInBackgroundCore();
                 createdClassList.onPostExecuteCoreHelper(); //done
 
+                ClassRoomsUpdate.fetchUpdates();
+                ClassRoomsUpdate.fetchProfilePics(freshUser.getUsername());
+
                 /*
                 If its new user then refresh on evry app openingtime,
                 After 50 opening count, refresh this suggestion list on interval of 10 opening counts

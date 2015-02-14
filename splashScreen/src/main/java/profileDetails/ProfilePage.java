@@ -418,13 +418,25 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                 ParseUser user = ParseUser.getCurrentUser();
                                 if (user != null) {
                                     user.put("name", value);
-                                    user.saveEventually();
-                                    name_textView.setText(value);
+                                    user.saveInBackground(new SaveCallback() {
+                                        @Override
+                                        public void done(ParseException e) {
+                                            if(e == null){
+                                                name_textView.setText(value);
+                                                Utility.toast("Name updated !");
+                                            }
+                                            else{
+                                                e.printStackTrace();
+                                                Utility.toast("Name update failed !");
+                                            }
+                                        }
+                                    });
 
                   /*
                    * updatin creator in codegroup
                    */
 
+                                    /*
                                     ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
                                     query.whereEqualTo("senderId", userId);
                                     query.findInBackground(new FindCallback<ParseObject>() {
@@ -439,12 +451,13 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                             }
                                         }
                                     });
+                                    */
 
                   /*
-                   * updating name in Group member class
+                   * updating name in Group member class. Not needed as now using associated name instead of parent's name
                    */
 
-                                    ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("GroupMembers");
+                                    /*ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("GroupMembers");
                                     memberQuery.whereEqualTo("emailId", userId);
                                     memberQuery.findInBackground(new FindCallback<ParseObject>() {
                                         public void done(List<ParseObject> itemList, ParseException e) {
@@ -457,7 +470,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                                 }
                                             }
                                         }
-                                    });
+                                    });*/
 
                   /*
                    * updating Creator in GroupDetails class
