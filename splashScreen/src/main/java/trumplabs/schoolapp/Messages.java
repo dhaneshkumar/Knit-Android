@@ -47,6 +47,7 @@ import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Queries;
+import utility.SessionManager;
 import utility.Utility;
 
 
@@ -461,7 +462,6 @@ public class Messages extends Fragment {
 
                 holder.confused.setText(newConfusedCount + "");
 
-
                 msgObject.put(Constants.CONFUSED_COUNT, newConfusedCount);
             }
 
@@ -586,7 +586,10 @@ public class Messages extends Fragment {
        * Setting group name and sender name
        */
 
-            String Str = msgObject.getString("name").toUpperCase();
+            String Str = null;
+
+            if(!UtilString.isBlank(msgObject.getString("name")))
+                 Str = msgObject.getString("name").toUpperCase();
             holder.groupName.setText(Str);
 
             Str = msgObject.getString("Creator");
@@ -656,8 +659,15 @@ public class Messages extends Fragment {
             try
 
             {
-                if (msgObject.getCreatedAt() != null)
+                if (msgObject.getCreatedAt() != null) {
                     holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
+
+                    SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                    Log.d("INBOX", "message : " + msgObject.getString("title"));
+                    Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
+                    Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
+
+                }
                 else if (msgObject.get("creationTime") != null)
                     holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
             } catch (

@@ -35,6 +35,10 @@ import utility.Queries;
 import utility.Tools;
 import utility.Utility;
 
+
+/**
+ * Shows all the created classrooms
+ */
 public class Classrooms extends Fragment {
     private Activity getactivity;
     public static ListView listv;
@@ -42,16 +46,13 @@ public class Classrooms extends Fragment {
     public static List<List<String>> createdGroups;
     protected LayoutInflater layoutinflater;
     public static BaseAdapter myadapter;
-    private String groupCode;
-    private ParseUser user;
     public static int members;
-    private String userId;
     private Queries query;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         layoutinflater = inflater;
-        // getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+
         View layoutview = inflater.inflate(R.layout.createdclasses_layout, container, false);
         return layoutview;
     }
@@ -63,6 +64,7 @@ public class Classrooms extends Fragment {
         listv = (ListView) getactivity.findViewById(R.id.listview);
         emptylayout = (LinearLayout) getactivity.findViewById(R.id.ccemptymsg);
 
+        //No created classrooms, goto create class activity
         getactivity.findViewById(R.id.ccemptylink).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,25 +72,19 @@ public class Classrooms extends Fragment {
             }
         });
 
-
         ParseUser parseObject = ParseUser.getCurrentUser();
-
         if (parseObject == null)
-            {Utility.logout(); return;}
+            {
+                Utility.logout(); return;}
 
-        userId = parseObject.getUsername();
 
         createdGroups = parseObject.getList(Constants.CREATED_GROUPS);
-
-        Log.d("stop", "class rooms : ---------");
 
         if (createdGroups == null) {
             createdGroups = new ArrayList<List<String>>();
         }
 
         myadapter = new myBaseAdapter();
-        // Log.d("FragmentB", "intial grp size : " + createdGroups.size());
-
         listv.setAdapter(myadapter);
         View emptyrow = layoutinflater.inflate(R.layout.createdclasses_classview, listv, false);
         listv.setEmptyView(emptyrow);
@@ -96,11 +92,6 @@ public class Classrooms extends Fragment {
         initialiseListViewMethods();
         super.onActivityCreated(savedInstanceState);
 
-    /*
-     * //Refreshing options if (Utility.isInternetOn()) { GetDataFromServer gf = new
-     * GetDataFromServer(); gf.execute(); } else { Utility.toast("Check your Internet connection");
-     * }
-     */
     }
 
     @Override
@@ -115,10 +106,12 @@ public class Classrooms extends Fragment {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
 
+                    //showing refreshing bar
                     if (MainActivity.mHeaderProgressBar != null) {
                         Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
                     }
 
+                    //refreshing class-list in background
                     CreatedClassRooms createdClassList = new CreatedClassRooms();
                     createdClassList.execute();
                 } else {
@@ -209,6 +202,10 @@ public class Classrooms extends Fragment {
 
     public void initialiseListViewMethods() {
 
+
+        /**
+         * setting long pressed list item functionality
+         */
         listv.setOnItemLongClickListener(new OnItemLongClickListener() {
 
             @Override
@@ -244,6 +241,9 @@ public class Classrooms extends Fragment {
         });
 
 
+        /**
+         * setting list item clicked functionality
+         */
         listv.setOnItemClickListener(new OnItemClickListener() {
 
             @Override

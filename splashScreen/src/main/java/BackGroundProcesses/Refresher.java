@@ -127,7 +127,7 @@ public class Refresher {
         /*
          * Updating joined group list
          */
-                JoinedClassRooms joinClass = new JoinedClassRooms(true);
+                JoinedClassRooms joinClass = new JoinedClassRooms();
                 joinClass.doInBackgroundCore();
                 joinClass.onPostExecuteHelper(); //done
 
@@ -141,7 +141,6 @@ public class Refresher {
                 CreatedClassRooms createdClassList = new CreatedClassRooms();
                 createdClassList.doInBackgroundCore();
                 createdClassList.onPostExecuteCoreHelper(); //done
-
             }
 
             //Refresh local outbox data, if not in valid state clear and fetch new.

@@ -54,6 +54,9 @@ import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 
+/**
+ * Displays list of all joined classes and suggested classes
+ */
 public class JoinedClasses extends Fragment {
 
     private LayoutInflater layoutinflater;
@@ -111,9 +114,9 @@ public class JoinedClasses extends Fragment {
         if (joinedadapter == null)
             joinedadapter = new myBaseAdapter();
 
-          /*
-          Fetching suggestion list
-           */
+      /*
+      Fetching suggestion list
+       */
         suggestedGroups = JoinedHelper.getSuggestionList(userId);
 
         if (suggestedGroups == null)
@@ -127,18 +130,16 @@ public class JoinedClasses extends Fragment {
         if (suggestionAdapter == null)
             suggestionAdapter = new suggestionAdapter();
 
-
-
-        /*
-         * SessionManager session = new SessionManager(Application.getAppContext()); int appOpeningCount
-         * = session.getAppOpeningCount(); Utility.toast(appOpeningCount + "");
-         */
         /*
          * Check whether it has default group or not
          */
         session = new SessionManager(Application.getAppContext());
         if (!session.getDefaultClassExtst()) {
-            defaultClassJoined();
+            try {
+                defaultClassJoined();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }
 
         if (ParseUser.getCurrentUser() != null) {
@@ -175,11 +176,13 @@ public class JoinedClasses extends Fragment {
                         Tools.runSmoothProgressBar(mHeaderProgressBar, 10);
                     }
 
+                    //refreshing join clases
                     JoinedClassRooms joinClass = new JoinedClassRooms();
                     joinClass.execute();
 
-                    UpdateSuggestions updateSuggestions = new UpdateSuggestions();
-                    updateSuggestions.execute();
+                    //refreshing classroom suggestions
+                  //  UpdateSuggestions updateSuggestions = new UpdateSuggestions(true);
+                   // updateSuggestions.execute();
                 } else {
                     Utility.toast("Check your Internet connection");
                 }
@@ -252,8 +255,8 @@ public class JoinedClasses extends Fragment {
           /*
            * setting condensed font
            */
-
             final String role = ParseUser.getCurrentUser().getString(Constants.ROLE);
+
             if(! role.equals(Constants.STUDENT)) {
                 child_textView.setTypeface(typeFace);
                 if (joinedGroups.get(position).size() > 2) {
@@ -265,10 +268,6 @@ public class JoinedClasses extends Fragment {
             {
                 child_textView.setVisibility(View.GONE);
             }
-
-
-
-
 
 
           /*
@@ -407,7 +406,7 @@ public class JoinedClasses extends Fragment {
                                         if (joinedGroups.get(position).size() > 2) {
                                             child = joinedGroups.get(position).get(2).toString().trim();
                                         }
-                                        showPopUp(popView, context, child, group, position);
+                                        showPopUp(popView, context, child, joinedGroups.get(position).get(0));
                                     }
                                     break;
                                 case R.id.action2:
@@ -650,8 +649,9 @@ public class JoinedClasses extends Fragment {
     class joinDefaultGroup extends AsyncTask<Void, Void, Void> {
         private String code;
         private String grpName;
+        private boolean classExist;
 
-        joinDefaultGroup(String code) {
+        public joinDefaultGroup(String code) throws ParseException {
             this.code = code;
         }
 
@@ -663,113 +663,19 @@ public class JoinedClasses extends Fragment {
             /*
              * Retrieving user details
              */
-
+                classExist = false;
                 String childName = ParseUser.getCurrentUser().getString("name");
                 childName = UtilString.parseString(childName);
 
-                ParseUser user = ParseUser.getCurrentUser();
-                if (user != null) {
-
-                    /********************* < joining class room > *************************/
-
-
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-                    query.whereEqualTo("code", code);
-
-                    ParseObject a;
-                    try {
-                        a = query.getFirst();
-
-                        if (a != null) {
-                            if (a.get("name") != null && a.getBoolean("classExist")) {
-
-                                String senderId = a.getString("senderId");
-                                ParseFile senderPic = a.getParseFile("senderPic");
-
-                                if (!UtilString.isBlank(a.get("name").toString())) {
-                                    grpName = a.get("name").toString();
-
-                                    // Enable to receive push
-
-                                    ParseInstallation pi = ParseInstallation.getCurrentInstallation();
-                                    if (pi != null) {
-                                        pi.addUnique("channels", code);
-                                        pi.saveEventually();
-                                    }
-
-
-                                    List<List<String>> oldList = user.getList("joined_groups");
-
-                                    if (oldList == null)
-                                        oldList = new ArrayList<List<String>>();
-
-                                    List<String> list = new ArrayList<String>();
-                                    list.add(code);
-                                    list.add(grpName);
-                                    list.add(childName);
-
-                                    oldList.add(0, list);
-                                    user.put("joined_groups", oldList);
-                                    user.saveEventually();
-
-                                    // Adding this user as member in GroupMembers table
-                                    final ParseObject groupMembers = new ParseObject("GroupMembers");
-                                    groupMembers.put("code", code);
-                                    groupMembers.put("name", user.getString("name"));
-                                    List<String> boys = new ArrayList<String>();
-                                    boys.add(childName.trim());
-                                    groupMembers.put("children_names", boys);
-
-
-                                    if (user.getEmail() != null)
-                                        groupMembers.put("emailId", user.getEmail());
-                                    groupMembers.saveEventually();
-                                    groupMembers.pin();
-
-
-                                    Queries2 memberQuery = new Queries2();
-                                    try {
-                                        memberQuery.storeGroupMember(code, userId, true);
-                                    } catch (ParseException e1) {
-                                    }
-                                }
-
-
-                    /*
-                     * Saving locally in Codegroup table
-                     */
-                                a.put("userId", userId);
-                                a.pin();
-
-                    /*
-                     * download pic locally
-                     */
-                                senderId = senderId.replaceAll("@", "");
-                                String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
-                                final File senderThumbnailFile = new File(filePath);
-
-                                if (!senderThumbnailFile.exists()) {
-
-                                    Queries2 imageQuery = new Queries2();
-
-                                    if (senderPic != null)
-                                        imageQuery.downloadProfileImage(senderId, senderPic);
-                                } else {
-                                    // Utility.toast("image already exist ");
-                                }
-
-                            }
-                        }
-                    } catch (ParseException e) {
-                    }
-                }
+                JoinedHelper.joinClass(code, childName, true);
             }
             return null;
         }
     }
 
 
-    private void defaultClassJoined() {
+
+    private void defaultClassJoined() throws ParseException {
 
 
         boolean defaultClassExist = false;
@@ -809,7 +715,7 @@ public class JoinedClasses extends Fragment {
      */
     @SuppressLint("NewApi")
     private void showPopUp(final View popupView, Context context, String hint,
-                           final List<String> group, final int position) {
+                           final String classcode) {
 
 
         /*
@@ -948,7 +854,7 @@ public class JoinedClasses extends Fragment {
 
 
         /*
-         * Setting button click listner
+         * Setting button click listener
          */
         ok.setOnClickListener(new OnClickListener() {
 
@@ -958,9 +864,13 @@ public class JoinedClasses extends Fragment {
 
                 if (!UtilString.isBlank(value)) {
 
-                    profileDetails.AddChild_Background acb =
-                            new profileDetails.AddChild_Background(userId, value, group, position);
-                    acb.execute();
+                    //showing progress bar
+                    progressBarLayout.setVisibility(View.VISIBLE);
+                    editProfileLayout.setVisibility(View.GONE);
+
+                    JoinedHelper.UpdateAssociatedName updateAssociatedName = new JoinedHelper.UpdateAssociatedName();
+                    String[] params = new String[]{classcode, value};
+                    updateAssociatedName.execute(params);
 
                     popupMessage.dismiss();
                 }

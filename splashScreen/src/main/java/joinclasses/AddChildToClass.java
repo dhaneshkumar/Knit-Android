@@ -6,6 +6,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -45,27 +46,22 @@ import utility.Queries2;
 import utility.SessionManager;
 import utility.Utility;
 
+/**
+ * Activity to show layout to enter the child-name
+ */
 public class AddChildToClass extends MyActionBarActivity {
   public static List<String> group;
   private TextView okButton;
   private AutoCompleteTextView child_editText;
   private static String userId;
   private String code;
-  private String grpName;
   public static LinearLayout progressBarLayout;
   public static LinearLayout editProfileLayout;
   private String childName;
   private Point p ;
   private int height;
-  private boolean joinFlag = false;
-  private boolean classExist = false;
-  private Queries textQuery;
-  private Queries2 memberQuery;
   private Typeface typeFace;
   private ParseUser user;
-  private String schoolId ;
-  private String standard;
-  private String division;
   private String backFlag;
   
   @Override
@@ -73,33 +69,31 @@ public class AddChildToClass extends MyActionBarActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.joinclass_addchild);
 
+    //enabling home button
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+    //validating current user
+    ParseUser user = ParseUser.getCurrentUser();
+    if (user == null)
+      {Utility.logout(); return;}
+
     typeFace =
         Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-BoldItalic.ttf");
-   
+
+    //Initializing variables
     child_editText = (AutoCompleteTextView) findViewById(R.id.child);
     TextView child_textView = (TextView) findViewById(R.id.child_textView);
     child_textView.setTypeface(typeFace);
     okButton = (TextView) findViewById(R.id.done);
-    // skipButton = (TextView) findViewById(R.id.skip);
     progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
     editProfileLayout = (LinearLayout) findViewById(R.id.profileEditLayout);
-
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    ParseUser user = ParseUser.getCurrentUser();
-
-    if (user == null)
-      {Utility.logout(); return;}
-
-    memberQuery = new Queries2();
-    textQuery = new Queries();
     userId = user.getUsername();
     code = getIntent().getExtras().getString("code");
-      backFlag = getIntent().getExtras().getString("backFlag");
-
+    backFlag = getIntent().getExtras().getString("backFlag");
     SessionManager session = new SessionManager(Application.getAppContext());
     
    
-    
+    //setting adapter for autocomplete child-name form
     ArrayAdapter adapter;
     if(session.getChildList()!= null)
     {
@@ -138,17 +132,20 @@ public class AddChildToClass extends MyActionBarActivity {
     final String txt =
         "Entered Name will be associated with this class. It may be your name or your child's name";
 
+    //setting help button functionality
     help.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
 
+          //show popup
         if (p != null) {
           Popup popup = new Popup();
           popup.showPopup(AddChildToClass.this, p, true, -300, txt, height, 15, 400);
 
           InputMethodManager inputMethodManager =
               (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-          // inputMethodManager.showSoftInput(viewToEdit, 0);
+
+            //hide keyboard
           if (getCurrentFocus() != null) {
             inputMethodManager.hideSoftInputFromWindow(getCurrentFocus()
                 .getApplicationWindowToken(), 0);
@@ -214,203 +211,68 @@ public class AddChildToClass extends MyActionBarActivity {
 
   /******************************************************************/
 
+    /**
+     * joining class in background using class-code and child-name
+     */
+  class AddChild_Background extends AsyncTask<Void, Void, Boolean> {
+      private boolean classExist = false;
 
-  class AddChild_Background extends AsyncTask<Void, Void, Void> {
-
-    ParseInstallation pi;
     @Override
-    protected Void doInBackground(Void... params) {
+    protected Boolean doInBackground(Void... params) {
 
-      if (userId != null && childName != null) {
+        Log.d("join", "class joining -----------");
+
+        if (userId != null && childName != null) {
 
         /*
          * Retrieving user details
          */
+            Log.d("join", "class joining -----------1111");
 
-        childName = childName.trim();
-        childName = UtilString.parseString(childName);
+            classExist = false; //setting flag initially false
+
+            childName = childName.trim();
+            childName = UtilString.parseString(childName);
         
         /*
-         * Change first letter to caps
+         * Storing child name for autocomplete suggestions
          */
-        
-        SessionManager session = new SessionManager(Application.getAppContext());
-        session.addChildName(childName);
-        
+            SessionManager session = new SessionManager(Application.getAppContext());
+            session.addChildName(childName);
 
-        user = ParseUser.getCurrentUser();
-        if (user != null) {
-
-          /********************* < joining class room > *************************/
-
-          joinFlag = false;
-          classExist = false;
-          // check whether group exist or not
-          ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-
-          String grpCode = code;
-          grpCode = grpCode.replace("TS", "");
-          code = "TS" + grpCode.trim();
+            Log.d("join", "class joining -----------1155");
 
 
-          query.whereEqualTo("code", code);
 
-          if (!textQuery.isJoinedClassExist(code)) {
-
-            ParseObject a;
-            try {
-              a = query.getFirst();
-
-              if (a != null) {
-                if (a.get("name") != null && a.getBoolean("classExist")) {
-
-                  String senderId = a.getString("senderId");
-                  final String grpSenderId =  senderId;
-                  ParseFile senderPic = a.getParseFile("senderPic");
-
-                  if (!UtilString.isBlank(a.get("name").toString())) {
-                    grpName = a.get("name").toString();
-
-                   schoolId = a.getString("school");
-                      standard = a.getString("standard");
-                      division = a.getString(Constants.DIVISION);
-
-                    // Enable to receive push
-
-                    pi = ParseInstallation.getCurrentInstallation();
-                    if (pi != null) {
-                      
-                      pi.addUnique("channels", code);
-                      pi.saveInBackground(new SaveCallback() {
-                        
-                        @Override
-                        public void done(ParseException e) {
-                         if(e != null)
-                         {
-                           pi.saveEventually();
-                           Utility.ls("saved not installation in back");
-                           
-                           e.printStackTrace();
-                         }
-                         else
-                         {
-                           Utility.ls("saved installation in back");
-                         }
-                        }
-                      });
-                      
-                    }
-                    else
-                      Utility.ls("parse installation --  null");
-
-                    user.addUnique("joined_groups", Arrays.asList(code, grpName, childName));
-                    user.saveEventually();
-
-                    // Adding this user as member in GroupMembers table
-                    final ParseObject groupMembers = new ParseObject("GroupMembers");
-                    groupMembers.put("code", code);
-                    groupMembers.put("name", user.getString("name"));
-                    List<String> boys = new ArrayList<String>();
-                    boys.add(childName.trim());
-                    groupMembers.put("children_names", boys);
+            user = ParseUser.getCurrentUser();
+            if (user != null) {
+                Log.d("join", "class joining -----------22222");
 
 
-                    if (user.getEmail() != null)
-                      groupMembers.put("emailId", user.getEmail());
-                    groupMembers.saveInBackground(new SaveCallback() {
-                      
-                      @Override
-                      public void done(ParseException e) {
-                        if(e == null)
-                        {
-                          try {
-                            memberQuery.storeGroupMember(code, userId, true);
-                            
-                          } catch(ParseException e1)
-                          {
-                           e1.printStackTrace(); 
-                          }
-                        }
-                      }
-                    });
-                  }
-                  
-
-                  /*
-                   * Saving locally in Codegroup table
-                   */
-                  a.put("userId", userId);
-                  a.pin();
-
-                  /*
-                   * download pic locally
-                   */
-                  senderId = senderId.replaceAll("@", "");
-                  String filePath =
-                      Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
-                  final File senderThumbnailFile = new File(filePath);
-
-                  if (!senderThumbnailFile.exists()) {
-
-                    Queries2 imageQuery = new Queries2();
-
-                    if (senderPic != null)
-                      imageQuery.downloadProfileImage(senderId, senderPic);
-                  } else {
-                    // Utility.toast("image already exist ");
-                  }
-
-                  joinFlag = true;
-                  
-                  
-                  
-               // Create our Installation query
-                /*  ParseQuery pushQuery = ParseInstallation.getQuery();
-                  pushQuery.whereEqualTo("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
-                   
-                  // Send push notification to query
-                    ParsePush push = new ParsePush();
-                    push.setQuery(pushQuery);             // Set our Installation query
-                    JSONObject data = new JSONObject();
-                    try {
-                        data.put("msg", utility.Config.welcomeMsg);
-                        data.put("groupName", grpName);
-                        push.setData(data);
-                        push.sendInBackground();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }*/
+                int result = JoinedHelper.joinClass(code, childName, false);
 
 
-                    //locally generating joiining notification and inbox msg
-                    NotificationGenerator.generateNotification(getApplicationContext(), utility.Config.welcomeMsg, grpName, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                    AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, code, a.getString("Creator"), a.getString("senderId"), grpName, user);
+                if (result == 1)
+                    return true;      //successfully joined class
+                else if (result == 2) {
+                    classExist = true;    //already joined
+                    return false;
+                } else
+                    return false;       //failed to join
 
-
-                  /*
-                  Retrieve suggestion classes and  store them in locally
-                   */
-
-
-                    School.storeSuggestions(schoolId, standard, division, userId);
-                }
-              }
-            } catch (ParseException e) {
-              joinFlag = false;
-            }
-          } else
-            classExist = true;
+            } else
+                return false;
         }
-      }
-      return null;
+
+        return false;
     }
 
 
 
     @Override
-    protected void onPostExecute(Void result) {
+    protected void onPostExecute(Boolean result) {
 
-      if (joinFlag) {
+      if (result) {
         Utility.toast("ClassRoom Added.");
         
         if( Messages.myadapter != null)
@@ -423,13 +285,12 @@ public class AddChildToClass extends MyActionBarActivity {
         if (classExist) {
           Utility.toast("Class room Already added.");
         } else
-          Utility.toast("Entered Class doesn't exist");
+          Utility.toast("Failed to join this class. Try again.");
 
         Intent intent = new Intent(AddChildToClass.this, joinclasses.JoinClassesContainer.class);
         intent.putExtra("VIEWPAGERINDEX", 1);
         startActivity(intent);
       }
-
     }
   }
 

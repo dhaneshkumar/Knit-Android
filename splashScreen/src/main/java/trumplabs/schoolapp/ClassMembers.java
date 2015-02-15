@@ -22,45 +22,50 @@ import android.widget.ListView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
 
+import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import BackGroundProcesses.MemberList;
 import additionals.InviteParents;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import library.UtilString;
 import trumplab.textslate.R;
-import utility.Config;
 import utility.Queries;
 import utility.Tools;
 import utility.Utility;
 
+/**
+ * Show subscriber list of a particular class
+ */
 public class ClassMembers extends Fragment {
-    Activity getactivity;
-    ListView listv;
+    private Activity getactivity;
+    private ListView listv;
     protected LayoutInflater layoutinflater;
     public static BaseAdapter myadapter;
     public static List<MemberDetails> memberDetails;
-    String groupCode = ClassContainer.classuid;
-    Queries query;
-    boolean getDataFromServer = false; // fetch data from local
+    private String groupCode = ClassContainer.classuid;
+    private Queries query;
     public static SmoothProgressBar mHeaderProgressBar;
-
-    Context context;
+    private Context context;
     public static LinearLayout progressBarLayout;
     public static LinearLayout editProfileLayout;
 
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        layoutinflater = inflater;
+        View layoutview = inflater.inflate(R.layout.classmembers_layout, container, false);
+        return layoutview;
+    }
 
     /*
-     * Initializing variables required for calling background process
-     */
+    * Initializing variables required for calling background process
+    */
     public void intializeBackgroundParameters() {
         query = new Queries();
 
@@ -76,17 +81,13 @@ public class ClassMembers extends Fragment {
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        layoutinflater = inflater;
-        View layoutview = inflater.inflate(R.layout.classmembers_layout, container, false);
-        return layoutview;
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
         intializeBackgroundParameters();
 
         getactivity = getActivity();
+
+        //intializing variables
         listv = (ListView) getactivity.findViewById(R.id.memberslistview);
         mHeaderProgressBar = (SmoothProgressBar) getActivity().findViewById(R.id.ptr_progress);
         progressBarLayout = (LinearLayout) getActivity().findViewById(R.id.progressBarLayout);
@@ -96,16 +97,8 @@ public class ClassMembers extends Fragment {
         listv.setAdapter(myadapter);
         super.onActivityCreated(savedInstanceState);
 
-        // refresh function
-    /*
-     * if (Utility.isInternetOn()) { getDataFromServer=true; GetDataFromServer gf = new
-     * GetDataFromServer(); gf.execute(); } else { Utility.toast("Check your Internet connection");
-     * }
-     */
-
-
+        //moving to invite parent activity
         LinearLayout inviteLayout = (LinearLayout) getActivity().findViewById(R.id.inviteLayout);
-
         inviteLayout.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -136,12 +129,13 @@ public class ClassMembers extends Fragment {
             case R.id.refresh:
                 if (Utility.isInternetOn(getActivity())) {
 
+                    //showing progress bar
                     if (mHeaderProgressBar != null) {
-                        Tools.runSmoothProgressBar(mHeaderProgressBar, 15);
+                        Tools.runSmoothProgressBar(mHeaderProgressBar, 10);
                     }
 
-                    getDataFromServer = true;
-                    MemberList memberList = new MemberList(groupCode, false, false);
+                    //refreshing member list in background
+                    MemberList memberList = new MemberList(groupCode);
                     memberList.execute();
                 } else {
                     Utility.toast("Check your Internet connection");
@@ -153,6 +147,9 @@ public class ClassMembers extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    Adapter to show member list
+     */
     class myBaseAdapter extends BaseAdapter {
 
         @Override
@@ -216,9 +213,9 @@ public class ClassMembers extends Fragment {
                             switch (item.getItemId()) {
                                 case R.id.action1:
 
-                      /*
-                        Remove this child from group
-                       */
+                                  /*
+                                    Remove this child from group
+                                   */
                                     if (context != null) {
                                         showRemoveChildPopUp(popView, context, memberDetails.get(position));
                                     }
@@ -444,27 +441,25 @@ public class ClassMembers extends Fragment {
     }
 
 
-    class RemoveChild extends AsyncTask<Void, Void, Void> {
-        private boolean flag;
+    class RemoveChild extends AsyncTask<Void, Void, Boolean> {
         private MemberDetails member;
 
         RemoveChild(MemberDetails member) {
-            this.flag = false;
             this.member = member;
 
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Boolean doInBackground(Void... params) {
 
-            Utility.ls("starting background....");
+            Utility.ls("remove child starting in background....");
 
             //Steps :
             //remove groupCode from member's joined group
             // unsubscribe this channel from member's channels
+            //remove entry of that class from subscriber's joined group
             // send notification to user about removing from this group
-            // remove entry from table memberlist
-            //remove locally from memberlist
+            // set status to "REMOVED" table entry of memberlist
 
             if (member != null) {
                 String type = member.getType();
@@ -474,103 +469,32 @@ public class ClassMembers extends Fragment {
 
                 if (type.equals(MemberDetails.APP_MEMBER)) {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
+                    query.fromLocalDatastore();
                     query.whereEqualTo("objectId", objectId);
+                    query.whereEqualTo("userId", ParseUser.getCurrentUser());
                     ParseObject obj = null;
 
                     try {
 
                         obj = query.getFirst();
-
-
                         if (obj != null) {
                             memberId = obj.getString("emailId");
                             groupCode = obj.getString("code");
 
-                            obj.deleteEventually();
-                            Utility.ls("child entry removed from group member table from server");
-/*
+                            boolean isRemoved = false;
 
-                            // Retriving local messages from groupmembers locally
-                            ParseQuery<ParseObject> localQuery = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
-                            localQuery.fromLocalDatastore();
-                            localQuery.whereEqualTo("objectId", objectId);
+                            HashMap<String, String> param = new HashMap<String, String>();
+                            param.put("classcode", groupCode);
+                            param.put("emailId", memberId);
+                            param.put("type", "APP");
+                            isRemoved = ParseCloud.callFunction("removechild", param);
 
-                            ParseObject localObj = localQuery.getFirst();
-                            if (localObj != null) {
-                                localObj.unpin();
-                                Utility.ls("child entry removed from group member table from locally");
+                            if(isRemoved){
 
-                            }
-*/
-
-
-                                /*
-                                Sending notification to member regarding removing from class && unsubscriber this member from this class
-                                 */
-
-                            Utility.ls("memberId : " + memberId);
-                            Utility.ls("code : " + groupCode);
-
-
-                            if (!UtilString.isBlank(memberId) && !UtilString.isBlank(groupCode)) {
-                                // Create our Installation query
-                                ParseQuery pushQuery = ParseInstallation.getQuery();
-                                pushQuery.whereEqualTo("username", memberId);
-
-                                Utility.ls("ener34444444----------");
-
-                                // Send push notification to query
-                                ParsePush push = new ParsePush();
-                                push.setQuery(pushQuery); // Set our Installation query
-                                push.setMessage(Config.RemoveMsg);
-                                Utility.ls("ener34444444---55-------");
-                                push.send();
-
-                                Utility.ls("removal notification sent to member");
-
-                                ParseObject install = pushQuery.getFirst();
-                                if (install != null) {
-                                    List<String> channelList = install.getList("channels");
-                                    if (channelList != null) {
-                                        channelList.remove(groupCode);
-
-                                        install.put("channels", channelList);
-                                        install.saveEventually();
-
-                                        Utility.ls("channel unsubscribed");
-                                    }
-                                }
+                                obj.fetch();        //retrieving updates from server
+                                return true;
                             }
 
-                                    /*
-                                    Removing this class from member's joinedGroup list
-                                     */
-
-                            ParseQuery userQuery = ParseUser.getQuery();
-                            userQuery.whereEqualTo("username", memberId);
-
-                            ParseObject memberObj = userQuery.getFirst();
-                            if (memberObj != null) {
-                                List<List<String>> joinedList = memberObj.getList(Constants.JOINED_GROUPS);
-                                if (joinedList != null) {
-
-                                    for (int i = 0; i < joinedList.size(); i++) {
-                                        if (joinedList.get(i).get(0).equals(groupCode)) {
-                                            joinedList.remove(i);
-
-                                            memberObj.put(Constants.JOINED_GROUPS, joinedList);
-                                            memberObj.saveEventually();
-                                            Utility.ls("group code removed from member's joined group list");
-                                            break;
-                                        }
-
-                                    }
-                                }
-
-                            }
-
-
-                            flag = true;  // to escape from internet slow issues
 
                         }
                     } catch (ParseException e) {
@@ -578,14 +502,64 @@ public class ClassMembers extends Fragment {
                     }
 
                 }
+                else
+                {
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
+                        query.fromLocalDatastore();
+                        query.whereEqualTo("objectId", objectId);
+                        query.whereEqualTo("userId", ParseUser.getCurrentUser());
+                        ParseObject obj = null;
+
+                        try {
+
+                            obj = query.getFirst();
+                            if (obj != null) {
+                                memberId = obj.getString("number");
+                                groupCode = obj.getString("code");
+
+
+                                //Retrieving class-name
+                                ParseQuery<ParseObject> codeGroupQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
+                                codeGroupQuery.fromLocalDatastore();
+                                codeGroupQuery.whereEqualTo("code", groupCode);
+
+                                ParseObject codeObject = codeGroupQuery.getFirst();
+
+                                String className = "Knit";
+                                if(codeObject != null)
+                                {
+                                    className = codeObject.getString("name");
+                                }
+
+
+
+                                boolean isRemoved = false;
+
+                                HashMap<String, String> param = new HashMap<String, String>();
+                                param.put("classcode", groupCode);
+                                param.put("emailId", memberId);
+                                param.put("usertype", "SMS");
+                                param.put("classname", className);
+                                isRemoved = ParseCloud.callFunction("removechild", param);
+
+                                if(isRemoved){
+                                    obj.fetch();        //retrieving updates from server
+                                return true;
+                            }
+
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                }
             }
 
-            return null;
+            return false;
         }
 
         @Override
-        protected void onPostExecute(Void result) {
-            if (flag) {
+        protected void onPostExecute(Boolean result) {
+            if (result) {
                 memberDetails.remove(member);
                 myadapter.notifyDataSetChanged();
             }

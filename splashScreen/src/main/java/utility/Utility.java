@@ -68,6 +68,8 @@ public class Utility extends MyActionBarActivity {
         session.reSetSignUpAccount();
         session.reSetChildList();
         session.reSetDefaultClassExtst();
+        session.reSetAppMemberVersion();
+        session.reSetSmsMemberVersion();
 
         Intent i = new Intent(_context, Signup.class);
         // Closing all the Activities

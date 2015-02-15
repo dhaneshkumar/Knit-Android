@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.PopupMenu.OnMenuItemClickListener;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,12 +18,13 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 import additionals.ClassInstructions;
@@ -48,11 +48,9 @@ public class CreateClass extends MyActionBarActivity {
   private LinearLayout codeviewlayout;
   private EditText classnameview;
   private String typedtxt;
-  private Queries query12;
   private String userId;
   private String codevalue;
   private boolean classNameCheckFlag = false;
-  private boolean internetFlag = false;
   Activity activity;
   private ParseUser user;
   private LinearLayout schoolButton;
@@ -64,13 +62,13 @@ public class CreateClass extends MyActionBarActivity {
   private String selectedSchool;
   private String selectedStandard;
   private String selectedDivison;
+  private Queries query12;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.create_class_new);
 
-    query12 = new Queries();
     actionbar = getSupportActionBar();
     actionbar.setDisplayHomeAsUpEnabled(true);
     createclasslayout = (ScrollView) findViewById(R.id.createclasslayout);
@@ -86,6 +84,7 @@ public class CreateClass extends MyActionBarActivity {
     division_txt = (TextView) findViewById(R.id.division);
     user = ParseUser.getCurrentUser();
     activity = this;
+    query12 = new Queries();
 
 
     if (user == null)
@@ -104,8 +103,10 @@ public class CreateClass extends MyActionBarActivity {
       school_txt.setText(selectedSchool);
     else
       selectedSchool ="Other";
+
     selectedDivison = "NA";
     selectedStandard = "NA";
+
 
     /*
      * convert typed edit-text letters to upper-case
@@ -117,27 +118,33 @@ public class CreateClass extends MyActionBarActivity {
       @Override
       public void onClick(View v) {
 
+        //typed class name
         typedtxt = classnameview.getText().toString().trim();
-        typedtxt = typedtxt.replaceAll("'", " ");
-        typedtxt = typedtxt.replaceAll("`", " ");
-        typedtxt = typedtxt.replaceAll("\"", " ");
+
 
 
 
 
         if (!UtilString.isBlank(typedtxt)) {
 
-
+            //Checking whether this class already exist locally or not
+            String className = typedtxt;
             if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
-                 typedtxt += " "+selectedStandard;
+                className += " "+selectedStandard;
 
             if(!UtilString.isBlank(selectedDivison) && !selectedDivison.equals("NA"))
-            typedtxt += selectedDivison;
+                className += selectedDivison;
+
+
+          if(query12.checkClassNameExist(className))
+          {
+              Utility.toast(className + " class already exist");
+              return;
+          }
 
           if (Utility.isInternetOn(activity)) {
             createGroup jg = new createGroup();
             jg.execute();
-
 
 
             /*
@@ -291,106 +298,75 @@ public class CreateClass extends MyActionBarActivity {
     Utility.isInternetOn(this);
   }
 
-  private class createGroup extends AsyncTask<Void, Void, String[]> {
+  private class createGroup extends AsyncTask<Void, Void, Boolean> {
 
-    String[] mStrings;
-    boolean creationFlag;
 
     @Override
-    protected String[] doInBackground(Void... params) {
+    protected Boolean doInBackground(Void... param) {
+
+        //setting parameters
+        HashMap<String, Object> params = new HashMap<String, Object>();
+
+        //setting schoolId, classname, standard and division
+        String schoolId = user.getString("school");
+        if (!selectedSchool.trim().equals("Other"))
+            params.put("school", schoolId);
+
+        params.put("divison", selectedDivison);
+        params.put("standard", selectedStandard);
+        params.put("classname", typedtxt);
+
+        ParseObject codeGroupObject = null;
 
 
-        creationFlag= false;
-      if (!query12.checkClassNameExist(typedtxt)) {
-
-        codevalue = Utility.generateCode().trim();
-
+        //calling parse cloud function to create class
         try {
-          while (Queries.isGroupExist(codevalue)) {
-            codevalue = Utility.generateCode().trim();
-          }
-        } catch (ParseException e2) {
+            codeGroupObject = ParseCloud.callFunction("createnewclass3", params);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return false;
         }
 
-        codetxtview.setText(codevalue);
 
-        /*
-         * Pushing newly created entry to users table in "Created_groups" columns
-         */
-        user = ParseUser.getCurrentUser();
-        
-        
-        if (user != null) {
+        if (codeGroupObject == null)
+            return false;
+        else {
+            //successfully created your class
 
-          /*
-           * pushing group informations in "group-details table"
-           */
-
-
-            Log.d("create class", "creating class .................");
-
-          final ParseObject groupDetails = new ParseObject("Codegroup");
-          groupDetails.put("code", codevalue);
-          groupDetails.put("name", typedtxt);
-          groupDetails.put("Creator", user.get("name").toString());
-          groupDetails.put("senderId", userId);
-
-          if (user.getString("sex") != null)
-            groupDetails.put("sex", user.getString("sex"));
-
-          if (ParseUser.getCurrentUser().get("picName") != null)
-            groupDetails.put("picName", ParseUser.getCurrentUser().get("picName"));
-
-          if (ParseUser.getCurrentUser().get("pid") != null)
-            groupDetails.put("senderPic", ParseUser.getCurrentUser().getParseFile("pid"));
-
-          groupDetails.put("classExist", true);
-          
-          String schoolId = user.getString("school");
-          if(! selectedSchool.trim().equals("Other"))
-          {
-            groupDetails.put("school", schoolId);
-            Utility.ls(schoolId);
-          }
-            
-          if(!selectedDivison.equals("NA"))
-            groupDetails.put("divison", selectedDivison);
-          
-          if(!selectedStandard.equals("NA"))
-            groupDetails.put("standard", selectedStandard);
-
-
-            Log.d("create class", "saving codegroup table .................");
+            //locally saving codegroup entry corresponding to that class
+            codeGroupObject.put("userId", userId);
             try {
-                groupDetails.save();
-
-                user.addUnique("Created_groups", Arrays.asList(codevalue, typedtxt));
-                user.saveEventually();
-                groupDetails.put("userId", userId);
-                groupDetails.pin();
-
-
-                creationFlag= true;
-
+                codeGroupObject.pin();
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
+            //retrieving class-code
+            codevalue = codeGroupObject.getString("code");
 
-        } else
-          {Utility.logout(); return mStrings;}
-      } else {
-        classNameCheckFlag = true;
-      }
+            //setting class-code to instruction view
+            codetxtview.setText(codevalue);
 
-      return mStrings;
+            //retrieving class name
+            typedtxt = codeGroupObject.getString("name");
+
+
+            //fetching changes made to created groups of user
+            try {
+                user.fetch();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return true;
+        }
     }
 
     @Override
-    protected void onPostExecute(String[] result) {
+    protected void onPostExecute(Boolean result) {
 
 
-      if (!classNameCheckFlag && creationFlag) {
+      if (result) {
         Utility.toast("Group Creation successful");
 
         List<String> newgroup = new ArrayList<String>();
@@ -417,18 +393,17 @@ public class CreateClass extends MyActionBarActivity {
         AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
 
 
-      } else if (classNameCheckFlag) {
+      } /*else if (classNameCheckFlag) {
         createclasslayout.setVisibility(View.VISIBLE);
         progressLayout.setVisibility(View.GONE);
         Utility.toast("Sorry. Can't create classes with same name");
         classNameCheckFlag = false;
-      }
+      }*/
       else
       {
           createclasslayout.setVisibility(View.VISIBLE);
           progressLayout.setVisibility(View.GONE);
           Utility.toast("Oops! Something went wrong. Can't create your class");
-          internetFlag = false;
       }
 
 

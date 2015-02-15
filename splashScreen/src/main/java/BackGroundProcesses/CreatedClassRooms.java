@@ -42,8 +42,7 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
 
       Utility.ls("created classroooms running....");
 
-
-      if (user != null) {
+    if (user != null) {
 
           try {
               user.fetchIfNeeded();
@@ -75,7 +74,7 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
       }
   }
 
-  public void onPostExecuteCore(){
+  public void onPostExecuteCore() {
       Classrooms.createdGroups = createdGroups;
       if (Classrooms.myadapter != null)
           Classrooms.myadapter.notifyDataSetChanged();
@@ -96,31 +95,18 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
       if (user != null) {
           Log.d("DEBUG_CREATED_CLASSROOMS", "onPostExecute() - updating memberlist using asynctask START");
           List<List<String>> createdGroupList = user.getList(Constants.CREATED_GROUPS);
-
           if (createdGroupList != null) {
-              ClassMembers classMembers = new ClassMembers();
-              classMembers.intializeBackgroundParameters();
+       /* ClassMembers classMembers = new ClassMembers();
+        classMembers.intializeBackgroundParameters();*/
 
               for (int i = 0; i < createdGroupList.size(); i++) {
-          /*
-           * updating member list
-           */
 
-                  SessionManager session = new SessionManager(Application.getAppContext());
-                  int count = session.getAppOpeningCount();
+                  //updating member list
+                  MemberList memberList = new MemberList(createdGroupList.get(i).get(0));
+                  memberList.execute();
 
-                  if (count % 5 == 0) {
-                      MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, true);
-                      memberList.execute();
-                  }
-                  else
-                  {
-                      MemberList memberList = new MemberList(createdGroupList.get(i).get(0), true, false);
-                      memberList.execute();
-                  }
               }
           }
-          Log.d("DEBUG_CREATED_CLASSROOMS", "onPostExecute() - updating memberlist deployment OVER");
       }
   }
 

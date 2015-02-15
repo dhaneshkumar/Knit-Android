@@ -3,12 +3,14 @@ package joinclasses;
 import android.os.AsyncTask;
 import android.view.View;
 
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
@@ -169,25 +171,24 @@ public class School {
         if (UtilString.isBlank(schoolId) || UtilString.isBlank(standard) || UtilString.isBlank(division))
             return;
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-        query.whereEqualTo(Constants.DIVISION, division);
-        query.whereEqualTo("standard", standard);
-        query.whereEqualTo("school", schoolId);
-        query.whereEqualTo("classExist", true);
+        //setting parameters
+        HashMap<String, Object> params = new HashMap<String, Object>();
+        params.put("schoolname", schoolId);
+        params.put("standard",standard);
+        params.put("divison", division);
+
 
         List<ParseObject> suggestions = null;
         try {
 
-            suggestions = query.find();
+            //calling parse cloud functions
+            suggestions = ParseCloud.callFunction("suggestclasses", params);
 
             if (suggestions != null) {
                 for (int i = 0; i < suggestions.size(); i++) {
                     ParseObject obj = suggestions.get(i);
                     obj.put("userId", userId);
                     obj.pin();
-
-
-                     // Utility.ls("suggestions : " + obj.getString("code") + " : " + obj.getString("name"));
                 }
             }
 

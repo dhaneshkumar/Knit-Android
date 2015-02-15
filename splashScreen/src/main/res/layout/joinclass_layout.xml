@@ -51,18 +51,10 @@
                 android:background="@color/white"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
-                android:paddingBottom="16dp"
-                android:paddingTop="16dp" >
+                android:paddingBottom="8dp"
+                android:paddingTop="8dp" >
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:paddingLeft="20dp"
-                    android:paddingRight="1dp"
-                    android:text="TS"
-                    android:textColor="@color/buttoncolor"
-                    android:textSize="19sp"
-                    android:textStyle="bold" />
+
 
                 <EditText
                     android:id="@+id/classcodevalue"
@@ -70,9 +62,11 @@
                     android:layout_height="wrap_content"
                     android:background="@color/white"
                     android:hint="Enter Class Code"
-                    android:inputType="phone|textNoSuggestions"
-                    android:paddingLeft="16dp"
+                    android:paddingLeft="24dp"
+                    android:paddingBottom="8dp"
+                    android:paddingTop="8dp"
                     android:textColorHint="#cbcbcb"
+                    android:inputType="textCapCharacters"
                     android:paddingRight="25dp"
                     android:textColor="@color/buttoncolor"
                     android:textSize="18sp"
@@ -98,7 +92,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginTop="8dp"
-                android:text="eg : TS12323"
+                android:text="eg : KNT1234"
                 android:textColor="@color/darkergrey"
                 android:textSize="16sp" />
 

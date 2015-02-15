@@ -43,6 +43,8 @@ public class SessionManager {
   public static final String CHILD_NAME_LIST ="childNameList";
   public static final String DEFAULT_CLASS_EXIST = "defaultClasExist";
   public static final String TIME_DELTA = "time_delta";
+  public static final String APP_MEMBER_VERSION = "app_member_version";
+  public static final String SMS_MEMBER_VERSION = "sms_member_version";
 
   public SessionManager() {}
 
@@ -95,6 +97,7 @@ public class SessionManager {
    
   }
 
+    /************************************************************************/
   /*
    * keeping app opening count
    */
@@ -114,6 +117,8 @@ public class SessionManager {
     int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
     return openingCount;
   }
+
+  /*********************************************************************************/
 
   //Handle reinstall/relogin to prevent duplicate outbox data
   // 0 means no local valid data present. So clear local outbox and fetch new messages
@@ -242,5 +247,45 @@ public class SessionManager {
         }
 
      return null;
+    }
+
+
+
+  /*
+  * Maintaining app member version count
+  */
+    public void setAppMemberVersion(int version) {
+
+        editor.putInt(APP_MEMBER_VERSION, version);
+        editor.commit();
+    }
+
+    public void reSetAppMemberVersion() {
+        editor.putInt(APP_MEMBER_VERSION, 0);
+        editor.commit();
+    }
+    public int getAppMemberVersion() {
+        int version = pref.getInt(APP_MEMBER_VERSION, 0);
+        return version;
+    }
+
+
+
+    /*
+    * Maintaining sms member version count
+    */
+    public void setSmsMemberVersion(int version) {
+
+        editor.putInt(SMS_MEMBER_VERSION, version);
+        editor.commit();
+    }
+
+    public void reSetSmsMemberVersion() {
+        editor.putInt(SMS_MEMBER_VERSION, 0);
+        editor.commit();
+    }
+    public int getSmsMemberVersion() {
+        int version = pref.getInt(SMS_MEMBER_VERSION, 0);
+        return version;
     }
 }

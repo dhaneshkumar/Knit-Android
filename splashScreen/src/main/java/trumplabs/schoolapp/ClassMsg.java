@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -39,16 +38,18 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.parse.DeleteCallback;
-import com.parse.FindCallback;
-import com.parse.GetCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -59,7 +60,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
@@ -70,42 +71,41 @@ import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
 
-public class ClassMsg extends Fragment implements CommunicatorInterface {
-    ListView listv;
-    protected LayoutInflater layoutinflater;
-    myBaseAdapter myadapter;
-    int ACTION_MODE_NO;
-    ArrayList<ParseObject> selectedlistitems; // To delete selected messages
-    public static String groupCode = ClassContainer.classuid;
-    List<ParseObject> groupDetails; // List of group messages
-    public static String grpName = ClassContainer.className;
-    String sender, userId;
-    Queries query;
-    boolean localCheck = false;
-    int msgCount = 0;
-    boolean extra = true;
-    int prevCount = 0;
-    String typedtxt;
-    Date timeStamp;
-    Activity myActivity;
-    TextView countview;
-    EditText typedmsg;
-    public static LinearLayout sendimgpreview;
-    ImageView sendimgview;
-    ProgressBar updProgressBar;
-    ImageView attachView;
-    public static LinearLayout progressLayout;
-    boolean createMsgFlag; // A flag to stop continuous request coming from create msgs in background on scrolling
-    SessionManager session;
-    boolean overflow;  // A flag to stop continuous request coming from create msgs on scrolling
-    public static int extraMessages; //extra retrieved msgs on scrolling
-    // Handler handler = new Handler();;
-    public static int totalClassMessages; //total messages sent from this class
 
+/**
+ * This class shows sent messages of a particular class and show option to send a new message.
+ */
+public class ClassMsg extends Fragment implements CommunicatorInterface {
+    private ListView listv;                   //listview to show sent messages
+    protected LayoutInflater layoutinflater;
+    private myBaseAdapter myadapter;        //Adapter for listview
+    private int ACTION_MODE_NO;
+    private ArrayList<ParseObject> selectedlistitems; // To delete selected messages
+    public static String groupCode = ClassContainer.classuid;       //class-code
+    private List<ParseObject> groupDetails;     // List of group messages
+    public static String grpName = ClassContainer.className;        //class-name
+    private String sender, userId;
+    private Queries query;
+    private String typedtxt;        //message to sent
+    private Activity myActivity;
+    private TextView countview;
+    private EditText typedmsg;
+    public static LinearLayout sendimgpreview;
+    private ImageView sendimgview;
+    private ProgressBar updProgressBar;
+    private ImageView attachView;
+    public static LinearLayout progressLayout;
+    private boolean createMsgFlag; // A flag to stop continuous request coming from create msgs in background on scrolling
+    private SessionManager session;
+    public static int totalClassMessages; //total messages sent from this class
+    public static LinearLayout contentLayout;
+    public static Activity currentActivity;
+
+    //calling constructor to refresh class-code and group name.
     public ClassMsg() {
         groupCode = ClassContainer.classuid;
         grpName = ClassContainer.className;
-        updateTotalClassMessages();
+        ClassMsgFunctions.updateTotalClassMessages(groupCode);
     }
 
     @Override
@@ -123,25 +123,26 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         myadapter = new myBaseAdapter();
         ACTION_MODE_NO = 0;
         query = new Queries();
-        listv = (ListView) getActivity().findViewById(R.id.classmsglistview);
-        listv.setStackFromBottom(true);
-        progressLayout = (LinearLayout) getActivity().findViewById(R.id.progressBarLayout);
+        currentActivity=getActivity();
+
+        listv = (ListView) getActivity().findViewById(R.id.classmsglistview);   //list view
+        listv.setStackFromBottom(true);         //show message from bottom
+        contentLayout = (LinearLayout) getActivity().findViewById(R.id.contentLayout);
+
+        progressLayout = (LinearLayout) getActivity().findViewById(R.id.progresslayout);
         session = new SessionManager(Application.getAppContext());
-        overflow = false;
 
         ParseUser userObject = ParseUser.getCurrentUser();
         myActivity = getActivity();
+
+        //checking parse user null or not
         if (userObject == null)
             {Utility.logout(); return;}
 
         sender = userObject.getString(Constants.NAME);
         userId = userObject.getUsername();
 
-        // retrieving top messages from local database
-
-        localCheck = false;
-        // GetDataFromLocalDatabase gf = new GetDataFromLocalDatabase();
-        // gf.execute();
+        // retrieving sent messages of given class from local database
         try {
             groupDetails = query.getLocalCreateMsgs(ClassContainer.classuid, groupDetails, false);
         } catch (ParseException e) {
@@ -150,70 +151,21 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         if (groupDetails == null)
             groupDetails = new ArrayList<ParseObject>();
 
-
-        if (groupDetails.size() < Config.createMsgCount) {
-            GetDataFromServer gf = new GetDataFromServer();
-            gf.execute();
-        }
-
-        // if(groupDetails.size())
-
         sendMsgMethod();
         initialiseListViewMethods();
+
+        //setting action bar title as class name
         ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(grpName);
 
+        //setting listview adapter
         listv.setAdapter(myadapter);
         super.onActivityCreated(savedInstanceState);
-    }
-
-
-
-    private class GetDataFromServer extends AsyncTask<Void, Void, String[]> {
-        String[] mStrings;
-
-        @Override
-        protected String[] doInBackground(Void... params) {
-
-
-      /*
-       * Checking flag to stop continuous server query from scrolling create msgs page
-       */
-            if (createMsgFlag)
-                return mStrings;
-
-            createMsgFlag = true;
-            Utility.ls("background thread started, sent messages");
-
-            try {
-                groupDetails = query.getServerCreateMsgs(ClassContainer.classuid, groupDetails, false);
-            } catch (ParseException e) {
-            }
-
-            createMsgFlag = false;
-            return mStrings;
-        }
-
-        @Override
-        protected void onPostExecute(String[] result) {
-
-            if (! createMsgFlag)
-                myadapter.notifyDataSetChanged();// needs to change
-
-            super.onPostExecute(result);
-        }
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        // handler.removeCallbacksAndMessages(null); // Remove all callbacks
-        // attached to views
     }
 
     @Override
@@ -244,9 +196,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
      * openchooser.show(fm, "Chooser Dialog"); break;
      */
 
-            case R.id.deletebin:
-                menuDeleteBinMethod();
-                break;
             case R.id.copyicon:
                 String txtcont = selectedlistitems.get(0).getString("title");
                 Utility.copyToClipBoard(getActivity(), "label", txtcont);
@@ -254,7 +203,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                 ((ActionBarActivity) getActivity()).supportInvalidateOptionsMenu();
                 int index = groupDetails.indexOf(selectedlistitems.get(0));
                 myadapter.notifyDataSetChanged();
-                // listv.setSelection(index);
                 selectedlistitems.clear();
                 Utility.toast("Message copied");
                 break;
@@ -282,95 +230,17 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                                     Utility.toast("No internet!! Can't delete!");
                                     return;
                                 }
-                                sendTxtMsgtoSubscribers("Your Class " + grpName
-                                        + " has been deleted by the Creator " + sender);
 
-                                List<String> group = new ArrayList<String>();
-                                group.add(groupCode);
-                                group.add(grpName);
+                                //showing progress bar
+                                contentLayout.setVisibility(View.GONE);
+                                progressLayout.setVisibility(View.VISIBLE);
 
-                                ParseUser user = ParseUser.getCurrentUser();
+                                //calling background function to delete class
 
-                                if (user == null)
-                                    {Utility.logout(); return;}
+                                String[] params = new String[]{groupCode};
+                                ClassMsgFunctions.deleteCreatedClass deleteCreatedClass = new ClassMsgFunctions.deleteCreatedClass();
+                                deleteCreatedClass.execute(params);
 
-
-                                user.put(Constants.JOINED_GROUPS, Utility.removeItemFromJoinedGroups(user, group));
-                                ParseUser.getCurrentUser().saveEventually();
-
-                                ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>("Codegroup");
-                                delquery1.whereEqualTo("code", groupCode);
-                                delquery1.getFirstInBackground(new GetCallback<ParseObject>() {
-                                    public void done(ParseObject object, ParseException e) {
-                                        if (object == null) {
-                                        } else {
-
-                                            object.put("classExist", false);
-                                            object.saveInBackground();
-                                        }
-                                    }
-                                });
-
-                                ParseQuery<ParseObject> delquery11 = new ParseQuery<ParseObject>("Codegroup");
-                                delquery11.whereEqualTo("code", groupCode);
-                                delquery11.fromLocalDatastore();
-                                try {
-                                    ParseObject.unpinAll(delquery11.find());
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-
-                                ParseQuery<ParseObject> delquery22 = new ParseQuery<ParseObject>("GroupDetails");
-                                delquery22.whereEqualTo("code", groupCode);
-                                delquery22.whereEqualTo("name", grpName);
-                                delquery22.fromLocalDatastore();
-                                try {
-                                    ParseObject.unpinAll(delquery22.find());
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-
-                                ParseQuery<ParseObject> delquery3 = new ParseQuery<ParseObject>("GroupMembers");
-                                delquery3.whereEqualTo("code", groupCode);
-                                delquery3.findInBackground(new FindCallback<ParseObject>() {
-
-                                    @Override
-                                    public void done(List<ParseObject> objects, ParseException e) {
-                                        if (e == null) {
-                                            ParseObject.deleteAllInBackground(objects, new DeleteCallback() {
-
-                                                @Override
-                                                public void done(ParseException e) {
-                                                    if (e == null)
-                                                        Log.d("textslate", "Query3 success!!");
-                                                }
-                                            });
-                                        }
-                                    }
-                                });
-
-                                ParseQuery<ParseObject> delquery33 = new ParseQuery<ParseObject>("GroupMembers");
-                                delquery33.whereEqualTo("code", groupCode);
-                                delquery33.fromLocalDatastore();
-                                try {
-                                    ParseObject.unpinAll(delquery33.find());
-                                    Log.d("textslate", "Local Query3 success!!");
-                                } catch (ParseException e1) {
-                                    e1.printStackTrace();
-                                }
-
-                                ParseUser userObject = ParseUser.getCurrentUser();
-                                if (userObject == null)
-                                    {Utility.logout(); return;}
-
-                                List<String> item = new ArrayList<String>();
-                                item.add(groupCode);
-                                item.add(grpName);
-
-                                userObject.getList(Constants.CREATED_GROUPS).remove(item);
-                                userObject.saveEventually();
-                                Classrooms.createdGroups.remove(item);
-                                getActivity().finish();
                             }
                         }).setNegativeButton("No", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
@@ -385,6 +255,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         return super.onOptionsItemSelected(item);
     }
 
+    /*
+    Setting adapter to show sent messages in list view
+     */
     class myBaseAdapter extends BaseAdapter {
         @Override
         public int getCount() {
@@ -413,20 +286,18 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
             } else {
             }
 
-            final ParseObject groupdetails1 = groupDetails.get(position);
-            String stringmsg = (String) getItem(position);
+            final ParseObject groupdetails1 = groupDetails.get(position);  //selected object
+            String stringmsg = (String) getItem(position);      //selected messages
+
+            //retrieving the message sent time
             String timestampmsg = null;
             try {
-                Date cdate = groupdetails1.getCreatedAt();
-
-                if (cdate == null)
-                    cdate = (Date) groupdetails1.get("creationTime");
-
+                Date  cdate = (Date) groupdetails1.get("creationTime");
                 timestampmsg = Utility.convertTimeStamp(cdate);
             } catch (java.text.ParseException e) {
             }
 
-            final String imagepath;// groupDetails.get(position).getString("attachment_name");
+            final String imagepath;
             if (groupdetails1.containsKey("attachment_name"))
                 imagepath = groupdetails1.getString("attachment_name");
             else
@@ -478,6 +349,10 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
             uploadprogressbar.setVisibility(View.GONE);
             // /////////////////////////////////////////////
             if (!UtilString.isBlank(imagepath)) {
+
+                /*
+                Showoing the attached image
+                 */
                 imgmsgview.setVisibility(View.VISIBLE);
                 uploadprogressbar.setTag("Progress");
                 File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
@@ -485,14 +360,14 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                 if (imgFile.exists() && !thumbnailFile.exists())
                     Utility.createThumbnail(getActivity(), imagepath);
                 if (imgFile.exists()) {
-                    // image file present locally
+                    // image file present locally then display it
                     Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
                     msgtxtcontent.setText(stringmsg);
                     imgmsgview.setTag(imgFile.getAbsolutePath());
                     imgmsgview.setImageBitmap(myBitmap);
                     timestampview.setText(timestampmsg);
                 } else {
-                    // Have to download image from server
+                    // else download image from server and then display it
                     ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
                     uploadprogressbar.setVisibility(View.VISIBLE);
                     imagefile.getDataInBackground(new GetDataCallback() {
@@ -556,6 +431,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
     public void initialiseListViewMethods() {
 
 
+        /*
+        On scrolling list view, load more messages from local storage
+         */
         listv.setOnScrollListener(new OnScrollListener() {
 
             @Override
@@ -565,52 +443,31 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount,
                                  int totalItemCount) {
-                int lastInScreen = firstVisibleItem + visibleItemCount;
 
                 int lastCount = groupDetails.size();
 
-
                 if (firstVisibleItem < 2) {
                     if(lastCount >= totalClassMessages){
-                        Log.d("DEBUG_CLASS_MSG_ONSCROLL", "All loaded, no need to load more. Saving unnecessary query");
                         return;
                     }
 
                     try {
-
                         if (lastCount >= Config.createMsgCount) {
-
                             if(totalItemCount - firstVisibleItem >= lastCount) {
-
-                                Utility.ls(groupDetails.size() + " : old groupDetails size");
                                 groupDetails = query.getLocalCreateMsgs(ClassContainer.classuid, groupDetails, true);
-
-
-                                Utility.ls(groupDetails.size() + " : new groupDetails size");
-
                                  myadapter.notifyDataSetChanged();
-
-                                //commenting this, as we are fetching outbox messages from server on first launch of app
-                                //and thereafter we won't need to do this
-
-                                /*if (lastCount == groupDetails.size()) {
-                                    GetDataFromServer gf = new GetDataFromServer();
-                                    gf.execute();
-                                }*/
                             }
                         }
-
                     } catch (ParseException e) {
-
                     }
-                } else {
-
                 }
-
             }
         });
 
 
+        /*
+        Setting options on clicking a list view item
+         */
         listv.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -629,9 +486,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                         ((ActionBarActivity) myActivity).supportInvalidateOptionsMenu();
                     }
                 } else if (ACTION_MODE_NO == 0) {
+
+                    //On clicking an image, will show that in gallery
                     final ImageView imgframell = (ImageView) view.findViewById(R.id.ccimgmsg);
-
-
                     imgframell.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
@@ -649,37 +506,9 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         });
     }
 
-    // delete the messages
-    public void menuDeleteBinMethod() {
-        ACTION_MODE_NO = 0;
-
-        if (myActivity != null) {
-            ((ActionBarActivity) myActivity).supportInvalidateOptionsMenu();
-            Iterator<ParseObject> it = selectedlistitems.iterator();
-            Integer count = 0;
-            ParseQuery<ParseObject> query4 = ParseQuery.getQuery("GroupDetails");
-            query4.whereEqualTo("code", groupCode);
-            while (it.hasNext()) {
-                final ParseObject object = (ParseObject) it.next();
-                object.unpinInBackground();
-                object.deleteInBackground(new DeleteCallback() {
-
-                    @Override
-                    public void done(ParseException e) {
-                        object.deleteEventually();
-                    }
-                });
-                groupDetails.remove(object);
-                count += 1;
-            }
-            Utility.toast("Deleted " + count + " messages");
-            selectedlistitems.clear();
-            myadapter.notifyDataSetChanged();
-        }
-    }
 
     private void sendMsgMethod() {
-        // Initializing all the views related to sending message
+        // Initializing all the views related to sending message view
         final ImageButton sendmsgbutton = (ImageButton) getActivity().findViewById(R.id.sendmsgbttn);
         typedmsg = (EditText) getActivity().findViewById(R.id.typedmsg);
         countview = (TextView) getActivity().findViewById(R.id.lettercount);
@@ -690,26 +519,23 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         updProgressBar = (ProgressBar) getActivity().findViewById(R.id.updprogressbar);
         updProgressBar.setVisibility(View.GONE);
         attachView = (ImageView) getActivity().findViewById(R.id.gallery);
-        final ImageButton templetsList = (ImageButton) getActivity().findViewById(R.id.templets);
 
         typedmsg.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View arg0, MotionEvent arg1) {
-                scrollMyListViewToBottom();
+                scrollMyListViewToBottom(); //show messages from bottom
                 return false;
             }
         });
 
+        /*
+        Change send button color on entering some text and update the entered text counter
+         */
         typedmsg.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
+            public void onTextChanged(CharSequence s, int start, int before, int count){}
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -724,10 +550,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
          */
                 if (s.length() > 0) {
                     sendmsgbutton.setImageResource(R.drawable.ic_action_send1);
-          /*
-           * sendmsgbutton.setBackgroundDrawable(getResources()
-           * .getDrawable(R.drawable.ic_action_send1));
-           */
+
                 } else
                     sendmsgbutton.setImageResource(R.drawable.ic_action_send);
             }
@@ -738,7 +561,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         /*
         Current model is MI then hide attachview option
          */
-
         if (android.os.Build.MODEL != null)
         {
             String[] models = new String[]{"MI 3W", "MI 3", "MI 3S", "MI 3SW", "MI 4", "MI 4W",
@@ -762,57 +584,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         });
 
 
-        templetsList.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-                final CharSequence[] items =
-                        {"These are assignment for today", "Help your children in preparing for exams ",
-                                "Parent-teacher meet tomorrow @9:30AM", "Exams will start from 27 Dec.",};
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Suggestions");
-        /*
-         * LayoutInflater inflater = LayoutInflater.from(Application.getAppContext()); View
-         * alertView = inflater.inflate(R.layout.template_msgs, null); builder.setView(alertView);
-         */
-
-
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        // Utility.toast(items[item].toString());
-                        typedmsg.setText(items[item].toString());
-                    }
-                });
-        /*
-         * 
-         * builder.setPositiveButton("Create new template", new DialogInterface.OnClickListener() {
-         * public void onClick(DialogInterface dialog, int id) { // do things
-         * 
-         * Utility.toast("ok clicked");
-         * 
-         * 
-         * Create a new alert dialog..
-         * 
-         * 
-         * 
-         * } });
-         */
-
-                AlertDialog alert = builder.create();
-                alert.show();
-
-        /*
-         * Button bq = alert.getButton(DialogInterface.BUTTON_POSITIVE); if (bq != null) {
-         * bq.setBackgroundColor(getResources().getColor(R.color.buttoncolor));
-         * bq.setTextColor(getResources().getColor(R.color.white)); bq.setTextSize(18);
-         * 
-         * }
-         */
-            }
-        });
-
+        //setting send message button clicked functionality
         sendmsgbutton.setOnClickListener(new View.OnClickListener() {
 
             @Override
@@ -827,6 +599,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                 }
                 Log.d("DEBUG_CLASS_MSG", "time hour of day " + hourOfDay);
                 if(hourOfDay != -1){
+
+                    //If current message time is not sutaible <9PM- 6AM> then show this warning as popup to users
                     if(hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime){
                         //note >= and < respectively because disallowed are [ >= EndTime and < StartTime]
                         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -863,9 +637,14 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
             }
 
+            /*
+            Send messages to subscribers
+             */
             public void sendFunction(){
-                scrollMyListViewToBottom();
-                typedtxt = typedmsg.getText().toString().trim();
+                scrollMyListViewToBottom();  //show sent messages from bottom on clicking send button
+                typedtxt = typedmsg.getText().toString().trim();  //message to send
+
+                //check internet connection
                 if (!Utility.isInternetOn(getActivity())) {
                     Utility.toast("No internet Connection!");
                     return;
@@ -917,6 +696,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
 
+        //adding item to the listview
         final ParseObject groupDetails1 = new ParseObject("GroupDetails");
         groupDetails1.put("code", groupCode);
         groupDetails1.put("title", typedtxt);
@@ -929,90 +709,96 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         myadapter.notifyDataSetChanged();
         updProgressBar.setVisibility(View.VISIBLE);
 
-        groupDetails1.saveInBackground(new SaveCallback() {
 
+        //sending message using parse cloud function
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("classcode", groupCode);
+        params.put("classname", grpName);
+        params.put("message", typedtxt);
+        params.put("name", sender);
+        params.put("email", userId);
+
+        ParseCloud.callFunctionInBackground("sendtextmessage", params, new FunctionCallback<HashMap>() {
             @Override
-            public void done(ParseException e) {
+            public void done(HashMap obj, ParseException e) {
+
                 if (e == null) {
-                    // message was sent successfully
-                    updProgressBar.setVisibility(View.GONE);
+                    if (obj != null) {
 
-          /*
-           * storing locally
-           */
-                    ParseObject sentMsg = new ParseObject("SentMessages");
-                    sentMsg.put("objectId", groupDetails1.getObjectId());
-                    sentMsg.put("Creator", groupDetails1.getString("Creator"));
-                    sentMsg.put("code", groupDetails1.getString("code"));
-                    sentMsg.put("title", groupDetails1.getString("title"));
-                    sentMsg.put("name", groupDetails1.getString("name"));
-                    sentMsg.put("creationTime", groupDetails1.getCreatedAt());
-                    sentMsg.put("senderId", groupDetails1.getString("senderId"));
-                    sentMsg.put("userId", userId);
+                            Date createdAt = (Date) obj.get("createdAt");
+                            String objectId = (String) obj.get("messageId");
 
-                    if (groupDetails1.get("attachment") != null)
-                        sentMsg.put("attachment", groupDetails1.get("attachment"));
-                    if (groupDetails1.getString("attachment_name") != null)
-                        sentMsg.put("attachment_name", groupDetails1.getString("attachment_name"));
-                    if (groupDetails1.get("senderpic") != null)
-                        sentMsg.put("senderpic", groupDetails1.get("senderpic"));
+                            updProgressBar.setVisibility(View.GONE);
 
-                    try {
-                        sentMsg.pin();
-
-                    } catch (ParseException e2) {
-                    }
-
-                    //update outbox message count
-                    Outbox.updateOutboxTotalMessages();
-
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
-                    query.fromLocalDatastore();
-                    query.orderByDescending("creationTime");
-                    query.whereEqualTo("userId", userId);
-                    query.whereEqualTo("code", groupCode);
-
-                    List<ParseObject> msgList1;
-                    try {
-                        msgList1 = query.find();
-
-                        groupDetails.clear();
-                        if (msgList1 != null) {
-                            for (int i = 0; i < msgList1.size(); i++) {
-
-                                groupDetails.add(0, msgList1.get(i));
+                            ParseObject sentMsg = new ParseObject("SentMessages");
+                            sentMsg.put("objectId", objectId);
+                            sentMsg.put("Creator", groupDetails1.getString("Creator"));
+                            sentMsg.put("code", groupDetails1.getString("code"));
+                            sentMsg.put("title", groupDetails1.getString("title"));
+                            sentMsg.put("name", groupDetails1.getString("name"));
+                            sentMsg.put("creationTime", createdAt);
+                            sentMsg.put("senderId", userId);
+                            sentMsg.put("userId", userId);
+                            try {
+                                sentMsg.pin();
+                            } catch (ParseException e1) {
+                                e1.printStackTrace();
                             }
-                        }
-                    } catch (ParseException e1) {
+
+
+                            //update outbox message count
+                            Outbox.updateOutboxTotalMessages();
+
+                            ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+                            query.fromLocalDatastore();
+                            query.orderByDescending("creationTime");
+                            query.whereEqualTo("userId", userId);
+                            query.whereEqualTo("code", groupCode);
+
+                            List<ParseObject> msgList1;
+                            try {
+                                msgList1 = query.find();
+
+                                groupDetails.clear();
+                                if (msgList1 != null) {
+                                    for (int i = 0; i < msgList1.size(); i++) {
+                                        groupDetails.add(0, msgList1.get(i));
+                                    }
+                                }
+                            } catch (ParseException e1) {
+                            }
+
+                            //updating local time
+                            SessionManager sm = new SessionManager(Application.getAppContext());
+                            if (createdAt != null) {
+                                sm.setCurrentTime(createdAt);
+                            }
+
+                            //showing popup
+                            Utility.toast("Notification Sent");
+
+                            //updating outbox
+                            Queries outboxQuery = new Queries();
+
+                            List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
+                            if (outboxItems != null) {
+                                Outbox.groupDetails = outboxItems;
+
+                                if (Outbox.myadapter != null)
+                                    Outbox.myadapter.notifyDataSetChanged();
+
+                                if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
+                                    Outbox.outboxLayout.setVisibility(View.GONE);
+                            }
+
                     }
-
-
-                    // pushing notification to this group
-                    ClassMsgFunctions.sendMessageAsData(groupCode, typedtxt, 0, sender, grpName);
-                    Utility.toast("Notification Sent");
-
-
-                    //updating outbox
-                    Queries outboxQuery = new Queries();
-
-                    List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-                    if( outboxItems != null)
-                    {
-                        Outbox.groupDetails = outboxItems;
-
-                        if( Outbox.myadapter != null)
-                            Outbox.myadapter.notifyDataSetChanged();
-
-                        if(Outbox.outboxLayout != null && Outbox.groupDetails.size()>0)
-                            Outbox.outboxLayout.setVisibility(View.GONE);
-                    }
-
                 } else {
                     // message was not sent
-                    groupDetails.remove(groupDetails1);
+                    groupDetails.remove(groupDetails1); //removing entry from list view
                     myadapter.notifyDataSetChanged();
                     Utility.toast("Message wasn't sent! Check Internet!");
                     updProgressBar.setVisibility(View.GONE);
+
                 }
             }
         });
@@ -1026,7 +812,6 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         sendimgpreview.setTag(Utility.getWorkingAppDir() + "/media/" + imgname);
         File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imgname);
 
-        // Utility.toast(Utility.getWorkingAppDir() + "/thumbnail/" + imgname);
         // The thumbnail is already created
         Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
         sendimgview.setImageBitmap(myBitmap);
@@ -1037,8 +822,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
 
         // /Creating ParseFile (Not yet uploaded)
         int slashindex = ((String) sendimgpreview.getTag()).lastIndexOf("/");
-        String fileName = ((String) sendimgpreview.getTag()).substring(slashindex + 1);// image file //
-        // name
+        final String fileName = ((String) sendimgpreview.getTag()).substring(slashindex + 1);// image file //
 
         RandomAccessFile f = new RandomAccessFile(filepath, "r");
         byte[] data = new byte[(int) f.length()];
@@ -1048,6 +832,7 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         // /saving the sent image message details on App//////////////////////
         final ParseObject groupDetails1 = new ParseObject("GroupDetails");
 
+        //Adding this object to list view
         groupDetails1.put("code", groupCode);
         groupDetails1.put("title", txtmsg);
         groupDetails1.put("Creator", sender);
@@ -1065,85 +850,116 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
             public void done(ParseException e) {
 
                 if (e == null) {
+                    //file uploading completed
                     updProgressBar.setVisibility(View.GONE);
-                    // Utility.toast("uploading completed");
 
-                    // //sending the message details to server since file is uploaded
+                    //sending the message details to server since file is uploaded
                     int index = groupDetails.indexOf(groupDetails1);
-                    groupDetails1.put("attachment", file);// updating the
-
                     if (index >= 0)
                         groupDetails.set(index, groupDetails1);// replacing with the
 
-                    groupDetails1.saveInBackground(new SaveCallback() {
+
+                    //sending message using parse cloud function
+                    HashMap<String, Object> msg = new HashMap<String, Object>();
+                        msg.put("classcode", groupCode);
+                        msg.put("classname", grpName);
+                        msg.put("message", typedtxt);
+                        msg.put("name", sender);
+                        msg.put("email", userId);
+                        msg.put("filename", fileName);
+                        msg.put("parsefile", file);
+
+
+                    ParseCloud.callFunctionInBackground("sendphototextmessage", msg, new FunctionCallback<HashMap>() {
                         @Override
-                        public void done(ParseException e) {
+                        public void done(HashMap obj, ParseException e) {
+
                             if (e == null) {
-                                Utility.toast("Notification Sent");
+                                if (obj != null) {
 
+                                        Date createdAt = (Date) obj.get("createdAt");
+                                        String objectId = (String) obj.get("messageId");
 
+                                        updProgressBar.setVisibility(View.GONE);
 
-                /*
-                 * Sending notification and storing locally
-                 */
-                                ClassMsgFunctions.sendMessageAsData(groupCode, groupDetails1.getString("title"), 0,
-                                        sender, grpName);
+                                        ParseObject sentMsg = new ParseObject("SentMessages");
+                                        sentMsg.put("objectId", objectId);
+                                        sentMsg.put("Creator", groupDetails1.getString("Creator"));
+                                        sentMsg.put("code", groupDetails1.getString("code"));
+                                        sentMsg.put("title", groupDetails1.getString("title"));
+                                        sentMsg.put("name", groupDetails1.getString("name"));
+                                        sentMsg.put("creationTime", createdAt);
+                                        sentMsg.put("senderId", userId);
+                                        sentMsg.put("userId", userId);
+                                        if (file != null)
+                                            sentMsg.put("attachment", file);
+                                        if (fileName != null)
+                                            sentMsg.put("attachment_name", fileName);
 
-                                // Removing old object and replacing it with new
-                                groupDetails.remove(groupDetails1);
+                                        //saving locally
+                                        try {
+                                            sentMsg.pin();
+                                        } catch (ParseException e1) {
+                                            e1.printStackTrace();
+                                        }
 
+                                        // Removing old object
+                                        groupDetails.remove(groupDetails1);
 
-                /*
-                 * storing locally
-                 */
-                                ParseObject sentMsg = new ParseObject("SentMessages");
-                                sentMsg.put("objectId", groupDetails1.getObjectId());
-                                sentMsg.put("Creator", groupDetails1.getString("Creator"));
-                                sentMsg.put("code", groupDetails1.getString("code"));
-                                sentMsg.put("title", groupDetails1.getString("title"));
-                                sentMsg.put("name", groupDetails1.getString("name"));
-                                sentMsg.put("creationTime", groupDetails1.getCreatedAt());
-                                sentMsg.put("senderId", groupDetails1.getString("senderId"));
-                                sentMsg.put("userId", userId);
+                                        //update outbox message count
+                                        Outbox.updateOutboxTotalMessages();
 
-                                if (groupDetails1.get("attachment") != null)
-                                    sentMsg.put("attachment", groupDetails1.get("attachment"));
-                                if (groupDetails1.getString("attachment_name") != null)
-                                    sentMsg.put("attachment_name", groupDetails1.getString("attachment_name"));
-                                if (groupDetails1.get("senderpic") != null)
-                                    sentMsg.put("senderpic", groupDetails1.get("senderpic"));
+                                        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+                                        query.fromLocalDatastore();
+                                        query.orderByDescending("creationTime");
+                                        query.whereEqualTo("userId", userId);
+                                        query.whereEqualTo("code", groupCode);
 
-                                try {
-                                    sentMsg.pin();
-                                    groupDetails.add(groupDetails1);
-                                    myadapter.notifyDataSetChanged();
-                                } catch (ParseException e2) {
-                                }
+                                        List<ParseObject> msgList1;
+                                        try {
+                                            msgList1 = query.find();
 
-                                //update outbox message count
-                                Outbox.updateOutboxTotalMessages();
+                                            groupDetails.clear();
+                                            if (msgList1 != null) {
+                                                for (int i = 0; i < msgList1.size(); i++) {
+                                                    groupDetails.add(0, msgList1.get(i));
+                                                }
+                                            }
+                                        } catch (ParseException e1) {
+                                        }
 
+                                        //updating local time
+                                        SessionManager sm = new SessionManager(Application.getAppContext());
+                                        if (createdAt != null) {
+                                            sm.setCurrentTime(createdAt);
+                                        }
 
-                                //updating outbox adapter
-                                Queries outboxQuery = new Queries();
+                                        //showing popup
+                                        Utility.toast("Notification Sent");
 
-                                List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-                                if( outboxItems != null)
-                                {
-                                    Outbox.groupDetails = outboxItems;
+                                        //updating outbox
+                                        Queries outboxQuery = new Queries();
 
-                                    if( Outbox.myadapter != null)
-                                        Outbox.myadapter.notifyDataSetChanged();
+                                        List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
+                                        if (outboxItems != null) {
+                                            Outbox.groupDetails = outboxItems;
 
-                                    if(Outbox.outboxLayout != null && Outbox.groupDetails.size()>0)
-                                        Outbox.outboxLayout.setVisibility(View.GONE);
+                                            if (Outbox.myadapter != null)
+                                                Outbox.myadapter.notifyDataSetChanged();
+
+                                            if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
+                                                Outbox.outboxLayout.setVisibility(View.GONE);
+                                        }
+
                                 }
                             }
                         }
                     });
+
+
                 } else {
                     updProgressBar.setVisibility(View.GONE);
-                    Utility.toast("uploading failed");
+                    Utility.toast("Sorry, Can't sent this image.");
                     groupDetails.remove(groupDetails1);
                     myadapter.notifyDataSetChanged();
                 }
@@ -1164,27 +980,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         });
     }
 
-    public static void updateTotalClassMessages(){
 
-        Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "updating total outbox count");
 
-        //update ClassMsg.totalClassMessages
-        ParseUser user = ParseUser.getCurrentUser();
 
-        if (user == null)
-            {Utility.logout(); return;}
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
-        query.fromLocalDatastore();
-        query.whereEqualTo("userId", user.getUsername());
-        query.whereEqualTo("code", groupCode);
-        try{
-            totalClassMessages = query.count();
-        }
-        catch(ParseException e){
-            e.printStackTrace();
-        }
-        Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "count is " + totalClassMessages);
-    }
 
 }

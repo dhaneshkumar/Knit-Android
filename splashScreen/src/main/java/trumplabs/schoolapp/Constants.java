@@ -102,9 +102,10 @@ public class Constants {
     public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
     //Note : action corresponding to LINK type will be a url
 
-
-
-
     public static String WELCOME_MESSAGE_STUDENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your teacher but you will need a class-code. If your teacher haven’t yet started using Knit then invite them";
+
+    public static String APP_MEMBER_VERSION = "app_member_version";
+    public static String SMS_MEMBER_VERSION= "sms_member_version";
+    public static String SENT_MESSAGE_TABLE = "SentMessages";
 
 }
