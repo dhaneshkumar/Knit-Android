@@ -215,10 +215,7 @@ public class Queries extends MyActivity {
                 for (int i = 0; i < joinedGroups.size(); i++) {
 
                     Date joinedTime = null;
-                    try {
-                        joinedTime = Queries2.getGroupJoinedTime(joinedGroups.get(i).get(0).trim(), userId);
-                    } catch (ParseException e1) {
-                    }
+
 
                     // Utility.ls(" joined time *************************  " +
                     // joinedGroups.get(i).get(1).trim());
@@ -532,8 +529,7 @@ public class Queries extends MyActivity {
         query.fromLocalDatastore();
         query.whereEqualTo("userId", userId);
         query.whereEqualTo("code", groupCode);
-        query.whereNotEqualTo("status", "LEAVE");
-        query.whereNotEqualTo("status", "REMOVED");
+        query.whereEqualTo("status", null);
 
 
         try {
@@ -543,10 +539,10 @@ public class Queries extends MyActivity {
                 for (int i = 0; i < appMembers.size(); i++) {
                     ParseObject members = appMembers.get(i);
 
-                    if(members.getString("status") != null)
-                        Log.d("STATUS",members.getObjectId() + "  " + members.getString("status"));
+                 /*   if(members.getString("status") != null)
+                        Log.d("STATUS",members.getObjectId() + "-" + members.getString("status") +  "-");
                     else
-                        Log.d("STATUS", members.getObjectId() + "  :  null status");
+                        Log.d("STATUS", members.getObjectId() + "  :  null status");*/
 
 
                     List<String> childList = members.getList("children_names");
@@ -583,8 +579,7 @@ public class Queries extends MyActivity {
         smsQuery.addAscendingOrder("subscriber");
         smsQuery.whereEqualTo("userId", userId);
         smsQuery.whereEqualTo("cod", groupCode); // "cod" - as written in table
-        smsQuery.whereNotEqualTo("status", "LEAVE");
-        smsQuery.whereNotEqualTo("status", "REMOVED");
+        smsQuery.whereEqualTo("status", "null");
 
         List<ParseObject> smsUsersList = null;
         try {
@@ -669,16 +664,15 @@ public class Queries extends MyActivity {
         query1.fromLocalDatastore();
         query1.whereEqualTo("code", groupCode);
         query1.whereEqualTo("userId", userId);
-        query1.whereNotEqualTo("status", "LEAVE");
-        query1.whereNotEqualTo("status", "REMOVED");
+        query1.whereEqualTo("status", null);
         appCount = query1.count();
 
         ParseQuery<ParseObject> smsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
         smsQuery.fromLocalDatastore();
         smsQuery.whereEqualTo("userId", userId);
         smsQuery.whereEqualTo("cod", groupCode);
-        smsQuery.whereNotEqualTo("status", "LEAVE");
-        smsQuery.whereNotEqualTo("status", "REMOVED");
+        smsQuery.whereEqualTo("status", null);
+
         smsCount = smsQuery.count();
 
         return appCount + smsCount;

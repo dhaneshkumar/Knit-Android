@@ -31,6 +31,7 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   @Override
   protected String[] doInBackground(Void... params) {
 
+
     //validating current user
     ParseUser user = ParseUser.getCurrentUser();
       if (user == null)

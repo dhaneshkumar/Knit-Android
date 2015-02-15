@@ -198,8 +198,8 @@ public class JoinedClasses extends Fragment {
                     joinClass.execute();
 
                     //refreshing classroom suggestions
-                    UpdateSuggestions updateSuggestions = new UpdateSuggestions(true);
-                    updateSuggestions.execute();
+                  //  UpdateSuggestions updateSuggestions = new UpdateSuggestions(true);
+                   // updateSuggestions.execute();
                 } else {
                     Utility.toast("Check your Internet connection");
                 }

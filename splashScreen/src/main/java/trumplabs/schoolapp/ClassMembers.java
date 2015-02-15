@@ -498,8 +498,12 @@ public class ClassMembers extends Fragment {
                             param.put("type", "APP");
                             isRemoved = ParseCloud.callFunction("removechild", param);
 
-                            if(isRemoved)
+                            if(isRemoved){
+
+                                obj.fetch();        //retrieving updates from server
                                 return true;
+                            }
+
 
                         }
                     } catch (ParseException e) {
@@ -522,16 +526,35 @@ public class ClassMembers extends Fragment {
                                 memberId = obj.getString("number");
                                 groupCode = obj.getString("code");
 
+
+                                //Retrieving class-name
+                                ParseQuery<ParseObject> codeGroupQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
+                                codeGroupQuery.fromLocalDatastore();
+                                codeGroupQuery.whereEqualTo("code", groupCode);
+
+                                ParseObject codeObject = codeGroupQuery.getFirst();
+
+                                String className = "Knit";
+                                if(codeObject != null)
+                                {
+                                    className = codeObject.getString("name");
+                                }
+
+
+
                                 boolean isRemoved = false;
 
                                 HashMap<String, String> param = new HashMap<String, String>();
                                 param.put("classcode", groupCode);
                                 param.put("emailId", memberId);
-                                param.put("type", "SMS");
+                                param.put("usertype", "SMS");
+                                param.put("classname", className);
                                 isRemoved = ParseCloud.callFunction("removechild", param);
 
-                                if(isRemoved)
-                                    return true;
+                                if(isRemoved){
+                                    obj.fetch();        //retrieving updates from server
+                                return true;
+                            }
 
                             }
                         } catch (ParseException e) {
