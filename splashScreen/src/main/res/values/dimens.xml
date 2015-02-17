@@ -25,4 +25,5 @@
     <dimen name="invite_teacher_margin">4dp</dimen>
     <dimen name="dots_width">55dp</dimen>
     <dimen name="dots_height">8dp</dimen>
+    <dimen name="signup_margin">32dp</dimen>
 </resources>

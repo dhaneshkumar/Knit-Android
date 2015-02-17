@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightbackgroundcolor"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/internetbar"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@color/internetbarcolor"
+        android:gravity="center"
+        android:text="No internet Connection"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/progresslayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/createclasslayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingTop="32dp"
+                android:paddingBottom="32dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:orientation="vertical">
+
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="18sp"
+                    android:layout_marginLeft="4dp"
+                    android:textColor="@color/black"
+                    android:text="Create a classroom"/>
+
+
+                <Spinner
+                    android:id="@+id/mr_spinner"
+                    style="@style/Widget.AppCompat.Spinner"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:entries="@array/title"
+                    android:background="@drawable/apptheme_spinner_default_holo_light"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="1dp"
+                    android:layout_marginTop="16dp"
+                    android:prompt="@string/prompt_choice"
+                    android:textSize="16sp" >
+                    <requestFocus />
+
+                </Spinner>
+
+
+
+                <EditText
+                    android:id="@+id/classnameid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="Class Name"
+                    android:inputType="textCapCharacters|textNoSuggestions"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="1dp"
+                    android:background="@drawable/apptheme_edit_text_holo_light"
+                    android:layout_marginTop="16dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textColorHint="#8A8A8A"
+                    android:textSize="16sp" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="16dp"
+                    >
+
+
+                    <Spinner
+                        style="@style/Widget.AppCompat.Spinner"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/title"
+                        android:background="@drawable/apptheme_spinner_default_holo_light"
+                        android:paddingLeft="16dp"
+                        android:prompt="@string/prompt_choice"
+                        android:textSize="16sp" >
+                    </Spinner>
+
+
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textSize="18sp"
+                        android:layout_weight="1"
+                        android:text=""/>
+
+
+                    <Spinner
+                        style="@style/Widget.AppCompat.Spinner"
+                        android:layout_width="0dp"
+                        android:layout_weight="2"
+                        android:layout_height="wrap_content"
+                        android:entries="@array/title"
+                        android:background="@drawable/apptheme_spinner_default_holo_light"
+                        android:paddingLeft="16dp"
+
+                        android:prompt="@string/prompt_choice"
+                        android:textSize="16sp" >
+                    </Spinner>
+
+                    </LinearLayout>
+
+            </LinearLayout>
+
+
+        <TextView
+            android:layout_width="match_parent"
+
+
+
+
+
+
+            android:layout_height="1dp"
+            android:text=""
+            android:background="@color/buttoncolor"
+            />
+
+        <TextView
+            android:id="@+id/create_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="16dp"
+            android:text="Create"
+            android:textColor="@color/buttoncolor"
+            android:textSize="18sp"
+            />
+        </LinearLayout>
+</LinearLayout>
