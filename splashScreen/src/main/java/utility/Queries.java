@@ -191,7 +191,7 @@ public class Queries {
             parameters.put("limit", 50);
             parameters.put("classtype", "j");
             try {
-                HashMap<String, List<ParseObject> > resultMap = ParseCloud.callFunction("showAllClassesMessagesWithlLimit", parameters);
+                HashMap<String, List<ParseObject> > resultMap = ParseCloud.callFunction("showLatestMessagesWithlLimit", parameters);
                 List<ParseObject> allMessages = resultMap.get("message");
                 List<ParseObject> allStates = resultMap.get("states");
 

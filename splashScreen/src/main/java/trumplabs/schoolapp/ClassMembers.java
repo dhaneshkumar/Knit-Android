@@ -480,6 +480,7 @@ public class ClassMembers extends Fragment {
                         if (obj != null) {
                             memberId = obj.getString("emailId");
                             groupCode = obj.getString("code");
+                            String groupName = obj.getString("name");
 
                             boolean isRemoved = false;
 
@@ -487,7 +488,7 @@ public class ClassMembers extends Fragment {
                             param.put("classcode", groupCode);
                             param.put("emailId", memberId);
                             param.put("type", "APP");
-                            isRemoved = ParseCloud.callFunction("removechild", param);
+                            isRemoved = ParseCloud.callFunction("removeMember", param);
 
                             if(isRemoved){
 

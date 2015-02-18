@@ -112,7 +112,7 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
         }
 
 
-        Log.d("MEMBER", "members " + updatedTime.toString());
+       // Log.d("MEMBER", "members " + updatedTime.toString());
 
         //calling parse cloud functions to fetch new member updates
         HashMap<String, Object> param = new HashMap<String, Object>();

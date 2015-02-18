@@ -48,7 +48,7 @@ public class DeleteJoinedGroup extends AsyncTask<Void, Void, Boolean> {
 
         boolean unsubscribeClass = false;
         try {
-            unsubscribeClass = ParseCloud.callFunction("leaveclass", param);
+            unsubscribeClass = ParseCloud.callFunction("leaveClass", param);
         } catch (ParseException e) {
             e.printStackTrace();
         }

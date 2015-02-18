@@ -118,7 +118,7 @@ public class SplashScreen extends MyActionBarActivity {
       public void run() {
         try {
           // waits for 800ms
-          sleep(1500);
+          sleep(1000);
 
           // start loginpage activity
 

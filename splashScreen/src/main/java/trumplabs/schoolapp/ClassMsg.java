@@ -715,10 +715,8 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         params.put("classcode", groupCode);
         params.put("classname", grpName);
         params.put("message", typedtxt);
-        params.put("name", sender);
-        params.put("email", userId);
 
-        ParseCloud.callFunctionInBackground("sendtextmessage", params, new FunctionCallback<HashMap>() {
+        ParseCloud.callFunctionInBackground("sendTextMessage", params, new FunctionCallback<HashMap>() {
             @Override
             public void done(HashMap obj, ParseException e) {
 
@@ -864,13 +862,11 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
                         msg.put("classcode", groupCode);
                         msg.put("classname", grpName);
                         msg.put("message", typedtxt);
-                        msg.put("name", sender);
-                        msg.put("email", userId);
                         msg.put("filename", fileName);
                         msg.put("parsefile", file);
 
 
-                    ParseCloud.callFunctionInBackground("sendphototextmessage", msg, new FunctionCallback<HashMap>() {
+                    ParseCloud.callFunctionInBackground("sendPhotoTextMessage", msg, new FunctionCallback<HashMap>() {
                         @Override
                         public void done(HashMap obj, ParseException e) {
 

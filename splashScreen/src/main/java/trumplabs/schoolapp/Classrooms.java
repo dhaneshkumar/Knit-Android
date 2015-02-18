@@ -16,11 +16,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.parse.ParseException;
@@ -60,6 +63,7 @@ public class Classrooms extends Fragment {
     public static int members;
     private Queries query;
     Typeface lightTypeFace;
+    public static LinearLayout buttonContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -71,6 +75,13 @@ public class Classrooms extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
+
+
+
+        buttonContainer = (LinearLayout) getActivity().findViewById(R.id.buttonContainer);
+
+
         query = new Queries();
         getactivity = getActivity();
         createdClassListView = (ExpandableListView) getactivity.findViewById(R.id.createdclasseslistview);
@@ -135,6 +146,7 @@ public class Classrooms extends Fragment {
 
         //View emptyrow = layoutinflater.inflate(R.layout.createdclasses_classview, createdClassListView, false);
         //createdClassListView.setEmptyView(emptyrow);
+        super.onActivityCreated(savedInstanceState);
     }
 
 
@@ -477,5 +489,8 @@ public class Classrooms extends Fragment {
             return row;
         }
     }
+
+
+
 
 }

@@ -18,6 +18,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -152,6 +154,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         actionbar.setDisplayShowCustomEnabled(true);
         FragmentManager fragmentmanager = getSupportFragmentManager();
         viewpager.setAdapter(new MyAdapter(fragmentmanager));
+        viewpager.setOffscreenPageLimit(2);
 
         //setting tab click functionality
         tab1.setOnClickListener(new OnClickListener() {
@@ -212,6 +215,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     params.setMargins(positionOffsetPixels / 3, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                     tabcolor.setLayoutParams(params);
                     highLightClassrooms();
+                    showButttonContainer(Classrooms.buttonContainer);
                 } else if (position == 1) {
                     //setTitle("Inbox");
 
@@ -219,12 +223,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     tabcolor.setLayoutParams(params);
 
                     highLightOutbox();
+                    hideButttonContainer(Classrooms.buttonContainer);
 
                 } else {
                     //setTitle("Classrooms");
                     params.setMargins((2 * screenwidth / 3), 0, 0, 0);
                     tabcolor.setLayoutParams(params);
                     highLightInbox();
+                    hideButttonContainer(Classrooms.buttonContainer);
                 }
             }
 
@@ -329,6 +335,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             if (role.equals("teacher")) {
                 switch (arg0) {
                     case 0:
+
                         fragment = new Classrooms();
                         break;
                     case 1:
@@ -413,5 +420,36 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         tab1Icon.setTextColor(getResources().getColor(R.color.buttoncolor));
         tab2Icon.setTextColor(getResources().getColor(R.color.light_button_color));
         tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
+    }
+
+
+
+    private void showButttonContainer(LinearLayout buttonContainer)
+    {
+
+        if(buttonContainer == null)
+            return;
+
+        Animation bottomUp = AnimationUtils.loadAnimation(this,
+                R.anim.bottom_up);
+        buttonContainer.setAnimation(bottomUp);
+        //bottomUp.setDuration(1000);
+        bottomUp.start();
+        buttonContainer.setVisibility(View.VISIBLE);
+    }
+
+
+    private void hideButttonContainer(LinearLayout buttonContainer)
+    {
+
+        if(buttonContainer == null)
+            return;
+
+        Animation bottomUp = AnimationUtils.loadAnimation(this,
+                R.anim.bottom_down);
+        buttonContainer.setAnimation(bottomUp);
+        //bottomUp.setDuration(1000);
+        bottomUp.start();
+        buttonContainer.setVisibility(View.GONE);
     }
 }

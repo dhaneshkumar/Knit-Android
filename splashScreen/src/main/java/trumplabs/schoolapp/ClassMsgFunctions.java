@@ -80,7 +80,7 @@ public class ClassMsgFunctions {
             //calling parse cloud function to delete class
             boolean isClassDeleted = false;
             try {
-                isClassDeleted = ParseCloud.callFunction("deleteclass", params);
+                isClassDeleted = ParseCloud.callFunction("deleteClass", params);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
