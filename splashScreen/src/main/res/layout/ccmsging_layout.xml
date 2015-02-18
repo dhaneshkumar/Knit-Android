@@ -22,7 +22,7 @@
         android:layout_height="match_parent"
         android:gravity="center"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="gone">
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -34,166 +34,168 @@
         android:id="@+id/contentLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
-
-    <ListView
-        android:id="@+id/classmsglistview"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_weight="1"
-        android:background="@color/lightbackgroundcolor"
-        android:divider="@color/lightbackgroundcolor"
-        android:dividerHeight="8dp"
-        android:stackFromBottom="true"
-        android:transcriptMode="normal" />
-
-    <ProgressBar
-        android:id="@+id/updprogressbar"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:layout_gravity="center"
-        android:background="@color/transparent"
-        android:visibility="visible" />
-
-    <LinearLayout
-        android:id="@+id/progressBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="124dp"
-        android:layout_marginBottom="4dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="0dp"
-        android:background="@color/white"
-        android:gravity="center"
-        android:visibility="gone"
         android:orientation="vertical">
 
-        <ProgressBar
-            android:id="@+id/progressBar1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:text="Loading Image..."
-            android:textSize="18dp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/imgpreview"
-        android:layout_width="match_parent"
-        android:layout_height="124dp"
-        android:background="@color/white"
-        android:padding="6dp"
-        android:visibility="gone">
-
-        <ImageView
-            android:id="@+id/attachedimg"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
+        <ListView
+            android:id="@+id/classmsglistview"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginBottom="4dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="8dp"
             android:layout_weight="1"
-            android:background="@color/lightbackgroundcolor"></ImageView>
+            android:background="@color/lightbackgroundcolor"
+            android:divider="@color/lightbackgroundcolor"
+            android:dividerHeight="8dp"
+            android:stackFromBottom="true"
+            android:transcriptMode="normal" />
+
+        <ProgressBar
+            android:id="@+id/updprogressbar"
+            android:layout_width="match_parent"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            android:background="@color/transparent"
+            android:visibility="visible" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:id="@+id/progressBarLayout"
+            android:layout_width="match_parent"
             android:layout_height="124dp"
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <Button
-                android:id="@+id/viewbutton"
-                android:layout_width="96dp"
-                android:layout_height="48dp"
-                android:text="View"
-                android:textSize="14sp" />
-
-            <Button
-                android:id="@+id/removebutton"
-                android:layout_width="96dp"
-                android:layout_height="48dp"
-                android:text="Remove"
-                android:textSize="14sp" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/darkgrey" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:paddingTop="5dp">
-
-        <ImageButton
-            android:id="@+id/gallery"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@drawable/ic_action_attachment_2"
-            android:minHeight="32dp"
-            android:minWidth="32dp"
-            android:src="@drawable/ic_action_attachment_2" />
-
-        <ImageButton
-            android:id="@+id/templets"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:background="@color/white"
-            android:minHeight="32dp"
-            android:minWidth="32dp"
-            android:paddingLeft="5dp"
-            android:paddingRight="5dp"
-            android:src="@drawable/ic_action_help"
-            android:visibility="gone" />
-
-        <EditText
-            android:id="@+id/typedmsg"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
             android:layout_marginBottom="4dp"
-            android:layout_marginLeft="5dp"
-            android:layout_weight="1"
-            android:textCursorDrawable="@null"
-            android:background="#00000000"
-            android:hint="Type your message here..."
-            android:maxLength="300"
-            android:paddingBottom="10dp"
-            android:paddingLeft="6dp"
-            android:paddingRight="2dp"
-            android:paddingTop="5dp"
-            android:textSize="16sp">
-        <requestFocus /></EditText>
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="0dp"
+            android:background="@color/white"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
 
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Loading Image..."
+                android:textSize="18dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/imgpreview"
+            android:layout_width="match_parent"
+            android:layout_height="124dp"
+            android:background="@color/white"
+            android:padding="6dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/attachedimg"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@color/lightbackgroundcolor"></ImageView>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="124dp"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/viewbutton"
+                    android:layout_width="96dp"
+                    android:layout_height="48dp"
+                    android:text="View"
+                    android:textSize="14sp" />
+
+                <Button
+                    android:id="@+id/removebutton"
+                    android:layout_width="96dp"
+                    android:layout_height="48dp"
+                    android:text="Remove"
+                    android:textSize="14sp" />
+            </LinearLayout>
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/lettercount"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:text=""
-            android:textColor="@color/buttoncolor"
-            android:textSize="12sp" />
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/darkgrey" />
 
-        <ImageButton
-            android:id="@+id/sendmsgbttn"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:background="@color/white"
-            android:minHeight="48dp"
-            android:minWidth="48dp"
-            android:src="@drawable/ic_action_send" />
+            android:paddingTop="5dp">
+
+            <ImageButton
+                android:id="@+id/gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/ic_action_attachment_2"
+                android:minHeight="32dp"
+                android:minWidth="32dp"
+                android:src="@drawable/ic_action_attachment_2" />
+
+            <ImageButton
+                android:id="@+id/templets"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:minHeight="32dp"
+                android:minWidth="32dp"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:src="@drawable/ic_action_help"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/typedmsg"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom"
+                android:layout_marginBottom="4dp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="#00000000"
+                android:hint="Type your message here..."
+                android:maxLength="300"
+                android:paddingBottom="10dp"
+                android:paddingLeft="6dp"
+                android:paddingRight="2dp"
+                android:paddingTop="5dp"
+                android:textCursorDrawable="@null"
+                android:textSize="16sp">
+
+                <requestFocus />
+            </EditText>
+
+
+            <TextView
+                android:id="@+id/lettercount"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text=""
+                android:textColor="@color/buttoncolor"
+                android:textSize="12sp" />
+
+            <ImageButton
+                android:id="@+id/sendmsgbttn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@color/white"
+                android:minHeight="48dp"
+                android:minWidth="48dp"
+                android:src="@drawable/ic_action_send" />
+        </LinearLayout>
     </LinearLayout>
-</LinearLayout>
 </LinearLayout>

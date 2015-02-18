@@ -76,11 +76,7 @@ public class Classrooms extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
 
-
-
-
         buttonContainer = (LinearLayout) getActivity().findViewById(R.id.buttonContainer);
-
 
         query = new Queries();
         getactivity = getActivity();
@@ -146,6 +142,7 @@ public class Classrooms extends Fragment {
 
         //View emptyrow = layoutinflater.inflate(R.layout.createdclasses_classview, createdClassListView, false);
         //createdClassListView.setEmptyView(emptyrow);
+        initialiseListViewMethods();
         super.onActivityCreated(savedInstanceState);
     }
 
@@ -292,17 +289,15 @@ public class Classrooms extends Fragment {
 
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
                 Intent intent = new Intent(getactivity, ClassContainer.class);
 
                 intent.putExtra("selectedclass", createdGroups.get(position).get(0));
                 intent.putExtra("selectedclassName", createdGroups.get(position).get(1));
-                Log.d("FragmentB", "user details : " + createdGroups.get(position).get(0)
-                        + createdGroups.get(position).get(1));
                 startActivity(intent);
             }
         });
     }
-
 
 
     class JoinedClassAdapter extends BaseAdapter {

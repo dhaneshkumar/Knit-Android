@@ -433,7 +433,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Animation bottomUp = AnimationUtils.loadAnimation(this,
                 R.anim.bottom_up);
         buttonContainer.setAnimation(bottomUp);
-        //bottomUp.setDuration(1000);
+        bottomUp.setDuration(100);
         bottomUp.start();
         buttonContainer.setVisibility(View.VISIBLE);
     }
@@ -448,7 +448,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Animation bottomUp = AnimationUtils.loadAnimation(this,
                 R.anim.bottom_down);
         buttonContainer.setAnimation(bottomUp);
-        //bottomUp.setDuration(1000);
+       // bottomUp.setDuration(100);
         bottomUp.start();
         buttonContainer.setVisibility(View.GONE);
     }

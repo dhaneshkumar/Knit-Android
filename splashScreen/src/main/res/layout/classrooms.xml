@@ -6,12 +6,21 @@
     android:layout_height="match_parent"
     android:background="@color/lightbackgroundcolor"
     android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:fillViewport="true"
+        android:layout_above="@+id/buttonContainer"
+        android:layout_alignParentTop="true"
+        android:layout_height="wrap_content"
+        >
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingLeft="16dp"
         android:paddingTop="8dp"
-        android:layout_alignParentTop="true"
         android:paddingRight="16dp"
         android:orientation="vertical">
 
@@ -73,6 +82,7 @@
             />
 
     </LinearLayout>
+    </ScrollView>
 
 
 

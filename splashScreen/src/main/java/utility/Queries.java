@@ -263,7 +263,7 @@ public class Queries {
 
             try {
                 //just fetch, set default state(like, confused = false, false)
-                List<ParseObject> allMessages= ParseCloud.callFunction("showAllClassesMessagesWithTime", parameters);
+                List<ParseObject> allMessages= ParseCloud.callFunction("showLatestMessages", parameters);
                 if(allMessages != null) {
                     Log.d("DEBUG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
                     for(int i=0; i<allMessages.size(); i++){
