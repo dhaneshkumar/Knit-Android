@@ -76,8 +76,8 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
 
   public void onPostExecuteCore() {
       Classrooms.createdGroups = createdGroups;
-      if (Classrooms.myadapter != null)
-          Classrooms.myadapter.notifyDataSetChanged();
+      if (Classrooms.createdClassAdapter != null)
+          Classrooms.createdClassAdapter.notifyDataSetChanged();
 
       if (MainActivity.mHeaderProgressBar != null)
           MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
