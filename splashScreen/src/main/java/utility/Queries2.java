@@ -256,8 +256,8 @@ public class Queries2 {
                     if (ClassMembers.myadapter != null)
                         ClassMembers.myadapter.notifyDataSetChanged();
 
-                    if (Classrooms.myadapter != null)
-                        Classrooms.myadapter.notifyDataSetChanged();
+                    if (Classrooms.createdClassAdapter != null)
+                        Classrooms.createdClassAdapter.notifyDataSetChanged();
                 }
 
             }

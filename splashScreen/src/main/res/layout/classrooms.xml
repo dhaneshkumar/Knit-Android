@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightbackgroundcolor"
+    android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingTop="8dp"
+        android:layout_alignParentTop="true"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/createdClassTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Created Classes"
+            android:textColor="@color/profile_title"
+            android:textSize="16sp"
+            />
+
+        <library.ExpandableListView
+            android:id="@+id/createdclasseslistview"
+            android:layout_width="match_parent"
+            android:layout_marginTop="2dp"
+            android:layout_height="wrap_content"
+            android:divider="@color/lightbackgroundcolor"
+            android:dividerHeight="1dp"
+            />
+
+        <TextView
+            android:id="@+id/joinedClassTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Joined Classes"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/profile_title"
+            android:textSize="16sp"
+            />
+
+        <library.ExpandableListView
+            android:id="@+id/joinedclasseslistview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="2dp"
+            android:divider="@color/lightbackgroundcolor"
+            android:dividerHeight="1dp"
+            />
+
+
+        <TextView
+            android:id="@+id/suggestedClassTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Suggested Classes"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/profile_title"
+            android:textSize="16sp"
+            />
+
+        <library.ExpandableListView
+            android:id="@+id/suggestedclasseslistview"
+            android:layout_width="match_parent"
+            android:layout_marginTop="2dp"
+            android:layout_height="wrap_content"
+            android:divider="@color/lightbackgroundcolor"
+            android:dividerHeight="1dp"
+            />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:layout_gravity="bottom"
+        android:layout_alignParentBottom="true"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Create Class"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@drawable/apptheme_spinner_default_holo_light"
+            android:textSize="18sp"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="Join Class"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:gravity="center"
+            android:textSize="18sp"
+            android:background="@drawable/apptheme_spinner_default_holo_light"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+
+</RelativeLayout>

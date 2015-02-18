@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:paddingLeft="16dp"
+    android:background="@color/white"
+    android:paddingRight="16dp"
+    >
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/classname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Knit"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        />
+
+    <TextView
+        android:id="@+id/childName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/classname"
+        android:layout_alignLeft="@+id/classname"
+        android:ellipsize="end"
+        android:layout_centerVertical="true"
+        android:maxEms="12"
+        android:singleLine="true"
+        android:text="Assigned to Knir"
+        android:textColor="#4a4949"
+        android:textSize="10sp" />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/classcreator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Mr. Kio"
+            android:textColor="#999999"
+            android:textSize="12sp"
+            android:maxEms="10"
+            android:singleLine="true"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+
+
+        <TextView
+            android:id="@+id/classcode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="KNI1234"
+            android:gravity="top|center_vertical"
+            android:textColor="#999999"
+            android:textSize="13sp"
+            android:layout_marginTop="4dp"
+            android:layout_below="@+id/classcreator"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

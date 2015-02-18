@@ -188,8 +188,8 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
         if (ClassMembers.myadapter != null)
             ClassMembers.myadapter.notifyDataSetChanged();
 
-        if (Classrooms.myadapter != null)
-            Classrooms.myadapter.notifyDataSetChanged();
+        if (Classrooms.createdClassAdapter != null)
+            Classrooms.createdClassAdapter.notifyDataSetChanged();
 
         super.onPostExecute(strings);
     }

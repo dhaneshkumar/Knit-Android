@@ -138,8 +138,9 @@ public class ClassMsgFunctions {
 
                 Classrooms.createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
 
-                if(Classrooms.myadapter != null)
-                    Classrooms.myadapter.notifyDataSetChanged();
+
+                if(Classrooms.createdClassAdapter != null)
+                    Classrooms.createdClassAdapter.notifyDataSetChanged();
                 //finishing the current activity
                 ClassMsg.currentActivity.finish();
 
