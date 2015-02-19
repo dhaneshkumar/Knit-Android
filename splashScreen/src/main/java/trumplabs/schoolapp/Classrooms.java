@@ -9,6 +9,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -30,6 +31,8 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +67,9 @@ public class Classrooms extends Fragment {
     private Queries query;
     Typeface lightTypeFace;
     public static LinearLayout buttonContainer;
+    private TextView createClassTV;
+    private TextView joinClassTV;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -86,6 +92,8 @@ public class Classrooms extends Fragment {
         TextView createdClassTV = (TextView) getActivity().findViewById(R.id.createdClassTextView);
         TextView joinedClassTV = (TextView) getActivity().findViewById(R.id.joinedClassTextView);
         TextView suggestedClassTV = (TextView) getActivity().findViewById(R.id.suggestedClassTextView);
+        createClassTV = (TextView) getActivity().findViewById(R.id.createClassTV);
+        joinClassTV = (TextView) getActivity().findViewById(R.id.joinClassTV);
 
         //Setting condensed font
         Typeface typeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/roboto-condensed.bold.ttf");
@@ -140,8 +148,20 @@ public class Classrooms extends Fragment {
         joinedClassListView.setExpanded(true);
 
 
-        //View emptyrow = layoutinflater.inflate(R.layout.createdclasses_classview, createdClassListView, false);
-        //createdClassListView.setEmptyView(emptyrow);
+
+        /*
+        On click create button , open up dialog box to crate class
+         */
+        createClassTV.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                CreateClassDialog createClassDialog = new CreateClassDialog();
+                createClassDialog.show(fm, "create Class");
+            }
+        });
+
+
         initialiseListViewMethods();
         super.onActivityCreated(savedInstanceState);
     }

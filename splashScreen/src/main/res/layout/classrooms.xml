@@ -104,25 +104,27 @@
         android:layout_height="wrap_content">
 
         <TextView
+            android:id="@+id/createClassTV"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="Create Class"
             android:gravity="center"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:background="@drawable/apptheme_spinner_default_holo_light"
-            android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:textColor="@color/buttoncolor"
+            android:paddingBottom="10dp"
+            android:textSize="16sp"
             android:layout_height="wrap_content" />
 
         <TextView
+            android:id="@+id/joinClassTV"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:text="Join Class"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
+            android:paddingTop="10dp"
+            android:textColor="@color/buttoncolor"
+            android:paddingBottom="10dp"
             android:gravity="center"
-            android:textSize="18sp"
-            android:background="@drawable/apptheme_spinner_default_holo_light"
+            android:textSize="16sp"
             android:layout_height="wrap_content" />
 
     </LinearLayout>

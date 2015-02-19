@@ -20,13 +20,21 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
+            android:padding="64dp"
+            android:visibility="gone"
             android:orientation="vertical"
-            android:visibility="gone">
+           >
 
             <ProgressBar
                 android:id="@+id/progressBar"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:textSize="14sp"
+                android:text="Creating your classroom..."/>
 
         </LinearLayout>
 
@@ -50,28 +58,23 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="18sp"
+                    android:textSize="19sp"
                     android:layout_marginLeft="4dp"
                     android:textColor="@color/black"
                     android:text="Create a classroom"/>
 
 
-                <Spinner
-                    android:id="@+id/mr_spinner"
-                    style="@style/Widget.AppCompat.Spinner"
+                <TextView
+                    android:id="@+id/school"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:entries="@array/title"
+                    android:textSize="16sp"
                     android:background="@drawable/apptheme_spinner_default_holo_light"
+                    android:layout_marginTop="16dp"
                     android:paddingLeft="16dp"
                     android:paddingRight="1dp"
-                    android:layout_marginTop="16dp"
-                    android:prompt="@string/prompt_choice"
-                    android:textSize="16sp" >
-                    <requestFocus />
-
-                </Spinner>
-
+                    android:textColor="@color/black"
+                    android:text="School"/>
 
 
                 <EditText
@@ -90,6 +93,15 @@
                     android:textSize="16sp" />
 
 
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="10sp"
+                    android:paddingLeft="8dp"
+                    android:paddingRight="1dp"
+                    android:textColor="#8A8A8A"
+                    android:text="eg. MATH"/>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -98,17 +110,17 @@
                     >
 
 
-                    <Spinner
-                        style="@style/Widget.AppCompat.Spinner"
+                    <TextView
+                        android:id="@+id/standard"
                         android:layout_width="0dp"
-                        android:layout_weight="2"
                         android:layout_height="wrap_content"
-                        android:entries="@array/title"
+                        android:textSize="16sp"
+                        android:layout_weight="2"
                         android:background="@drawable/apptheme_spinner_default_holo_light"
                         android:paddingLeft="16dp"
-                        android:prompt="@string/prompt_choice"
-                        android:textSize="16sp" >
-                    </Spinner>
+                        android:paddingRight="1dp"
+                        android:textColor="@color/black"
+                        android:text="Standard"/>
 
 
 
@@ -120,32 +132,23 @@
                         android:text=""/>
 
 
-                    <Spinner
-                        style="@style/Widget.AppCompat.Spinner"
+                    <TextView
+                        android:id="@+id/division"
                         android:layout_width="0dp"
-                        android:layout_weight="2"
                         android:layout_height="wrap_content"
-                        android:entries="@array/title"
+                        android:textSize="16sp"
+                        android:layout_weight="2"
                         android:background="@drawable/apptheme_spinner_default_holo_light"
                         android:paddingLeft="16dp"
-
-                        android:prompt="@string/prompt_choice"
-                        android:textSize="16sp" >
-                    </Spinner>
-
+                        android:paddingRight="1dp"
+                        android:textColor="@color/black"
+                        android:text="Division"/>
                     </LinearLayout>
 
             </LinearLayout>
 
-
         <TextView
             android:layout_width="match_parent"
-
-
-
-
-
-
             android:layout_height="1dp"
             android:text=""
             android:background="@color/buttoncolor"
@@ -156,10 +159,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:padding="16dp"
+            android:padding="14dp"
             android:text="Create"
             android:textColor="@color/buttoncolor"
-            android:textSize="18sp"
+            android:textSize="16sp"
             />
         </LinearLayout>
 </LinearLayout>
