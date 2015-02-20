@@ -17,6 +17,7 @@ import joinclasses.JoinedClasses;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
+import utility.Queries2;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -53,9 +54,10 @@ public class Refresher {
         /*
          * Updating joined group list
          */
+                /* NOT REQUIRED. As fetching joined and created classes once and for all after reinstallation
                 final JoinedClassRooms joinClass = new JoinedClassRooms();
                 joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper(); //done
+                joinClass.onPostExecuteHelper(); //done*/
 
 
         /*
@@ -127,9 +129,10 @@ public class Refresher {
         /*
          * Updating joined group list
          */
+                /* NOT REQUIRED. As fetching joined and created classes once and for all after reinstallation
                 JoinedClassRooms joinClass = new JoinedClassRooms();
                 joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper(); //done
+                joinClass.onPostExecuteHelper(); //done*/
 
                 //call inbox
                 Inbox newInboxMsg = new Inbox(null);
@@ -147,25 +150,22 @@ public class Refresher {
             //If already present then no need to fetch outbox messages
             if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
                 if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
-                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time in a thread");
-                    /*Runnable r = new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("DEBUG_REFRESHER", "running fetchOutboxMessages");
-                            OutboxMsgFetch.fetchOutboxMessages();
-                        }
-                    };
-
-                    Thread t = new Thread(r);
-                    t.setPriority(Thread.MIN_PRIORITY);
-                    t.start();*/
-
+                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
                     //no need to do in seperate thread. Already this is running in a background thread
                     OutboxMsgFetch.fetchOutboxMessages();
                 }
                 else{
                     Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
                 }
+            }
+
+            //Fetch codegroup details if not yet fetched after reinstallation
+            if(sm.getCodegroupLocalState(freshUser.getUsername()) == 0){
+                Log.d("DEBUG_REFRESHER", "fetching Codegroup info for the first and last time");
+                Queries2.fetchAllClassDetails();
+            }
+            else{
+                Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
             }
 
 

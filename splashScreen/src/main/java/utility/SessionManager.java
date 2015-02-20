@@ -131,8 +131,23 @@ public class SessionManager {
   public int getOutboxLocalState(String userId){
     return pref.getInt("outbox-" + userId, 0);
   }
-  
-  /*
+
+    /*
+        Handle reisntall/relogin to see if Codegroup data for joined and created clasees has been
+        fetched or not
+        value 1 = fetched and pinned locally
+        value 0 = Not yet fetched successfully
+     */
+    public void setCodegroupLocalState(int val, String userId){
+        editor.putInt("codegroup-" + userId, val);
+        editor.commit();
+    }
+
+    public int getCodegroupLocalState(String userId){
+        return pref.getInt("codegroup-" + userId, 0);
+    }
+
+    /*
    * Checking its sign up or login.
    */
   public void setSignUpAccount()

@@ -22,7 +22,10 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -35,6 +38,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
@@ -441,15 +445,19 @@ public class Utility extends MyActionBarActivity {
     public static void updateCurrentTime(ParseUser freshUser){
         Log.d("DEBUG_UTILITY", "using updateCurrentTime() during login/signup");
         SessionManager session = new SessionManager(Application.getAppContext());
-        boolean test = freshUser.getBoolean("test");
-        test = !test;
-        freshUser.put("test", test);
+
+        HashMap<String, Date> parameters = new HashMap<String, Date>();
         try{
-            freshUser.save();
-            Date currentDate = freshUser.getUpdatedAt();
-            session.setCurrentTime(currentDate);
+            Date now = ParseCloud.callFunction("getServerTime", parameters);
+            if(now != null) {
+                session.setCurrentTime(now);
+            }
+            else{
+                Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "getServerTime failed - Date null");
+            }
         }
         catch (com.parse.ParseException e){
+            Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "getServerTime failed - ParseException");
             e.printStackTrace();
         }
     }
@@ -458,19 +466,18 @@ public class Utility extends MyActionBarActivity {
     public static void updateCurrentTimeInBackground(final ParseUser freshUser){
         Log.d("DEBUG_UTILITY", "using updateCurrentTimeInBackground()");
         final SessionManager session = new SessionManager(Application.getAppContext());
-        boolean test = freshUser.getBoolean("test");
-        test = !test;
-        freshUser.put("test", test);
-        freshUser.saveInBackground(new SaveCallback() {
 
+        HashMap<String, Date> parameters = new HashMap<String, Date>();
+        ParseCloud.callFunctionInBackground("getServerTime", parameters, new FunctionCallback<Object>() {
             @Override
-            public void done(com.parse.ParseException e) {
-                if(e == null) {
-                    Date currentDate = freshUser.getUpdatedAt();
-                    session.setCurrentTime(currentDate);
+            public void done(Object now, com.parse.ParseException e) {
+
+                if(e == null && now != null) {
+                    Date currentTime = (Date) now;
+                    session.setCurrentTime(currentTime);
                 }
                 else{
-                    Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "freshUser saveInBackground failed");
+                    Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME_BACK", "getServerTime failed");
                 }
             }
         });

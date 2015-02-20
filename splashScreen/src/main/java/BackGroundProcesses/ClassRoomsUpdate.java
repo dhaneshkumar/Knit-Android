@@ -20,6 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 import library.UtilString;
+import trumplabs.schoolapp.Application;
+import utility.SessionManager;
 import utility.Utility;
 
 /**
@@ -30,22 +32,35 @@ import utility.Utility;
  */
 public class ClassRoomsUpdate {
     public static void fetchUpdates(){
+
         ParseUser user = ParseUser.getCurrentUser();
         if(user != null){
+            SessionManager sm = new SessionManager(Application.getAppContext());
+            //check if Codegroup data has been fetched or not yet. If not just return
+            if(sm.getCodegroupLocalState(user.getUsername()) == 0){
+                Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Codegroup data not yet availabe locally. So returning");
+                return;
+            }
+
             ParseQuery joinedQuery = new ParseQuery("Codegroup");
             joinedQuery.fromLocalDatastore();
             joinedQuery.whereEqualTo("userId", user.getUsername());
 
             try{
                 List<ParseObject> joinedGroups = joinedQuery.find();
+                if(joinedGroups == null || joinedGroups.size() == 0){
+                    Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Zero code group size");
+                    return;
+                }
 
-                ArrayList<String> joinedCodes = new ArrayList<>();
+                ArrayList<String> joinedSenderIds = new ArrayList<>();
                 for(int i=0; i<joinedGroups.size(); i++){
-                    joinedCodes.add(joinedGroups.get(i).getString("senderId"));
+                    joinedSenderIds.add(joinedGroups.get(i).getString("senderId"));
+                    Log.d("DEBUG_CLASS_ROOMS_UPDATE", i + joinedGroups.get(i).getString("senderId"));
                 }
 
                 HashMap<String, Object> parameters = new HashMap<String, Object>();
-                parameters.put("joinedObjectIds", joinedCodes);
+                parameters.put("joinedObjectIds", joinedSenderIds);
 
                 try{
                     List<Map<String, Object>>  resultUsers = ParseCloud.callFunction("getUpdatesUserDetail", parameters);
@@ -60,10 +75,12 @@ public class ClassRoomsUpdate {
                     }
                 }
                 catch (ParseException e1){
+                    Log.d("DEBUG_CLASS_ROOMS_UPDATE", "getUpdatesUserDetails() failed");
                     e1.printStackTrace();
                 }
             }
             catch (ParseException e){
+                Log.d("DEBUG_CLASS_ROOMS_UPDATE", "local Codegroup query failed");
                 e.printStackTrace();
             }
         }

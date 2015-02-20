@@ -35,53 +35,16 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
 
   public void doInBackgroundCore(){
 
-        //validating current user
-        ParseUser user = ParseUser.getCurrentUser();
-        if (user == null)
-        {Utility.logout(); return;}
+    //validating current user
+    ParseUser user = ParseUser.getCurrentUser();
+    if (user == null)
+    {Utility.logout(); return;}
 
-        userId = user.getUsername();
+    userId = user.getUsername();
 
-        Utility.ls("joined classrooms running in background....");
-
-
-          joinedGroups = user.getList(Constants.JOINED_GROUPS);
-
-          if (joinedGroups == null) {
-              joinedGroups = new ArrayList<List<String>>();
-
-          } else {
-
-
-        /*
-         * Adding new joined list
-         */
-              for (int i = 0; i < joinedGroups.size(); i++) {
-
-                  String grpCode = joinedGroups.get(i).get(0).trim();
-                  Queries2 joinQuery = new Queries2();
-
-                  try {
-
-            /*
-              Checking existence of codegroup entry for each joined-groups.
-              If it doesn't exist then fetch them from server and store locally
-              else update profile pic
-               */
-                      if (!joinQuery.isCodegroupExist(grpCode, userId)) {
-                          joinQuery.storeCodegroup(grpCode, userId);    //fetching from server and storing locally
-
-                      } else {
-
-                          Log.d("JOIN", "updating profile...");
-                          //updating profile image of teacher
-                          joinQuery.updateProfileImage(grpCode, userId);
-                      }
-                  } catch (ParseException e) {
-                      e.printStackTrace();
-                  }
-              }
-          }
+      //just update all the Users info as we need to update name and profile pic only
+    ClassRoomsUpdate.fetchUpdates();
+    ClassRoomsUpdate.fetchProfilePics(userId);
   }
 
   public void onPostExecuteHelper(){
@@ -96,7 +59,6 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   }
 
   public void onPostExecuteCore(){
-      JoinedClasses.joinedGroups = joinedGroups;
       if (JoinedClasses.joinedadapter != null)
           JoinedClasses.joinedadapter.notifyDataSetChanged();
 
@@ -109,5 +71,4 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
     onPostExecuteCore();
     super.onPostExecute(result);
   }
-
 }
