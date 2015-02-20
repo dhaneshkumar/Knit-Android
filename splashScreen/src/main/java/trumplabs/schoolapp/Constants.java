@@ -63,7 +63,7 @@ public class Constants {
 
     public static  final String CODE_GROUP = "Codegroup";
     public static  final String DIVISION = "divison";
-
+    public static final String IS_SUGGESTION = "isSuggestion"; //flag indicating whether this codegroup entry is a suggestion
 
     //group members
     public static final String GROUP_MEMBERS = "GroupMembers";

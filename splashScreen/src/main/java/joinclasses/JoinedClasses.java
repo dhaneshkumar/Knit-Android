@@ -118,7 +118,7 @@ public class JoinedClasses extends Fragment {
       /*
       Fetching suggestion list
        */
-        suggestedGroups = JoinedHelper.getSuggestionList(userId);
+        suggestedGroups = null; //We are no longer using JoinedClasses. = JoinedHelper.getSuggestionList(userId);
 
         if (suggestedGroups == null)
             suggestedGroups = new ArrayList<List<String>>();

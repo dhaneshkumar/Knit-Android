@@ -1,6 +1,5 @@
 package joinclasses;
 
-import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
@@ -166,89 +165,63 @@ public class JoinedHelper {
      * @return classrooms suggestion list
      * @how All codegroup classrooms - joined classrooms - removed list classrooms - created classrooms = suggestion list
      */
-    public static List<List<String>> getSuggestionList(String userId) {
+    public static List<ParseObject> getSuggestionList(String userId) {
+
+        List<List<String>> joinedList = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
+        List<List<String>> removedList = ParseUser.getCurrentUser().getList(Constants.REMOVED_GROUPS);
+        List<List<String>> createdList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+
+        ArrayList<String> ignoreList = new ArrayList<String>(); //these is list of classcode which are not be included in suggestions
+
+        if(joinedList != null){
+            for(int i=0; i<joinedList.size(); i++){
+                ignoreList.add(joinedList.get(i).get(0));
+            }
+        }
+        if(removedList != null){
+            for(int i=0; i<removedList.size(); i++){
+                ignoreList.add(removedList.get(i).get(0));
+            }
+        }
+        if(createdList != null){
+            for(int i=0; i<createdList.size(); i++){
+                ignoreList.add(createdList.get(i).get(0));
+            }
+        }
+
+        Log.d("DEBUG_GET_SUGGESTION", "ignore list size " + ignoreList.size());
+
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
         query.fromLocalDatastore();
         query.whereEqualTo("userId", userId);
+        query.whereNotContainedIn("code", ignoreList);
 
-        List<ParseObject> codeGroupList = null;
         try {
-            codeGroupList = query.find();
+            List<ParseObject> codeGroupList = query.find();
 
-            if (codeGroupList != null && codeGroupList.size() > 0) {
-                List<List<String>> joinedList = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
-                List<List<String>> removedList = ParseUser.getCurrentUser().getList(Constants.REMOVED_GROUPS);
-                List<List<String>> createdList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
-
-                //removing joined list
-                if (joinedList != null) {
-                    for (int i = 0; i < joinedList.size(); i++) {
-                        for (int j = 0; j < codeGroupList.size(); j++) {
-                            String code = codeGroupList.get(j).getString("code");
-
-                            if (!UtilString.isBlank(code)) {
-                                if (code.trim().equals(joinedList.get(i).get(0).trim()))
-                                    codeGroupList.remove(j);
-
-                            }
-                        }
-
-                    }
-                }
-
-                //removing removedlist classrooms
-                if (removedList != null) {
-                    for (int i = 0; i < removedList.size(); i++) {
-                        for (int j = 0; j < codeGroupList.size(); j++) {
-                            String code = codeGroupList.get(j).getString("code");
-                            if (!UtilString.isBlank(code)) {
-                                if (code.trim().equals(removedList.get(i).get(0).trim()))
-                                    codeGroupList.remove(j);
-                            }
-                        }
-
-                    }
-                }
-
-                //removing createdlist classrooms
-                if (createdList != null) {
-                    for (int i = 0; i < createdList.size(); i++) {
-                        for (int j = 0; j < codeGroupList.size(); j++) {
-                            String code = codeGroupList.get(j).getString("code");
-                            if (!UtilString.isBlank(code)) {
-                                if (code.trim().equals(createdList.get(i).get(0).trim()))
-                                    codeGroupList.remove(j);
-                            }
-                        }
-
-                    }
-                }
-
-
+            if (codeGroupList != null) {
                 //creating new list of suggestions
-                List<List<String>> suggestionList = new ArrayList<List<String>>();
+                List<ParseObject> finalSuggestionList = new ArrayList<ParseObject>();
 
                 for (int i = 0; i < codeGroupList.size(); i++) {
-                    List<String> suggestion = new ArrayList<String>();
-
-                    String code = codeGroupList.get(i).getString("code");
-                    String groupName = codeGroupList.get(i).getString("name");
+                    ParseObject suggestion = codeGroupList.get(i);
+                    String code = suggestion.getString("code");
+                    String groupName = suggestion.getString("name");
 
                     if ((!UtilString.isBlank(code)) && (!UtilString.isBlank(groupName))) {
-                        suggestion.add(code);
-                        suggestion.add(groupName);
-                        suggestionList.add(suggestion);
+                        finalSuggestionList.add(suggestion);
                     }
                 }
 
-
-                return suggestionList;
+                Log.d("DEBUG_GET_SUGGESTION", "final suggestion list size = " + finalSuggestionList.size());
+                return finalSuggestionList;
             }
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        return null;
+        Log.d("DEBUG_GET_SUGGESTION", "something wrong happened. Returning empty list");
+        return new ArrayList<ParseObject>();
     }
 
 

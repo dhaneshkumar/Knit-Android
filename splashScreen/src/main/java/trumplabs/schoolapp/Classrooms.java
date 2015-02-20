@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import BackGroundProcesses.CreatedClassRooms;
+import joinclasses.JoinedHelper;
 import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -58,7 +59,7 @@ public class Classrooms extends Fragment {
    // private LinearLayout emptylayout;
     public static List<List<String>> createdGroups;
     public static List<List<String>> joinedGroups;
-    public static List<List<String>> suggestedGroups;
+    public static List<ParseObject> suggestedGroups;
     protected LayoutInflater layoutinflater;
     public static BaseAdapter createdClassAdapter;
     public static BaseAdapter joinedClassAdapter;
@@ -147,7 +148,17 @@ public class Classrooms extends Fragment {
         joinedClassListView.setAdapter(joinedClassAdapter);
         joinedClassListView.setExpanded(true);
 
-
+         /*
+       Initializing suggested class list and it's Adapter
+       */
+        suggestedGroups = JoinedHelper.getSuggestionList(parseObject.getUsername());
+        if(suggestedGroups == null)
+            suggestedGroups = new ArrayList<ParseObject>();
+        if(suggestedClassAdapter == null){
+            suggestedClassAdapter = new SuggestedClassAdapter();
+        }
+        suggestedClassListView.setAdapter(suggestedClassAdapter);
+        suggestedClassListView.setExpanded(true);
 
         /*
         On click create button , open up dialog box to crate class
@@ -317,6 +328,46 @@ public class Classrooms extends Fragment {
                 startActivity(intent);
             }
         });
+    }
+
+    class SuggestedClassAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+
+            if (suggestedGroups == null)
+                suggestedGroups = new ArrayList<ParseObject>();
+            return suggestedGroups.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return suggestedGroups.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row = convertView;
+            if (row == null) {
+                row = layoutinflater.inflate(R.layout.classroom_created_item, parent, false);
+            }
+
+            TextView classNameView = (TextView) row.findViewById(R.id.classname1);
+            TextView classCodeView = (TextView) row.findViewById(R.id.classcode1);
+
+            classCodeView.setText(suggestedGroups.get(position).getString("code"));
+
+            String classNameString = suggestedGroups.get(position).getString("name");
+            classNameView.setText(classNameString.toUpperCase());
+
+            return row;
+        }
     }
 
 
