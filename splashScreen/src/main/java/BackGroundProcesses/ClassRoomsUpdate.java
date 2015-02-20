@@ -42,9 +42,23 @@ public class ClassRoomsUpdate {
                 return;
             }
 
+            List<List<String>> joinedClasses = user.getList("joined_groups");
+            if(joinedClasses == null || joinedClasses.size() == 0){
+                Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is 0");
+                return; //We're done. No joined groups
+            }
+
+            Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is " + joinedClasses.size());
+
+            ArrayList<String> joinedClassCodes = new ArrayList<String>();
+            for(int i=0; i<joinedClasses.size(); i++){
+                joinedClassCodes.add(joinedClasses.get(i).get(0));
+            }
+
             ParseQuery joinedQuery = new ParseQuery("Codegroup");
             joinedQuery.fromLocalDatastore();
             joinedQuery.whereEqualTo("userId", user.getUsername());
+            joinedQuery.whereContainedIn("code", joinedClassCodes);
 
             try{
                 List<ParseObject> joinedGroups = joinedQuery.find();
@@ -56,7 +70,7 @@ public class ClassRoomsUpdate {
                 ArrayList<String> joinedSenderIds = new ArrayList<>();
                 for(int i=0; i<joinedGroups.size(); i++){
                     joinedSenderIds.add(joinedGroups.get(i).getString("senderId"));
-                    Log.d("DEBUG_CLASS_ROOMS_UPDATE", i + joinedGroups.get(i).getString("senderId"));
+                    //Log.d("DEBUG_CLASS_ROOMS_UPDATE", i + joinedGroups.get(i).getString("senderId"));
                 }
 
                 HashMap<String, Object> parameters = new HashMap<String, Object>();

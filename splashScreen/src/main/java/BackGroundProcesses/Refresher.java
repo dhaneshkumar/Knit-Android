@@ -51,13 +51,7 @@ public class Refresher {
 
             if (appOpeningCount > 0) {
                 Log.d("DEBUG_REFRESHER",  "calling background tasks");
-        /*
-         * Updating joined group list
-         */
-                /* NOT REQUIRED. As fetching joined and created classes once and for all after reinstallation
-                final JoinedClassRooms joinClass = new JoinedClassRooms();
-                joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper(); //done*/
+
 
 
         /*
@@ -89,8 +83,12 @@ public class Refresher {
                 createdClassList.doInBackgroundCore();
                 createdClassList.onPostExecuteCoreHelper(); //done
 
-                ClassRoomsUpdate.fetchUpdates();
-                ClassRoomsUpdate.fetchProfilePics(freshUser.getUsername());
+             /*
+             * Updating joined classes teacher details(name, profile pic)
+             */
+                final JoinedClassRooms joinClass = new JoinedClassRooms();
+                joinClass.doInBackgroundCore();
+                joinClass.onPostExecuteHelper();
 
                 /*
                 If its new user then refresh on evry app openingtime,
@@ -126,13 +124,6 @@ public class Refresher {
 
                 sm.setAppOpeningCount();
                 //sequentially execute following
-        /*
-         * Updating joined group list
-         */
-                /* NOT REQUIRED. As fetching joined and created classes once and for all after reinstallation
-                JoinedClassRooms joinClass = new JoinedClassRooms();
-                joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper(); //done*/
 
                 //call inbox
                 Inbox newInboxMsg = new Inbox(null);
