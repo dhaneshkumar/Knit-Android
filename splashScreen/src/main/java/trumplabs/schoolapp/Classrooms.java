@@ -4,26 +4,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.widget.PopupMenu;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -31,8 +24,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -328,6 +319,24 @@ public class Classrooms extends Fragment {
                 startActivity(intent);
             }
         });
+
+        /**
+         * setting list item clicked functionality
+         */
+        suggestedClassListView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                Intent intent = new Intent(getactivity, JoinSuggestedClass.class);
+
+                intent.putExtra("classCode", suggestedGroups.get(position).getString("code"));
+                intent.putExtra("className", suggestedGroups.get(position).getString("name"));
+                intent.putExtra("teacherName", suggestedGroups.get(position).getString("Creator"));
+                startActivity(intent);
+            }
+        });
     }
 
     class SuggestedClassAdapter extends BaseAdapter {
@@ -355,16 +364,22 @@ public class Classrooms extends Fragment {
         public View getView(int position, View convertView, ViewGroup parent) {
             View row = convertView;
             if (row == null) {
-                row = layoutinflater.inflate(R.layout.classroom_created_item, parent, false);
+                row = layoutinflater.inflate(R.layout.classroom_suggested_item, parent, false);
             }
 
-            TextView classNameView = (TextView) row.findViewById(R.id.classname1);
-            TextView classCodeView = (TextView) row.findViewById(R.id.classcode1);
+            TextView classNameView = (TextView) row.findViewById(R.id.classname);
+            TextView classCodeView = (TextView) row.findViewById(R.id.classcode);
+            TextView classCreatorView = (TextView) row.findViewById(R.id.classcreator);
 
             classCodeView.setText(suggestedGroups.get(position).getString("code"));
 
             String classNameString = suggestedGroups.get(position).getString("name");
             classNameView.setText(classNameString.toUpperCase());
+
+            String classCreatorString = suggestedGroups.get(position).getString("Creator");
+            if(classCreatorString == null)
+                classCreatorString = "";
+            classCreatorView.setText(classCreatorString);
 
             return row;
         }
