@@ -312,7 +312,7 @@ public class CreateClass extends MyActionBarActivity {
         if (!selectedSchool.trim().equals("Other"))
             params.put("school", schoolId);
 
-        params.put("divison", selectedDivison);
+        params.put("division", selectedDivison);
         params.put("standard", selectedStandard);
         params.put("classname", typedtxt);
 
@@ -321,7 +321,7 @@ public class CreateClass extends MyActionBarActivity {
 
         //calling parse cloud function to create class
         try {
-            codeGroupObject = ParseCloud.callFunction("createnewclass3", params);
+            codeGroupObject = ParseCloud.callFunction("createClass", params);
         } catch (ParseException e) {
             e.printStackTrace();
             return false;

@@ -17,6 +17,7 @@ import joinclasses.JoinedClasses;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
+import utility.Queries2;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -50,12 +51,7 @@ public class Refresher {
 
             if (appOpeningCount > 0) {
                 Log.d("DEBUG_REFRESHER",  "calling background tasks");
-        /*
-         * Updating joined group list
-         */
-                final JoinedClassRooms joinClass = new JoinedClassRooms();
-                joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper(); //done
+
 
 
         /*
@@ -87,8 +83,12 @@ public class Refresher {
                 createdClassList.doInBackgroundCore();
                 createdClassList.onPostExecuteCoreHelper(); //done
 
-                ClassRoomsUpdate.fetchUpdates();
-                ClassRoomsUpdate.fetchProfilePics(freshUser.getUsername());
+             /*
+             * Updating joined classes teacher details(name, profile pic)
+             */
+                final JoinedClassRooms joinClass = new JoinedClassRooms();
+                joinClass.doInBackgroundCore();
+                joinClass.onPostExecuteHelper();
 
                 /*
                 If its new user then refresh on evry app openingtime,
@@ -124,12 +124,6 @@ public class Refresher {
 
                 sm.setAppOpeningCount();
                 //sequentially execute following
-        /*
-         * Updating joined group list
-         */
-                JoinedClassRooms joinClass = new JoinedClassRooms();
-                joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper(); //done
 
                 //call inbox
                 Inbox newInboxMsg = new Inbox(null);
@@ -147,25 +141,22 @@ public class Refresher {
             //If already present then no need to fetch outbox messages
             if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
                 if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
-                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time in a thread");
-                    /*Runnable r = new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d("DEBUG_REFRESHER", "running fetchOutboxMessages");
-                            OutboxMsgFetch.fetchOutboxMessages();
-                        }
-                    };
-
-                    Thread t = new Thread(r);
-                    t.setPriority(Thread.MIN_PRIORITY);
-                    t.start();*/
-
+                    Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
                     //no need to do in seperate thread. Already this is running in a background thread
                     OutboxMsgFetch.fetchOutboxMessages();
                 }
                 else{
                     Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
                 }
+            }
+
+            //Fetch codegroup details if not yet fetched after reinstallation
+            if(sm.getCodegroupLocalState(freshUser.getUsername()) == 0){
+                Log.d("DEBUG_REFRESHER", "fetching Codegroup info for the first and last time");
+                Queries2.fetchAllClassDetails();
+            }
+            else{
+                Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
             }
 
 

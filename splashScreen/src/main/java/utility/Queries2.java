@@ -8,6 +8,7 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,8 +19,10 @@ import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.ClassMembers;
 import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.Constants;
 
 public class Queries2 {
 
@@ -213,6 +216,37 @@ public class Queries2 {
         }
     }
 
+    /*
+     * fetch details(Codegroup objects) of all joined and created classes. Called only once after reinstallation
+     * @how use giveClassesDetails cloud function
+     */
+    public static void fetchAllClassDetails(){
+        ParseUser parseObject = ParseUser.getCurrentUser();
+
+        if (parseObject == null)
+        {Utility.logout(); return;}
+
+        String userId = parseObject.getUsername();
+
+        HashMap<String, String> parameters = new HashMap<String, String>();
+        try{
+            List<ParseObject> codegroupEntries = ParseCloud.callFunction("giveClassesDetails", parameters);
+            if(codegroupEntries != null){
+                for(int i=0; i<codegroupEntries.size(); i++){
+                    ParseObject codegroup = codegroupEntries.get(i);
+                    codegroup.put(Constants.USER_ID, userId);
+                }
+            }
+            ParseObject.pinAll(codegroupEntries);
+            final SessionManager sm = new SessionManager(Application.getAppContext());
+            sm.setCodegroupLocalState(1, userId); //set the flag locally that outbox data is valid
+            Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "Pinned all. State changed to 1");
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+            Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "Failed with exception");
+        }
+    }
 
     public boolean isGroupMemberExist(String code, String userId) throws ParseException {
         ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupMembers");

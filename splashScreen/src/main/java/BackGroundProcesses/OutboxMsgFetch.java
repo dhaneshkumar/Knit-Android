@@ -16,6 +16,7 @@ import java.util.List;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Outbox;
 import utility.Config;
+import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -67,12 +68,11 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
 
         //Now fetch outbox messages
         HashMap<String, String> parameters = new HashMap<String, String>();
-        parameters.put("senderId", userId);
         parameters.put("limit", Config.outboxMsgMaxFetchCount+"");
-
+        parameters.put("classtype", "c"); //created type
         List<ParseObject> newMsgsToPin = new ArrayList<ParseObject>();
         try{
-            List<ParseObject> outboxMessages = ParseCloud.callFunction("getOutboxMessages", parameters);
+            List<ParseObject> outboxMessages = ParseCloud.callFunction("showLatestMessagesWithLimit", parameters);
             Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "fetched " + outboxMessages.size() + "messages");
             for(int i=0; i<outboxMessages.size(); i++){
                 ParseObject outboxMsg = outboxMessages.get(i);
@@ -91,22 +91,27 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
                     sentMsg.put("attachment", outboxMsg.get("attachment"));
                 if (outboxMsg.getString("attachment_name") != null)
                     sentMsg.put("attachment_name", outboxMsg.getString("attachment_name"));
-                if (outboxMsg.get("senderpic") != null)
-                    sentMsg.put("senderpic", outboxMsg.get("senderpic"));
 
                 newMsgsToPin.add(sentMsg);
             }
             ParseObject.pinAll(newMsgsToPin);
             final SessionManager sm = new SessionManager(Application.getAppContext());
             sm.setOutboxLocalState(1, userId); //set the flag locally that outbox data is valid
-            Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Pinned all. State changed to 1");
+            Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Pinned all. State changed to 1. Notifying Outbox about it");
+
+            //update total message count outbox
+            Outbox.updateOutboxTotalMessages();
+
+            //update the groupDetails of Outbox fragment so that it can use it in adapter
+            Queries query = new Queries();
+            Outbox.groupDetails = query.getLocalOutbox(); //get locally stored outbox messages and notify adapter
+
+            //Notify Outbox fragment about these new messages
+            Outbox.refreshSelf();
         }
         catch (ParseException e){
             Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Error in parsecloud function calling maybe");
             e.printStackTrace();
         }
-
-        //update total message count outbox
-        Outbox.updateOutboxTotalMessages();
     }
 }

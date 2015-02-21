@@ -191,7 +191,7 @@ public class Queries {
             parameters.put("limit", 50);
             parameters.put("classtype", "j");
             try {
-                HashMap<String, List<ParseObject> > resultMap = ParseCloud.callFunction("showLatestMessagesWithlLimit", parameters);
+                HashMap<String, List<ParseObject> > resultMap = ParseCloud.callFunction("showLatestMessagesWithLimit", parameters);
                 List<ParseObject> allMessages = resultMap.get("message");
                 List<ParseObject> allStates = resultMap.get("states");
 
@@ -217,34 +217,7 @@ public class Queries {
                         msg.put(Constants.DIRTY_BIT, false);
                         msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
-                    /*for (int i=0; i< allMessages.size(); i++) {
-                        ParseObject msg = allMessages.get(i);
-                        ParseQuery msgStateQuery = new ParseQuery("MessageState");
 
-                        msgStateQuery.whereMatches(Constants.USERNAME, userId);
-                        msgStateQuery.whereMatches(Constants.MESSAGE_ID, msg.getObjectId());
-                        //object id won't be null as it was fetched from parse
-                        try {
-                            ParseObject msgState = msgStateQuery.getFirst();
-                            if (msgState != null) {
-                                msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
-                                msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
-                            } else {
-                                //default state 0 0
-                                msg.put(Constants.LIKE, false);
-                                msg.put(Constants.CONFUSING, false);
-                            }
-                        }
-                        catch (ParseException e){
-                            //no entry for it in MessageState table
-                            //use default state 0 0
-                            msg.put(Constants.LIKE, false);
-                            msg.put(Constants.CONFUSING, false);
-                        }
-                        msg.put(Constants.USER_ID, userId);
-                        msg.put(Constants.DIRTY_BIT, false);
-                        msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
-                    }*/
                     Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages);
@@ -286,123 +259,6 @@ public class Queries {
         }
 
         return msgList;
-
-
-     /* *//*
-       * Retrieving new msgs...
-       *//*
-            List<List<String>> joinedGroups = user.getList("joined_groups");
-
-            if (joinedGroups == null)
-                joinedGroups = new ArrayList<List<String>>();
-
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
-            query.orderByAscending(Constants.TIMESTAMP);
-
-
-            if (joinedGroups.size() > 0) {
-                for (int i = 0; i < joinedGroups.size(); i++) {
-
-                    Date joinedTime = null;
-
-
-                    // Utility.ls(" joined time *************************  " +
-                    // joinedGroups.get(i).get(1).trim());
-
-                    if (joinedTime == null) {
-
-                        Utility.ls("joined time null in start");
-                        try {
-                            Queries2.storeGroupMember(joinedGroups.get(i).get(0).trim(), userId, false);
-
-                            joinedTime = Queries2.getGroupJoinedTime(joinedGroups.get(i).get(0).trim(), userId);
-
-
-                        } catch (ParseException e) {
-                        }
-                    }
-
-                    *//*
-                    newTimeStamp : most recent messages timestamp
-                    joinedTime : group joining timestamp of that member
-
-                    in case of new installation  :  joinedTime not locally stored, so firstly store that.
-                    other cases : compare newTimeStamp & joinedTime, and pick the latest one for query
-                     *//*
-                    if (joinedTime != null) {
-                        //                      Utility.ls(joinedGroups.get(i).get(0) + " joined time : " + joinedTime);
-                        SessionManager session = new SessionManager(Application.getAppContext());
-
-                        if (newTimeStamp == null && joinedTime != null) {
-                            query.whereGreaterThan(Constants.TIMESTAMP, joinedTime);
-                            //                        Utility.ls(" newTimeStamp : null");
-                        } else if (newTimeStamp != null && joinedTime == null) {
-                            query.whereGreaterThan(Constants.TIMESTAMP, newTimeStamp);
-                        } else if (newTimeStamp == null && joinedTime == null) {
-                            try {
-                                newTimeStamp = session.getCurrentTime();
-
-                                if (newTimeStamp != null)
-                                    query.whereGreaterThan(Constants.TIMESTAMP, newTimeStamp);
-                            } catch (java.text.ParseException e) {
-                            }
-                        } else {
-                            int diff = newTimeStamp.compareTo(joinedTime);
-
-                            if (diff < 0)
-                                query.whereGreaterThan(Constants.TIMESTAMP, joinedTime);
-                            else
-                                query.whereGreaterThan(Constants.TIMESTAMP, newTimeStamp);
-                        }
-                    } else {
-//                        Utility.ls(joinedGroups.get(i).get(0) + " joined time : " + null);
-                        if (newTimeStamp != null)
-                            query.whereGreaterThan(Constants.TIMESTAMP, newTimeStamp);
-                    }
-                    query.whereEqualTo("code", joinedGroups.get(i).get(0));
-
-                    try {
-                        List<ParseObject> newmsgs = query.find();
-
-                        if (newmsgs != null) {
-
-                            for (int k = 0; k < newmsgs.size(); k++) {
-                                // Adding new msgs to msg list
-                                msgList.add(0, newmsgs.get(k));
-
-                                // Storing new msgs to local database
-                                ParseObject messages = newmsgs.get(k);
-
-                                messages.put(Constants.USER_ID, userId);
-                                messages.put(Constants.DIRTY_BIT, false);
-                                messages.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded,
-                                                                        // then must have seen
-
-                                //likestatus and confused status should be fetched and set here
-                                ParseQuery msgStateQuery = new ParseQuery("MessageState");
-                                msgStateQuery.whereMatches(Constants.USERNAME, userId);
-                                msgStateQuery.whereMatches(Constants.MESSAGE_ID, messages.getObjectId());
-                                //object id won't be null as it was fetched from parse
-                                List<ParseObject> msgStateResults = msgStateQuery.find();
-                                if (msgStateResults == null || msgStateResults.size() == 0) {//default state 00
-                                    messages.put(Constants.LIKE, false);
-                                    messages.put(Constants.CONFUSING, false);
-                                } else {
-                                    ParseObject msgState = msgStateResults.get(0);
-                                    messages.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
-                                    messages.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
-                                }
-                                messages.pinInBackground();
-                            }
-                        }
-
-                    } catch (ParseException e) {
-                    }
-                }
-            }
-        }
-        return msgList;
-        */
     }
 
 

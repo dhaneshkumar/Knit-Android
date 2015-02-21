@@ -431,23 +431,33 @@ public class Outbox extends Fragment {
         return super.onOptionsItemSelected(item);
     }
 
-
-    public static void refreshCountCore(){
-        Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
-        SyncMessageDetails.fetchLikeConfusedCountOutbox();
-        //following is the onpostexecute thing
+    //Refresh the layout. For e.g if outbox messages have changed
+    public static void refreshSelf(){
         if (Outbox.outboxRefreshLayout != null){
             Outbox.outboxRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Notifying Outbox.myadapter");
+                    Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
                     outboxRefreshLayout.setRefreshing(false);
+                    if (groupDetails == null || groupDetails.size() == 0) {
+                        outboxLayout.setVisibility(View.VISIBLE);
+                    } else {
+                        outboxLayout.setVisibility(View.GONE);
+                    }
+
                     if(Outbox.myadapter != null){
                         Outbox.myadapter.notifyDataSetChanged();
                     }
                 }
             });
         }
+    }
+
+    public static void refreshCountCore(){
+        Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
+        SyncMessageDetails.fetchLikeConfusedCountOutbox();
+        //following is the onpostexecute thing
+        refreshSelf();
     }
 
     //update like/confused/seen count for sent messages in a background thread
