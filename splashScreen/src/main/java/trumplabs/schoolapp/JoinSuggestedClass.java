@@ -1,5 +1,7 @@
 package trumplabs.schoolapp;
 
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import baseclasses.MyActionBarActivity;
+import joinclasses.JoinClassDialog;
 import joinclasses.JoinedHelper;
 import trumplab.textslate.R;
 
@@ -49,6 +52,18 @@ public class JoinSuggestedClass extends MyActionBarActivity {
         classNameView.setText(className);
         classCodeView.setText("Code : " + classCode);
 
+        joinButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getSupportFragmentManager();
+                JoinClassDialog joinClassDialog = new JoinClassDialog();
+                Bundle args = new Bundle();
+                args.putString("classCode", classCode);
+
+                joinClassDialog.setArguments(args);
+                joinClassDialog.show(fm, "Join Class");
+            }
+        });
         ignoreView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -68,7 +83,7 @@ public class JoinSuggestedClass extends MyActionBarActivity {
                     removedGroup.add(classCode);
                     removedGroup.add(className);
                     removedList.add(removedGroup);
-                    user.put(Constants.REMOVED_GROUPS, removedList);
+                    user.put(Constants.REMOVED_GROUPS, new ArrayList<List<String>>());
                     user.getCurrentUser().saveEventually();
 
                     // updating suggestions adapter in Classrooms fragment

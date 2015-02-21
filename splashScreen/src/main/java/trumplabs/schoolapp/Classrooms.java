@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import BackGroundProcesses.CreatedClassRooms;
+import joinclasses.JoinClassDialog;
 import joinclasses.JoinedHelper;
 import library.ExpandableListView;
 import library.UtilString;
@@ -160,6 +161,19 @@ public class Classrooms extends Fragment {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
                 CreateClassDialog createClassDialog = new CreateClassDialog();
                 createClassDialog.show(fm, "create Class");
+            }
+        });
+
+
+         /*
+        On click join button , open up dialog box to join class
+         */
+        joinClassTV.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                JoinClassDialog joinClassDialog = new JoinClassDialog();
+                joinClassDialog.show(fm, "Join Class");
             }
         });
 
@@ -435,9 +449,6 @@ public class Classrooms extends Fragment {
             group.add(joinedGroups.get(position).get(0));
             group.add(Str);
 
-            final String classCode = joinedGroups.get(position).get(0);
-            final String className = Str;
-
           /*
            * setting condensed font
            */
@@ -466,6 +477,8 @@ public class Classrooms extends Fragment {
                 classcreator.setVisibility(View.GONE);
 
                 child_textView.setText("Assigned to : " + ParseUser.getCurrentUser().getString("name"));
+
+
             }
 
           /*
@@ -480,8 +493,6 @@ public class Classrooms extends Fragment {
                 ParseObject obj = delquery1.getFirst();
                 if (obj != null) {
                     String creatorName = obj.get("Creator").toString();
-                    senderId = obj.getString("senderId");
-
 
                     if (!UtilString.isBlank(creatorName)) {
                         Str = creatorName.trim();
@@ -570,8 +581,4 @@ public class Classrooms extends Fragment {
             return row;
         }
     }
-
-
-
-
 }
