@@ -68,7 +68,7 @@
                     android:id="@+id/school"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="16sp"
+                    android:textSize="14sp"
                     android:background="@drawable/apptheme_spinner_default_holo_light"
                     android:layout_marginTop="16dp"
                     android:paddingLeft="16dp"
@@ -90,7 +90,7 @@
                     android:singleLine="true"
                     android:textColor="@color/black"
                     android:textColorHint="#8A8A8A"
-                    android:textSize="16sp" />
+                    android:textSize="14sp" />
 
 
                 <TextView
@@ -114,7 +114,7 @@
                         android:id="@+id/standard"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:layout_weight="2"
                         android:background="@drawable/apptheme_spinner_default_holo_light"
                         android:paddingLeft="16dp"
@@ -136,7 +136,7 @@
                         android:id="@+id/division"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:textSize="16sp"
+                        android:textSize="14sp"
                         android:layout_weight="2"
                         android:background="@drawable/apptheme_spinner_default_holo_light"
                         android:paddingLeft="16dp"
@@ -165,4 +165,78 @@
             android:textSize="16sp"
             />
         </LinearLayout>
+
+
+    <LinearLayout
+        android:id="@+id/codeViewLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ClassCode"
+            android:padding="16dp"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            />
+
+        <TextView
+            android:id="@+id/codeTV"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="KNI1234"
+            android:gravity="center"
+            android:padding="12dp"
+            android:background="@drawable/app_color_box"
+            android:textColor="@color/buttoncolor"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:textSize="22sp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="(tap to copy)"
+            android:layout_marginRight="16dp"
+            android:gravity="right"
+            android:textStyle="italic"
+            android:textSize="11sp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:textSize="12sp"
+            android:text="This is a unique code generated for every class and is to be used by parents to subscribe to your classroom."
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:text=""
+            android:layout_marginTop="16dp"
+            android:background="@color/buttoncolor"
+            />
+
+        <TextView
+            android:id="@+id/seeHow"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="14dp"
+            android:text="See How!"
+            android:textColor="@color/buttoncolor"
+            android:textSize="16sp"
+            />
+
+        </LinearLayout>
+
+
 </LinearLayout>

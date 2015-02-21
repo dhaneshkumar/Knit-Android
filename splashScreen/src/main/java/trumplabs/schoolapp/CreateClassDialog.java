@@ -54,6 +54,9 @@ public class CreateClassDialog extends DialogFragment{
     private String classCode;
     private LinearLayout progressLayout;
     private LinearLayout contentLayout;
+    private LinearLayout codeViewLayout;
+    private TextView codeTV;
+    private TextView seeHowTV;
 
     @NonNull
     @Override
@@ -74,6 +77,9 @@ public class CreateClassDialog extends DialogFragment{
         classView = (EditText) view.findViewById(R.id.classnameid);
         progressLayout = (LinearLayout) view.findViewById(R.id.progresslayout);
         contentLayout = (LinearLayout) view.findViewById(R.id.createclasslayout);
+        codeViewLayout = (LinearLayout) view.findViewById(R.id.codeViewLayout);
+        codeTV = (TextView) view.findViewById(R.id.codeTV);
+        seeHowTV = (TextView) view.findViewById(R.id.seeHow);
 
 
         School school = new School();
@@ -95,11 +101,20 @@ public class CreateClassDialog extends DialogFragment{
                 //typed class name
                 className = classView.getText().toString().trim();
 
+                String updatedName = className;
+
+                if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
+                    updatedName += " "+selectedStandard;
+
+                if(!UtilString.isBlank(selectedDivison) && !selectedDivison.equals("NA"))
+                    updatedName += selectedDivison;
+
+
                 if (!UtilString.isBlank(className)) {
 
-                    if(query.checkClassNameExist(className))
+                    if(query.checkClassNameExist(updatedName))
                     {
-                        Utility.toast(className + " class already exist");
+                        Utility.toast(updatedName + " class already exist");
                         return;
                     }
 
@@ -111,7 +126,9 @@ public class CreateClassDialog extends DialogFragment{
                         /*
                          * Hidding the keyboard from screen
                          */
-                        Tools.hideKeyboard(getActivity());
+
+                        if(getActivity() != null)
+                            Tools.hideKeyboard(getActivity());
 
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);
@@ -145,7 +162,6 @@ public class CreateClassDialog extends DialogFragment{
                 menu.getMenu().add("Other");
                 menu.show();
 
-
                 // setting menu click functionality
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
 
@@ -168,7 +184,6 @@ public class CreateClassDialog extends DialogFragment{
             @Override
             public void onClick(View v) {
 
-                Tools.hideKeyboard(getActivity());
         /*
          * Creating popmenu for selecting schools
          */
@@ -199,7 +214,7 @@ public class CreateClassDialog extends DialogFragment{
             @Override
             public void onClick(View v) {
 
-                Tools.hideKeyboard(getActivity());
+
         /*
          * Creating popmenu for selecting schools
          */
@@ -222,6 +237,32 @@ public class CreateClassDialog extends DialogFragment{
                         return false;
                     }
                 });
+            }
+        });
+
+
+        //on click code, copy code to clipboard
+        codeTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Utility.copyToClipBoard(getActivity(), "Class code", classCode);
+
+            }
+        });
+
+
+        //on click on "seeHow" button go to invite parent class.
+        seeHowTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                   Intent intent = new Intent(getActivity(), ClassContainer.class);
+
+                    intent.putExtra("selectedclass", classCode);
+                    intent.putExtra("selectedclassName", className);
+                    startActivity(intent);
+
+                    dialog.dismiss();
+
             }
         });
 
@@ -301,29 +342,26 @@ public class CreateClassDialog extends DialogFragment{
 
 
             if (result) {
-                Utility.toast("Group Creation successful");
+//                Utility.toast("Group Creation successful");
 
-                Intent intent = new Intent(getActivity(), ClassContainer.class);
+                if(getActivity() != null) {
+                    //create class creation messages and notification
+                    SessionManager session = new SessionManager(getActivity().getApplicationContext());
+                    NotificationGenerator.generateNotification(getActivity().getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                    AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
+                }
 
-                intent.putExtra("selectedclass", classCode);
-                intent.putExtra("selectedclassName", className);
-                startActivity(intent);
+                codeTV.setText(classCode);
 
                 Classrooms.createdGroups = user.getList(Constants.CREATED_GROUPS);
                 if(Classrooms.createdClassAdapter != null)
                     Classrooms.createdClassAdapter.notifyDataSetChanged();
 
-                dialog.dismiss();
-
                 // Setting layouts visibility
-               // contentLayout.setVisibility(View.VISIBLE);
-                //progressLayout.setVisibility(View.GONE);
+                codeViewLayout.setVisibility(View.VISIBLE);
+                progressLayout.setVisibility(View.GONE);
 
-                //create class creation messages and notification
-                SessionManager session = new SessionManager(getActivity().getApplicationContext());
-                NotificationGenerator.generateNotification(getActivity().getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
-
+               // dialog.dismiss();
 
             } /*else if (classNameCheckFlag) {
         createclasslayout.setVisibility(View.VISIBLE);

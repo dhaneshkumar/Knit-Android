@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/lightbackgroundcolor"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/internetbar"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@color/internetbarcolor"
+        android:gravity="center"
+        android:text="No internet Connection"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/progresslayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:padding="64dp"
+        android:visibility="gone"
+        android:orientation="vertical"
+        >
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="14sp"
+            android:text="Creating your classroom..."/>
+
+    </LinearLayout>
+
+
+
+
+    <LinearLayout
+        android:id="@+id/createclasslayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingTop="32dp"
+        android:paddingBottom="32dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:orientation="vertical">
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="19sp"
+            android:layout_marginLeft="4dp"
+            android:textColor="@color/black"
+            android:text="Join a classroom"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/code"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Enter Class Code"
+                android:inputType="textCapCharacters|textNoSuggestions"
+                android:paddingLeft="16dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/apptheme_edit_text_holo_light"
+                android:layout_marginTop="12dp"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="#8A8A8A"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/nameHelp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:src="@drawable/question"
+                android:layout_marginRight="16dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10sp"
+            android:paddingLeft="8dp"
+            android:paddingRight="1dp"
+            android:textColor="#8A8A8A"
+            android:text="eg. KNIT234"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/child"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Associated Name"
+                android:inputType="textCapWords"
+                android:paddingLeft="16dp"
+                android:paddingRight="1dp"
+                android:background="@drawable/apptheme_edit_text_holo_light"
+                android:layout_marginTop="8dp"
+                android:singleLine="true"
+                android:textColor="@color/black"
+                android:textColorHint="#8A8A8A"
+                android:textSize="14sp" />
+
+            <ImageView
+                android:id="@+id/childHelp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:src="@drawable/question"
+                android:layout_marginRight="16dp"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true" />
+        </RelativeLayout>
+
+
+        <TextView
+            android:id="@+id/join"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Join"
+            android:background="@color/buttoncolor"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:layout_marginTop="12dp"
+            />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Is yout teacher not using Knit? \nNo Worries!"
+            android:layout_marginTop="24dp"
+            android:textColor="@color/black"
+            android:textSize="14sp"
+            />
+
+        <TextView
+            android:id="@+id/invite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Invite Teacher"
+            android:background="@color/buttoncolor"
+            android:textColor="@color/white"
+            android:textSize="17sp"
+            android:gravity="center"
+            android:padding="8dp"
+            android:layout_marginTop="8dp"
+            />
+
+
+    </LinearLayout>
+
+
+</LinearLayout>
