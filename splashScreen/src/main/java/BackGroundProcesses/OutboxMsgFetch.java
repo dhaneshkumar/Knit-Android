@@ -71,9 +71,10 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
         parameters.put("limit", Config.outboxMsgMaxFetchCount+"");
         parameters.put("classtype", "c"); //created type
         List<ParseObject> newMsgsToPin = new ArrayList<ParseObject>();
+
         try{
             List<ParseObject> outboxMessages = ParseCloud.callFunction("showLatestMessagesWithLimit", parameters);
-            Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "fetched " + outboxMessages.size() + "messages");
+           // Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "fetched " + outboxMessages.size() + "messages");
             for(int i=0; i<outboxMessages.size(); i++){
                 ParseObject outboxMsg = outboxMessages.get(i);
                 //Now create a SentMessage object and pin it
@@ -97,7 +98,7 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
             ParseObject.pinAll(newMsgsToPin);
             final SessionManager sm = new SessionManager(Application.getAppContext());
             sm.setOutboxLocalState(1, userId); //set the flag locally that outbox data is valid
-            Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Pinned all. State changed to 1. Notifying Outbox about it");
+            //Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Pinned all. State changed to 1. Notifying Outbox about it");
 
             //update total message count outbox
             Outbox.updateOutboxTotalMessages();
@@ -110,7 +111,7 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
             Outbox.refreshSelf();
         }
         catch (ParseException e){
-            Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Error in parsecloud function calling maybe");
+          //  Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Error in parsecloud function calling maybe");
             e.printStackTrace();
         }
     }

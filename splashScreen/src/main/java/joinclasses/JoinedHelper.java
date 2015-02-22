@@ -61,7 +61,7 @@ public class JoinedHelper {
         //setting parameters
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("classCode", classcode);
-        params.put("childName", childname);
+        params.put("associateName", childname);
         params.put("installationObjectId", ParseInstallation.getCurrentInstallation().getObjectId());
 
         if(ParseInstallation.getCurrentInstallation() != null)

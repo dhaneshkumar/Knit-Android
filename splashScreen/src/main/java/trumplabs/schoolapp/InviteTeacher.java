@@ -4,9 +4,12 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -38,12 +41,11 @@ public class InviteTeacher extends MyActionBarActivity {
     LinearLayout detailsLayout;
     LinearLayout congratsLayout;
     LinearLayout progressBarLayout;
-    AutoCompleteTextView schoolEditText;
+    EditText schoolEditText;
     EditText teacherEditText;
     EditText phoneEditText;
     EditText emailEditText;
     EditText childEditText;
-    Button submitButton;
 
     static String schoolName;
     static String teacherName;
@@ -63,187 +65,24 @@ public class InviteTeacher extends MyActionBarActivity {
         detailsLayout = (LinearLayout) findViewById(R.id.detailsLayout);
         congratsLayout = (LinearLayout) findViewById(R.id.congratsLayout);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
-        schoolEditText = (AutoCompleteTextView) findViewById(R.id.schoolEditText);
+        schoolEditText = (EditText) findViewById(R.id.schoolEditText);
         teacherEditText = (EditText) findViewById(R.id.teacherEditText);
         phoneEditText = (EditText) findViewById(R.id.phoneEditText);
         emailEditText = (EditText) findViewById(R.id.emailEditText);
         childEditText = (EditText) findViewById(R.id.childEditText);
 
-
-
-        ArrayAdapter adapter;
-        try {
-
-            ReadSchoolFile readSchoolFile = new ReadSchoolFile();
-            adapter =
-                    new ArrayAdapter(this, android.R.layout.simple_list_item_1, readSchoolFile.getSchoolsList().toArray());
-            schoolEditText.setAdapter(adapter);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
         //Adding home back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         //setting title of activity
-        getSupportActionBar().setTitle("Invite Teachers");
+        getSupportActionBar().setTitle("Invite Teacher");
 
-        //submit button click response
-        submitButton = (Button) findViewById(R.id.submitButton);
-        submitButton.setOnClickListener(new View.OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                schoolName = schoolEditText.getText().toString();
-                teacherName = teacherEditText.getText().toString();
-                phoneNo = phoneEditText.getText().toString();
-                email = emailEditText.getText().toString();
-                childName = childEditText.getText().toString();
-
-                if (UtilString.isBlank(schoolName))
-                    Utility.toast("Incorrect school name");
-                else if (UtilString.isBlank(teacherName))
-                    Utility.toast("Incorrect teacher name");
-                else if (UtilString.isBlank(phoneNo) && UtilString.isBlank(email))
-                    Utility.toast("Please enter atleast phone number or email");
-                else {
-                    if (!Utility.isInternetOn(InviteTeacher.this)) {
-                        Utility.toast("No internet Connection!");
-                        return;
-                    }
-
-                    detailsLayout.setVisibility(View.GONE);
-                    progressBarLayout.setVisibility(View.VISIBLE);
-
-                    InviteTeacherTask inviteTask = new InviteTeacherTask();
-                    inviteTask.execute();
-
-                }
-            }
-        });
-
-
-        //setting box color transition for teacher name editText
-        teacherEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //Changing sending box color
-                if (s.length() > 0) {
-                    setColor(teacherEditText);
-                    teacherFlag = true;
-                    setButtonColor();
-                }
-                else {
-                    unSetColor(teacherEditText);
-                    teacherFlag = false;
-                    setButtonColor();
-                }
-            }
-        });
-
-        //setting box color transition for school name editText
-        schoolEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //Changing sending box color
-                if (s.length() > 0) {
-                    setColor(schoolEditText);
-                    schoolFlag= true;
-                    setButtonColor();
-                }
-                else {
-                    unSetColor(schoolEditText);
-                    schoolFlag = false;
-                    setButtonColor();
-                }
-            }
-        });
-
-        //setting box color transition for child name editText
-        childEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //Changing sending box color
-                if (s.length() > 0)
-                    setColor(childEditText);
-                else
-                    unSetColor(childEditText);
-            }
-        });
-
-        //setting box color transition for phone name editText
-        phoneEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //Changing sending box color
-                if (s.length() > 0) {
-                    setColor(phoneEditText);
-                    phoneFlag = true;
-                    setButtonColor();
-                }
-                else {
-                    unSetColor(phoneEditText);
-                    phoneFlag = false;
-                    setButtonColor();
-                }
-            }
-        });
-
-        //setting box color transition for email name editText
-        emailEditText.addTextChangedListener(new TextWatcher() {
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
-            @Override
-            public void afterTextChanged(Editable s) {
-                //Changing sending box color
-                if (s.length() > 0) {
-                    setColor(emailEditText);
-                    emailFlag = true;
-                    setButtonColor();
-                }
-                else {
-                    unSetColor(emailEditText);
-                    emailFlag = false;
-                    setButtonColor();
-                }
-            }
-        });
 
     };
+
+
+
+
 
 
     public class InviteTeacherTask extends AsyncTask<Void, Void, Void>{
@@ -288,7 +127,7 @@ public class InviteTeacher extends MyActionBarActivity {
             if(response == 1) {
                 detailsLayout.setVisibility(View.VISIBLE);
 
-                String text = "You have successfully invited teacher to create a classroom. You will be the first one to know when they come on-board";
+                String text = "You have successfully invited your teacher to use Knit. You will be the first one to know when they come on-board";
 
                 AlertDialog.Builder alert = new AlertDialog.Builder(InviteTeacher.this);
 
@@ -325,11 +164,52 @@ public class InviteTeacher extends MyActionBarActivity {
     }
 
 
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.invite_teacher, menu);
+        return true;
+    }
+
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
                 onBackPressed();
+                break;
+            case  R.id.submit:
+
+                schoolName = schoolEditText.getText().toString();
+                teacherName = teacherEditText.getText().toString();
+                phoneNo = phoneEditText.getText().toString();
+                email = emailEditText.getText().toString();
+                childName = childEditText.getText().toString();
+
+                if (UtilString.isBlank(schoolName))
+                    Utility.toast("Incorrect school name");
+                else if (UtilString.isBlank(teacherName))
+                    Utility.toast("Incorrect teacher name");
+                else if (UtilString.isBlank(phoneNo) && UtilString.isBlank(email))
+                    Utility.toast("Please enter atleast phone number or email");
+                else {
+                    if (!Utility.isInternetOn(InviteTeacher.this)) {
+                        Utility.toast("No internet Connection!");
+                        break;
+                    }
+
+                    detailsLayout.setVisibility(View.GONE);
+                    progressBarLayout.setVisibility(View.VISIBLE);
+
+                    InviteTeacherTask inviteTask = new InviteTeacherTask();
+                    inviteTask.execute();
+                }
+
                 break;
             default:
                 break;
@@ -338,47 +218,5 @@ public class InviteTeacher extends MyActionBarActivity {
     }
 
 
-    private  void setColor(EditText editText)
-    {
-        int sdk = android.os.Build.VERSION.SDK_INT;
-        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            editText.setBackgroundDrawable( getResources().getDrawable(R.drawable.button_color_boundry) );
-        } else {
-            editText.setBackground( getResources().getDrawable(R.drawable.button_color_boundry));
-        }
-    }
 
-    private  void unSetColor(EditText editText)
-    {
-        int sdk = android.os.Build.VERSION.SDK_INT;
-        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            editText.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_grey_color) );
-        } else {
-            editText.setBackground( getResources().getDrawable(R.drawable.round_corner_grey_color));
-        }
-    }
-
-
-    private void setButtonColor()
-    {
-        int sdk = android.os.Build.VERSION.SDK_INT;
-
-        if( (schoolFlag && teacherFlag && phoneFlag)  || (schoolFlag && teacherFlag && emailFlag) )
-        {
-
-            if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                submitButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_button_color) );
-            } else {
-                submitButton.setBackground( getResources().getDrawable(R.drawable.round_corner_button_color));
-            }
-        }
-        else
-        {
-            if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-                submitButton.setBackgroundDrawable( getResources().getDrawable(R.drawable.round_corner_light_button_color) );
-            } else {
-                submitButton.setBackground( getResources().getDrawable(R.drawable.round_corner_light_button_color));
-            }
-        }
-    }
 }
