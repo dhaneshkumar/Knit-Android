@@ -61,9 +61,9 @@ public class JoinedHelper {
 
         //setting parameters
         HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("classcode", classcode);
-        params.put("childname", childname);
-        params.put("installationId", ParseInstallation.getCurrentInstallation().getObjectId());
+        params.put("classCode", classcode);
+        params.put("childName", childname);
+        params.put("installationObjectId", ParseInstallation.getCurrentInstallation().getObjectId());
 
         if(ParseInstallation.getCurrentInstallation() != null)
         {
@@ -79,8 +79,10 @@ public class JoinedHelper {
             Log.d("JOIN", "parseInstallation : null");
 
         ParseObject codeGroupObject = null;
+        HashMap<String, Object> result = null;
+
         try {
-            codeGroupObject = ParseCloud.callFunction("joinnewclass2", params);
+            result = ParseCloud.callFunction("joinClass", params);
 
 
             Log.d("join", "class joining");
@@ -94,48 +96,54 @@ public class JoinedHelper {
         ParseUser user = ParseUser.getCurrentUser();
         String userId = user.getUsername();
 
-        if (codeGroupObject == null)
+        if (result == null)
             return 0;
         else {
 
-            Log.d("join", "code object not null");
-            //successfully joined the classroom
-            codeGroupObject.put("userId", userId);
-            try {
-                codeGroupObject.pin();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            codeGroupObject = (ParseObject) result.get("codegroup");
+            List<ParseObject> oldMessages = (List<ParseObject>) result.get("messages");
+
+            if(codeGroupObject != null) {
+
+                Log.d("join", "code object not null");
+                //successfully joined the classroom
+                codeGroupObject.put("userId", userId);
+                try {
+                    codeGroupObject.pin();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
 
-            //fetching parse user's joined group details
-            try {
-                user.fetch();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+                //fetching parse user's joined group details
+                try {
+                    user.fetch();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
 
 
              /*
               * download profile pic of teacher locally
               */
-            String senderId = codeGroupObject.getString("senderId");
-            ParseFile senderPic = codeGroupObject.getParseFile("senderPic");
+                String senderId = codeGroupObject.getString("senderId");
+                ParseFile senderPic = codeGroupObject.getParseFile("senderPic");
 
-            if(!UtilString.isBlank(senderId)) {
-                senderId = senderId.replaceAll("@", "");
-                String filePath =
-                        Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
-                final File senderThumbnailFile = new File(filePath);
+                if (!UtilString.isBlank(senderId)) {
+                    senderId = senderId.replaceAll("@", "");
+                    String filePath =
+                            Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
+                    final File senderThumbnailFile = new File(filePath);
 
-                if (!senderThumbnailFile.exists()) {
+                    if (!senderThumbnailFile.exists()) {
 
-                    Queries2 imageQuery = new Queries2();
+                        Queries2 imageQuery = new Queries2();
 
-                    if (senderPic != null)
-                        imageQuery.downloadProfileImage(senderId, senderPic);
-                } else {
-                    // Utility.toast("image already exist ");
+                        if (senderPic != null)
+                            imageQuery.downloadProfileImage(senderId, senderPic);
+                    } else {
+                        // Utility.toast("image already exist ");
+                    }
                 }
             }
 
@@ -155,6 +163,20 @@ public class JoinedHelper {
                 School.storeSuggestions(schoolId, standard, division, userId);
             }
 
+
+            if(oldMessages != null)
+            {
+                for(int i=0 ; i<oldMessages.size(); i++)
+                {
+                    oldMessages.get(i).put("userId", ParseUser.getCurrentUser().getUsername());
+                }
+
+                try {
+                    ParseObject.pinAll(oldMessages);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
             return 1;
         }
     }

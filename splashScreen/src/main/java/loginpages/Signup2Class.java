@@ -123,7 +123,7 @@ public class Signup2Class extends ActionBarActivity {
                             if (schoolId != null)
                                 user.put("school", schoolId);
                         }*/
-                        if (mr.equals("Mr")) {
+                        if (mr.equals("Mr.")) {
                             user.put("sex", "M");
                         } else
                             user.put("sex", "F");

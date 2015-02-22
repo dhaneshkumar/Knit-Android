@@ -216,7 +216,6 @@ public class JoinClass extends Fragment {
                 if (user != null) {
                     int result = JoinedHelper.joinClass(code, childName, false);
 
-
                     if (result == 1)
                         return true;      //successfully joined class
                     else if (result == 2) {

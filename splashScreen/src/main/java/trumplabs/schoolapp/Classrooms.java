@@ -432,7 +432,6 @@ public class Classrooms extends Fragment {
                         Str = creatorName.trim();
                         classcreator.setText(Str);
                     }
-
                 }
             } catch (ParseException e) {
             }
