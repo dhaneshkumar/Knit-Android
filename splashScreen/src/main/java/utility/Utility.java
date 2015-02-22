@@ -37,6 +37,7 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -481,5 +482,14 @@ public class Utility extends MyActionBarActivity {
                 }
             }
         });
+    }
+
+    /*
+        Returns a date 1/1/11 which is way before Knit app came into being
+     */
+    public static Date getOriginDate(){
+        Calendar origin = Calendar.getInstance();
+        origin.set(2011, 0, 1, 0, 0);//2011(year), 0(January month), 1(Day), 0(hour), 0(minute)
+        return origin.getTime();
     }
 }

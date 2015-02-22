@@ -8,15 +8,15 @@
     >
 
 
-        <TextView
-            android:id="@+id/classname1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Knit"
-            android:layout_centerVertical="true"
-            android:textSize="22sp"
-            android:textColor="@color/black"
-            />
+    <TextView
+        android:id="@+id/classname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Knit"
+        android:layout_centerVertical="true"
+        android:textSize="16sp"
+        android:textColor="@color/black"
+        />
 
 
 
@@ -42,14 +42,14 @@
 
 
         <TextView
-            android:id="@+id/classcode1"
+            android:id="@+id/classcode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="KNI1234"
             android:gravity="top|center_vertical"
             android:textColor="#999999"
             android:textSize="13sp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:layout_below="@+id/classcreator"
             android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true" />

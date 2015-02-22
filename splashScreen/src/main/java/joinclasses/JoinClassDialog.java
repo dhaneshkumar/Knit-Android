@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
@@ -132,6 +133,13 @@ public class JoinClassDialog extends DialogFragment {
             }
         });
 
+        //get parameter "classCode" from caller to know if called to join a suggested class. If that is the case
+        //don't show class code, invite teacher details
+        String classCode = getArguments().getString("classCode");
+        if(classCode != null){
+            //Hide unnecessary details here
+            Log.d("DEBUG_JOIN_CLASS_DIALOG", "called to join the suggested group " + classCode);
+        }
         return dialog;
     }
 
