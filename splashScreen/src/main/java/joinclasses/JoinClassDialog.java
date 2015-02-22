@@ -135,10 +135,12 @@ public class JoinClassDialog extends DialogFragment {
 
         //get parameter "classCode" from caller to know if called to join a suggested class. If that is the case
         //don't show class code, invite teacher details
-        String classCode = getArguments().getString("classCode");
-        if(classCode != null){
-            //Hide unnecessary details here
-            Log.d("DEBUG_JOIN_CLASS_DIALOG", "called to join the suggested group " + classCode);
+        if(getArguments() != null) {
+            String classCode = getArguments().getString("classCode");
+            if (classCode != null) {
+                //Hide unnecessary details here
+                Log.d("DEBUG_JOIN_CLASS_DIALOG", "called to join the suggested group " + classCode);
+            }
         }
         return dialog;
     }
