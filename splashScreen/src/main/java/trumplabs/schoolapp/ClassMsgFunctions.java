@@ -130,11 +130,12 @@ public class ClassMsgFunctions {
         @Override
         protected void onPostExecute(Boolean result) {
 
-            ClassMsg.progressLayout.setVisibility(View.GONE);
-            ClassMsg.contentLayout.setVisibility(View.VISIBLE);
+            SendMessage.progressLayout.setVisibility(View.GONE);
+            SendMessage.contentLayout.setVisibility(View.VISIBLE);
 
-            if(result  &&  ClassMsg.currentActivity!= null)
+            if(result  &&  SendMessage.currentActivity!= null)
             {
+                Utility.toast("Successfully deleted your classroom");
 
                 Classrooms.createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
 
@@ -142,7 +143,7 @@ public class ClassMsgFunctions {
                 if(Classrooms.createdClassAdapter != null)
                     Classrooms.createdClassAdapter.notifyDataSetChanged();
                 //finishing the current activity
-                ClassMsg.currentActivity.finish();
+                SendMessage.currentActivity.finish();
 
             }
 
@@ -154,9 +155,9 @@ public class ClassMsgFunctions {
     //Updating total sent messages count of this class
     public static void updateTotalClassMessages(String groupCode){
 
-        Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "updating total outbox count");
+        //Log.d("DEBUG_CLASS_MSG_UPDATE_TOTAL_COUNT", "updating total outbox count");
 
-        //update ClassMsg.totalClassMessages
+        //update SendMessage.totalClassMessages
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null)
@@ -168,7 +169,7 @@ public class ClassMsgFunctions {
         query.whereEqualTo("userId", user.getUsername());
         query.whereEqualTo("code", groupCode);
         try{
-            ClassMsg.totalClassMessages = query.count();
+            SendMessage.totalClassMessages = query.count();
         }
         catch(ParseException e){
             e.printStackTrace();

@@ -1,23 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" 
       xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item
-        android:id="@+id/memberlist"
-        android:orderInCategory="100"
-        app:showAsAction="always"
-        android:icon="@drawable/ic_action_users"
-        android:title="Subscribed Members"/>
-    <!-- <item
-        android:id="@+id/attachfile"
-        android:orderInCategory="200"
-        app:showAsAction="always"
-        android:icon="@drawable/content_new_attachment"
-        android:title="Attch File"/> -->
-        
-    <!--  <item android:id="@+id/invite"
-       app:showAsAction="never"
-       android:title="Invite Parents"/> -->
+
+
     <item android:id="@+id/deleteclassmenu"
        app:showAsAction="never"
        android:title="Delete Class"/>
+
+    <item android:id="@+id/copyCode"
+        app:showAsAction="never"
+        android:title="Copy Class code"/>
     
 </menu>
