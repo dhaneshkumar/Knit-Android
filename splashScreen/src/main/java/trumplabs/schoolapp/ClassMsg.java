@@ -2,6 +2,7 @@ package trumplabs.schoolapp;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -155,11 +157,43 @@ public class ClassMsg extends Fragment implements CommunicatorInterface {
         initialiseListViewMethods();
 
         //setting action bar title as class name
-        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(grpName);
+        //((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(grpName);
 
         //setting listview adapter
         listv.setAdapter(myadapter);
+
+
+
+
+
+        ActionBar actionBar = ((ActionBarActivity) getActivity()).getSupportActionBar();
+
+     //   actionBar.setTitle("science");
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        LayoutInflater inflator = (LayoutInflater) this .getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.classmsg_action_view, null);
+
+        TextView className = (TextView) v.findViewById(R.id.className);
+        className.setText("KKK");
+
+        actionBar.setCustomView(v);
+
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), Subscribers.class);
+                intent.putExtra("className", "gfgfg");
+                intent.putExtra("classCode", "gggg");
+
+                startActivity(intent);
+
+            }
+        });
+
         super.onActivityCreated(savedInstanceState);
+
+
     }
 
     @Override

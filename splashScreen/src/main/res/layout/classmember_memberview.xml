@@ -2,30 +2,47 @@
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:background="@color/lightbackgroundcolor">
+
+    <TextView
+        android:id="@+id/head"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:text=""
+        android:background="@color/black"
+        />
 
     <TextView
         android:id="@+id/membernameid"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingTop="16dp"
+        android:layout_below="@+id/head"
         android:paddingBottom="16dp"
         android:paddingLeft="16dp"
         android:paddingRight="16dp"
-        android:background="@drawable/greyoutline"
         android:text="Rahul's Mom"
         android:textColor="@color/black"
         android:textSize="16sp" />
 
+
+    <ImageView
+        android:id="@+id/memberIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/joinOpt"
+        android:src="@drawable/android" />
+
     <ImageView
         android:id="@+id/joinOpt"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
-        android:layout_alignParentTop="true"
-        android:paddingBottom="10dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="0dp"
-        android:src="@drawable/ic_action_overflow" />
+        android:layout_centerVertical="true"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:paddingRight="16dp"
+        android:src="@drawable/remove" />
 </RelativeLayout>

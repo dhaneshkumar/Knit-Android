@@ -49,8 +49,8 @@ public class ClassContainer extends MyActionBarActivity {
 		case R.id.memberlist:
 			viewpager.setCurrentItem(1);
 			break;
-		case R.id.classmsgmenu:
-			viewpager.setCurrentItem(0);
+		/*case R.id.classmsgmenu:
+			viewpager.setCurrentItem(0);*/
 		default:
 			break;
 		}
