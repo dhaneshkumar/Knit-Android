@@ -1,48 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:background="@color/lightbackgroundcolor">
 
-    <TextView
-        android:id="@+id/head"
-        android:layout_width="match_parent"
-        android:layout_height="0.5dp"
-        android:text=""
-        android:background="@color/black"
-        />
 
-    <TextView
-        android:id="@+id/membernameid"
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="16dp"
-        android:layout_below="@+id/head"
-        android:paddingBottom="16dp"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:text="Rahul's Mom"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        android:background="@color/lightbackgroundcolor">
+
+        <TextView
+            android:id="@+id/head"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/grey_light"
+            android:text="" />
+
+        <TextView
+            android:id="@+id/membernameid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/head"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingTop="16dp"
+            android:text="Rahul's Mom"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
 
-    <ImageView
-        android:id="@+id/memberIcon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toLeftOf="@+id/joinOpt"
-        android:src="@drawable/android" />
+        <ImageView
+            android:id="@+id/memberIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/joinOpt"
+            android:src="@drawable/android" />
 
-    <ImageView
-        android:id="@+id/joinOpt"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
-        android:paddingRight="16dp"
-        android:src="@drawable/remove" />
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/joinOpt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:paddingBottom="4dp"
+            android:paddingRight="16dp"
+            android:paddingTop="4dp"
+            android:src="@drawable/remove" />
+    </RelativeLayout>
+</LinearLayout>

@@ -321,10 +321,10 @@ public class Classrooms extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent(getactivity, ClassContainer.class);
+                Intent intent = new Intent(getactivity, SendMessage.class);
 
-                intent.putExtra("selectedclass", createdGroups.get(position).get(0));
-                intent.putExtra("selectedclassName", createdGroups.get(position).get(1));
+                intent.putExtra("classCode", createdGroups.get(position).get(0));
+                intent.putExtra("className", createdGroups.get(position).get(1));
                 startActivity(intent);
             }
         });

@@ -15,6 +15,17 @@
         android:background="@color/white"
         android:indeterminate="true" />
 
+    <TextView
+        android:id="@+id/internetbar"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@color/internetbarcolor"
+        android:gravity="center"
+        android:text="No internet Connection"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+
 
     <LinearLayout
         android:id="@+id/progressBarLayout"
@@ -123,7 +134,7 @@
             android:layout_marginRight="16dp"
             android:gravity="center"
             android:padding="4dp"
-            android:layout_marginBottom="8dp"
+            android:layout_marginBottom="16dp"
             android:layout_marginTop="-4dp"
             android:background="@color/buttoncolor">
 
@@ -144,13 +155,13 @@
                 android:text="Invite Parents"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
-
         </LinearLayout>
 
         <library.ExpandableListView
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@color/lightbackgroundcolor"
             android:id="@+id/memberslistview"/>
 
     </LinearLayout>

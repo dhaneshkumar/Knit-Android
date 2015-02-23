@@ -46,9 +46,7 @@ public class ClassContainer extends MyActionBarActivity {
 		case android.R.id.home:
 			onBackPressed();
 			break;
-		case R.id.memberlist:
-			viewpager.setCurrentItem(1);
-			break;
+
 		/*case R.id.classmsgmenu:
 			viewpager.setCurrentItem(0);*/
 		default:
