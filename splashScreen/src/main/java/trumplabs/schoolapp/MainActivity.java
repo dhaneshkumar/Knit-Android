@@ -93,7 +93,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             session.setAppOpeningCount();
 
             if (!session.getSignUpAccount()) {
-                Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress");
+                //Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress");
                 progressBarLayout.setVisibility(View.VISIBLE);
                 editLayout.setVisibility(View.GONE);
 
@@ -250,12 +250,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         if(!isAlarmTriggered){
-            Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "triggering alarm on app opening");
+            //Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "triggering alarm on app opening");
             AlarmTrigger.triggerAlarm(getApplicationContext());
             isAlarmTriggered = true;
         }
         else{
-            Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "alarm already triggered");
+            //Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "alarm already triggered");
         }
 
     }

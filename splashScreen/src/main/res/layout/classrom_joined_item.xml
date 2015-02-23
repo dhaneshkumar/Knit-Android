@@ -28,9 +28,9 @@
         android:layout_alignLeft="@+id/classname"
         android:ellipsize="end"
         android:layout_centerVertical="true"
-        android:maxEms="12"
+        android:maxEms="13"
         android:singleLine="true"
-        android:text="Assigned to Knir"
+        android:text="Assigned to Knit"
         android:textColor="#4a4949"
         android:textSize="10sp" />
     </RelativeLayout>

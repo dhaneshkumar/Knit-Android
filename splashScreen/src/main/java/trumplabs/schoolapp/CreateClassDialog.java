@@ -136,6 +136,8 @@ public class CreateClassDialog extends DialogFragment{
                         Utility.toast("Check your Internet connection");
                     }
                 }
+                else
+                    Utility.toast("Enter Class Name");
             }
 
         });

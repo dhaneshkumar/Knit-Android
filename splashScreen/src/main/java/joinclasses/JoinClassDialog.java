@@ -2,7 +2,6 @@ package joinclasses;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.AsyncTask;
@@ -11,13 +10,11 @@ import android.support.v4.app.DialogFragment;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.ParseCloud;
 import com.parse.ParseUser;
 
 import library.UtilString;
@@ -25,10 +22,10 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.Messages;
 import utility.Popup;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 /**
@@ -48,6 +45,8 @@ public class JoinClassDialog extends DialogFragment {
     private LinearLayout contentLayout;
     private String childName;
     private String userId;
+    private Point p;
+    private int height;
 
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -124,24 +123,80 @@ public class JoinClassDialog extends DialogFragment {
         });
 
 
-        //setting help button clicked functionality
-        codeHelp.setOnClickListener(new View.OnClickListener() {
+        inviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), InviteTeacher.class);
+                startActivity(intent);
 
-                Utility.toast("yo clicked");
+                dialog.dismiss();
             }
         });
 
         //get parameter "classCode" from caller to know if called to join a suggested class. If that is the case
         //don't show class code, invite teacher details
-        if(getArguments() != null) {
-            String classCode = getArguments().getString("classCode");
-            if (classCode != null) {
-                //Hide unnecessary details here
-                Log.d("DEBUG_JOIN_CLASS_DIALOG", "called to join the suggested group " + classCode);
-            }
+
+        String classCode = null;
+        if(getArguments() != null)
+            classCode = getArguments().getString("classCode");
+
+        if(classCode != null){
+            //Hide unnecessary details here
+            Log.d("DEBUG_JOIN_CLASS_DIALOG", "called to join the suggested group " + classCode);
         }
+
+
+
+
+        // Get the x, y location and store it in the location[] array
+        // location[0] = x, location[1] = y.
+        ViewTreeObserver vto = codeHelp.getViewTreeObserver();
+        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                int[] location = new int[2];
+                codeHelp.getLocationOnScreen(location);
+                height = codeHelp.getHeight();
+
+                // Initialize the Point with x, and y positions
+                p = new Point();
+                p.x = location[0];
+                p.y = location[1];
+            }
+        });
+
+        final String txt =
+                "You need a class-code to join the class-room. If you don't have any, ask to teacher for it.";
+
+
+        //setting help button clicked functionality
+        codeHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (p != null) {
+
+                    Utility.toast("yo clicked");
+
+                    Popup popup = new Popup();
+                    //popup.showPopup(getActivity(), p, true, 0, txt, height, 15, 400);
+                    //popup.showPopup();
+
+                   /* InputMethodManager inputMethodManager =
+                            (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+
+                    //hiding keyboard
+                    if (getActivity().getCurrentFocus() != null) {
+                        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus()
+                                .getApplicationWindowToken(), 0);
+                    }*/
+                }
+                else
+                    Utility.toast("yo null clicked");
+            }
+        });
+
+
+
         return dialog;
     }
 
@@ -198,14 +253,14 @@ public class JoinClassDialog extends DialogFragment {
                 if( Messages.myadapter != null)
                     Messages.myadapter.notifyDataSetChanged();
 
-                if(getActivity() != null) {
+               /* if(getActivity() != null) {
                     Intent intent = new Intent(getActivity(), joinclasses.JoinClassesContainer.class);
                     startActivity(intent);
-                }
+                }*/
 
                 Classrooms.joinedGroups = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
 
-                if(Classrooms.joinedGroups != null)
+                if(Classrooms.joinedClassAdapter != null)
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
 
                 dialog.dismiss();

@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     >
 
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -27,10 +26,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp"
+            android:padding="32dp"
             android:visibility="visible">
 
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fill in the following info about your teacher. We will invite them on your behalf. "
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                />
 
 
             <EditText
@@ -39,15 +45,12 @@
                 android:inputType="textPersonName"
                 android:text=""
                 android:layout_marginTop="8dp"
-                android:background="@drawable/round_corner_grey_color"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:hint="Name of Teacher"
                 android:ems="10"
                 android:paddingLeft="16dp"
-                android:paddingRight="8dp"
                 android:paddingTop="16dp"
-                android:paddingBottom="8dp"
-                android:textColorHint="@color/grey_light"
-                android:textSize="@dimen/invite_teacher_subheading"
+                android:textSize="14sp"
                 android:id="@+id/teacherEditText"
                 />
 
@@ -55,100 +58,63 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:hint="Name of Child"
-                android:textColorHint="@color/grey_light"
+                android:hint="Name of your Child"
                 android:ems="10"
-                android:layout_marginTop="24dp"
+                android:layout_marginTop="16dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="8dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="8dp"
-                android:background="@drawable/round_corner_grey_color"
-                android:textSize="@dimen/invite_teacher_subheading"
+                android:background="@drawable/apptheme_edit_text_holo_light"
+                android:textSize="14sp"
                 android:id="@+id/childEditText" />
 
 
-            <AutoCompleteTextView
+            <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textPersonName"
-                android:text=""
-                android:layout_marginTop="24dp"
-                android:paddingLeft="16dp"
-                android:completionThreshold="1"
-                android:paddingRight="8dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="8dp"
-                android:background="@drawable/round_corner_grey_color"
                 android:hint="Name of School"
-                android:textColorHint="@color/grey_light"
-                android:textSize="@dimen/invite_teacher_subheading"
-                android:id="@+id/schoolEditText"
-                />
+                android:ems="10"
+                android:layout_marginTop="16dp"
+                android:paddingLeft="16dp"
+                android:background="@drawable/apptheme_edit_text_holo_light"
+                android:textSize="14sp"
+                android:id="@+id/schoolEditText" />
 
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="phone"
-                android:hint="Phone"
+                android:hint="Phone number of Teacher"
                 android:maxLength="10"
                 android:layout_marginTop="24dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="8dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="8dp"
-                android:background="@drawable/round_corner_grey_color"
-                android:textColorHint="@color/grey_light"
+                android:background="@drawable/apptheme_edit_text_holo_light"
                 android:ems="10"
-                android:textSize="@dimen/invite_teacher_subheading"
+                android:textSize="15sp"
                 android:id="@+id/phoneEditText" />
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="or"
+                android:text="OR"
                 android:gravity="center"
-                android:layout_marginLeft="@dimen/invite_teacher_margin"
                 android:layout_marginTop="4dp"
-                android:textStyle="italic"
                 android:textColor="@color/grey"
-                android:textSize="16dp" />
+                android:textSize="12sp" />
 
 
             <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
-                android:hint="Email"
-                android:ems="10"
+                android:hint="Email of Teacher"
                 android:layout_marginTop="4dp"
                 android:paddingLeft="16dp"
-                android:paddingRight="8dp"
-                android:paddingTop="16dp"
-                android:paddingBottom="8dp"
-                android:background="@drawable/round_corner_grey_color"
-                android:textColorHint="@color/grey_light"
-                android:textSize="@dimen/invite_teacher_subheading"
+                android:background="@drawable/apptheme_edit_text_holo_light"
+                android:textSize="14sp"
                 android:id="@+id/emailEditText"
                 />
 
-
-            <Button
-                android:id="@+id/submitButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="right"
-                android:layout_marginTop="24dp"
-                android:background="@drawable/round_corner_light_button_color"
-                android:paddingBottom="8dp"
-                android:paddingLeft="24dp"
-                android:paddingRight="24dp"
-                android:paddingTop="8dp"
-                android:text="Submit"
-                android:textColorHint="@color/grey_light"
-                android:textColor="@color/white"
-                android:textSize="16sp" />
         </LinearLayout>
 
         <LinearLayout

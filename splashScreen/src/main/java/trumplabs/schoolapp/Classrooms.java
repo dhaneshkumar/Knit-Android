@@ -8,6 +8,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -462,6 +463,8 @@ public class Classrooms extends Fragment {
 
             String grooupCode = joinedGroups.get(position).get(0);
 
+            Log.d("join", "class code : " + grooupCode + " - "+ Str);
+
 
             final List<String> group = new ArrayList<String>();
             group.add(joinedGroups.get(position).get(0));
@@ -475,8 +478,11 @@ public class Classrooms extends Fragment {
             if(! role.equals(Constants.STUDENT)) {
                 child_textView.setTypeface(lightTypeFace);
                 if (joinedGroups.get(position).size() > 2) {
-                    String child = joinedGroups.get(position).get(2).toString().trim();
-                    child_textView.setText("Assigned to : " + child);
+
+                    if(joinedGroups.get(position).get(2) != null) {
+                        String child = joinedGroups.get(position).get(2).toString().trim();
+                        child_textView.setText("Assigned to : " + child);
+                    }
                 }
             }
             else
@@ -496,6 +502,8 @@ public class Classrooms extends Fragment {
 
                 child_textView.setText("Assigned to : " + ParseUser.getCurrentUser().getString("name"));
 
+
+                Log.d("join", "Default class code : " + grooupCode);
 
             }
 
