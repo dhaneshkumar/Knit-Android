@@ -292,7 +292,13 @@ public class Utility extends MyActionBarActivity {
             Utility.toast("path null");
             return;
         }
-        Bitmap myBitmap = Utility.decodeFile(new File(filepath));
+
+        String fname = filepath.substring(filepath.lastIndexOf("/") + 1);
+        String targetPath = Utility.getWorkingAppDir() + "/media/" + fname;
+
+        ScalingUtilities.scaleAndSave(filepath, targetPath);
+
+        /*Bitmap myBitmap = Utility.decodeFile(new File(filepath));
         String fname = filepath.substring(filepath.lastIndexOf("/") + 1);
         String targetPath = Utility.getWorkingAppDir() + "/media/" + fname;
         File file = new File(targetPath);
@@ -306,7 +312,7 @@ public class Utility extends MyActionBarActivity {
             out.close();
         } catch (Exception e) {
             e.printStackTrace();
-        }
+        }*/
     }
 
     // Creating the thumbnail of the image in media folder

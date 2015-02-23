@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import trumplab.textslate.R;
+import utility.ScalingUtilities;
 import utility.Utility;
 
 public class ChooserDialog extends DialogFragment implements OnClickListener {
@@ -251,6 +252,8 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
                   if (outStream != null)
                     outStream.close();
+
+                  ScalingUtilities.scaleAndSave(targetPath, targetPath); //overwrite
 
                   // creating thumbnail of that image
                   Utility.createThumbnail(currentActivity, fileName);
