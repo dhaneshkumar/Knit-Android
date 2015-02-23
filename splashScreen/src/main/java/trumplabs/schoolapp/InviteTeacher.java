@@ -192,9 +192,9 @@ public class InviteTeacher extends MyActionBarActivity {
                 childName = childEditText.getText().toString();
 
                 if (UtilString.isBlank(schoolName))
-                    Utility.toast("Incorrect school name");
+                    Utility.toast("Enter school name");
                 else if (UtilString.isBlank(teacherName))
-                    Utility.toast("Incorrect teacher name");
+                    Utility.toast("Enter teacher name");
                 else if (UtilString.isBlank(phoneNo) && UtilString.isBlank(email))
                     Utility.toast("Please enter atleast phone number or email");
                 else {

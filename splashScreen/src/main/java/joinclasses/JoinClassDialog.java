@@ -146,8 +146,6 @@ public class JoinClassDialog extends DialogFragment {
         }
 
 
-
-
         // Get the x, y location and store it in the location[] array
         // location[0] = x, location[1] = y.
         ViewTreeObserver vto = codeHelp.getViewTreeObserver();

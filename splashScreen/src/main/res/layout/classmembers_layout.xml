@@ -15,6 +15,7 @@
         android:background="@color/white"
         android:indeterminate="true" />
 
+
     <LinearLayout
         android:id="@+id/progressBarLayout"
         android:layout_width="match_parent"
@@ -38,56 +39,120 @@
             android:textSize="18dp" />
     </LinearLayout>
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:fillViewport="true"
+        android:layout_height="match_parent">
+
     <LinearLayout
         android:id="@+id/editLayout"
-
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="1dp"
-            android:gravity="center_vertical|left"
-            android:text="Subscribers"
-            android:textSize="22sp"
-            android:textColor="@color/txtgrey" />
+            android:padding="16dp"
+            android:layout_height="wrap_content">
 
-        <ListView
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:id="@+id/memberslistview"></ListView>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/className"
+                android:text="KNIT 2A"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/school"
+                android:text="School Name"
+                android:textColor="@color/black"
+                android:textSize="11sp"
+                android:layout_below="@+id/className"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/memberCount"
+                android:text="0 subscribers"
+                android:textSize="11sp"
+                android:layout_below="@+id/school"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true" />
+
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="KNIT123"
+                android:textColor="@color/black"
+                android:textSize="14sp"
+                android:padding="4dp"
+                android:id="@+id/classcode"
+                android:background="@drawable/button_color_boundry_grey_area"
+                android:layout_centerVertical="true"
+                android:layout_alignParentRight="true"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="tap to copy code"
+                android:textSize="8sp"
+                android:layout_marginTop="14dp"
+                android:textColor="@color/txtgrey"
+                android:layout_below="@+id/classcode"
+                android:layout_alignRight="@+id/classcode"
+                android:layout_alignEnd="@+id/classcode" />
+
+        </RelativeLayout>
+
 
         <LinearLayout
             android:id="@+id/inviteLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             android:gravity="center"
+            android:padding="4dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="-4dp"
             android:background="@color/buttoncolor">
 
             <ImageButton
                 android:id="@+id/gallery"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:background="@color/buttoncolor"
-                android:src="@drawable/ic_action_user_add" />
+                android:src="@drawable/plus_white" />
 
             <TextView
                 android:id="@+id/lettercount"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:gravity="center"
+                android:layout_marginLeft="4dp"
                 android:text="Invite Parents"
                 android:textColor="@color/white"
-                android:textStyle="bold"
-                android:textSize="22sp" />
+                android:textSize="16sp" />
 
         </LinearLayout>
+
+        <library.ExpandableListView
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:id="@+id/memberslistview"/>
+
     </LinearLayout>
+    </ScrollView>
 </LinearLayout>

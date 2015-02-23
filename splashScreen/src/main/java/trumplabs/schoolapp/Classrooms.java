@@ -268,12 +268,6 @@ public class Classrooms extends Fragment {
             String classnamestr = createdGroups.get(position).get(1);
             classname1.setText(classnamestr.toUpperCase());                 //setting class name
 
-            String Str = null;
-            if (!UtilString.isBlank(classnamestr)) {
-                Str = classnamestr.trim();
-                classnamestr = Str;
-            }
-
             return row;
         }
     }
