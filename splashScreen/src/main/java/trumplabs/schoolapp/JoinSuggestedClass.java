@@ -83,7 +83,7 @@ public class JoinSuggestedClass extends MyActionBarActivity {
                     removedGroup.add(classCode);
                     removedGroup.add(className);
                     removedList.add(removedGroup);
-                    user.put(Constants.REMOVED_GROUPS, new ArrayList<List<String>>());
+                    user.put(Constants.REMOVED_GROUPS, removedList);
                     user.getCurrentUser().saveEventually();
 
                     // updating suggestions adapter in Classrooms fragment
