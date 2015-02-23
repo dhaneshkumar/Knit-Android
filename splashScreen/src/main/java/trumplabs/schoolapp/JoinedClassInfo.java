@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,6 +19,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.ParseCloud;
@@ -36,6 +38,7 @@ import trumplab.textslate.R;
 import utility.Utility;
 
 /**
+ * Show joined classroom information
  * Created by ashish on 22/2/15.
  */
 public class JoinedClassInfo extends MyActionBarActivity {
@@ -48,6 +51,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
     TextView schoolNameTV;
     TextView assignedNameTV;
     LinearLayout assignedNameContainer;
+    RelativeLayout whatsappLayout;
 
     String className;
     String classCode;
@@ -68,6 +72,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         className = getIntent().getExtras().getString("className");
         classCode = getIntent().getExtras().getString("classCode");
         assignedName = getIntent().getExtras().getString("assignedName");
+
         if(assignedName == null){
             assignedName = "";
         }
@@ -81,6 +86,10 @@ public class JoinedClassInfo extends MyActionBarActivity {
         schoolNameTV = (TextView) findViewById(R.id.schoolName);
         assignedNameTV = (TextView) findViewById(R.id.assignedName);
         assignedNameContainer = (LinearLayout) findViewById(R.id.assignedNameContainer);
+        whatsappLayout = (RelativeLayout) findViewById(R.id.whatsappLayout);
+        TextView profile = (TextView) findViewById(R.id.profile);
+        TextView classDetails = (TextView) findViewById(R.id.classDetails);
+        TextView share = (TextView) findViewById(R.id.share);
 
         //get details(schoolName, profile pic, assigned name) from Codegroup and User table
         ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
@@ -89,6 +98,11 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
         String teacherSenderId = null;
         String teacherSex = "";
+
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
+        profile.setTypeface(typeFace);
+        classDetails.setTypeface(typeFace);
+        share.setTypeface(typeFace);
 
         try{
             ParseObject codegroup = classQuery.getFirst();
@@ -165,7 +179,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         classCodeTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility.copyToClipBoard(activityContext, "Class code", classCode);
+                Utility.copyToClipBoard(activityContext, "Class Code", classCode);
             }
         });
 
@@ -215,7 +229,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                                                     user.saveEventually();
                                                     assignedNameTV.setText(newAssignedName);
 
-                                                    Utility.toast("Child name update successful");
+                                                    Utility.toast("Successfully updated Associated name.");
 
                                                     //notify Classrooms joined groups adapter
                                                     Classrooms.joinedGroups = joinedGroups;
@@ -246,7 +260,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             }
         });
 
-        whatsAppImageView.setOnClickListener(new View.OnClickListener() {
+        whatsappLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);

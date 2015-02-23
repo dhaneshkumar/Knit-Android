@@ -355,7 +355,6 @@ public class Classrooms extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-
                 Intent intent = new Intent(getactivity, JoinedClassInfo.class);
 
                 intent.putExtra("classCode", joinedGroups.get(position).get(0));
