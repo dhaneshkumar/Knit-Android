@@ -346,6 +346,24 @@ public class Classrooms extends Fragment {
                 startActivity(intent);
             }
         });
+
+        /**
+         * setting list item clicked functionality
+         */
+        joinedClassListView.setOnItemClickListener(new OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
+                Intent intent = new Intent(getactivity, JoinedClassInfo.class);
+
+                intent.putExtra("classCode", joinedGroups.get(position).get(0));
+                intent.putExtra("className", joinedGroups.get(position).get(1));
+                intent.putExtra("assignedName", joinedGroups.get(position).get(2));
+                startActivity(intent);
+            }
+        });
     }
 
     class SuggestedClassAdapter extends BaseAdapter {

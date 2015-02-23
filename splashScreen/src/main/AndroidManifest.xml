@@ -72,6 +72,7 @@
         <activity android:name="additionals.ShareInstructions"></activity>
         <activity android:name="trumplabs.schoolapp.InviteTeacher"></activity>
         <activity android:name="trumplabs.schoolapp.JoinSuggestedClass"></activity>
+        <activity android:name="trumplabs.schoolapp.JoinedClassInfo"></activity>
         <activity android:name="trumplabs.schoolapp.Subscribers"></activity>
         <activity android:name="trumplabs.schoolapp.SendMessage"></activity>
 
