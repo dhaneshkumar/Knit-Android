@@ -35,6 +35,7 @@ import java.util.List;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import utility.Config;
 import utility.Utility;
 
 /**
@@ -48,18 +49,19 @@ public class JoinedClassInfo extends MyActionBarActivity {
     TextView teacherNameTV;
     TextView classCodeTV;
     ImageView whatsAppImageView;
-    TextView schoolNameTV;
+    static TextView schoolNameTV;
     TextView assignedNameTV;
+    TextView subCodeTV;
     LinearLayout assignedNameContainer;
     RelativeLayout whatsappLayout;
 
     String className;
     String classCode;
-    String schoolName;
+    static String schoolName;
     String assignedName;
     String teacherName;
 
-    String defaultSchoolName = "Unknown School";
+    static String defaultSchoolName = "";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,6 +89,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         assignedNameTV = (TextView) findViewById(R.id.assignedName);
         assignedNameContainer = (LinearLayout) findViewById(R.id.assignedNameContainer);
         whatsappLayout = (RelativeLayout) findViewById(R.id.whatsappLayout);
+        subCodeTV = (TextView) findViewById(R.id.subCode);
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
         TextView share = (TextView) findViewById(R.id.share);
@@ -113,7 +116,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             if(schoolName == null){
                 //fetch school name from id using asynctask
                 Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName not in codegroup. Fetching...");
-                GetSchoolName getSchoolNameTask = new GetSchoolName(codegroup);
+                GetSchoolName getSchoolNameTask = new GetSchoolName(codegroup, 0);
                 getSchoolNameTask.execute();
             }
             else{
@@ -155,11 +158,11 @@ public class JoinedClassInfo extends MyActionBarActivity {
                         if (names != null && names.length > 1) {
                             String title = names[0].trim();
 
-                            if (title.equals("Mr")) {
+                            if (title.equals("Mr") || title.equals("Mr.")) {
                                 profileImageView.setImageResource(R.drawable.maleteacherdp);
-                            } else if (title.equals("Mrs")) {
+                            } else if (title.equals("Mrs") || title.equals("Mrs.")) {
                                 profileImageView.setImageResource(R.drawable.femaleteacherdp);
-                            } else if (title.equals("Ms")) {
+                            } else if (title.equals("Ms") || title.equals("Ms.")) {
                                 profileImageView.setImageResource(R.drawable.femaleteacherdp);
                             }
                         }
@@ -171,6 +174,12 @@ public class JoinedClassInfo extends MyActionBarActivity {
         //set ui elements
         setTitle(className);
         classNameTV.setText(className);
+
+        if(classCode.equals(Config.defaultParentGroupCode) || classCode.equals(Config.defaultTeacherGroupCode))
+        {
+            classCodeTV.setVisibility(View.GONE);
+            subCodeTV.setVisibility(View.GONE);
+        }
         classCodeTV.setText(classCode);
         assignedNameTV.setText(assignedName);
         teacherNameTV.setText(teacherName);
@@ -356,28 +365,32 @@ public class JoinedClassInfo extends MyActionBarActivity {
         }
     }
 
-    class GetSchoolName extends AsyncTask<Void, Void, Void>{
+    public static class GetSchoolName extends AsyncTask<Void, Void, Void>{
         ParseObject codegroup;
-        public GetSchoolName(ParseObject inputCodegroup){
+        private String school;
+        int caller;  //  caller class  -- 0: joinedClassInfo & 1: JoinSuggestedClass
+        public GetSchoolName(ParseObject inputCodegroup, int caller){
             this.codegroup = inputCodegroup;
+            this.caller = caller;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             String schoolId = codegroup.getString("school");
+
+            school = "";
             if(schoolId == null) {
-                Log.d("DEBUG_JOINED_CLASS_INFO", "schoolId null");
+
                 //store default school name and pin
-                schoolName = defaultSchoolName;
-                codegroup.put("schoolName", schoolName);
+                codegroup.put("schoolName", school);
                 codegroup.pinInBackground();
                 return null;
             }
 
             if(schoolId.equalsIgnoreCase("Others") || schoolId.equalsIgnoreCase("Other")){//school-id is Other. No need to fetch anything. Just put "Other" in schoolName
                 Log.d("DEBUG_JOINED_CLASS_INFO", "schoolId Others");
-                schoolName = defaultSchoolName;
-                codegroup.put("schoolName", schoolName);
+
+                codegroup.put("schoolName", school);
                 codegroup.pinInBackground();
                 return null;
             }
@@ -389,18 +402,12 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 String name = ParseCloud.callFunction("getSchoolName", parameters);
                 if(name != null){ //store and pin
                     Log.d("DEBUG_JOINED_CLASS_INFO", "getSchoolName() success with name "+ name);
-                    schoolName = name;
-                    codegroup.put("schoolName", schoolName);
+                    school = name;
+                    codegroup.put("schoolName", school);
                     codegroup.pinInBackground();
-                }
-                else{
-                    Log.d("DEBUG_JOINED_CLASS_INFO", "getSchoolName() success with name NULL");
-                    schoolName = defaultSchoolName; //don't pin this
                 }
             }
             catch (ParseException e){
-                Log.d("DEBUG_JOINED_CLASS_INFO", "getSchoolName() failed ParseException");
-                schoolName = defaultSchoolName; //don't pin this
                 e.printStackTrace();
             }
             return null;
@@ -408,7 +415,11 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result){//schoolName has been set to a non-null value
-            schoolNameTV.setText(schoolName);
+
+            if(caller ==0)
+                JoinedClassInfo.schoolNameTV.setText(school);
+            else
+                JoinSuggestedClass.schoolNameTV.setText(school);
         }
     }
 }

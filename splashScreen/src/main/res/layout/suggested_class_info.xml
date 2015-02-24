@@ -58,8 +58,6 @@
                     android:text=""
                     />
 
-
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -82,7 +80,7 @@
                         android:paddingBottom="8dp" >
 
                         <TextView
-                            android:id="@+id/teacherName"
+                            android:id="@+id/teacher"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="15dp"
@@ -124,12 +122,12 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:paddingTop="4dp"
-                    android:paddingBottom="4dp"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:layout_height="wrap_content">
 
                     <TextView
-                        android:id="@+id/className"
+                        android:id="@+id/classname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/text_left_margin"
@@ -143,7 +141,7 @@
                         android:paddingBottom="10dp" />
 
                     <TextView
-                        android:id="@+id/classCode"
+                        android:id="@+id/classcode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="KNIT123"
@@ -163,114 +161,66 @@
                         android:textSize="8sp"
                         android:layout_marginTop="10dp"
                         android:textColor="@color/txtgrey"
-                        android:layout_below="@+id/classCode"
-                        android:layout_alignRight="@+id/classCode"
-                        android:layout_alignEnd="@+id/classCode" />
+                        android:layout_below="@+id/classcode"
+                        android:layout_alignRight="@+id/classcode"
+                        android:layout_alignEnd="@+id/classcode" />
+
 
                 </RelativeLayout>
 
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/profile_tail_bar"
-                    android:paddingBottom="12dp"
-                    android:text="" />
 
                 <LinearLayout
-                    android:id="@+id/assignedNameContainer"
+                    android:id="@+id/join"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingTop="12dp"
-                    android:paddingBottom="12dp"
-                    android:orientation="vertical"
-                    >
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal" >
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/text_left_margin"
-                            android:text="Assiciated Name : "
-                            android:textColor="@color/profile_heading"
-                            android:textSize="15sp" />
-                        <TextView
-                            android:id="@+id/assignedName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/text_left_margin"
-                            android:text="Chotu"
-                            android:textColor="@color/profile_heading"
-                            android:textSize="15sp" />
-                    </LinearLayout>
+                    android:gravity="center"
+                    android:padding="4dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@color/buttoncolor">
 
-                    <TextView
+                    <ImageButton
+                        android:id="@+id/gallery"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/text_left_margin"
-                        android:layout_marginTop="3dp"
-                        android:text="Edit"
-                        android:textColor="@color/profile_edit"
-                        android:textSize="12sp" />
+                        android:layout_gravity="center"
+                        android:background="@color/buttoncolor"
+                        android:src="@drawable/plus_white" />
 
+                    <TextView
+                        android:id="@+id/lettercount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:layout_marginLeft="4dp"
+                        android:text="Join Class"
+                        android:textColor="@color/white"
+                        android:textSize="16sp" />
                 </LinearLayout>
-
-
-                <TextView
-                    android:id="@+id/share"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="3dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginLeft="@dimen/text_left_margin"
-                    android:text="SAHRE CLASS CODE"
-                    android:textColor="@color/profile_title"
-                    android:textSize="@dimen/profil_bar_font_size" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/profile_head_bar"
-                    android:text="" />
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
-                    android:text="Share this class code with other parents of same class on WhatsApp."
-                    android:textSize="10sp"
-                    />
 
                 <RelativeLayout
                     android:id="@+id/whatsappLayout"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:paddingBottom="2dp"
                     android:paddingTop="2dp"
                     android:orientation="horizontal" >
 
-
-                    <ImageView
-                        android:id="@+id/whatsAppIcon"
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
-                        android:background="@drawable/ic_action_emo_cool"
-                        android:padding="10dp" />
-
                     <TextView
-                        android:id="@+id/app"
+                        android:id="@+id/ignore"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="via WhatsApp"
-                        android:textSize="14sp"
+                        android:text="Don't show it again"
+                        android:textSize="12sp"
+                        android:layout_alignParentBottom="true"
+                        android:paddingTop="8dp"
+                        android:paddingBottom="8dp"
                         android:layout_centerVertical="true"
-                        android:textColor="@color/profile_heading"
-                        android:layout_toRightOf="@+id/whatsAppIcon"
-                        android:layout_toEndOf="@+id/whatsAppIcon" />
+                        android:paddingLeft="8dp"
+                        android:layout_marginBottom="64dp"
+                        android:layout_alignParentRight="true"
+                        android:textColor="@color/buttoncolor"
+                        />
                 </RelativeLayout>
-
-
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

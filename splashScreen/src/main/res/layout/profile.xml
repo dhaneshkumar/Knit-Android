@@ -187,6 +187,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/text_left_margin"
                 android:text="School Name"
+                android:singleLine="true"
                 android:textColor="@color/profile_heading"
                 android:textSize="@dimen/profil_heading_font_size" />
 

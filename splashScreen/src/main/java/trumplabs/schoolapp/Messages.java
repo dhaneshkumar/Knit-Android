@@ -632,15 +632,15 @@ public class Messages extends Fragment {
                                 if (names != null && names.length > 1) {
                                     String title = names[0].trim();
 
-                                    if (title.equals("Mr")) {
+                                    if (title.equals("Mr") || title.equals("Mr.")) {
                                         holder.senderImg.setImageResource(R.drawable.maleteacherdp);
                                         obj.put("sex", "M");
                                         obj.pin();
-                                    } else if (title.equals("Mrs")) {
+                                    } else if (title.equals("Mrs") || title.equals("Mrs.")) {
                                         holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
                                         obj.put("sex", "F");
                                         obj.pin();
-                                    } else if (title.equals("Ms")) {
+                                    } else if (title.equals("Ms") || title.equals("Ms.")) {
                                         holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
                                         obj.put("sex", "F");
                                         obj.pin();

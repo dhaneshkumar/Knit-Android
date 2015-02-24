@@ -18,6 +18,7 @@ import trumplabs.schoolapp.ClassMembers;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MemberDetails;
+import trumplabs.schoolapp.Subscribers;
 import utility.Queries;
 
 /**
@@ -179,14 +180,14 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
         //updating listview items of member list.
         List<MemberDetails> updatedLocalMemberList = queries.getLocalClassMembers(groupCode);
         if (updatedLocalMemberList != null) {
-            ClassMembers.memberDetails = updatedLocalMemberList;
+            Subscribers.memberDetails = updatedLocalMemberList;
         }
 
-        if (ClassMembers.mHeaderProgressBar != null)
-            ClassMembers.mHeaderProgressBar.setVisibility(View.GONE);
+        if (Subscribers.mHeaderProgressBar != null)
+            Subscribers.mHeaderProgressBar.setVisibility(View.GONE);
 
-        if (ClassMembers.myadapter != null)
-            ClassMembers.myadapter.notifyDataSetChanged();
+        if (Subscribers.myadapter != null)
+            Subscribers.myadapter.notifyDataSetChanged();
 
         if (Classrooms.createdClassAdapter != null)
             Classrooms.createdClassAdapter.notifyDataSetChanged();

@@ -117,11 +117,8 @@ public class ClassMembers extends Fragment {
         setHasOptionsMenu(true);
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.menu5, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {

@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.PopupMenu;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -317,17 +318,24 @@ public class Subscribers extends ActionBarActivity {
             // send notification to user about removing from this group
             // set status to "REMOVED" table entry of memberlist
 
+            Log.d("REMOVE", "remove child starting in ");
+
             if (member != null) {
                 String type = member.getType();
                 String objectId = member.getObjectId();
                 String memberId = null;
 
+
+                Log.d("REMOVE", "removal starting..");
+
                 if (type.equals(MemberDetails.APP_MEMBER)) {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
                     query.fromLocalDatastore();
                     query.whereEqualTo("objectId", objectId);
-                    query.whereEqualTo("userId", ParseUser.getCurrentUser());
+                    query.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
                     ParseObject obj = null;
+
+                    Log.d("REMOVE", "APP Member");
 
                     try {
 
@@ -335,6 +343,7 @@ public class Subscribers extends ActionBarActivity {
                         if (obj != null) {
                             memberId = obj.getString("emailId");
 
+                            Log.d("REMOVE", "obj not null");
                             boolean isRemoved = false;
 
                             HashMap<String, String> param = new HashMap<String, String>();
@@ -342,8 +351,14 @@ public class Subscribers extends ActionBarActivity {
                             param.put("classname", className);
                             if(memberId != null)
                                 param.put("emailId", memberId);
-                            param.put("usertype", "APP");
+                            param.put("usertype", "app");
+
+                            Log.d("REMOVE", "calling  start remove function");
+
                             isRemoved = ParseCloud.callFunction("removeMember", param);
+
+                            Log.d("REMOVE", "calling remove function");
+
 
                             if(isRemoved){
 
@@ -354,8 +369,14 @@ public class Subscribers extends ActionBarActivity {
                                 return true;
                             }
                         }
+                        else
+                        {
+                            Log.d("REMOVE", "got null object");
+                        }
                     } catch (ParseException e) {
                         e.printStackTrace();
+
+                        Log.d("REMOVE", "local query failed object");
                     }
                 }
                 else
@@ -363,7 +384,7 @@ public class Subscribers extends ActionBarActivity {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
                     query.fromLocalDatastore();
                     query.whereEqualTo("objectId", objectId);
-                    query.whereEqualTo("userId", ParseUser.getCurrentUser());
+                    query.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
                     ParseObject obj = null;
 
                     try {
@@ -378,12 +399,11 @@ public class Subscribers extends ActionBarActivity {
                             param.put("classcode", classCode);
                             param.put("classname", className);
                             param.put("number", number);
-                            param.put("usertype", "SMS");
+                            param.put("usertype", "sms");
                             isRemoved = ParseCloud.callFunction("removechild", param);
 
                             if(isRemoved){
                                 obj.fetch();        //retrieving updates from server
-                                memberDetails = memberQuery.getLocalClassMembers(classCode);
                                 return true;
                             }
                         }
@@ -401,6 +421,10 @@ public class Subscribers extends ActionBarActivity {
             if (result) {
                 memberDetails.remove(member);
                 myadapter.notifyDataSetChanged();
+
+                if(Classrooms.createdClassAdapter != null)
+                    Classrooms.createdClassAdapter.notifyDataSetChanged();
+
 
                 Utility.toast(memberName +" successfully removed from your classroom.");
             }
