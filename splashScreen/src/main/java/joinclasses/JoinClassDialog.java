@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.parse.ParseUser;
 
+import BackGroundProcesses.UpdateSuggestions;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
@@ -228,8 +229,12 @@ public class JoinClassDialog extends DialogFragment {
                     int result = JoinedHelper.joinClass(code, childName, false);
 
 
-                    if (result == 1)
+                    if (result == 1) {
+                        //update class suggestions in background
+                        UpdateSuggestions updateSuggestions = new UpdateSuggestions();
+                        updateSuggestions.execute();
                         return true;      //successfully joined class
+                    }
                     else if (result == 2) {
                         classExist = true;    //already joined
                         return false;
