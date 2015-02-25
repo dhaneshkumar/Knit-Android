@@ -9,19 +9,21 @@
         android:title="Notification count"
         app:showAsAction="always">
     </item>    -->
-    <item
-        android:id="@+id/joinedclasses"
-        android:icon="@drawable/ic_action_document"
-        android:orderInCategory="100"
-        android:title="Joined Classes"
-        app:showAsAction="always"/>
+
+
+
     <item
         android:id="@+id/joinclass"
         android:icon="@drawable/ic_action_import"
-        android:orderInCategory="200"
         android:title="Join a Class"
         app:showAsAction="always"/>
-     
+
+    <item
+        android:id="@+id/joinedclasses"
+        android:icon="@drawable/ic_action_document"
+        android:title="Joined Classes"
+        app:showAsAction="always"/>
+
     <item
         android:id="@+id/profile"
         android:title="Profile &amp; Settings"

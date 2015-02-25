@@ -34,7 +34,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textSize="14sp"
-            android:text="Creating your classroom..."/>
+            android:text="Joining your classroom..."/>
 
     </LinearLayout>
 
@@ -93,6 +93,7 @@
         </RelativeLayout>
 
         <TextView
+            android:id="@+id/codeHelper"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="10sp"
@@ -147,6 +148,11 @@
             android:layout_marginTop="12dp"
             />
 
+        <LinearLayout
+            android:id="@+id/inviteLayout"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -168,7 +174,7 @@
             android:padding="8dp"
             android:layout_marginTop="8dp"
             />
-
+        </LinearLayout>
 
     </LinearLayout>
 

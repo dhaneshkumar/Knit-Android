@@ -40,7 +40,8 @@ public class JoinSuggestedClass extends MyActionBarActivity {
     private Button joinButton;
     private TextView ignoreView;
     private ImageView profileImageView;
-    public static TextView  schoolNameTV;
+    public static
+    TextView  schoolNameTV;
     private LinearLayout joinLayout;
 
     private String teacherName;

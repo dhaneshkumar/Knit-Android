@@ -6,11 +6,14 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import baseclasses.MyActionBarActivity;
 import joinclasses.JoinedClasses.ViewPagerCommunicator;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.MainActivity;
 import utility.Utility;
 
@@ -33,21 +36,8 @@ public class JoinClassesContainer extends MyActionBarActivity implements ViewPag
   protected void onResume() {
     super.onResume();
     Utility.isInternetOn(this);
-    
-   /* Intent intent = getIntent();
-    finish();
-    startActivity(intent);*/
   }
 
-  /*@Override
-  protected void onRestart() {
-    super.onRestart();
-    
-    Utility.toast("restarted");
-    Intent intent = getIntent();
-    finish();
-    startActivity(intent);
-  }*/
   
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
@@ -55,11 +45,7 @@ public class JoinClassesContainer extends MyActionBarActivity implements ViewPag
       case android.R.id.home:
         onBackPressed();
         break;
-      case R.id.addclass:
-        viewpager.setCurrentItem(1);
-        break;
-      case R.id.joinedclassesmenu:
-        viewpager.setCurrentItem(0);
+
       default:
         break;
     }
@@ -78,10 +64,7 @@ public class JoinClassesContainer extends MyActionBarActivity implements ViewPag
       supportInvalidateOptionsMenu();
       switch (arg0) {
         case 0:
-          fragment = new JoinedClasses();
-          break;
-        case 1:
-          fragment = new JoinClass();
+          fragment = new Classrooms();
           break;
         default:
           break;
@@ -91,7 +74,7 @@ public class JoinClassesContainer extends MyActionBarActivity implements ViewPag
 
     @Override
     public int getCount() {
-      return 2;
+      return 1;
     }
   }
 

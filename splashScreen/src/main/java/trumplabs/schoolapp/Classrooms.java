@@ -63,6 +63,9 @@ public class Classrooms extends Fragment {
     public static LinearLayout buttonContainer;
     private TextView createClassTV;
     private TextView joinClassTV;
+    private TextView createdClassTV;
+    private TextView joinedClassTV;
+    private TextView suggestedClassTV;
 
 
     @Override
@@ -83,9 +86,9 @@ public class Classrooms extends Fragment {
         createdClassListView = (ExpandableListView) getactivity.findViewById(R.id.createdclasseslistview);
         joinedClassListView = (ExpandableListView) getactivity.findViewById(R.id.joinedclasseslistview);
         suggestedClassListView = (ExpandableListView) getactivity.findViewById(R.id.suggestedclasseslistview);
-        TextView createdClassTV = (TextView) getActivity().findViewById(R.id.createdClassTextView);
-        TextView joinedClassTV = (TextView) getActivity().findViewById(R.id.joinedClassTextView);
-        TextView suggestedClassTV = (TextView) getActivity().findViewById(R.id.suggestedClassTextView);
+        createdClassTV = (TextView) getActivity().findViewById(R.id.createdClassTextView);
+        joinedClassTV = (TextView) getActivity().findViewById(R.id.joinedClassTextView);
+        suggestedClassTV = (TextView) getActivity().findViewById(R.id.suggestedClassTextView);
         createClassTV = (TextView) getActivity().findViewById(R.id.createClassTV);
         joinClassTV = (TextView) getActivity().findViewById(R.id.joinClassTV);
 
@@ -100,20 +103,17 @@ public class Classrooms extends Fragment {
         lightTypeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/Roboto-Light.ttf");
 
 
-       // emptylayout = (LinearLayout) getactivity.findViewById(R.id.ccemptymsg);
-
-        //No created classrooms, goto create class activity
-      /*  getactivity.findViewById(R.id.ccemptylink).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getactivity, CreateClass.class));
-            }
-        });*/
-
         ParseUser parseObject = ParseUser.getCurrentUser();
         if (parseObject == null)
             {
                 Utility.logout(); return;}
+
+
+        //show create class option only for teachers
+        if(!ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)) {
+            createClassTV.setVisibility(View.GONE);
+            createdClassListView.setVisibility(View.GONE);
+        }
 
 
         /*
@@ -136,8 +136,7 @@ public class Classrooms extends Fragment {
         if (joinedGroups == null)
             joinedGroups = new ArrayList<List<String>>();
 
-        if (joinedClassAdapter == null)
-            joinedClassAdapter = new JoinedClassAdapter();
+        joinedClassAdapter = new JoinedClassAdapter();
         joinedClassListView.setAdapter(joinedClassAdapter);
         joinedClassListView.setExpanded(true);
 
@@ -147,11 +146,12 @@ public class Classrooms extends Fragment {
         suggestedGroups = JoinedHelper.getSuggestionList(parseObject.getUsername());
         if(suggestedGroups == null)
             suggestedGroups = new ArrayList<ParseObject>();
-        if(suggestedClassAdapter == null){
-            suggestedClassAdapter = new SuggestedClassAdapter();
-        }
+
+        suggestedClassAdapter = new SuggestedClassAdapter();
+
         suggestedClassListView.setAdapter(suggestedClassAdapter);
         suggestedClassListView.setExpanded(true);
+
 
         /*
         On click create button , open up dialog box to crate class
@@ -222,13 +222,11 @@ public class Classrooms extends Fragment {
             if (createdGroups == null)
                 createdGroups = new ArrayList<List<String>>();
 
-          /*  if (createdGroups.size() == 0) {
-                listv.setVisibility(View.GONE);
-                emptylayout.setVisibility(View.VISIBLE);
-            } else {
-                listv.setVisibility(View.VISIBLE);
-                emptylayout.setVisibility(View.GONE);
-            }*/
+            if (createdGroups.size() == 0)
+                createdClassTV.setVisibility(View.GONE);
+            else
+                createClassTV.setVisibility(View.VISIBLE);
+
             return createdGroups.size();
         }
 
@@ -372,6 +370,12 @@ public class Classrooms extends Fragment {
 
             if (suggestedGroups == null)
                 suggestedGroups = new ArrayList<ParseObject>();
+
+            if (suggestedGroups.size() == 0)
+                suggestedClassTV.setVisibility(View.GONE);
+            else
+                suggestedClassTV.setVisibility(View.VISIBLE);
+
             return suggestedGroups.size();
         }
 
@@ -418,6 +422,12 @@ public class Classrooms extends Fragment {
         public int getCount() {
             if (joinedGroups == null)
                 joinedGroups = new ArrayList<List<String>>();
+
+
+            if (joinedGroups.size() == 0)
+                joinedClassTV.setVisibility(View.GONE);
+            else
+                joinedClassTV.setVisibility(View.VISIBLE);
 
             return joinedGroups.size();
         }
