@@ -24,11 +24,13 @@ import android.widget.TextView;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -54,6 +56,8 @@ public class JoinedClassInfo extends MyActionBarActivity {
     TextView subCodeTV;
     LinearLayout assignedNameContainer;
     RelativeLayout whatsappLayout;
+    LinearLayout classInfoLayout;
+    LinearLayout progressBarLayout;
 
     String className;
     String classCode;
@@ -90,6 +94,9 @@ public class JoinedClassInfo extends MyActionBarActivity {
         assignedNameContainer = (LinearLayout) findViewById(R.id.assignedNameContainer);
         whatsappLayout = (RelativeLayout) findViewById(R.id.whatsappLayout);
         subCodeTV = (TextView) findViewById(R.id.subCode);
+        classInfoLayout = (LinearLayout) findViewById(R.id.classInfoLayout);
+        progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
+
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
         TextView share = (TextView) findViewById(R.id.share);
@@ -215,41 +222,15 @@ public class JoinedClassInfo extends MyActionBarActivity {
                         String newAssignedName = input.getText().toString();
 
                         if (!UtilString.isBlank(newAssignedName)) {
-                            assignedName = newAssignedName;
-
                             if (Utility.isInternetOn(JoinedClassInfo.this)) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
 
-                                ParseUser user = ParseUser.getCurrentUser();
-                                if (user != null) {
-                                    //update assigned name for this class
-                                    List<List<String>> joinedGroups = user.getList(Constants.JOINED_GROUPS);
-                                    if(joinedGroups != null){
-                                        for(int i=0; i<joinedGroups.size(); i++){
-                                            List<String> group = joinedGroups.get(i);
-                                            if(group.get(0).equals(classCode)){
-                                                Log.d("DEBUG_JOINED_CLASS_INFO", "changing assigned name to " + newAssignedName);
-                                                //remove the last entry(child name) of group and put new name there
-                                                if(group.size() >= 3){
-                                                    group.remove(2);
-                                                    group.add(newAssignedName);
-                                                    user.saveEventually();
-                                                    assignedNameTV.setText(newAssignedName);
-
-                                                    Utility.toast("Successfully updated Associated name.");
-
-                                                    //notify Classrooms joined groups adapter
-                                                    Classrooms.joinedGroups = joinedGroups;
-                                                    Classrooms.joinedClassAdapter.notifyDataSetChanged();
-
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
+                                UpdateAssignedName updateAssignedName = new UpdateAssignedName(newAssignedName);
+                                updateAssignedName.execute();
+                                progressBarLayout.setVisibility(View.VISIBLE);
+                                classInfoLayout.setVisibility(View.GONE);
                             }
                             else{
                                 Utility.toast("Check you internet connection !");
@@ -272,46 +253,53 @@ public class JoinedClassInfo extends MyActionBarActivity {
         whatsappLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-                builder.setMessage("Share via WhatsApp ?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
+                PackageManager pm = getPackageManager();
+                try {
+                    pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.setPackage("com.whatsapp");
+                    sendIntent.setType("text/plain");
+                    String trimSchoolName = schoolName;
+                    if(trimSchoolName.length() > 50 ){
+                        trimSchoolName = schoolName.substring(0, 50);
+                    }
 
-                            PackageManager pm = getPackageManager();
-                            try {
-                                pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
-                                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                                sendIntent.setPackage("com.whatsapp");
-                                sendIntent.setType("text/plain");
-                                String trimSchoolName = schoolName.substring(0, 50);
-                                trimSchoolName = trimSchoolName + "...";
-                                sendIntent.putExtra(Intent.EXTRA_TEXT, "I have joined " + className +
-                                        " class(code " + classCode + ") on KNIT App by " + teacherName + " of " + trimSchoolName + ". Please join this class ! ");
-                                startActivity(sendIntent);
+                    trimSchoolName = trimSchoolName + "...";
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "I have joined " + className +
+                            " class(code " + classCode + ") on KNIT App by " + teacherName + " of " + trimSchoolName + ". Please join this class ! ");
+                    startActivity(sendIntent);
 
-                            } catch (PackageManager.NameNotFoundException e) {
-                                e.printStackTrace();
-                                Utility.toast("WhatsApp not installed !");
-                            }
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                        }
-                    });
-                builder.create().show();
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                    Utility.toast("WhatsApp not installed !");
+                }
             }
         });
     }
 
 
+    Boolean isDefaultGroup(String code){
+        if(code == null) return false;
+        if(code.equals(Config.defaultParentGroupCode) || code.equals(Config.defaultTeacherGroupCode)){
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
+        if(classCode != null) {
 
-        MenuInflater inflater = getMenuInflater();
+            if(isDefaultGroup(classCode)){
+                return true;
+            }
 
-        inflater.inflate(R.menu.joined_class_info_menu, menu);
+            //inflate menu containing unsubscribe option only if class is not the default group
+            MenuInflater inflater = getMenuInflater();
+
+            inflater.inflate(R.menu.joined_class_info_menu, menu);
+        }
         return true;
     }
 
@@ -322,7 +310,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 onBackPressed();
                 break;
             case R.id.unsubscribe:
-                unSubscribe();
+                unSubscribeAction();
                 break;
             default:
                 break;
@@ -330,38 +318,124 @@ public class JoinedClassInfo extends MyActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    void unSubscribe(){
-        if (Utility.isInternetOn(JoinedClassInfo.this)) {
-
-            ParseUser user = ParseUser.getCurrentUser();
-            if (user != null) {
-                //update assigned name for this class
-                List<List<String>> joinedGroups = user.getList(Constants.JOINED_GROUPS);
-                if(joinedGroups != null){
-                    int targetIndex = -1; //group index to remove from joined_groups
-                    for(int i=0; i<joinedGroups.size(); i++){
-                        List<String> group = joinedGroups.get(i);
-                        if(group.get(0).equals(classCode)){
-                            targetIndex = i;
-                        }
+    void unSubscribeAction(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
+        builder.setMessage("Unsubscribe from this class ?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        progressBarLayout.setVisibility(View.VISIBLE);
+                        classInfoLayout.setVisibility(View.GONE);
+                        UnSubscribeTask unSubscribeTask = new UnSubscribeTask();
+                        unSubscribeTask.execute();
                     }
-                    if(targetIndex != -1){
-                        joinedGroups.remove(targetIndex); //remove this class
-                        user.saveEventually();
-
-                        Utility.toast("Successfully unsubscribed");
-                        //notify Classrooms joined groups adapter
-                        Classrooms.joinedGroups = joinedGroups;
-                        Classrooms.joinedClassAdapter.notifyDataSetChanged();
-
-                        finish(); //close this activity to go back to MainActivity
-                        return;
+                })
+                .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
                     }
+                });
+        builder.create().show();
+    }
+
+    public class UnSubscribeTask extends AsyncTask<Void, Void, Void>{
+        List<List<String>> joinedGroups; //this will contain updated joined_groups
+        Boolean success = false;
+        public UnSubscribeTask(){
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            //setting parameters
+            HashMap<String, Object> param = new HashMap<String, Object>();
+            param.put("classcode", classCode);
+            param.put("installationObjectId", ParseInstallation.getCurrentInstallation().getObjectId());
+
+            try {
+                success = ParseCloud.callFunction("leaveClass", param);
+                ParseUser user = ParseUser.getCurrentUser();
+                user.fetch();
+            } catch (ParseException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            progressBarLayout.setVisibility(View.GONE);
+            classInfoLayout.setVisibility(View.VISIBLE);
+            if(success) {
+                //notify Classrooms joined groups adapter
+                joinedGroups = ParseUser.getCurrentUser().getList("joined_groups");
+                if (joinedGroups == null) {
+                    joinedGroups = new ArrayList<List<String>>();
                 }
+                Classrooms.joinedGroups = joinedGroups;
+                if(Classrooms.joinedClassAdapter != null) {
+                    Classrooms.joinedClassAdapter.notifyDataSetChanged();
+                }
+
+                Utility.toast("Successfully unsubscribed");
+                finish(); //close the activity
+            }
+            else{
+                Utility.toast("Oops ! Failed to unsubscribe");
             }
         }
-        else{
-            Utility.toast("Check you internet connection !");
+    }
+
+    public class UpdateAssignedName extends AsyncTask<Void, Void, Void>{
+        String newAssignedName;
+        List<List<String>> joinedGroups; //this will contain updated joined_groups
+        Boolean success = false;
+        public UpdateAssignedName(String newName){
+            newAssignedName = newName;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
+
+            parameters.put("classCode", classCode);
+            parameters.put("childName", newAssignedName);
+
+            try{
+                ParseCloud.callFunction("changeAssociateName", parameters);
+                Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() success with new asso name "+ newAssignedName);
+                ParseUser user = ParseUser.getCurrentUser();
+                user.fetch();
+                success = true;
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            progressBarLayout.setVisibility(View.GONE);
+            classInfoLayout.setVisibility(View.VISIBLE);
+            if(success) {
+                assignedName = newAssignedName;
+                assignedNameTV.setText(assignedName); //assignedName reflects correct name(new when success, old when fail)
+
+                //notify Classrooms joined groups adapter
+                joinedGroups = ParseUser.getCurrentUser().getList("joined_groups");
+                if (joinedGroups == null) {
+                    joinedGroups = new ArrayList<List<String>>();
+                }
+                Classrooms.joinedGroups = joinedGroups;
+                if(Classrooms.joinedClassAdapter != null) {
+                    Classrooms.joinedClassAdapter.notifyDataSetChanged();
+                }
+
+                Utility.toast("Successfully updated Associated name.");
+            }
+            else{
+                Utility.toast("Oops ! Failed to update Associated name.");
+            }
         }
     }
 
@@ -416,10 +490,14 @@ public class JoinedClassInfo extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Void result){//schoolName has been set to a non-null value
 
-            if(caller ==0)
+            if(caller ==0) {
                 JoinedClassInfo.schoolNameTV.setText(school);
-            else
+                JoinedClassInfo.schoolName = school; //used for whats app messages. So need to update
+            }
+            else if(caller == 1)
                 JoinSuggestedClass.schoolNameTV.setText(school);
+            else if(caller == 2)
+                Subscribers.schoolNameTV.setText(school);
         }
     }
 }

@@ -11,6 +11,7 @@
         android:background="@color/white"
         android:orientation="vertical" >
 
+
         <TextView
             android:id="@+id/internetbar"
             android:layout_width="match_parent"
@@ -20,6 +21,28 @@
             android:text="No internet Connection"
             android:textColor="@color/white"
             android:visibility="gone" />
+
+        <LinearLayout
+            android:id="@+id/progressBarLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/lightbackgroundcolor"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone" >
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:text="Loading..."
+                android:textSize="18dp" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/classInfoLayout"

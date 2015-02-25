@@ -55,9 +55,9 @@ public class FeedBackClass extends DialogFragment {
             HashMap<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("feed", content);
-            ParseCloud.callFunctionInBackground("feedback", parameters, new FunctionCallback<String>() {
+            ParseCloud.callFunctionInBackground("feedback", parameters, new FunctionCallback<Boolean>() {
                 @Override
-                public void done(String result, ParseException e) {
+                public void done(Boolean result, ParseException e) {
                     if(e == null) {
                         Utility.toast("Thanks for the feedback! :)");
                     }
