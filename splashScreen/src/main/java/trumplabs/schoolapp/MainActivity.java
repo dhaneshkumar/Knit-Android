@@ -35,6 +35,7 @@ import java.lang.reflect.Field;
 import BackGroundProcesses.Refresher;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
@@ -281,7 +282,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
 
         return true;
-        // inflater.inflate(R.menu.messages, menu);
     }
 
 
@@ -290,17 +290,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         switch (item.getItemId()) {
 
-            case R.id.addclass:
-                startActivity(new Intent(this, CreateClass.class));
-                break;
             case R.id.joinedclasses:
                 startActivity(new Intent(this, JoinClassesContainer.class));
                 break;
 
             case R.id.joinclass:
-                Intent intent = new Intent(this, JoinClassesContainer.class);
-                intent.putExtra("VIEWPAGERINDEX", 1);
-                startActivity(intent);
+                FragmentManager fm = getSupportFragmentManager();
+                JoinClassDialog joinClassDialog = new JoinClassDialog();
+                joinClassDialog.show(fm, "Join Class");
                 break;
 
             case R.id.profile:

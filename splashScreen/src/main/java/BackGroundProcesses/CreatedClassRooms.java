@@ -93,7 +93,6 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
      */
       ParseUser user = ParseUser.getCurrentUser();
       if (user != null) {
-          Log.d("DEBUG_CREATED_CLASSROOMS", "onPostExecute() - updating memberlist using asynctask START");
           List<List<String>> createdGroupList = user.getList(Constants.CREATED_GROUPS);
           if (createdGroupList != null) {
        /* ClassMembers classMembers = new ClassMembers();

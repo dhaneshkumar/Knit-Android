@@ -15,17 +15,22 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import BackGroundProcesses.UpdateSuggestions;
+import java.util.ArrayList;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.InviteTeacher;
+import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
 import utility.Popup;
+import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -48,6 +53,8 @@ public class JoinClassDialog extends DialogFragment {
     private String userId;
     private Point p;
     private int height;
+    private boolean callerflag= false;  // true if its called from "join suggestion" class.
+    private Queries query;
 
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -60,6 +67,7 @@ public class JoinClassDialog extends DialogFragment {
         dialog = builder.create();
         dialog.show();
 
+
         //Initializing variables
         codeET = (EditText) view.findViewById(R.id.code);
         childET = (EditText) view.findViewById(R.id.child);
@@ -69,25 +77,68 @@ public class JoinClassDialog extends DialogFragment {
         inviteButton = (TextView) view.findViewById(R.id.invite);
         progressLayout = (LinearLayout) view.findViewById(R.id.progresslayout);
         contentLayout = (LinearLayout) view.findViewById(R.id.createclasslayout);
+        LinearLayout inviteLayout = (LinearLayout) view.findViewById(R.id.inviteLayout);
+        TextView codeHint = (TextView) view.findViewById(R.id.codeHelper);
 
         //checking role and setting child name according to that
         role = ParseUser.getCurrentUser().getString(Constants.ROLE);
-        if(role.equals(Constants.STUDENT))
+        if(role.equals(Constants.STUDENT)) {
             childName = ParseUser.getCurrentUser().getString("name");
+            childET.setVisibility(View.GONE);
+            childHelp.setVisibility(View.GONE);
+        }
 
         userId = ParseUser.getCurrentUser().getUsername();
+        query = new Queries();
+
+        callerflag = false;
+
+        if(getArguments() != null) {
+            code = getArguments().getString("classCode");
+
+            callerflag = true;
+
+            codeET.setVisibility(View.GONE);
+            codeHelp.setVisibility(View.GONE);
+            codeHint.setVisibility(View.GONE);
+            inviteLayout.setVisibility(View.GONE);
+
+
+            //if user is a student and joining class from suggestions, then directly join the class
+            if(role.equals(Constants.STUDENT)) {
+                //checking for internet connection
+                if (Utility.isInternetOn(getActivity())) {
+
+                    //calling background function to join clas
+                    AddChild_Background rcb = new AddChild_Background();
+                    rcb.execute();
+
+                    //showing progress bar
+                    progressLayout.setVisibility(View.VISIBLE);
+                    contentLayout.setVisibility(View.GONE);
+
+                }
+                else {
+                    Utility.toast("Check your Internet connection");
+                }
+            }
+
+        }
 
         //Setting join button click functionality
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                childName = childET.getText().toString();
+                if(! role.equals(Constants.STUDENT))
+                    childName = childET.getText().toString();
+
+                if(! callerflag)
+                    code = codeET.getText().toString().trim();
 
                 //validating class code and child name
-                if ((!UtilString.isBlank(codeET.getText().toString()))   && (! UtilString.isBlank(childName)) ) {
+                if ((!UtilString.isBlank(code))   && (! UtilString.isBlank(childName)) ) {
 
-                    code = codeET.getText().toString().trim();
                     childName = childName.trim();
 
                     //validating code format
@@ -116,10 +167,12 @@ public class JoinClassDialog extends DialogFragment {
                         Utility.toast("Check your Internet connection");
                     }
                 }
-                else if(UtilString.isBlank(codeET.getText().toString()))
+                else if(UtilString.isBlank(codeET.getText().toString())) {
                     Utility.toast("Enter correct class-code");
-                else
+                }
+                else {
                     Utility.toast("Enter correct child name");
+                }
             }
         });
 
@@ -137,14 +190,6 @@ public class JoinClassDialog extends DialogFragment {
         //get parameter "classCode" from caller to know if called to join a suggested class. If that is the case
         //don't show class code, invite teacher details
 
-        String classCode = null;
-        if(getArguments() != null)
-            classCode = getArguments().getString("classCode");
-
-        if(classCode != null){
-            //Hide unnecessary details here
-            Log.d("DEBUG_JOIN_CLASS_DIALOG", "called to join the suggested group " + classCode);
-        }
 
 
         // Get the x, y location and store it in the location[] array
@@ -230,7 +275,7 @@ public class JoinClassDialog extends DialogFragment {
 
 
                     if (result == 1) {
-                        //update class suggestions in background
+                        //fetch class suggestions in background for this class explicitly TODO using cloud function for this codegroup
                         UpdateSuggestions updateSuggestions = new UpdateSuggestions();
                         updateSuggestions.execute();
                         return true;      //successfully joined class
@@ -253,20 +298,47 @@ public class JoinClassDialog extends DialogFragment {
             if (result) {
                // Utility.toast("ClassRoom Added.");
 
-                if( Messages.myadapter != null)
-                    Messages.myadapter.notifyDataSetChanged();
 
-               /* if(getActivity() != null) {
-                    Intent intent = new Intent(getActivity(), joinclasses.JoinClassesContainer.class);
-                    startActivity(intent);
-                }*/
-
+                //Refreshing joined class adapter
                 Classrooms.joinedGroups = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
 
                 if(Classrooms.joinedClassAdapter != null)
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
 
+                if(callerflag && getActivity()!= null)
+                {
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    startActivity(intent);
+                }
+
+                //Refreshing inbox fetched messages
+
+                try {
+                    Messages.msgs = query.getLocalInboxMsgs();
+                    Messages.updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
+
+                    if(Messages.msgs == null)
+                        Messages.msgs = new ArrayList<ParseObject>();
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if( Messages.myadapter != null)
+                    Messages.myadapter.notifyDataSetChanged();
+
+
+                //Refreshing suggestion adapter
+                Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(ParseUser.getCurrentUser().getUsername());
+                if(Classrooms.suggestedGroups == null)
+                    Classrooms.suggestedGroups = new ArrayList<ParseObject>();
+
+                if(Classrooms.suggestedClassAdapter != null)
+                    Classrooms.suggestedClassAdapter.notifyDataSetChanged();
+
+
                 dialog.dismiss();
+
             } else {
                 if (classExist) {
                     Utility.toast("Class room Already added.");
