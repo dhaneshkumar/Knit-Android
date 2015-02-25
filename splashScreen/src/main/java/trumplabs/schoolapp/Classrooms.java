@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import BackGroundProcesses.CreatedClassRooms;
+import BackGroundProcesses.JoinedClassRooms;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinedHelper;
 import library.ExpandableListView;
@@ -198,6 +199,10 @@ public class Classrooms extends Fragment {
                     //refreshing class-list in background
                     CreatedClassRooms createdClassList = new CreatedClassRooms();
                     createdClassList.execute();
+
+                    //refreshing joined classes list
+                    JoinedClassRooms joinClass = new JoinedClassRooms();
+                    joinClass.execute();
                 } else {
                     Utility.toast("Check your Internet connection");
                 }
@@ -455,8 +460,6 @@ public class Classrooms extends Fragment {
             TextView classname = (TextView) row.findViewById(R.id.classname);
             TextView classcode = (TextView) row.findViewById(R.id.classcode);
 
-
-
           /*
            * Setting class name, code & child name
            */
@@ -508,6 +511,11 @@ public class Classrooms extends Fragment {
 
                 Log.d("join", "Default class code : " + grooupCode);
 
+            }
+            else
+            {
+                classcode.setVisibility(View.VISIBLE);
+                classcreator.setVisibility(View.VISIBLE);
             }
 
           /*

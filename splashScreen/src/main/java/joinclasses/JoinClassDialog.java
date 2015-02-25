@@ -15,7 +15,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
 
 import library.UtilString;
 import trumplab.textslate.R;
@@ -26,6 +30,7 @@ import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
 import utility.Popup;
+import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -49,6 +54,7 @@ public class JoinClassDialog extends DialogFragment {
     private Point p;
     private int height;
     private boolean callerflag= false;  // true if its called from "join suggestion" class.
+    private Queries query;
 
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -83,6 +89,9 @@ public class JoinClassDialog extends DialogFragment {
         }
 
         userId = ParseUser.getCurrentUser().getUsername();
+        query = new Queries();
+
+        callerflag = false;
 
         if(getArguments() != null) {
             code = getArguments().getString("classCode");
@@ -121,16 +130,14 @@ public class JoinClassDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
 
-                if(UtilString.isBlank(childName))
+                if(! role.equals(Constants.STUDENT))
                     childName = childET.getText().toString();
 
-                if(UtilString.isBlank(code))
+                if(! callerflag)
                     code = codeET.getText().toString().trim();
 
                 //validating class code and child name
                 if ((!UtilString.isBlank(code))   && (! UtilString.isBlank(childName)) ) {
-
-
 
                     childName = childName.trim();
 
@@ -160,10 +167,12 @@ public class JoinClassDialog extends DialogFragment {
                         Utility.toast("Check your Internet connection");
                     }
                 }
-                else if(UtilString.isBlank(codeET.getText().toString()))
+                else if(UtilString.isBlank(codeET.getText().toString())) {
                     Utility.toast("Enter correct class-code");
-                else
+                }
+                else {
                     Utility.toast("Enter correct child name");
+                }
             }
         });
 
@@ -285,21 +294,44 @@ public class JoinClassDialog extends DialogFragment {
             if (result) {
                // Utility.toast("ClassRoom Added.");
 
-                if( Messages.myadapter != null)
-                    Messages.myadapter.notifyDataSetChanged();
 
+                //Refreshing joined class adapter
                 Classrooms.joinedGroups = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
 
                 if(Classrooms.joinedClassAdapter != null)
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
-
-
 
                 if(callerflag && getActivity()!= null)
                 {
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     startActivity(intent);
                 }
+
+                //Refreshing inbox fetched messages
+
+                try {
+                    Messages.msgs = query.getLocalInboxMsgs();
+                    Messages.updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
+
+                    if(Messages.msgs == null)
+                        Messages.msgs = new ArrayList<ParseObject>();
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if( Messages.myadapter != null)
+                    Messages.myadapter.notifyDataSetChanged();
+
+
+                //Refreshing suggestion adapter
+                Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(ParseUser.getCurrentUser().getUsername());
+                if(Classrooms.suggestedGroups == null)
+                    Classrooms.suggestedGroups = new ArrayList<ParseObject>();
+
+                if(Classrooms.suggestedClassAdapter != null)
+                    Classrooms.suggestedClassAdapter.notifyDataSetChanged();
+
 
                 dialog.dismiss();
 
