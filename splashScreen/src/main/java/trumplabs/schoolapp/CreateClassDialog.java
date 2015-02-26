@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import additionals.InviteParents;
 import joinclasses.School;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -257,10 +258,10 @@ public class CreateClassDialog extends DialogFragment{
         seeHowTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                   Intent intent = new Intent(getActivity(), ClassContainer.class);
+                   Intent intent = new Intent(getActivity(), InviteParents.class);
 
-                    intent.putExtra("selectedclass", classCode);
-                    intent.putExtra("selectedclassName", className);
+                    intent.putExtra("classCode", classCode);
+                    intent.putExtra("className", className);
                     startActivity(intent);
 
                     dialog.dismiss();

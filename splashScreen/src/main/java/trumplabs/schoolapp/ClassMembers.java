@@ -87,7 +87,7 @@ public class ClassMembers extends Fragment {
 
         getactivity = getActivity();
 
-        //intializing variables
+        //initializing variables
         listv = (ListView) getactivity.findViewById(R.id.memberslistview);
         mHeaderProgressBar = (SmoothProgressBar) getActivity().findViewById(R.id.ptr_progress);
         progressBarLayout = (LinearLayout) getActivity().findViewById(R.id.progressBarLayout);

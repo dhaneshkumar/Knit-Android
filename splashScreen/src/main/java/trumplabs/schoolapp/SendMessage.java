@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import additionals.InviteParents;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -92,6 +93,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     public static int totalClassMessages; //total messages sent from this class
     public static LinearLayout contentLayout;
     public static Activity currentActivity;
+    private LinearLayout inviteLayout;
 
 
     @Override
@@ -113,6 +115,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
         progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
+        inviteLayout = (LinearLayout) findViewById(R.id.inviteLayout);
 
         session = new SessionManager(Application.getAppContext());
 
@@ -171,6 +174,16 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 intent.putExtra("className", grpName);
                 intent.putExtra("classCode", groupCode);
 
+                startActivity(intent);
+            }
+        });
+
+        inviteLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(SendMessage.this, InviteParents.class);
+                intent.putExtra("classCode", groupCode);
+                intent.putExtra("className", grpName);
                 startActivity(intent);
             }
         });

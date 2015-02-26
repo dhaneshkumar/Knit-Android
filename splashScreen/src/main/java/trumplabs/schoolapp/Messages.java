@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -373,6 +374,7 @@ public class Messages extends Fragment {
         ImageView likeIcon;
         ImageView confusingIcon;
         ImageView senderImg;
+        LinearLayout copyLayout;
 
         public ViewHolder(View row) {
             super(row);
@@ -392,6 +394,7 @@ public class Messages extends Fragment {
             likeIcon = (ImageView) row.findViewById(R.id.likeIcon);
             confusingIcon = (ImageView) row.findViewById(R.id.confusionIcon);
             senderImg = (ImageView) row.findViewById(R.id.image);
+            copyLayout = (LinearLayout) row.findViewById(R.id.copyMessage);
         }
     }
 
@@ -677,21 +680,54 @@ public class Messages extends Fragment {
             {
             }
 
-            if (msgObject.getString("title").
-
-                    equals("")
-
-                    )
+            final String message = msgObject.getString("title");
+            if (UtilString.isBlank(message)) {
                 holder.msgslist.setVisibility(View.GONE);
+             //   holder.copyLayout.setVisibility(View.GONE);
+            }
             else
-
             {
+
                 holder.msgslist.setVisibility(View.VISIBLE);
-                holder.msgslist.setText(msgObject.getString("title"));
+                holder.msgslist.setText(message);
+               // holder.copyLayout.setVisibility(View.VISIBLE);
+
+                holder.copyLayout.setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        /*
+         * Creating popmenu for selecting schools
+         */
+                        PopupMenu menu = new PopupMenu(getActivity(), v);
+
+                        menu.getMenuInflater().inflate(R.menu.copy_text, menu.getMenu());
+
+                        menu.show();
+
+
+                        // setting menu click functionality
+                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+
+                                switch (item.getItemId()) {
+                                    case R.id.copy:
+
+                                        Utility.copyToClipBoard(getActivity(), "Message", message);
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                                return true;
+                            }
+                        });
+                    }
+                });
             }
 
             if (!imagepath.equals(""))
-
             {
                 holder.imgframelayout.setVisibility(View.VISIBLE);
                 holder.imgframelayout.setOnClickListener(new OnClickListener() {

@@ -272,34 +272,24 @@ public class JoinedClassInfo extends MyActionBarActivity {
         whatsappLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-                builder.setMessage("Share via WhatsApp ?")
-                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
 
-                            PackageManager pm = getPackageManager();
-                            try {
-                                pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
-                                Intent sendIntent = new Intent(Intent.ACTION_SEND);
-                                sendIntent.setPackage("com.whatsapp");
-                                sendIntent.setType("text/plain");
-                                String trimSchoolName = schoolName.substring(0, 50);
-                                trimSchoolName = trimSchoolName + "...";
-                                sendIntent.putExtra(Intent.EXTRA_TEXT, "I have joined " + className +
-                                        " class(code " + classCode + ") on KNIT App by " + teacherName + " of " + trimSchoolName + ". Please join this class ! ");
-                                startActivity(sendIntent);
+                PackageManager pm = getPackageManager();
+                try {
+                    pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+                    Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                    sendIntent.setPackage("com.whatsapp");
+                    sendIntent.setType("text/plain");
+                    String trimSchoolName = schoolName.substring(0, 50);
+                    trimSchoolName = trimSchoolName + "...";
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, "I have joined " + className +
+                            " class(code " + classCode + ") on KNIT App by " + teacherName + " of " + trimSchoolName + ". Please join this class ! ");
+                    startActivity(sendIntent);
 
-                            } catch (PackageManager.NameNotFoundException e) {
-                                e.printStackTrace();
-                                Utility.toast("WhatsApp not installed !");
-                            }
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                        }
-                    });
-                builder.create().show();
+                } catch (PackageManager.NameNotFoundException e) {
+                    e.printStackTrace();
+                    Utility.toast("WhatsApp not installed !");
+                }
+
             }
         });
     }

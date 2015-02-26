@@ -87,7 +87,6 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
       if (MainActivity.editLayout != null)
           MainActivity.editLayout.setVisibility(View.VISIBLE);
 
-      //TODO See if background alternative to following
      /*
      * Updating member list
      */
