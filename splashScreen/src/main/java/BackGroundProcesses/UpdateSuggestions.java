@@ -12,19 +12,13 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import joinclasses.JoinedClasses;
 import joinclasses.JoinedHelper;
-import joinclasses.School;
-import library.UtilString;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
-import utility.Config;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -127,27 +121,38 @@ public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
         return userId;
     }
 
+    //checks if given codegroup is a candidate for suggestions i.e has school and standard set properly
+    public static boolean checkIfCandidateCodegroup(ParseObject group){
+        if(group == null) return false;
+        if(group.getString("school") == null || group.getString("school").equalsIgnoreCase("other") ||
+                group.getString("standard") == null || group.getString("standard").equalsIgnoreCase("NA")){
+            return false;
+        }
+        return true;
+    }
+
     //select those codegroup objects which have non-null "school" and "standard" is NOT "NA"
     static ArrayList<HashMap<String, String>> filterCandidateCodegroups(List<ParseObject> joinedGroups){
         ArrayList<HashMap<String, String>> candidateCodegroups = new ArrayList<HashMap<String, String>>();
 
         for(int i=0; i<joinedGroups.size(); i++){
             ParseObject group = joinedGroups.get(i);
-            if(group.getString("school") == null || group.getString("school").equalsIgnoreCase("other") ||
-                    group.getString("standard") == null || group.getString("standard").equalsIgnoreCase("NA")){
+            if(!checkIfCandidateCodegroup(group)){
                 continue; //ignore this codegroup
             }
             HashMap<String, String> candidate = new HashMap<String, String>();
             candidate.put("school", group.getString("school"));
             candidate.put("standard", group.getString("standard"));
-            if(group.getString("division") == null){
+            if(group.getString("divison") == null){
+                Log.d("DEBUG_UPDATE_SUGGESTIONS", "NULL division for class " + group.getString("code"));
                 candidate.put("division", "NA");
             }
             else{
-                candidate.put("division", group.getString("division"));
+                candidate.put("division", group.getString("divison"));
             }
             candidateCodegroups.add(candidate);//add this candidate
         }
+        Log.d("DEBUG_UPDATE_SUGGESTIONS", "candidateCodegroups size " + candidateCodegroups.size());
         return candidateCodegroups;
     }
 

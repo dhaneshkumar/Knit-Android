@@ -54,7 +54,7 @@ public class JoinedHelper {
                 return 2;
         }
 
-        Log.d("join", "class joining started.........");
+        Log.d("join", "class joining started current.........");
         Log.d("join", classcode);
         Log.d("join", childname);
 
@@ -217,6 +217,7 @@ public class JoinedHelper {
         query.fromLocalDatastore();
         query.whereEqualTo("userId", userId);
         query.whereNotContainedIn("code", ignoreList);
+        query.whereEqualTo("classExist", true); //get only classes which exist
 
         try {
             List<ParseObject> codeGroupList = query.find();
