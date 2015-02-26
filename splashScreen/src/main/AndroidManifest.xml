@@ -55,6 +55,12 @@
         <activity android:name="loginpages.Signup"></activity>
         <activity android:name="loginpages.Signup1Class"></activity>
         <activity android:name="loginpages.Signup1_5Class"></activity>
+
+        <activity android:name="loginpages.PhoneSignUpName"></activity>
+        <activity android:name="loginpages.PhoneSignUpSchool"></activity>
+        <activity android:name="loginpages.PhoneSignUpVerfication"></activity>
+        <activity android:name="loginpages.PhoneLoginPage"></activity>
+
         <activity android:name="loginpages.LoginPanda"></activity>
         <activity android:name="loginpages.Test"></activity>
 

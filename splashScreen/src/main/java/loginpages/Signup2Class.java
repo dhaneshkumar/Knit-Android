@@ -200,10 +200,14 @@ public class Signup2Class extends ActionBarActivity {
 
     class StoreSchoolInBackground extends AsyncTask<Void, Void, Void>
     {
+        ParseUser currentUser;
         @Override
         protected Void doInBackground(Void... params) {
 
-            //storing school on database server
+            currentUser = ParseUser.getCurrentUser(); //won't be null
+
+            if(currentUser == null) return null;
+            /*//storing school on database server
             try {
                 if (role.equals(Constants.TEACHER)) {
                     String schoolId = School.getSchoolObjectId(school);
@@ -211,38 +215,37 @@ public class Signup2Class extends ActionBarActivity {
                         user.put("school", schoolId);
                 }
             } catch (ParseException e2) {
-            }
+            }*/
 
 
-            Utility.updateCurrentTime(user);
+            Utility.updateCurrentTime(currentUser);
 
 
             //storing username in parseInstallation table
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-            installation.put("username", user.getUsername());
+            installation.put("username", currentUser.getUsername());
             List<String> channelList = new ArrayList<String>();
             installation.put("channels", channelList);
             try {
-                if(user.getUsername() != null)
-                    Log.d("Install", user.getUsername());
+                if(currentUser.getUsername() != null)
+                    Log.d("Install", currentUser.getUsername());
                 else
                     Log.d("Install", "username null");
 
 
                 installation.save();
             } catch (ParseException e1) {
-                System.out.println("Installfailed not saved");
+                System.out.println("Install failed not saved");
                 e1.getCode();
                 e1.getMessage();
                 e1.printStackTrace();
             }
 
               /*
-                                    * Joining default groups
-                                    */
+                * Joining default groups
+                */
             joinDefaultGroup joinGroup = new joinDefaultGroup();
             joinGroup.execute();
-
 
             return null;
         }
@@ -251,6 +254,7 @@ public class Signup2Class extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            if(currentUser == null) return;
 
             //here create welcome notification and message
             if(user.getString("role").equals("teacher")){

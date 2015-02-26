@@ -62,6 +62,18 @@
     </RelativeLayout>
 
 
+    <ProgressBar
+        android:id="@+id/loading_schools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="School Name"
+        android:paddingLeft="16dp"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:background="@drawable/apptheme_edit_text_holo_light"
+        android:visibility="gone"
+        />
 
     <AutoCompleteTextView
         android:id="@+id/schoolName"
@@ -74,6 +86,7 @@
         android:textColor="@color/black"
         android:textSize="16sp"
         android:background="@drawable/apptheme_edit_text_holo_light"
+        android:visibility="visible"
         />
 
 </LinearLayout>

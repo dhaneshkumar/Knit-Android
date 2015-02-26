@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:padding="@dimen/signup_margin"
+    android:background="@color/lightbackgroundcolor"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enter your registered mobile number"
+        android:textSize="16sp"
+        android:layout_marginLeft="4dp"
+        android:gravity="left"
+        android:layout_marginTop="4dp"
+        />
+
+    <EditText
+        android:id="@+id/phone_id"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:hint="Mobile"
+        android:background="@drawable/apptheme_edit_text_holo_light"
+        android:paddingLeft="16dp"
+        android:paddingRight="1dp"
+        android:inputType="number"
+        android:maxLength="10"
+        android:textColor="@color/black"
+        android:textSize="16sp" />
+</LinearLayout>

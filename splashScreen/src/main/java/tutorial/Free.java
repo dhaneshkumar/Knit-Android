@@ -17,6 +17,7 @@ import com.parse.ParseQuery;
 
 import java.util.List;
 
+import loginpages.PhoneSignUpName;
 import loginpages.Signup1Class;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
@@ -59,7 +60,7 @@ public class Free extends Fragment {
                 if(role.equals(Constants.TEACHER))
                 {
 
-                    Intent intent = new Intent(getActivity(), Signup1Class.class);
+                    Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
                     intent.putExtra("role", Constants.TEACHER);
                     startActivity(intent);
 
@@ -71,7 +72,7 @@ public class Free extends Fragment {
                 }
                 else
                 {
-                    Intent intent = new Intent(getActivity(),Signup1Class.class);
+                    Intent intent = new Intent(getActivity(),PhoneSignUpName.class);
                     intent.putExtra("role", role);
                     startActivity(intent);
                 }
