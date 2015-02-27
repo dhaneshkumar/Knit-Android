@@ -182,7 +182,7 @@ public class School {
         try {
 
             //calling parse cloud functions
-            suggestions = ParseCloud.callFunction("suggestclasses", params);
+            suggestions = ParseCloud.callFunction("suggestClasses", params);
 
             if (suggestions != null) {
                 for (int i = 0; i < suggestions.size(); i++) {

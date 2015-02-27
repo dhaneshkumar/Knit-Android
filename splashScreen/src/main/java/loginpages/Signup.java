@@ -89,7 +89,8 @@ public class Signup extends ActionBarActivity {
         login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Signup.this, LoginPage.class);
+                Intent intent = new Intent(Signup.this, PhoneLoginPage.class);
+                intent.putExtra("login", true); //just a dummy extra for proper behaviour of empty text on forward, filled text on back
                 //Intent intent = new Intent(Signup.this, Test.class);
                 startActivity(intent);
             }

@@ -124,7 +124,7 @@ public class LoginPage extends MyActionBarActivity {
 
 
               } else {
-
+                  e.printStackTrace();
                 getSupportActionBar().show();
                 loginLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
@@ -164,7 +164,7 @@ public class LoginPage extends MyActionBarActivity {
 
 
 
-  private void setDefaultGroupCheck(ParseUser user) {
+  public static void setDefaultGroupCheck(ParseUser user) {
     if (user == null)
       return;
 
@@ -191,8 +191,6 @@ public class LoginPage extends MyActionBarActivity {
         }
       }
     }
-
-
   }
 
 

@@ -12,7 +12,9 @@ import java.util.List;
 
 import joinclasses.JoinedClasses;
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.Queries2;
 import utility.SessionManager;
@@ -48,8 +50,8 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   }
 
   public void onPostExecuteHelper(){
-      if(JoinedClasses.mHeaderProgressBar != null){
-          JoinedClasses.mHeaderProgressBar.post(new Runnable() {
+      if(MainActivity.mHeaderProgressBar != null){
+          MainActivity.mHeaderProgressBar.post(new Runnable() {
               @Override
               public void run() {
                 onPostExecuteCore();
@@ -59,11 +61,11 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   }
 
   public void onPostExecuteCore(){
-      if (JoinedClasses.joinedadapter != null)
-          JoinedClasses.joinedadapter.notifyDataSetChanged();
+      if (Classrooms.joinedClassAdapter != null)
+          Classrooms.joinedClassAdapter.notifyDataSetChanged();
 
-      if (JoinedClasses.mHeaderProgressBar != null)
-          JoinedClasses.mHeaderProgressBar.setVisibility(View.GONE);
+      if (MainActivity.mHeaderProgressBar != null)
+          MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
   }
 
   @Override

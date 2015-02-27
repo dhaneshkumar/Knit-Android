@@ -19,8 +19,9 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
+import BackGroundProcesses.FetchSuggestionsOnJoin;
+import BackGroundProcesses.UpdateSuggestions;
 import java.util.ArrayList;
-
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
@@ -274,8 +275,12 @@ public class JoinClassDialog extends DialogFragment {
                     int result = JoinedHelper.joinClass(code, childName, false);
 
 
-                    if (result == 1)
+                    if (result == 1) {
+                        //fetch class suggestions in background for this class explicitly TODO using cloud function for this codegroup
+                        FetchSuggestionsOnJoin fetchSuggestionsOnJoin = new FetchSuggestionsOnJoin(code);
+                        fetchSuggestionsOnJoin.execute();
                         return true;      //successfully joined class
+                    }
                     else if (result == 2) {
                         classExist = true;    //already joined
                         return false;

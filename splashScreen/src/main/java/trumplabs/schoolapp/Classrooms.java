@@ -31,6 +31,7 @@ import java.util.List;
 
 import BackGroundProcesses.CreatedClassRooms;
 import BackGroundProcesses.JoinedClassRooms;
+import BackGroundProcesses.UpdateSuggestions;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinedHelper;
 import library.ExpandableListView;
@@ -224,6 +225,10 @@ public class Classrooms extends Fragment {
                     //refreshing joined classes list
                     JoinedClassRooms joinClass = new JoinedClassRooms();
                     joinClass.execute();
+
+                    //update class suggestions in background
+                    UpdateSuggestions updateSuggestions = new UpdateSuggestions();
+                    updateSuggestions.execute();
                 } else {
                     Utility.toast("Check your Internet connection");
                 }
