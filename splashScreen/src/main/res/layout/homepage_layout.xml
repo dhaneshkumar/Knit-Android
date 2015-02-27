@@ -146,6 +146,7 @@
 
             </LinearLayout>
 
+
             <TextView
                 android:id="@+id/tabcolor"
                 android:layout_width="wrap_content"
@@ -158,6 +159,11 @@
                 android:layout_gravity="left"
                 android:background="@color/buttoncolor" />-->
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="1dp"
+            android:background="@color/buttoncolor" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"

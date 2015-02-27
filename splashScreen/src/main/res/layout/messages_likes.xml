@@ -90,6 +90,22 @@
                 android:text="Ms Seema"
                 android:textColor="@color/darkergrey"
                 android:textSize="12sp" />
+
+            <LinearLayout
+                android:id="@+id/copyMessage"
+                android:layout_width="wrap_content"
+                android:layout_alignParentRight="true"
+                android:paddingLeft="12dp"
+                android:visibility="gone"
+                android:paddingBottom="12dp"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_marginRight="5dp"
+                    android:src="@drawable/ic_action_expand" />
+            </LinearLayout>
         </RelativeLayout>
 
         <TextView

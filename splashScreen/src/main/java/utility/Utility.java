@@ -17,6 +17,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -121,6 +122,17 @@ public class Utility extends MyActionBarActivity {
             width = display.getWidth();
             height = display.getHeight();
         }
+/*
+        ImageView img = new ImageView(Application.getAppContext());
+
+        int sdk = android.os.Build.VERSION.SDK_INT;
+        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+            img.setBackgroundDrawable( Application.getAppContext().getResources().getDrawable(R.drawable.done) );
+        } else {
+            img.setBackground( Application.getAppContext().getResources().getDrawable(R.drawable.done));
+        }
+
+        layout.addView(img);*/
 
         TextView tv = new TextView(Application.getAppContext());
         // set the TextView properties like color, size etc

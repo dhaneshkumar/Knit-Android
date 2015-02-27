@@ -108,8 +108,6 @@ public class Outbox extends Fragment {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                getActivity().setTitle("Classrooms"); //set the title explicitly. o/w it shows partial text
-
                 MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
                 MainActivity.viewpager.setCurrentItem(0);
             }

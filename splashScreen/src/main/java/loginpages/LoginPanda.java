@@ -3,15 +3,17 @@ package loginpages;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.TextView;
 
 import trumplab.textslate.R;
+import trumplabs.schoolapp.CreateClassDialog;
 import trumplabs.schoolapp.MainActivity;
 
 /**
- * Created by dhanno on 21/1/15.
+ * Created by dhanesh on 21/1/15.
  */
 public class LoginPanda extends ActionBarActivity {
 
@@ -34,7 +36,11 @@ public class LoginPanda extends ActionBarActivity {
             public void onClick(View v) {
 
                     Intent intent = new Intent(LoginPanda.this, MainActivity.class);
+                    intent.putExtra("flag", "SIGNUP");
                     startActivity(intent);
+
+
+
             }
         });
 

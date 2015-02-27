@@ -142,6 +142,7 @@ public class Subscribers extends ActionBarActivity {
         });
 
         listv.setAdapter(myadapter);
+        listv.setExpanded(true);
 
         //moving to invite parent activity on click of "invite parent"
         LinearLayout inviteLayout = (LinearLayout) findViewById(R.id.inviteLayout);
@@ -150,9 +151,37 @@ public class Subscribers extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(), InviteParents.class);
+                intent.putExtra("classCode", classCode);
+                intent.putExtra("className", className);
                 startActivity(intent);
             }
         });
+
+        /*
+        //setting school name
+        //get details(schoolName, profile pic, assigned name) from Codegroup and User table
+        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
+        classQuery.fromLocalDatastore();
+        classQuery.whereEqualTo("code", classCode);
+        String schoolName = "";
+
+        try{
+            ParseObject codegroup = classQuery.getFirst();
+            schoolName = codegroup.getString("schoolName"); //this is a new field. If not present, fetch and store locally
+            if(schoolName == null){
+                //fetch school name from id using asynctask
+                JoinedClassInfo.GetSchoolName getSchoolNameTask = new JoinedClassInfo.GetSchoolName(codegroup, 2);
+                getSchoolNameTask.execute();
+            }
+            else{
+                Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName already there " + schoolName);
+                schoolNameTV.setText(schoolName);
+            }
+        }
+        catch (ParseException e){
+            schoolNameTV.setText(schoolName);
+            e.printStackTrace();
+        }*/
     }
 
     /*

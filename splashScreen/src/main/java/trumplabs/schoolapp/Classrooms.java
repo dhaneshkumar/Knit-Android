@@ -51,7 +51,7 @@ public class Classrooms extends Fragment {
     private library.ExpandableListView createdClassListView;
     private library.ExpandableListView joinedClassListView;
     private library.ExpandableListView suggestedClassListView;
-   // private LinearLayout emptylayout;
+    // private LinearLayout emptylayout;
     public static List<List<String>> createdGroups;
     public static List<List<String>> joinedGroups;
     public static List<ParseObject> suggestedGroups;
@@ -99,6 +99,29 @@ public class Classrooms extends Fragment {
         createdClassTV.setTypeface(typeFace);
         joinedClassTV.setTypeface(typeFace);
         suggestedClassTV.setTypeface(typeFace);
+
+
+        //signup check
+        if(getActivity().getIntent() != null)
+        {
+            if(getActivity().getIntent().getExtras() != null)
+            {
+                String signup = getActivity().getIntent().getExtras().getString("flag");
+                if((!UtilString.isBlank(signup))  && signup.equals("SIGNUP"))
+                {
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    CreateClassDialog createClassDialog = new CreateClassDialog();
+                    Bundle args = new Bundle();
+                    args.putString("flag", "SIGNUP");
+                    createClassDialog.setArguments(args);
+                    createClassDialog.show(fm, "create Class");
+
+
+
+
+                }
+            }
+        }
 
 
         //Setting light font
@@ -167,7 +190,6 @@ public class Classrooms extends Fragment {
             }
         });
 
-
          /*
         On click join button , open up dialog box to join class
          */
@@ -179,7 +201,6 @@ public class Classrooms extends Fragment {
                 joinClassDialog.show(fm, "Join Class");
             }
         });
-
 
         initialiseListViewMethods();
         super.onActivityCreated(savedInstanceState);

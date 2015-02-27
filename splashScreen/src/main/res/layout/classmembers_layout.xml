@@ -82,6 +82,8 @@
                 android:text="School Name"
                 android:textColor="@color/black"
                 android:textSize="11sp"
+                android:singleLine="true"
+                android:ems="19"
                 android:layout_below="@+id/className"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />

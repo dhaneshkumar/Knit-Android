@@ -13,7 +13,8 @@ import trumplab.textslate.R;
  * Created by Dhanesh on 1/17/2015.
  */
 public class TeacherTutorial extends ActionBarActivity{
-    ViewPager viewpager;
+    public static ViewPager viewpager;
+    public static MyAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,12 +25,15 @@ public class TeacherTutorial extends ActionBarActivity{
         viewpager = (ViewPager) findViewById(R.id.pager);
 
         getSupportActionBar().hide();
-        viewpager.setAdapter(new MyAdapter(getSupportFragmentManager()));
+
+        myAdapter = new MyAdapter(getSupportFragmentManager());
+        viewpager.setAdapter(myAdapter);
+        viewpager.setOffscreenPageLimit(3);
 
     }
 
 
-    class MyAdapter extends FragmentPagerAdapter {
+    public static class MyAdapter extends FragmentPagerAdapter {
 
         public MyAdapter(FragmentManager fm) {
             super(fm);
@@ -38,7 +42,6 @@ public class TeacherTutorial extends ActionBarActivity{
         @Override
         public Fragment getItem(int arg0) {
             Fragment fragment = null;
-            supportInvalidateOptionsMenu();
             switch (arg0) {
                 case 0:
                     fragment = new OneWay();

@@ -220,7 +220,7 @@ public class JoinClassDialog extends DialogFragment {
             public void onClick(View v) {
                 if (p != null) {
 
-                    Utility.toast("yo clicked");
+                //    Utility.toast("yo clicked");
 
                     Popup popup = new Popup();
                     //popup.showPopup(getActivity(), p, true, 0, txt, height, 15, 400);

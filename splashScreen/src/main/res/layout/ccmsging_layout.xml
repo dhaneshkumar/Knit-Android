@@ -36,6 +36,36 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <LinearLayout
+            android:id="@+id/inviteLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:padding="6dp"
+            android:background="@color/white">
+
+            <ImageButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="@drawable/plus_blue"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_marginLeft="4dp"
+                android:text="Invite Parents"
+                android:textColor="@color/buttoncolor"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/buttoncolor" />
+
         <ListView
             android:id="@+id/classmsglistview"
             android:layout_width="match_parent"
@@ -182,7 +212,8 @@
                 android:background="@color/white"
                 android:minHeight="48dp"
                 android:minWidth="48dp"
-                android:src="@drawable/send" />
+                android:layout_marginTop="-2dp"
+                android:src="@drawable/send_grey" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

@@ -259,6 +259,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Intent sendIntent = new Intent(Intent.ACTION_SEND);
                     sendIntent.setPackage("com.whatsapp");
                     sendIntent.setType("text/plain");
+
                     String trimSchoolName = schoolName;
                     if(trimSchoolName.length() > 50 ){
                         trimSchoolName = schoolName.substring(0, 50);
