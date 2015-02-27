@@ -7,13 +7,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 
 import com.parse.LogInCallback;
 import com.parse.ParseCloud;
@@ -31,7 +27,6 @@ import notifications.AlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import utility.Config;
@@ -90,6 +85,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         Boolean loginError = false; //session code login status
         Boolean networkError = false; //parse exception
         Boolean verifyError = false; //code verification status
+        Boolean userDoesNotExistsError = false; //user doesnot exist - during login
+        Boolean userAlreadyExistsError = false; //user already exists - during sigup
+
         public VerifyCodeTask(){
         }
 
@@ -166,8 +164,16 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     verifyError = true;
                 }
             } catch (ParseException e) {
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "network error");
-                networkError = true;
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "network error with message " + e.getMessage() + " code "  + e.getCode());
+                if(e.getMessage().equals("USER_DOESNOT_EXISTS")){
+                    userDoesNotExistsError = true;
+                }
+                else if(e.getMessage().equals("USER_ALREADY_EXISTS")){
+                    userAlreadyExistsError = true;
+                }
+                else {
+                    networkError = true;
+                }
                 e.printStackTrace();
                 return null;
             }
@@ -177,7 +183,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void result){
 
-            if(networkError || verifyError || loginError){
+            if(networkError || verifyError || loginError || userAlreadyExistsError || userDoesNotExistsError){
                 if(pdialog != null){
                     pdialog.dismiss();
                 }
@@ -190,6 +196,12 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             }
             else if(loginError){
                 Utility.toast("Error logging in");
+            }
+            else if(userAlreadyExistsError){
+                Utility.toast("This username already exists. Please try logging in");
+            }
+            else if(userDoesNotExistsError){
+                Utility.toast("This user account does not exist. Please try signing up");
             }
         }
     }

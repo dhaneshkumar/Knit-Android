@@ -55,7 +55,12 @@ public class PhoneLoginPage extends MyActionBarActivity {
     activity = this;
       phoneNumberET = (EditText) findViewById(R.id.phone_id);
 
-      phoneNumberET.setText(phoneNumber);
+      if(getIntent()!=null && getIntent().getExtras() != null){
+          phoneNumber = ""; //reset as called from parent
+      }
+      else {//coming back from child, so restore the fields
+          phoneNumberET.setText(phoneNumber);
+      }
   };
 
   @Override

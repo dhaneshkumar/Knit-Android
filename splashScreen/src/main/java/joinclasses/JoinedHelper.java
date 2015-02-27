@@ -152,14 +152,6 @@ public class JoinedHelper {
                 //locally generating joining notification and inbox msg
                 NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
                 AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
-
-
-                //fetch classroom suggestions from server
-                String schoolId = codeGroupObject.getString("school");
-                String standard = codeGroupObject.getString("standard");
-                String division = codeGroupObject.getString("divison");
-
-                School.storeSuggestions(schoolId, standard, division, userId);
             }
 
 

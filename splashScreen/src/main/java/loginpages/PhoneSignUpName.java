@@ -48,13 +48,24 @@ public class PhoneSignUpName extends ActionBarActivity {
         displayNameET = (EditText) findViewById(R.id.displaynameid);
         phoneNumberET = (EditText) findViewById(R.id.phoneid);
 
-        displayNameET.setText(displayName);
-        phoneNumberET.setText(phoneNumber);
-        titleSpinner.setSelection(titleSpinnerPosition);
+
 
         if(getIntent() != null && getIntent().getExtras() != null) {
+            resetFields();
             role = getIntent().getExtras().getString("role");
         }
+        else{//on press back from next activity. Use previous values to show
+            displayNameET.setText(displayName);
+            phoneNumberET.setText(phoneNumber);
+            titleSpinner.setSelection(titleSpinnerPosition);
+        }
+    }
+
+    void resetFields(){
+        displayName = "";
+        phoneNumber = "";
+        title = "";
+        titleSpinnerPosition = 0;
     }
 
     @Override
