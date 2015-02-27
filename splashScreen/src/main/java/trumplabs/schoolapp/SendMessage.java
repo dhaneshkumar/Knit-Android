@@ -94,6 +94,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     public static LinearLayout contentLayout;
     public static Activity currentActivity;
     private LinearLayout inviteLayout;
+    public static LinearLayout picProgressBarLayout;
 
 
     @Override
@@ -116,6 +117,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
         progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
         inviteLayout = (LinearLayout) findViewById(R.id.inviteLayout);
+        picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
 
         session = new SessionManager(Application.getAppContext());
 
@@ -588,7 +590,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     sendmsgbutton.setImageResource(R.drawable.send);
 
                 } else
-                    sendmsgbutton.setImageResource(R.drawable.send);
+                    sendmsgbutton.setImageResource(R.drawable.send_grey);
             }
 
         });

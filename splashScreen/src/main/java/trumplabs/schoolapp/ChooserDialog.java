@@ -52,7 +52,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     LinearLayout gallerybutton = (LinearLayout) view.findViewById(R.id.galleryclick);
     LinearLayout camerabutton = (LinearLayout) view.findViewById(R.id.cameraclick);
 
-    activity = (CommunicatorInterface) getTargetFragment();
+    activity = (CommunicatorInterface) getActivity();
     gallerybutton.setOnClickListener(this);
     camerabutton.setOnClickListener(this);
     builder.setView(view);
@@ -159,8 +159,8 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
 
           // changing visibility option of progressbar and imageview
-          ClassMsg.progressLayout.setVisibility(View.VISIBLE);
-          ClassMsg.sendimgpreview.setVisibility(View.GONE);
+          SendMessage.picProgressBarLayout.setVisibility(View.VISIBLE);
+            SendMessage.sendimgpreview.setVisibility(View.GONE);
 
           /*
            * Executing background class to load image in imageview from gallery and photos app
@@ -286,8 +286,8 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
 
       // changing visibility option
-      ClassMsg.progressLayout.setVisibility(View.GONE);
-      ClassMsg.sendimgpreview.setVisibility(View.VISIBLE);
+        SendMessage.picProgressBarLayout.setVisibility(View.GONE);
+        SendMessage.sendimgpreview.setVisibility(View.VISIBLE);
 
 
       if (flag) {

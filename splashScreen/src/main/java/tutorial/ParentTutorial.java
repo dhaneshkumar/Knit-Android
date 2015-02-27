@@ -14,8 +14,8 @@ import trumplabs.schoolapp.Constants;
  * Created by Dhanesh on 1/17/2015.
  */
 public class ParentTutorial extends ActionBarActivity{
-    ViewPager viewpager;
-    String role;
+    public static ViewPager viewpager;
+    static String role;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,15 +27,13 @@ public class ParentTutorial extends ActionBarActivity{
 
         getSupportActionBar().hide();
         viewpager.setAdapter(new MyAdapter(getSupportFragmentManager()));
+        viewpager.setOffscreenPageLimit(3);
 
         role = getIntent().getExtras().getString(Constants.ROLE);
-
-
-
     }
 
 
-    class MyAdapter extends FragmentPagerAdapter {
+    public static class MyAdapter extends FragmentPagerAdapter {
 
         public MyAdapter(FragmentManager fm) {
             super(fm);
@@ -44,7 +42,6 @@ public class ParentTutorial extends ActionBarActivity{
         @Override
         public Fragment getItem(int arg0) {
             Fragment fragment = null;
-            supportInvalidateOptionsMenu();
             switch (arg0) {
                 case 0:
                     fragment = new ConnectClass();

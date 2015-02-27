@@ -81,6 +81,7 @@ public class CreateClassDialog extends DialogFragment{
         codeViewLayout = (LinearLayout) view.findViewById(R.id.codeViewLayout);
         codeTV = (TextView) view.findViewById(R.id.codeTV);
         seeHowTV = (TextView) view.findViewById(R.id.seeHow);
+        TextView classHeading = (TextView) view.findViewById(R.id.heading);
 
 
         School school = new School();
@@ -93,6 +94,15 @@ public class CreateClassDialog extends DialogFragment{
 
         selectedDivison = "NA";
         selectedStandard = "NA";
+
+        //signup check.
+        if(getArguments() != null) {
+            String flag = getArguments().getString("flag");
+            if(flag.equals("SIGNUP"))
+            {
+                classHeading.setText("Create your First Classroom");
+            }
+        }
 
 
         createclassbtn.setOnClickListener(new View.OnClickListener() {

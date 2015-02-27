@@ -114,15 +114,6 @@ public class Messages extends Fragment {
         }
 
 
-        getActivity().findViewById(R.id.inemptylink).setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), JoinClassesContainer.class);
-                intent.putExtra("VIEWPAGERINDEX", 1);
-                startActivity(intent);
-            }
-        });
-
         typeFace =
                 Typeface.createFromAsset(getActivity().getAssets(), "fonts/RobotoCondensed-Bold.ttf");
 

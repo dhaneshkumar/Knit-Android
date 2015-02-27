@@ -57,6 +57,7 @@ public class Subscribers extends ActionBarActivity {
     public static LinearLayout progressBarLayout;
     public static LinearLayout editProfileLayout;
     private ExpandableListView listv;
+    static TextView schoolTV;
 
 
     @Override
@@ -84,7 +85,7 @@ public class Subscribers extends ActionBarActivity {
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         editProfileLayout = (LinearLayout) findViewById(R.id.editLayout);
         TextView classNameTV = (TextView) findViewById(R.id.className);
-        TextView schoolTV = (TextView) findViewById(R.id.school);
+        schoolTV = (TextView) findViewById(R.id.school);
         TextView subscriberTV = (TextView) findViewById(R.id.memberCount);
         final TextView classCodeTV = (TextView) findViewById(R.id.classcode);
 
@@ -114,6 +115,7 @@ public class Subscribers extends ActionBarActivity {
         });
 
         listv.setAdapter(myadapter);
+        listv.setExpanded(true);
 
         //moving to invite parent activity on click of "invite parent"
         LinearLayout inviteLayout = (LinearLayout) findViewById(R.id.inviteLayout);
@@ -122,9 +124,37 @@ public class Subscribers extends ActionBarActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(), InviteParents.class);
+                intent.putExtra("classCode", classCode);
+                intent.putExtra("className", className);
                 startActivity(intent);
             }
         });
+
+
+        //setting school name
+        //get details(schoolName, profile pic, assigned name) from Codegroup and User table
+        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
+        classQuery.fromLocalDatastore();
+        classQuery.whereEqualTo("code", classCode);
+        String schoolName = "";
+
+        try{
+            ParseObject codegroup = classQuery.getFirst();
+            schoolName = codegroup.getString("schoolName"); //this is a new field. If not present, fetch and store locally
+            if(schoolName == null){
+                //fetch school name from id using asynctask
+                JoinedClassInfo.GetSchoolName getSchoolNameTask = new JoinedClassInfo.GetSchoolName(codegroup, 2);
+                getSchoolNameTask.execute();
+            }
+            else{
+                Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName already there " + schoolName);
+                schoolTV.setText(schoolName);
+            }
+        }
+        catch (ParseException e){
+            schoolTV.setText(schoolName);
+            e.printStackTrace();
+        }
     }
 
     /*

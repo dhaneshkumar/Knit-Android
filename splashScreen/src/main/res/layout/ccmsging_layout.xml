@@ -212,7 +212,8 @@
                 android:background="@color/white"
                 android:minHeight="48dp"
                 android:minWidth="48dp"
-                android:src="@drawable/send" />
+                android:layout_marginTop="-2dp"
+                android:src="@drawable/send_grey" />
         </LinearLayout>
     </LinearLayout>
 </LinearLayout>

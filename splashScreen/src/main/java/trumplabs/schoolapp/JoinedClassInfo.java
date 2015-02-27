@@ -408,8 +408,10 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
             if(caller ==0)
                 JoinedClassInfo.schoolNameTV.setText(school);
-            else
+            else if(caller ==1)
                 JoinSuggestedClass.schoolNameTV.setText(school);
+            else
+                Subscribers.schoolTV.setText(school);
         }
     }
 }

@@ -5,6 +5,7 @@ import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,7 +23,7 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 
 /**
- * Fragment showing Secure icon
+ * Fragment showing Secure icons
  *
  * Created by Dhanesh on 1/17/2015.
  */
@@ -51,6 +52,37 @@ public class Free extends Fragment {
         Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
         heading.setTypeface(typeFace);
 
+
+        LinearLayout back = (LinearLayout) getActivity().findViewById(R.id.free_back);
+
+        if(role.equals(Constants.TEACHER)) {
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                    if(TeacherTutorial.myAdapter == null)
+                        TeacherTutorial.myAdapter = new TeacherTutorial.MyAdapter(fragmentmanager);
+                    TeacherTutorial.viewpager.setAdapter(TeacherTutorial.myAdapter);
+                    TeacherTutorial.viewpager.setCurrentItem(2);
+                }
+            });
+        }
+        else
+        {
+            back.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                    ParentTutorial.viewpager.setAdapter(new ParentTutorial.MyAdapter(fragmentmanager));
+                    ParentTutorial.viewpager.setCurrentItem(2);
+                }
+            });
+        }
+
+
+
+
+
         //sign up button clicked..
         signup.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,9 +109,6 @@ public class Free extends Fragment {
                 }
             }
         });
-
-
-
 
     }
 
