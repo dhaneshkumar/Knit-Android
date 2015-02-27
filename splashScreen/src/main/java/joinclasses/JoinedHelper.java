@@ -210,6 +210,7 @@ public class JoinedHelper {
         query.whereEqualTo("userId", userId);
         query.whereNotContainedIn("code", ignoreList);
         query.whereEqualTo("classExist", true); //get only classes which exist
+        query.whereEqualTo(Constants.IS_SUGGESTION, true); //check for suggestion flag
 
         try {
             List<ParseObject> codeGroupList = query.find();

@@ -56,6 +56,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
     TextView subCodeTV;
     LinearLayout assignedNameContainer;
     RelativeLayout whatsappLayout;
+    LinearLayout whatsAppSection;
     LinearLayout classInfoLayout;
     LinearLayout progressBarLayout;
 
@@ -96,6 +97,12 @@ public class JoinedClassInfo extends MyActionBarActivity {
         subCodeTV = (TextView) findViewById(R.id.subCode);
         classInfoLayout = (LinearLayout) findViewById(R.id.classInfoLayout);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
+
+        whatsAppSection = (LinearLayout) findViewById(R.id.whatsAppSection);
+
+        if(isDefaultGroup(classCode)){
+            whatsAppSection.setVisibility(View.GONE);
+        }
 
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
