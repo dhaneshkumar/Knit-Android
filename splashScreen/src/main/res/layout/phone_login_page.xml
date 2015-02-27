@@ -30,4 +30,17 @@
         android:maxLength="10"
         android:textColor="@color/black"
         android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/oldLogin"
+        android:layout_width="wrap_content"
+        android:text="Old users. Click here to login via email"
+        android:gravity="center"
+        android:paddingTop="20dp"
+        android:textColor="@color/buttoncolor"
+        android:paddingBottom="20dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:textSize="16sp"
+        android:layout_height="wrap_content" />
 </LinearLayout>

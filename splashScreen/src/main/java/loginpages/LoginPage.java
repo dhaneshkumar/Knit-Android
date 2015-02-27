@@ -124,7 +124,7 @@ public class LoginPage extends MyActionBarActivity {
 
 
               } else {
-
+                  e.printStackTrace();
                 getSupportActionBar().show();
                 loginLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);

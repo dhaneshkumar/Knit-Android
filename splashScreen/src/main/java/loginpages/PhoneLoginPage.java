@@ -36,6 +36,7 @@ import utility.Utility;
 
 public class PhoneLoginPage extends MyActionBarActivity {
   EditText phoneNumberET;
+  TextView oldLoginTV;
     ProgressDialog pdialog;
 
   Activity activity;
@@ -54,6 +55,7 @@ public class PhoneLoginPage extends MyActionBarActivity {
     }
     activity = this;
       phoneNumberET = (EditText) findViewById(R.id.phone_id);
+      oldLoginTV = (TextView) findViewById(R.id.oldLogin);
 
       if(getIntent()!=null && getIntent().getExtras() != null){
           phoneNumber = ""; //reset as called from parent
@@ -61,6 +63,15 @@ public class PhoneLoginPage extends MyActionBarActivity {
       else {//coming back from child, so restore the fields
           phoneNumberET.setText(phoneNumber);
       }
+
+      oldLoginTV.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              Intent oldLoginIntent = new Intent(getBaseContext(), LoginPage.class);
+              oldLoginIntent.putExtra("login", false);
+              startActivity(oldLoginIntent);
+          }
+      });
   };
 
   @Override
