@@ -138,8 +138,8 @@ public class CreateClassDialog extends DialogFragment{
                          * Hidding the keyboard from screen
                          */
 
-                        if(getActivity() != null)
-                            Tools.hideKeyboard(getActivity());
+                        /*if(getActivity() != null)
+                            Tools.hideKeyboard(getActivity());*/
 
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);
@@ -165,7 +165,7 @@ public class CreateClassDialog extends DialogFragment{
                 String school = school1.getSchoolName(user.getString("school"));
 
         /*
-         * Creating popmenu for selecting schools
+         * Creating pop-menu for selecting schools
          */
                 PopupMenu menu = new PopupMenu(getActivity(), v);
 
@@ -367,8 +367,15 @@ public class CreateClassDialog extends DialogFragment{
                 codeTV.setText(classCode);
 
                 Classrooms.createdGroups = user.getList(Constants.CREATED_GROUPS);
+
+                if(Classrooms.createdGroups != null && Classrooms.createdGroups.size()> 0)
+                {
+                    Classrooms.createdClassTV.setVisibility(View.VISIBLE);
+                }
+
                 if(Classrooms.createdClassAdapter != null)
                     Classrooms.createdClassAdapter.notifyDataSetChanged();
+
 
                 // Setting layouts visibility
                 codeViewLayout.setVisibility(View.VISIBLE);

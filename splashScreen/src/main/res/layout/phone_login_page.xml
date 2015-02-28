@@ -7,21 +7,11 @@
     android:background="@color/lightbackgroundcolor"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Enter your registered mobile number"
-        android:textSize="16sp"
-        android:layout_marginLeft="4dp"
-        android:gravity="left"
-        android:layout_marginTop="4dp"
-        />
 
     <EditText
         android:id="@+id/phone_id"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
         android:hint="Mobile"
         android:background="@drawable/apptheme_edit_text_holo_light"
         android:paddingLeft="16dp"
@@ -34,13 +24,14 @@
     <TextView
         android:id="@+id/oldLogin"
         android:layout_width="wrap_content"
-        android:text="Old users. Click here to login via email"
+        android:text="Are you an old user, \n Login via Email"
+        android:paddingTop="16dp"
         android:gravity="center"
-        android:paddingTop="20dp"
+        android:layout_gravity="right"
+        android:layout_marginTop="32dp"
         android:textColor="@color/buttoncolor"
-        android:paddingBottom="20dp"
-        android:paddingLeft="20dp"
-        android:paddingRight="20dp"
-        android:textSize="16sp"
+        android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:textSize="14sp"
         android:layout_height="wrap_content" />
 </LinearLayout>

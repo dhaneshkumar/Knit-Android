@@ -11,23 +11,25 @@
         android:gravity="left|center_vertical"
         android:layout_marginLeft="16dp"
         android:text="Attach File"
-        android:textSize="22sp"
-        android:textColor="@color/txtgrey"/>
+        android:textSize="20sp"
+        android:textColor="@color/buttoncolor"/>
     <TextView 
         android:layout_width="match_parent"
         android:layout_height="2dp"
         android:background="@color/lightbackgroundcolor"/>
 	<LinearLayout 
 	    android:layout_width="match_parent"
-	    android:layout_height="48dp"
+	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="16dp"
 	    android:layout_marginRight="16dp"
 	    android:layout_marginTop="4dp"
+        android:padding="4dp"
 	    android:id="@+id/galleryclick"
 	    android:background="@drawable/selector">
 	    <ImageButton
 	        android:layout_width="48dp"
 	        android:layout_height="48dp"
+
 	        android:background="@drawable/gallery"/>
 	    <TextView 
 	        android:layout_width="0dp"
@@ -36,8 +38,8 @@
 	        android:layout_marginLeft="16dp"
 	        android:gravity="left|center_vertical"
 	        android:text="Gallery"
-	        android:textColor="@color/txtgrey"
-	        android:textSize="18sp"/>
+	        android:textColor="@color/black"
+	        android:textSize="16sp"/>
 	</LinearLayout>
 	 <TextView 
         android:layout_width="match_parent"
@@ -49,6 +51,7 @@
 	    android:layout_marginLeft="16dp"
 	    android:layout_marginRight="16dp"
 	    android:layout_marginTop="4dp"
+        android:padding="4dp"
 	    android:layout_marginBottom="4dp"
 	    android:id="@+id/cameraclick"
 	    android:background="@drawable/selector">
@@ -64,36 +67,11 @@
 	        android:layout_marginLeft="16dp"
 	        android:gravity="left|center_vertical"
 	        android:text="Camera"
-	        android:textColor="@color/txtgrey"
-	        android:textSize="18sp"/> 
+	        android:textColor="@color/black"
+	        android:textSize="16sp"/>
     </LinearLayout>
     <TextView 
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lightbackgroundcolor"/>
- <!-- 
-	<LinearLayout 
-	    android:layout_width="match_parent"
-	    android:layout_height="48dp"
-	    android:layout_marginLeft="16dp"
-	    android:layout_marginRight="16dp"
-	    android:layout_marginTop="4dp"
-	    android:layout_marginBottom="4dp"
-	    android:id="@+id/filepickerclick"
-	    android:background="@drawable/selector">
-	    <ImageButton
-	        android:layout_width="48dp"
-	        android:layout_height="48dp"
-	        android:layout_toRightOf="@+id/cameraclick"
-	        android:background="@drawable/file"/>
-	    <TextView 
-	        android:layout_width="0dp"
-	        android:layout_height="match_parent"
-	        android:layout_weight="1"
-	        android:layout_marginLeft="16dp"
-	        android:gravity="left|center_vertical"
-	        android:text="File"
-	        android:textColor="@color/txtgrey"
-	        android:textSize="18sp"/> 
-    </LinearLayout>-->
   </LinearLayout>

@@ -286,7 +286,7 @@ public class JoinedHelper {
         @Override
         protected void onPostExecute(Boolean aBoolean) {
 
-            if(aBoolean)
+           /* if(aBoolean)
             {
                 Utility.toast("Udpated Associated Name");
 
@@ -299,7 +299,7 @@ public class JoinedHelper {
                 Utility.toast("Sorry, Couldn't Update Associated name");
 
             JoinedClasses.progressBarLayout.setVisibility(View.GONE);
-            JoinedClasses.editProfileLayout.setVisibility(View.VISIBLE);
+            JoinedClasses.editProfileLayout.setVisibility(View.VISIBLE);*/
 
             super.onPostExecute(aBoolean);
         }

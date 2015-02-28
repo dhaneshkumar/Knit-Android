@@ -15,7 +15,6 @@ import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.ClassMsg;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.CreateClass;
 import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
 
@@ -32,7 +31,6 @@ public class PushOpen extends ActionBarActivity {
 
         //type and action will never be null. Handled in NotificationGenerator
         if(type.equals(Constants.NORMAL_NOTIFICATION)){
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "clearing normal notification list");
             NotificationGenerator.normalNotificationList.clear();
         }
 
@@ -65,7 +63,13 @@ public class PushOpen extends ActionBarActivity {
                 i.putExtra("pushOpen", true);
             }
             else if(action.equals(Constants.CREATE_CLASS_ACTION)){
-                i = new Intent(this, CreateClass.class);
+
+                i = new Intent(this, MainActivity.class);
+                ParseUser user = ParseUser.getCurrentUser();
+                if (user != null && user.getString("role").equals(Constants.TEACHER))
+                    i.putExtra("VIEWPAGERINDEX", 0);
+                i.putExtra("flag", "CREATE_CLASS");
+                i.putExtra("pushOpen", true);
             }
         }
         else if (type.equals(Constants.LINK_NOTIFICATION)) {

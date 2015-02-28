@@ -1,4 +1,4 @@
-package trumplabs.schoolapp;
+package joinclasses;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import baseclasses.MyActionBarActivity;
-import joinclasses.JoinClassDialog;
-import joinclasses.JoinedHelper;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.Constants;
 import utility.Utility;
 
 /**

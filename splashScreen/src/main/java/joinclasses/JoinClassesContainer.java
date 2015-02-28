@@ -11,13 +11,12 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import baseclasses.MyActionBarActivity;
-import joinclasses.JoinedClasses.ViewPagerCommunicator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.MainActivity;
 import utility.Utility;
 
-public class JoinClassesContainer extends MyActionBarActivity implements ViewPagerCommunicator {
+public class JoinClassesContainer extends MyActionBarActivity  {
   android.support.v7.app.ActionBar actionbar;
   public ViewPager viewpager;
 
@@ -77,12 +76,6 @@ public class JoinClassesContainer extends MyActionBarActivity implements ViewPag
       return 1;
     }
   }
-
-  @Override
-  public void viewPagerSet(int i) {
-    viewpager.setCurrentItem(i);
-  }
-
 
 
   @Override

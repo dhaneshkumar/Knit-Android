@@ -1,4 +1,4 @@
-package trumplabs.schoolapp;
+package joinclasses;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -37,6 +37,8 @@ import java.util.List;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.Subscribers;
 import utility.Config;
 import utility.Utility;
 
@@ -376,7 +378,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
 
-                Utility.toast("Successfully unsubscribed");
+                Utility.toast("You are successfully unsubscribed");
                 finish(); //close the activity
             }
             else{

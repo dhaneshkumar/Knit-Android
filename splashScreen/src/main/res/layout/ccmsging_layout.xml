@@ -185,7 +185,7 @@
                 android:hint="Type your message here..."
                 android:maxLength="300"
                 android:paddingBottom="10dp"
-                android:paddingLeft="6dp"
+                android:paddingLeft="4dp"
                 android:paddingRight="2dp"
                 android:paddingTop="5dp"
                 android:textCursorDrawable="@null"

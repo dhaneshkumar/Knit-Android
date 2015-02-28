@@ -7,6 +7,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,6 +24,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import BackGroundProcesses.MemberList;
 import joinclasses.JoinedHelper;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -32,6 +36,7 @@ import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
+import utility.Tools;
 import utility.Utility;
 
 /**
@@ -54,11 +59,31 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         activityContext = this;
 
         verificationCodeET = (EditText) findViewById(R.id.verificationCode);
-        verifyButton = (Button) findViewById(R.id.verifyButton);
 
-        verifyButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(getIntent() != null && getIntent().getExtras() != null) {
+            isLogin = getIntent().getExtras().getBoolean("login");
+        }
+    }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+
+        super.onCreateOptionsMenu(menu);
+
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.phone_verification, menu);
+        return true;
+    }
+
+
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.verify:
                 verificationCode = verificationCodeET.getText().toString();
                 if(UtilString.isBlank(verificationCode)){
                     Utility.toast("Please enter the verification code");
@@ -72,13 +97,18 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     VerifyCodeTask verifyCodeTask = new VerifyCodeTask();
                     verifyCodeTask.execute();
                 }
-            }
-        });
+                break;
 
-        if(getIntent() != null && getIntent().getExtras() != null) {
-            isLogin = getIntent().getExtras().getBoolean("login");
+            case android.R.id.home:
+                onBackPressed();
+                break;
+
+            default:
+                break;
         }
+        return super.onOptionsItemSelected(item);
     }
+
 
     public class VerifyCodeTask extends AsyncTask<Void, Void, Void> {
         List<List<String>> joinedGroups; //this will contain updated joined_groups

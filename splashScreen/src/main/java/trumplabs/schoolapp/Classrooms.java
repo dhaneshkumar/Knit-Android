@@ -33,6 +33,8 @@ import BackGroundProcesses.CreatedClassRooms;
 import BackGroundProcesses.JoinedClassRooms;
 import BackGroundProcesses.UpdateSuggestions;
 import joinclasses.JoinClassDialog;
+import joinclasses.JoinSuggestedClass;
+import joinclasses.JoinedClassInfo;
 import joinclasses.JoinedHelper;
 import library.ExpandableListView;
 import library.UtilString;
@@ -65,7 +67,7 @@ public class Classrooms extends Fragment {
     public static LinearLayout buttonContainer;
     private TextView createClassTV;
     private TextView joinClassTV;
-    private TextView createdClassTV;
+    public static TextView createdClassTV;
     private TextView joinedClassTV;
     private TextView suggestedClassTV;
 
@@ -107,18 +109,23 @@ public class Classrooms extends Fragment {
             if(getActivity().getIntent().getExtras() != null)
             {
                 String signup = getActivity().getIntent().getExtras().getString("flag");
-                if((!UtilString.isBlank(signup))  && signup.equals("SIGNUP"))
+                if(!UtilString.isBlank(signup))
                 {
-                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                    CreateClassDialog createClassDialog = new CreateClassDialog();
-                    Bundle args = new Bundle();
-                    args.putString("flag", "SIGNUP");
-                    createClassDialog.setArguments(args);
-                    createClassDialog.show(fm, "create Class");
+                    if(signup.equals("SIGNUP")) {
+                        FragmentManager fm = getActivity().getSupportFragmentManager();
+                        CreateClassDialog createClassDialog = new CreateClassDialog();
+                        Bundle args = new Bundle();
+                        args.putString("flag", "SIGNUP");
+                        createClassDialog.setArguments(args);
+                        createClassDialog.show(fm, "create Class");
+                    }
+                    else if(signup.equals("CREATE_CLASS")) {
+                        FragmentManager fm = getActivity().getSupportFragmentManager();
+                        CreateClassDialog createClassDialog = new CreateClassDialog();
+                        createClassDialog.show(fm, "create Class");
+                    }
 
-
-
-
+                    getActivity().getIntent().putExtra("flag", "false"); // resetting flag
                 }
             }
         }
