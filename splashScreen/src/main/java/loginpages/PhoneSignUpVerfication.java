@@ -49,9 +49,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static Context activityContext;
     static Boolean isLogin;
 
-    static Boolean manualVerifyOngoing = false; //NOT used differently handle dialog when auto verify & manual verify is triggered
+    static Boolean manualVerifyOngoing = true; //NOT used differently handle dialog when auto verify & manual verify is triggered
 
-    private CountDownTimer countDownTimer;
+    private static CountDownTimer countDownTimer;
     TextView timerTV;
 
     @Override
@@ -94,10 +94,11 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     }
 
     public static void smsListenerVerifyTask(String code){
-        /*pdialog = new ProgressDialog(PhoneSignUpVerfication.activityContext);
+        countDownTimer.cancel();
+        pdialog = new ProgressDialog(PhoneSignUpVerfication.activityContext);
         pdialog.setCancelable(false);
         pdialog.setMessage("Please Wait...");
-        pdialog.show();*/
+        pdialog.show();
         Log.d("DEBUG_SMS_LISTENER", "triggering PhoneSignUpVerfication.VerifyCodeTask");
         VerifyCodeTask verifyCodeTask = new VerifyCodeTask(code);
         verifyCodeTask.execute();
