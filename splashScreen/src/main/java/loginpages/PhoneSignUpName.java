@@ -20,6 +20,7 @@ import java.util.List;
 
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
 import utility.Utility;
 
 /**
@@ -68,6 +69,12 @@ public class PhoneSignUpName extends ActionBarActivity {
         titleSpinnerPosition = 0;
     }
 
+    public void onBackPressed() {
+        Intent intent = new Intent(getBaseContext(), Signup.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -104,12 +111,18 @@ public class PhoneSignUpName extends ActionBarActivity {
             Utility.toast("Incorrect Mobile Number");
         else{
             //Removed school input page. So directly go to verification page
-            pdialog = new ProgressDialog(this);
+            /*pdialog = new ProgressDialog(this);
             pdialog.setCancelable(false);
             pdialog.setMessage("Please Wait...");
-            pdialog.show();
+            pdialog.show();*/
+
+            Intent nextIntent = new Intent(this, PhoneSignUpVerfication.class);
+            //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            nextIntent.putExtra("login", false);
 
             PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(1, phoneNumber);
+            startActivity(nextIntent);
+
             generateVerificationCode.execute();
         }
     }
