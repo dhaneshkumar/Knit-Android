@@ -53,8 +53,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static Context activityContext;
     static Boolean isLogin;
 
-    static Boolean manualVerifyOngoing = true; //NOT used differently handle dialog when auto verify & manual verify is triggered
-
     private static CountDownTimer countDownTimer;
     TextView timerTV;
 
@@ -101,7 +99,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     Utility.toast("Please enter the verification code");
                 }
                 else {
-                    manualVerifyOngoing = true;
                     pdialog = new ProgressDialog(activityContext);
                     pdialog.setCancelable(false);
                     pdialog.setMessage("Please Wait...");
@@ -265,9 +262,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         protected void onPostExecute(Void result){
 
             if(networkError || verifyError || loginError || userAlreadyExistsError || userDoesNotExistsError){
-                if(pdialog != null && manualVerifyOngoing){
+                if(pdialog != null){
                     pdialog.dismiss();
-                    manualVerifyOngoing = false;
                 }
             }
             if(networkError){
@@ -311,9 +307,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (pdialog != null && manualVerifyOngoing) {
+            if (pdialog != null) {
                 pdialog.dismiss();
-                manualVerifyOngoing = false;
             }
 
             //Switching to MainActivity
@@ -380,9 +375,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if(pdialog != null && manualVerifyOngoing){
+            if(pdialog != null){
                 pdialog.dismiss();
-                manualVerifyOngoing = false;
             }
             if(currentUser == null) return; //won't happen as called after successful login
 
