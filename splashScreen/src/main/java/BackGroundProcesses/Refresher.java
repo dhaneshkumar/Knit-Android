@@ -93,7 +93,7 @@ public class Refresher {
                 If its new user then refresh on evry app openingtime,
                 After 50 opening count, refresh this suggestion list on interval of 10 opening counts
                  */
-                if (appOpeningCount <= 50) {
+               /* if (appOpeningCount <= 50) {
                     UpdateSuggestions updateSuggestions = new UpdateSuggestions();
                     String userId = updateSuggestions.doInBackgroundCore();
                     updateSuggestions.onPostExecuteHelper(userId);
@@ -103,7 +103,7 @@ public class Refresher {
                         String userId = updateSuggestions.doInBackgroundCore();
                         updateSuggestions.onPostExecuteHelper(userId);
                     }
-                }
+                }*/
 
 
                 //Checking for correct channels (It should match to joined groups entries)

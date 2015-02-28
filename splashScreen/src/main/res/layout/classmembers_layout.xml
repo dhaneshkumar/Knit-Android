@@ -84,6 +84,7 @@
                 android:textSize="11sp"
                 android:singleLine="true"
                 android:ems="19"
+                android:visibility="gone"
                 android:layout_below="@+id/className"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
@@ -95,9 +96,10 @@
                 android:id="@+id/memberCount"
                 android:text="0 subscribers"
                 android:textSize="11sp"
-                android:layout_below="@+id/school"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_below="@+id/className"
+                android:layout_alignBottom="@+id/textView3"
+                android:layout_alignLeft="@+id/school"
+                android:layout_alignStart="@+id/school" />
 
 
 
@@ -110,20 +112,20 @@
                 android:padding="4dp"
                 android:id="@+id/classcode"
                 android:background="@drawable/button_color_boundry_grey_area"
-                android:layout_centerVertical="true"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentRight="true"
-                />
+                android:layout_alignParentEnd="true" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="tap to copy code"
                 android:textSize="8sp"
-                android:layout_marginTop="14dp"
                 android:textColor="@color/txtgrey"
                 android:layout_below="@+id/classcode"
                 android:layout_alignRight="@+id/classcode"
-                android:layout_alignEnd="@+id/classcode" />
+                android:layout_alignEnd="@+id/classcode"
+                android:id="@+id/textView3" />
 
         </RelativeLayout>
 

@@ -52,15 +52,15 @@ public class Classrooms extends Fragment {
     private Activity getactivity;
     private library.ExpandableListView createdClassListView;
     private library.ExpandableListView joinedClassListView;
-    private library.ExpandableListView suggestedClassListView;
+    //private library.ExpandableListView suggestedClassListView;
     // private LinearLayout emptylayout;
     public static List<List<String>> createdGroups;
     public static List<List<String>> joinedGroups;
-    public static List<ParseObject> suggestedGroups;
+    //public static List<ParseObject> suggestedGroups;
     protected LayoutInflater layoutinflater;
     public static BaseAdapter createdClassAdapter;
     public static BaseAdapter joinedClassAdapter;
-    public static BaseAdapter suggestedClassAdapter;
+    //public static BaseAdapter suggestedClassAdapter;
     public static int members;
     private Queries query;
     Typeface lightTypeFace;
@@ -69,7 +69,7 @@ public class Classrooms extends Fragment {
     private TextView joinClassTV;
     public static TextView createdClassTV;
     private TextView joinedClassTV;
-    private TextView suggestedClassTV;
+    //private TextView suggestedClassTV;
 
 
     @Override
@@ -89,10 +89,8 @@ public class Classrooms extends Fragment {
         getactivity = getActivity();
         createdClassListView = (ExpandableListView) getactivity.findViewById(R.id.createdclasseslistview);
         joinedClassListView = (ExpandableListView) getactivity.findViewById(R.id.joinedclasseslistview);
-        suggestedClassListView = (ExpandableListView) getactivity.findViewById(R.id.suggestedclasseslistview);
         createdClassTV = (TextView) getActivity().findViewById(R.id.createdClassTextView);
         joinedClassTV = (TextView) getActivity().findViewById(R.id.joinedClassTextView);
-        suggestedClassTV = (TextView) getActivity().findViewById(R.id.suggestedClassTextView);
         createClassTV = (TextView) getActivity().findViewById(R.id.createClassTV);
         joinClassTV = (TextView) getActivity().findViewById(R.id.joinClassTV);
 
@@ -100,7 +98,6 @@ public class Classrooms extends Fragment {
         Typeface typeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/roboto-condensed.bold.ttf");
         createdClassTV.setTypeface(typeFace);
         joinedClassTV.setTypeface(typeFace);
-        suggestedClassTV.setTypeface(typeFace);
 
 
         //signup check
@@ -172,17 +169,6 @@ public class Classrooms extends Fragment {
         joinedClassListView.setAdapter(joinedClassAdapter);
         joinedClassListView.setExpanded(true);
 
-         /*
-       Initializing suggested class list and it's Adapter
-       */
-        suggestedGroups = JoinedHelper.getSuggestionList(parseObject.getUsername());
-        if(suggestedGroups == null)
-            suggestedGroups = new ArrayList<ParseObject>();
-
-        suggestedClassAdapter = new SuggestedClassAdapter();
-
-        suggestedClassListView.setAdapter(suggestedClassAdapter);
-        suggestedClassListView.setExpanded(true);
 
 
         /*
@@ -233,9 +219,7 @@ public class Classrooms extends Fragment {
                     JoinedClassRooms joinClass = new JoinedClassRooms();
                     joinClass.execute();
 
-                    //update class suggestions in background
-                    UpdateSuggestions updateSuggestions = new UpdateSuggestions();
-                    updateSuggestions.execute();
+
                 } else {
                     Utility.toast("Check your Internet connection");
                 }
@@ -365,23 +349,7 @@ public class Classrooms extends Fragment {
             }
         });
 
-        /**
-         * setting list item clicked functionality
-         */
-        suggestedClassListView.setOnItemClickListener(new OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-
-                Intent intent = new Intent(getactivity, JoinSuggestedClass.class);
-
-                intent.putExtra("classCode", suggestedGroups.get(position).getString("code"));
-                intent.putExtra("className", suggestedGroups.get(position).getString("name"));
-                intent.putExtra("teacherName", suggestedGroups.get(position).getString("Creator"));
-                startActivity(intent);
-            }
-        });
 
         /**
          * setting list item clicked functionality
@@ -399,58 +367,6 @@ public class Classrooms extends Fragment {
                 startActivity(intent);
             }
         });
-    }
-
-    class SuggestedClassAdapter extends BaseAdapter {
-
-        @Override
-        public int getCount() {
-
-            if (suggestedGroups == null)
-                suggestedGroups = new ArrayList<ParseObject>();
-
-            if (suggestedGroups.size() == 0)
-                suggestedClassTV.setVisibility(View.GONE);
-            else
-                suggestedClassTV.setVisibility(View.VISIBLE);
-
-            return suggestedGroups.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return suggestedGroups.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            View row = convertView;
-            if (row == null) {
-                row = layoutinflater.inflate(R.layout.classroom_suggested_item, parent, false);
-            }
-
-            TextView classNameView = (TextView) row.findViewById(R.id.classname);
-            TextView classCodeView = (TextView) row.findViewById(R.id.classcode);
-            TextView classCreatorView = (TextView) row.findViewById(R.id.classcreator);
-
-            classCodeView.setText(suggestedGroups.get(position).getString("code"));
-
-            String classNameString = suggestedGroups.get(position).getString("name");
-            classNameView.setText(classNameString.toUpperCase());
-
-            String classCreatorString = suggestedGroups.get(position).getString("Creator");
-            if(classCreatorString == null)
-                classCreatorString = "";
-            classCreatorView.setText(classCreatorString);
-
-            return row;
-        }
     }
 
 
@@ -571,81 +487,6 @@ public class Classrooms extends Fragment {
                 }
             } catch (ParseException e) {
             }
-
-
-          /*
-           * Setting options for items
-           */
-          /*  option_imageView.setOnClickListener(new OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-
-                    final View popView = v;
-
-                    if (context == null)
-                        return;
-
-                    *//** Instantiating PopupMenu class *//*
-                    final PopupMenu popup = new PopupMenu(context, v);
-
-
-                    *//** Adding menu items to the popumenu *//*
-
-                    if(role.equals(Constants.STUDENT))
-                        popup.getMenuInflater().inflate(R.menu.joined_groups_student_popup, popup.getMenu());
-                    else
-                        popup.getMenuInflater().inflate(R.menu.joined_groups_popup, popup.getMenu());
-
-
-                    *//** Defining menu item click listener for the popup menu *//*
-                    popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-
-                        @Override
-                        public boolean onMenuItemClick(MenuItem item) {
-
-                            popup.dismiss();
-
-
-                            switch (item.getItemId()) {
-                                case R.id.action1:
-
-                      *//*
-                       * Updating child name
-                       *//*
-
-                                    if (context != null) {
-
-                                        String child = "";
-                                        if (joinedGroups.get(position).size() > 2) {
-                                            child = joinedGroups.get(position).get(2).toString().trim();
-                                        }
-                                        showPopUp(popView, context, child, joinedGroups.get(position).get(0));
-                                    }
-                                    break;
-                                case R.id.action2:
-                                    Utility.copyToClipBoard(context, "ClassCode", classCode);
-                                    break;
-                                case R.id.action3:
-                                    String dispayText = "Unsubscribe from this class? Are you sure?";
-                                    showDeleteClassPopUp(popView, context, classCode, className, true, dispayText);
-
-                                    break;
-
-                                default:
-                                    break;
-                            }
-
-                            return true;
-                        }
-                    });
-
-                    *//** Showing the popup menu *//*
-                    popup.show();
-
-                }
-            });*/
 
             return row;
         }

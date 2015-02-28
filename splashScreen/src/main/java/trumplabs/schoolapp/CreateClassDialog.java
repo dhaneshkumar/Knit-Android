@@ -84,16 +84,16 @@ public class CreateClassDialog extends DialogFragment{
         TextView classHeading = (TextView) view.findViewById(R.id.heading);
 
 
-        School school = new School();
+       // School school = new School();
         user = ParseUser.getCurrentUser();
-        selectedSchool = school.getSchoolName(user.getString("school"));
+       /* selectedSchool = school.getSchoolName(user.getString("school"));
         if (selectedSchool != null)
             schoolButton.setText(selectedSchool);
         else
             selectedSchool ="Other";
 
         selectedDivison = "NA";
-        selectedStandard = "NA";
+        selectedStandard = "NA";*/
 
         //signup check.
         if(getArguments() != null) {
@@ -114,12 +114,12 @@ public class CreateClassDialog extends DialogFragment{
 
                 String updatedName = className;
 
-                if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
+            /*    if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
                     updatedName += " "+selectedStandard;
 
                 if(!UtilString.isBlank(selectedDivison) && !selectedDivison.equals("NA"))
                     updatedName += selectedDivison;
-
+*/
 
                 if (!UtilString.isBlank(className)) {
 
@@ -296,12 +296,12 @@ public class CreateClassDialog extends DialogFragment{
             HashMap<String, Object> params = new HashMap<String, Object>();
 
             //setting schoolId, classname, standard and division
-            String schoolId = user.getString("school");
+           /* String schoolId = user.getString("school");
             if (!selectedSchool.trim().equals("Other"))
-                params.put("school", schoolId);
+                params.put("school", schoolId);*/
 
-            params.put("division", selectedDivison);
-            params.put("standard", selectedStandard);
+      //      params.put("division", selectedDivison);
+      //      params.put("standard", selectedStandard);
             params.put("classname", className);
 
 

@@ -128,11 +128,11 @@ public class JoinSuggestedClass extends MyActionBarActivity {
                     user.put(Constants.REMOVED_GROUPS, removedList);
                     user.getCurrentUser().saveEventually();
 
-                    // updating suggestions adapter in Classrooms fragment
+                  /*  // updating suggestions adapter in Classrooms fragment
                     Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(user.getUsername());
 
                     if(Classrooms.suggestedClassAdapter != null)
-                        Classrooms.suggestedClassAdapter.notifyDataSetChanged();
+                        Classrooms.suggestedClassAdapter.notifyDataSetChanged();*/
                 }
                 finish(); //close the activity
             }

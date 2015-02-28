@@ -48,13 +48,13 @@ public class Subscribers extends ActionBarActivity {
     public static List<MemberDetails> memberDetails;
     private String classCode;
     private String className;
-    private String schoolName;
+   // private String schoolName;
     private Queries memberQuery;
     public static SmoothProgressBar mHeaderProgressBar;
     public static LinearLayout progressBarLayout;
     public static LinearLayout editProfileLayout;
     private ExpandableListView listv;
-    public static TextView schoolNameTV;
+   // public static TextView schoolNameTV;
 
     static String defaultSchoolName = "";
 
@@ -83,7 +83,7 @@ public class Subscribers extends ActionBarActivity {
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         editProfileLayout = (LinearLayout) findViewById(R.id.editLayout);
         TextView classNameTV = (TextView) findViewById(R.id.className);
-        schoolNameTV = (TextView) findViewById(R.id.school);
+      //  schoolNameTV = (TextView) findViewById(R.id.school);
         TextView subscriberTV = (TextView) findViewById(R.id.memberCount);
         final TextView classCodeTV = (TextView) findViewById(R.id.classcode);
 
@@ -95,7 +95,7 @@ public class Subscribers extends ActionBarActivity {
         if(!UtilString.isBlank(className))
             classNameTV.setText(className);
 
-        //setting school name
+     /*   //setting school name
         ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
         classQuery.fromLocalDatastore();
         classQuery.whereEqualTo("code", classCode);
@@ -118,7 +118,7 @@ public class Subscribers extends ActionBarActivity {
             schoolName = defaultSchoolName;
             schoolNameTV.setText(schoolName);
             e.printStackTrace();
-        }
+        }*/
 
         //setting member count
         int memberCount = 0;
