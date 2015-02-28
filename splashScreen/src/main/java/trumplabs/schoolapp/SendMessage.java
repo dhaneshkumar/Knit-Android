@@ -635,7 +635,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     //cal.setTime(now);
                     hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
                 }
-                Log.d("DEBUG_CLASS_MSG", "time hour of day " + hourOfDay);
+
+
                 if(hourOfDay != -1){
 
                     //If current message time is not sutaible <9PM- 6AM> then show this warning as popup to users
@@ -754,6 +755,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         params.put("classname", grpName);
         params.put("message", typedtxt);
 
+
         ParseCloud.callFunctionInBackground("sendTextMessage", params, new FunctionCallback<HashMap>() {
             @Override
             public void done(HashMap obj, ParseException e) {
@@ -811,7 +813,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         }
 
                         //showing popup
-                        Utility.toast("Notification Sent");
+                        Utility.toastDone("Notification Sent");
 
                         //updating outbox
                         Queries outboxQuery = new Queries();
@@ -832,8 +834,9 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     // message was not sent
                     groupDetails.remove(groupDetails1); //removing entry from list view
                     myadapter.notifyDataSetChanged();
-                    Utility.toast("Message wasn't sent! Check Internet!");
+                    Utility.toast("oops, Message wasn't sent. Try Again!");
                     updProgressBar.setVisibility(View.GONE);
+                    e.printStackTrace();
 
                 }
             }
@@ -969,7 +972,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                                     }
 
                                     //showing popup
-                                    Utility.toast("Notification Sent");
+                                    Utility.toastDone("Notification Sent");
 
                                     //updating outbox
                                     Queries outboxQuery = new Queries();

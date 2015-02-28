@@ -440,7 +440,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
 
-                Utility.toast("Successfully updated Associated name.");
+                Utility.toastDone("Successfully updated Associated name.");
             }
             else{
                 Utility.toast("Oops ! Failed to update Associated name.");

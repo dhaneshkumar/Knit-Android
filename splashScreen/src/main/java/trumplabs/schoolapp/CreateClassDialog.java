@@ -355,6 +355,7 @@ public class CreateClassDialog extends DialogFragment{
 
 
             if (result) {
+
 //                Utility.toast("Group Creation successful");
 
                 if(getActivity() != null) {
