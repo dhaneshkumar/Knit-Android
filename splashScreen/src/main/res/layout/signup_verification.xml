@@ -10,7 +10,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="We are waiting to autodetect verification code sent to your phone number."
+        android:text="We are trying to autodetect verification code sent to your phone."
         android:textSize="14sp"
         android:layout_marginLeft="4dp"
         android:gravity="left"

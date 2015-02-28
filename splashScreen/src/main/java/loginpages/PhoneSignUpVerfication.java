@@ -190,8 +190,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         @Override
         public void onFinish(){
             SmsListener.unRegister(); //stop listening for new messages
-            //timerTV.setText("Sorry! Unable to verify automatically. Please enter code manually");
-            smoothProgressBar.setVisibility(View.GONE);
+            timerTV.setText("0 : 00");
+            showError("The verification code has expired. Please click on resend to retry");
+            showResendAction();
         }
 
         @Override
