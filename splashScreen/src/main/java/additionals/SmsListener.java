@@ -49,10 +49,10 @@ public class SmsListener extends BroadcastReceiver {
                             isListeningOn = false;
                             final String code = extractCode(msgBody);
                             if(code != null) {
-                                if (PhoneSignUpVerfication.verifyButton != null) {
+                                if (PhoneSignUpVerfication.verificationCodeET != null) {
                                     Log.d("DEBUG_SMS_LISTENER", "posting to PhoneSignUpVerfication");
                                     Thread.sleep(5000);
-                                    PhoneSignUpVerfication.verifyButton.post(new Runnable() {
+                                    PhoneSignUpVerfication.verificationCodeET.post(new Runnable() {
                                         @Override
                                         public void run() {
                                             PhoneSignUpVerfication.smsListenerVerifyTask(code);

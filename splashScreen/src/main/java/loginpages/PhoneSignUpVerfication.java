@@ -46,8 +46,7 @@ import utility.Utility;
  * Created by ashish on 26/2/15.
  */
 public class PhoneSignUpVerfication extends ActionBarActivity {
-    EditText verificationCodeET;
-    public static Button verifyButton;
+    public static EditText verificationCodeET;
     static ProgressDialog pdialog;
 
     static String verificationCode;
