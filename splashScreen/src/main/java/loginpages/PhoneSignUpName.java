@@ -36,7 +36,7 @@ public class PhoneSignUpName extends ActionBarActivity {
     static String phoneNumber = "";
     static int titleSpinnerPosition = 0;
     static String title = "";
-    ProgressDialog pdialog;
+    static ProgressDialog pdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,47 +116,8 @@ public class PhoneSignUpName extends ActionBarActivity {
                 pdialog.setMessage("Please Wait...");
                 pdialog.show();
 
-                GenerateVerificationCode generateVerificationCode = new GenerateVerificationCode();
+                PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(1, phoneNumber);
                 generateVerificationCode.execute();
-            }
-        }
-    }
-
-    public class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
-        List<List<String>> joinedGroups; //this will contain updated joined_groups
-        Boolean success = false;
-        public GenerateVerificationCode(){
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //setting parameters
-            HashMap<String, Object> param = new HashMap<String, Object>();
-            param.put("number", phoneNumber);
-
-            Log.d("DEBUG_SIGNUP_NAME", "calling genCode() with " + phoneNumber);
-            try {
-                success = ParseCloud.callFunction("genCode", param);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result){
-            if(pdialog != null){
-                pdialog.dismiss();
-            }
-
-            if(success) {
-                Intent nextIntent = new Intent(getBaseContext(), PhoneSignUpVerfication.class);
-                nextIntent.putExtra("login", false);
-                startActivity(nextIntent);
-            }
-            else{
-                Utility.toast("Oops ! Sign up failed. Try again");
             }
         }
     }

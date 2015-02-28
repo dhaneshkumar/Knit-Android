@@ -37,11 +37,11 @@ import utility.Utility;
 public class PhoneLoginPage extends MyActionBarActivity {
   EditText phoneNumberET;
   TextView oldLoginTV;
-    ProgressDialog pdialog;
+  static ProgressDialog pdialog;
 
   Activity activity;
 
-    static String phoneNumber = "";
+  static String phoneNumber = "";
 
   protected void onCreate(android.os.Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -58,6 +58,7 @@ public class PhoneLoginPage extends MyActionBarActivity {
       oldLoginTV = (TextView) findViewById(R.id.oldLogin);
 
       if(getIntent()!=null && getIntent().getExtras() != null){
+          Log.d("DEBUG_PHONE_LOGIN", "setting phone number empty");
           phoneNumber = ""; //reset as called from parent
       }
       else {//coming back from child, so restore the fields
@@ -107,47 +108,8 @@ public class PhoneLoginPage extends MyActionBarActivity {
             pdialog.setMessage("Please Wait...");
             pdialog.show();
 
-            GenerateVerificationCode generateVerificationCode = new GenerateVerificationCode();
+            PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, phoneNumber);
             generateVerificationCode.execute();
-        }
-    }
-
-    public class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
-        List<List<String>> joinedGroups; //this will contain updated joined_groups
-        Boolean success = false;
-        public GenerateVerificationCode(){
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            //setting parameters
-            HashMap<String, Object> param = new HashMap<String, Object>();
-            param.put("number", phoneNumber);
-
-            Log.d("DEBUG_PHONE_LOGIN", "calling genCode() with " + phoneNumber);
-            try {
-                success = ParseCloud.callFunction("genCode", param);
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result){
-            if(pdialog != null){
-                pdialog.dismiss();
-            }
-
-            if(success) {
-                Intent nextIntent = new Intent(getBaseContext(), PhoneSignUpVerfication.class);
-                nextIntent.putExtra("login", true);
-                startActivity(nextIntent);
-            }
-            else{
-                Utility.toast("Oops ! Sign up failed. Try again");
-            }
         }
     }
 }

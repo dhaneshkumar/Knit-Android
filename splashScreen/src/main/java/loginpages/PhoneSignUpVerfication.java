@@ -5,11 +5,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseCloud;
@@ -21,6 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import additionals.SmsListener;
 import joinclasses.JoinedHelper;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -39,12 +42,17 @@ import utility.Utility;
  */
 public class PhoneSignUpVerfication extends ActionBarActivity {
     EditText verificationCodeET;
-    Button verifyButton;
-    ProgressDialog pdialog;
+    public static Button verifyButton;
+    static ProgressDialog pdialog;
 
     static String verificationCode;
-    Context activityContext;
-    Boolean isLogin;
+    static Context activityContext;
+    static Boolean isLogin;
+
+    static Boolean manualVerifyOngoing = false; //NOT used differently handle dialog when auto verify & manual verify is triggered
+
+    private CountDownTimer countDownTimer;
+    TextView timerTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +63,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         verificationCodeET = (EditText) findViewById(R.id.verificationCode);
         verifyButton = (Button) findViewById(R.id.verifyButton);
+        timerTV = (TextView) findViewById(R.id.timerText);
 
         verifyButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,12 +73,13 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     Utility.toast("Please enter the verification code");
                 }
                 else {
+                    manualVerifyOngoing = true;
                     pdialog = new ProgressDialog(activityContext);
                     pdialog.setCancelable(false);
                     pdialog.setMessage("Please Wait...");
                     pdialog.show();
 
-                    VerifyCodeTask verifyCodeTask = new VerifyCodeTask();
+                    VerifyCodeTask verifyCodeTask = new VerifyCodeTask(verificationCode);
                     verifyCodeTask.execute();
                 }
             }
@@ -78,24 +88,64 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         if(getIntent() != null && getIntent().getExtras() != null) {
             isLogin = getIntent().getExtras().getBoolean("login");
         }
+        countDownTimer = new MyCountDownTimer(1*60*1000, 1000); //5 minutes, tick every second
+        countDownTimer.start();
+        timerTV.setText("1 : 00");
     }
 
-    public class VerifyCodeTask extends AsyncTask<Void, Void, Void> {
-        List<List<String>> joinedGroups; //this will contain updated joined_groups
+    public static void smsListenerVerifyTask(String code){
+        /*pdialog = new ProgressDialog(PhoneSignUpVerfication.activityContext);
+        pdialog.setCancelable(false);
+        pdialog.setMessage("Please Wait...");
+        pdialog.show();*/
+        Log.d("DEBUG_SMS_LISTENER", "triggering PhoneSignUpVerfication.VerifyCodeTask");
+        VerifyCodeTask verifyCodeTask = new VerifyCodeTask(code);
+        verifyCodeTask.execute();
+    }
+
+    public void onBackPressed() {
+        SmsListener.unRegister(); //important so that it doesnot trigger when out of context
+        super.onBackPressed();
+    }
+
+    public class MyCountDownTimer extends CountDownTimer{
+        public  MyCountDownTimer(long startTime, long interval){
+            super(startTime, interval);
+        }
+
+        @Override
+        public void onFinish(){
+            timerTV.setText("Sorry! Unable to verify automatically. Please enter code manually");
+        }
+
+        @Override
+        public void onTick(long millisUntilFinished) {
+            long remainingSeconds = millisUntilFinished/1000;
+            long minuteValue = remainingSeconds/60;
+            long secondValue = remainingSeconds%60;
+            String secondValueStr = String.format("%02d", secondValue); //format with left padded zeroes
+            timerTV.setText(minuteValue + " : " + secondValueStr);
+        }
+    }
+
+    public static class VerifyCodeTask extends AsyncTask<Void, Void, Void> {
         Boolean loginError = false; //session code login status
         Boolean networkError = false; //parse exception
         Boolean verifyError = false; //code verification status
         Boolean userDoesNotExistsError = false; //user doesnot exist - during login
         Boolean userAlreadyExistsError = false; //user already exists - during sigup
 
-        public VerifyCodeTask(){
+        String code;
+
+        public VerifyCodeTask(String tcode){//code to verify. Number will be taken from relevant activity
+            code = tcode;
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             //setting parameters
             HashMap<String, Object> param = new HashMap<String, Object>();
-            param.put("code", Integer.parseInt(verificationCode));
+            param.put("code", Integer.parseInt(code));
 
 
             if(!isLogin) {
@@ -184,8 +234,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         protected void onPostExecute(Void result){
 
             if(networkError || verifyError || loginError || userAlreadyExistsError || userDoesNotExistsError){
-                if(pdialog != null){
+                if(pdialog != null && manualVerifyOngoing){
                     pdialog.dismiss();
+                    manualVerifyOngoing = false;
                 }
             }
             if(networkError){
@@ -207,7 +258,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     }
 
 
-    class PostLoginTask extends  AsyncTask<Void, Void, Void> {
+    static class PostLoginTask extends  AsyncTask<Void, Void, Void> {
         ParseUser user;
 
         public PostLoginTask(ParseUser u) {
@@ -229,17 +280,18 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (pdialog != null) {
+            if (pdialog != null && manualVerifyOngoing) {
                 pdialog.dismiss();
+                manualVerifyOngoing = false;
             }
 
             //Switching to MainActivity
-            Intent intent = new Intent(getBaseContext(), MainActivity.class);
-            startActivity(intent);
+            Intent intent = new Intent(activityContext, MainActivity.class);
+            activityContext.startActivity(intent);
         }
     }
 
-    class StoreSchoolInBackground extends AsyncTask<Void, Void, Void>
+    static class StoreSchoolInBackground extends AsyncTask<Void, Void, Void>
     {
         ParseUser currentUser;
         @Override
@@ -297,32 +349,33 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if(pdialog != null){
+            if(pdialog != null && manualVerifyOngoing){
                 pdialog.dismiss();
+                manualVerifyOngoing = false;
             }
             if(currentUser == null) return; //won't happen as called after successful login
 
             //here create welcome notification and message
             if(currentUser.getString("role").equals("teacher")){
-                NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
                 AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, currentUser);
             }
             else if(currentUser.getString("role").equals("parent")){
-                NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
                 AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, currentUser);
             }
             else{
-                NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
                 AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, currentUser);
             }
 
             //Switching to MainActivity
-            Intent intent = new Intent(getBaseContext(), LoginPanda.class);
-            startActivity(intent);
+            Intent intent = new Intent(activityContext, LoginPanda.class);
+            activityContext.startActivity(intent);
         }
     }
 
-    class joinDefaultGroup extends AsyncTask<Void, Void, Void> {
+    static class joinDefaultGroup extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
             ParseUser user = ParseUser.getCurrentUser();

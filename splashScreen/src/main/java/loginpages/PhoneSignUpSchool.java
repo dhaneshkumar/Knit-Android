@@ -27,9 +27,11 @@ import java.util.HashMap;
 import java.util.List;
 
 import additionals.SchoolAutoComplete;
+import additionals.SmsListener;
 import library.DelayAutoCompleteTextView;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import utility.Utility;
 
@@ -40,7 +42,7 @@ public class PhoneSignUpSchool extends ActionBarActivity {
     DelayAutoCompleteTextView locationInput;
     AutoCompleteTextView schoolNameView;
     ProgressBar loadingSchools;
-    ProgressDialog pdialog;
+    static ProgressDialog pdialog;
 
     private ArrayAdapter schoolsAdapter;
     private Context activityContext;
@@ -130,25 +132,31 @@ public class PhoneSignUpSchool extends ActionBarActivity {
             pdialog.setMessage("Please Wait...");
             pdialog.show();
 
-            GenerateVerificationCode generateVerificationCode = new GenerateVerificationCode();
+            GenerateVerificationCode generateVerificationCode = new GenerateVerificationCode(0, PhoneSignUpName.phoneNumber);
             generateVerificationCode.execute();
         }
     }
 
-    public class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
-        List<List<String>> joinedGroups; //this will contain updated joined_groups
+    public static class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
         Boolean success = false;
-        public GenerateVerificationCode(){
+        int callerId;
+        String number;
+        public GenerateVerificationCode(int id, String num){ //id identifies the caller, num the phone number
+            callerId = id;
+            number = num;
+            SmsListener.register();
         }
 
         @Override
         protected Void doInBackground(Void... params) {
             //setting parameters
             HashMap<String, Object> param = new HashMap<String, Object>();
-            param.put("number", PhoneSignUpName.phoneNumber);
 
-            Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode() with " + PhoneSignUpName.phoneNumber);
+            param.put("number", number);
+
+            Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode() with " + number);
             try {
+
                 success = ParseCloud.callFunction("genCode", param);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -159,17 +167,33 @@ public class PhoneSignUpSchool extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result){
-            if(pdialog != null){
-                pdialog.dismiss();
+            boolean isLogin = false; //flag indicating whether caller is login or not
+            if(callerId == 0) {
+                if (PhoneSignUpSchool.pdialog != null) {
+                    PhoneSignUpSchool.pdialog.dismiss();
+                }
+            }
+            else if(callerId == 1){
+                if (PhoneSignUpName.pdialog != null) {
+                    PhoneSignUpName.pdialog.dismiss();
+                }
+            }
+            else if(callerId == 2){
+                if (PhoneLoginPage.pdialog != null) {
+                    PhoneLoginPage.pdialog.dismiss();
+                }
+                isLogin = true;
             }
 
             if(success) {
-                Intent nextIntent = new Intent(getBaseContext(), PhoneSignUpVerfication.class);
-                nextIntent.putExtra("login", false);
-                startActivity(nextIntent);
+                Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpVerfication.class);
+                nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                nextIntent.putExtra("login", isLogin);
+                Application.getAppContext().startActivity(nextIntent);
             }
             else{
-                Utility.toast("Oops ! Sign up failed. Try again");
+                SmsListener.unRegister();
+                Utility.toast("Oops ! some error occured. Try again");
             }
         }
     }

@@ -258,5 +258,15 @@ public class ClassRoomsUpdate {
                 }
             });
         }
+        else{
+            //since it has no valid image parse file, just set dirty to false
+            dirtyUser.put("dirty", false);
+            try{
+                dirtyUser.pin();
+            }
+            catch (ParseException e){
+                //e.printStackTrace();
+            }
+        }
     }
 }
