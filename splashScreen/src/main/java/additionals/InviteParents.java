@@ -17,9 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import baseclasses.MyActionBarActivity;
-import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.ClassMsg;
 import utility.Utility;
 
 public class InviteParents extends MyActionBarActivity{

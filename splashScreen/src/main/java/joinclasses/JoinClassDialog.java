@@ -277,8 +277,8 @@ public class JoinClassDialog extends DialogFragment {
 
                     if (result == 1) {
                         //fetch class suggestions in background for this class explicitly TODO using cloud function for this codegroup
-                        FetchSuggestionsOnJoin fetchSuggestionsOnJoin = new FetchSuggestionsOnJoin(code);
-                        fetchSuggestionsOnJoin.execute();
+                       /* FetchSuggestionsOnJoin fetchSuggestionsOnJoin = new FetchSuggestionsOnJoin(code);
+                        fetchSuggestionsOnJoin.execute();*/
                         return true;      //successfully joined class
                     }
                     else if (result == 2) {
@@ -330,12 +330,12 @@ public class JoinClassDialog extends DialogFragment {
 
 
                 //Refreshing suggestion adapter
-                Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(ParseUser.getCurrentUser().getUsername());
+             /*   Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(ParseUser.getCurrentUser().getUsername());
                 if(Classrooms.suggestedGroups == null)
                     Classrooms.suggestedGroups = new ArrayList<ParseObject>();
 
                 if(Classrooms.suggestedClassAdapter != null)
-                    Classrooms.suggestedClassAdapter.notifyDataSetChanged();
+                    Classrooms.suggestedClassAdapter.notifyDataSetChanged();*/
 
 
                 dialog.dismiss();

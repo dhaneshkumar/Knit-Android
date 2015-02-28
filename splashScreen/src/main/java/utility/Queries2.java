@@ -20,7 +20,6 @@ import java.util.List;
 
 import library.UtilString;
 import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.ClassMembers;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 
@@ -246,74 +245,6 @@ public class Queries2 {
             e.printStackTrace();
             Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "Failed with exception");
         }
-    }
-
-    public boolean isGroupMemberExist(String code, String userId) throws ParseException {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupMembers");
-        query.fromLocalDatastore();
-        query.whereEqualTo("code", code);
-        query.whereEqualTo("userId", userId);
-        query.whereEqualTo("emailId", userId);
-        ParseObject obj = query.getFirst();
-
-        if (obj != null) {
-            return true;
-        }
-
-        return false;
-    }
-
-
-    public static void storeGroupMember(String code, String userId, boolean adapterFlag)
-            throws ParseException {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupMembers");
-        query.whereEqualTo("code", code);
-        query.whereEqualTo("emailId", userId);
-
-        ParseObject obj = query.getFirst();
-
-        if (obj != null) {
-            if (obj.getCreatedAt() != null) {
-
-
-                ParseObject joinedObj = new ParseObject("JoinedTiming");
-                joinedObj.put("objectId", obj.getObjectId());
-                joinedObj.put("code", code);
-                joinedObj.put("joiningTime", obj.getCreatedAt());
-                joinedObj.put("userId", userId);
-
-                joinedObj.pin();
-
-                //   Utility.ls(obj.getCreatedAt() + "joining time");
-
-                if (adapterFlag) {
-                    if (ClassMembers.myadapter != null)
-                        ClassMembers.myadapter.notifyDataSetChanged();
-
-                    if (Classrooms.createdClassAdapter != null)
-                        Classrooms.createdClassAdapter.notifyDataSetChanged();
-                }
-
-            }
-        } else {
-            Utility.ls("null object");
-        }
-    }
-
-
-    public static Date getGroupJoinedTime(String code, String userId) throws ParseException {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("JoinedTiming");
-        query.fromLocalDatastore();
-
-        query.whereEqualTo("code", code.trim());
-        query.whereEqualTo("userId", userId.trim());
-
-        ParseObject obj = query.getFirst();
-
-        if (obj != null)
-            return (Date) obj.get("joiningTime");
-
-        return null;
     }
 
 

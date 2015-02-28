@@ -205,19 +205,25 @@ public class Utility extends MyActionBarActivity {
 
 
     public static void copyToClipBoard(Context activity, String label, String content) {
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            android.content.ClipboardManager clipboard =
-                    (android.content.ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            ClipData clip = ClipData.newPlainText(label, content);
-            clipboard.setPrimaryClip(clip);
-        } else {
-            android.text.ClipboardManager clipboard =
-                    (android.text.ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
-            clipboard.setText(content);
-        }
 
-        Utility.toast(label + " copied.");
+        if(UtilString.isBlank(label)  || UtilString.isBlank(content))
+            return;
+        else {
+
+            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+                android.content.ClipboardManager clipboard =
+                        (android.content.ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText(label, content);
+                clipboard.setPrimaryClip(clip);
+            } else {
+                android.text.ClipboardManager clipboard =
+                        (android.text.ClipboardManager) activity.getSystemService(Context.CLIPBOARD_SERVICE);
+                clipboard.setText(content);
+            }
+
+            Utility.toast(label.trim() + " copied");
+        }
     }
 
     public static String convertTimeStamp(Date d1) throws ParseException {

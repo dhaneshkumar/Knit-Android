@@ -1,4 +1,4 @@
-package trumplabs.schoolapp;
+package joinclasses;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -23,10 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import baseclasses.MyActionBarActivity;
-import joinclasses.JoinClassDialog;
-import joinclasses.JoinedHelper;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.Constants;
 import utility.Utility;
 
 /**
@@ -128,11 +128,11 @@ public class JoinSuggestedClass extends MyActionBarActivity {
                     user.put(Constants.REMOVED_GROUPS, removedList);
                     user.getCurrentUser().saveEventually();
 
-                    // updating suggestions adapter in Classrooms fragment
+                  /*  // updating suggestions adapter in Classrooms fragment
                     Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(user.getUsername());
 
                     if(Classrooms.suggestedClassAdapter != null)
-                        Classrooms.suggestedClassAdapter.notifyDataSetChanged();
+                        Classrooms.suggestedClassAdapter.notifyDataSetChanged();*/
                 }
                 finish(); //close the activity
             }

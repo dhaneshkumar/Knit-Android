@@ -1,4 +1,4 @@
-package trumplabs.schoolapp;
+package joinclasses;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -37,6 +37,8 @@ import java.util.List;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.Subscribers;
 import utility.Config;
 import utility.Utility;
 
@@ -51,7 +53,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
     TextView teacherNameTV;
     TextView classCodeTV;
     ImageView whatsAppImageView;
-    static TextView schoolNameTV;
+    //static TextView schoolNameTV;
     TextView assignedNameTV;
     TextView subCodeTV;
     LinearLayout assignedNameContainer;
@@ -62,7 +64,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
     String className;
     String classCode;
-    static String schoolName;
+    //static String schoolName;
     String assignedName;
     String teacherName;
 
@@ -90,7 +92,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         teacherNameTV = (TextView) findViewById(R.id.teacherName);
         classCodeTV = (TextView) findViewById(R.id.classCode);
         whatsAppImageView = (ImageView) findViewById(R.id.whatsAppIcon);
-        schoolNameTV = (TextView) findViewById(R.id.schoolName);
+       // schoolNameTV = (TextView) findViewById(R.id.schoolName);
         assignedNameTV = (TextView) findViewById(R.id.assignedName);
         assignedNameContainer = (LinearLayout) findViewById(R.id.assignedNameContainer);
         whatsappLayout = (RelativeLayout) findViewById(R.id.whatsappLayout);
@@ -112,7 +114,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
         ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
         classQuery.fromLocalDatastore();
         classQuery.whereEqualTo("code", classCode);
-
         String teacherSenderId = null;
         String teacherSex = "";
 
@@ -126,7 +127,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             teacherName = codegroup.getString("Creator");
             teacherSenderId = codegroup.getString("senderId");
             teacherSex = codegroup.getString("sex");
-            schoolName = codegroup.getString("schoolName"); //this is a new field. If not present, fetch and store locally
+           /* schoolName = codegroup.getString("schoolName"); //this is a new field. If not present, fetch and store locally
             if(schoolName == null){
                 //fetch school name from id using asynctask
                 Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName not in codegroup. Fetching...");
@@ -136,13 +137,13 @@ public class JoinedClassInfo extends MyActionBarActivity {
             else{
                 Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName already there " + schoolName);
                 schoolNameTV.setText(schoolName);
-            }
+            }*/
         }
         catch (ParseException e){
-            Log.d("DEBUG_JOINED_CLASS_INFO", "local query into Codegroup failed");
-            teacherName = "Unknown";
-            schoolName = defaultSchoolName;
-            schoolNameTV.setText(schoolName);
+          //  Log.d("DEBUG_JOINED_CLASS_INFO", "local query into Codegroup failed");
+            teacherName = "";
+           /* schoolName = defaultSchoolName;
+            schoolNameTV.setText(schoolName);*/
             e.printStackTrace();
         }
 
@@ -267,14 +268,14 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     sendIntent.setPackage("com.whatsapp");
                     sendIntent.setType("text/plain");
 
-                    String trimSchoolName = schoolName;
+                  /*  String trimSchoolName = schoolName;
                     if(trimSchoolName.length() > 50 ){
                         trimSchoolName = schoolName.substring(0, 50);
-                    }
+                    }*/
 
-                    trimSchoolName = trimSchoolName + "...";
+                   // trimSchoolName = trimSchoolName + "...";
                     sendIntent.putExtra(Intent.EXTRA_TEXT, "I have joined " + className +
-                            " class(code " + classCode + ") on KNIT App by " + teacherName + " of " + trimSchoolName + ". Please join this class ! ");
+                            " class(code " + classCode + ") on KNIT App by " + teacherName +". Please join this class ! ");
                     startActivity(sendIntent);
 
                 } catch (PackageManager.NameNotFoundException e) {
@@ -383,7 +384,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
 
-                Utility.toast("Successfully unsubscribed");
+                Utility.toast("You are successfully unsubscribed");
                 finish(); //close the activity
             }
             else{
@@ -498,14 +499,14 @@ public class JoinedClassInfo extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Void result){//schoolName has been set to a non-null value
 
-            if(caller ==0) {
+         /*   if(caller ==0) {
                 JoinedClassInfo.schoolNameTV.setText(school);
                 JoinedClassInfo.schoolName = school; //used for whats app messages. So need to update
             }
             else if(caller == 1)
                 JoinSuggestedClass.schoolNameTV.setText(school);
             else if(caller == 2)
-                Subscribers.schoolNameTV.setText(school);
+                Subscribers.schoolNameTV.setText(school);*/
         }
     }
 }

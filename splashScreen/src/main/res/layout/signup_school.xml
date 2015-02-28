@@ -10,10 +10,10 @@
 <TextView
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="Select your school"
+    android:text="Please enter your school info."
     android:textColor="@color/black"
     android:layout_marginLeft="4dp"
-    android:textSize="18sp"
+    android:textSize="15sp"
     />
 
     <RelativeLayout
@@ -22,22 +22,26 @@
         android:orientation="horizontal"
         android:gravity="center"
 
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         >
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/ic_action_android"
+            android:src="@drawable/location"
+            android:paddingLeft="8dp"
+            android:layout_centerVertical="true"
             android:id="@+id/imageView" />
 
     <library.DelayAutoCompleteTextView
         android:id="@+id/school_location"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Location of your school"
-        android:paddingLeft="16dp"
+        android:hint="Location"
+        android:paddingLeft="48dp"
         android:layout_marginLeft="4dp"
+
+        android:layout_alignParentLeft="true"
         android:background="@drawable/apptheme_edit_text_holo_light"
         android:completionThreshold="1"
         android:textColor="@color/black"
@@ -48,18 +52,19 @@
         />
 
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="e.g, Powai"
-            android:textSize="12sp"
-            android:layout_marginLeft="4dp"
-            android:layout_alignLeft="@+id/school_location"
-            android:layout_below="@+id/school_location"
-            android:layout_marginTop="4dp"
-            />
 
     </RelativeLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="e.g, Powai"
+        android:textSize="11sp"
+        android:layout_marginLeft="8dp"
+        android:layout_alignLeft="@+id/school_location"
+        android:layout_below="@+id/school_location"
+        />
+
 
 
     <ProgressBar
@@ -70,7 +75,7 @@
         android:hint="School Name"
         android:paddingLeft="16dp"
         android:textColor="@color/black"
-        android:textSize="16sp"
+        android:textSize="14sp"
         android:background="@drawable/apptheme_edit_text_holo_light"
         android:visibility="gone"
         />

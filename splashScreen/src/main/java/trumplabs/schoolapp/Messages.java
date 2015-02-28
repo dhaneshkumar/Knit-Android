@@ -91,25 +91,27 @@ public class Messages extends Fragment {
       /*
       Check for push open
        */
-        if (getActivity().getIntent().getExtras() != null) {
-            Intent intent = getActivity().getIntent();
-            boolean pushOpen = getActivity().getIntent().getExtras().getBoolean("pushOpen", false);
-            if (pushOpen) {
-                intent.putExtra("pushOpen", false);
-                getActivity().setIntent(intent);
 
-                if (Utility.isInternetOn(getActivity())) {
-                    if (mPullToRefreshLayout != null) {
-                        runSwipeRefreshLayout(mPullToRefreshLayout, 10);
+        if(getActivity().getIntent() != null) {
+            if (getActivity().getIntent().getExtras() != null) {
+                Intent intent = getActivity().getIntent();
+                boolean pushOpen = getActivity().getIntent().getExtras().getBoolean("pushOpen", false);
+                if (pushOpen) {
+                    intent.putExtra("pushOpen", false);
+                    getActivity().setIntent(intent);
+
+                    if (Utility.isInternetOn(getActivity())) {
+                        if (mPullToRefreshLayout != null) {
+                            runSwipeRefreshLayout(mPullToRefreshLayout, 10);
+                        }
+
+                        Log.d("DEBUG_MESSAGES", "calling Inbox execute() on activity created");
+                        Inbox newInboxMsg = new Inbox(msgs);
+                        newInboxMsg.execute();
                     }
-
-                    Log.d("DEBUG_MESSAGES", "calling Inbox execute() on activity created");
-                    Inbox newInboxMsg = new Inbox(msgs);
-                    newInboxMsg.execute();
+                } else {
+                    Log.d("DEBUG_MESSAGES", "pushOpen flag false");
                 }
-            }
-            else{
-                Log.d("DEBUG_MESSAGES","pushOpen flag false");
             }
         }
 

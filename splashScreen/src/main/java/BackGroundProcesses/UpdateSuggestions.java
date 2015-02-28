@@ -205,10 +205,10 @@ public class UpdateSuggestions extends AsyncTask<Void, Void, String> {
 
     public void onPostExecuteCore(String userId){
         if (userId != null) {
-            Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(userId);
+           /* Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(userId);
 
             if(Classrooms.suggestedClassAdapter != null)
-                Classrooms.suggestedClassAdapter.notifyDataSetChanged();
+                Classrooms.suggestedClassAdapter.notifyDataSetChanged();*/
         }
     }
 

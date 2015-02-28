@@ -11,11 +11,10 @@ import com.parse.ParseUser;
 
 import additionals.InviteParents;
 import additionals.OpenURL;
+import library.UtilString;
 import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
-import trumplabs.schoolapp.ClassMsg;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.CreateClass;
 import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
 
@@ -32,7 +31,6 @@ public class PushOpen extends ActionBarActivity {
 
         //type and action will never be null. Handled in NotificationGenerator
         if(type.equals(Constants.NORMAL_NOTIFICATION)){
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "clearing normal notification list");
             NotificationGenerator.normalNotificationList.clear();
         }
 
@@ -44,11 +42,17 @@ public class PushOpen extends ActionBarActivity {
             }
             else if(action.equals(Constants.INVITE_PARENT_ACTION)){
                 i = new Intent(this, InviteParents.class);
-                ClassMsg.groupCode = getIntent().getExtras().getString("grpCode");
-                ClassMsg.grpName = getIntent().getExtras().getString("grpName");
-                if(ClassMsg.groupCode == null || ClassMsg.grpName == null){ //if null, then just go to main activity
-                    i = new Intent(this, MainActivity.class); //go to main activity
+
+                String classCode = getIntent().getExtras().getString("classCode");
+                String className = getIntent().getExtras().getString("className");
+
+
+                if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
+                    i.putExtra("className", classCode);
+                    i.putExtra("classCode", className);
                 }
+                else
+                    i = new Intent(this, MainActivity.class); //go to main activity
             }
             else if(action.equals(Constants.CLASSROOMS_ACTION)){
                 i = new Intent(this, MainActivity.class);
@@ -65,7 +69,13 @@ public class PushOpen extends ActionBarActivity {
                 i.putExtra("pushOpen", true);
             }
             else if(action.equals(Constants.CREATE_CLASS_ACTION)){
-                i = new Intent(this, CreateClass.class);
+
+                i = new Intent(this, MainActivity.class);
+                ParseUser user = ParseUser.getCurrentUser();
+                if (user != null && user.getString("role").equals(Constants.TEACHER))
+                    i.putExtra("VIEWPAGERINDEX", 0);
+                i.putExtra("flag", "CREATE_CLASS");
+                i.putExtra("pushOpen", true);
             }
         }
         else if (type.equals(Constants.LINK_NOTIFICATION)) {

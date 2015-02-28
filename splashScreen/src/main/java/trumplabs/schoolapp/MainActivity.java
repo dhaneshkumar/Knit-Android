@@ -314,6 +314,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                 break;
 
+            case R.id.feedback:
+                FeedBackClass feedBack = new FeedBackClass();
+                FragmentManager fmr = getSupportFragmentManager();
+                feedBack.show(fmr, "FeedBackClass");
+
+                break;
+
             default:
                 break;
         }

@@ -103,22 +103,14 @@ public class PhoneSignUpName extends ActionBarActivity {
         else if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
             Utility.toast("Incorrect Mobile Number");
         else{
-            Intent nextIntent;
-            if(role.equals("teacher")) {
-                nextIntent = new Intent(getBaseContext(), PhoneSignUpSchool.class);
-                displayName = UtilString.changeFirstToCaps(displayName);
-                title = titleSpinner.getSelectedItem().toString();
-                startActivity(nextIntent);
-            }
-            else{
-                pdialog = new ProgressDialog(this);
-                pdialog.setCancelable(false);
-                pdialog.setMessage("Please Wait...");
-                pdialog.show();
+            //Removed school input page. So directly go to verification page
+            pdialog = new ProgressDialog(this);
+            pdialog.setCancelable(false);
+            pdialog.setMessage("Please Wait...");
+            pdialog.show();
 
-                PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(1, phoneNumber);
-                generateVerificationCode.execute();
-            }
+            PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(1, phoneNumber);
+            generateVerificationCode.execute();
         }
     }
 }

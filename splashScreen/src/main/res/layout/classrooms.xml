@@ -62,25 +62,6 @@
             />
 
 
-        <TextView
-            android:id="@+id/suggestedClassTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Suggested Classes"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/profile_title"
-            android:textSize="16sp"
-            />
-
-        <library.ExpandableListView
-            android:id="@+id/suggestedclasseslistview"
-            android:layout_width="match_parent"
-            android:layout_marginTop="2dp"
-            android:layout_height="wrap_content"
-            android:divider="@color/lightbackgroundcolor"
-            android:dividerHeight="1dp"
-            />
-
     </LinearLayout>
     </ScrollView>
 

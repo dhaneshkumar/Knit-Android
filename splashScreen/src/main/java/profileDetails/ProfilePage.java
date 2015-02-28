@@ -83,15 +83,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         setContentView(R.layout.profile);
         actcontext = this;
 
-
-        try {
-
-            ReadSchoolFile readSchoolFile = new ReadSchoolFile();
-            readSchoolFile.getSchoolsList();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
         name_textView = (TextView) findViewById(R.id.name);
         phone_textView = (TextView) findViewById(R.id.phone);
         school_textView = (TextView) findViewById(R.id.school);
@@ -103,7 +94,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         LinearLayout editName = (LinearLayout) findViewById(R.id.editName);
         LinearLayout editPhone = (LinearLayout) findViewById(R.id.editPhone);
         LinearLayout editSchool = (LinearLayout) findViewById(R.id.editSchool);
-        TextView changePassword = (TextView) findViewById(R.id.changePassword);
+      //  TextView changePassword = (TextView) findViewById(R.id.changePassword);
         TextView rateOurApp = (TextView) findViewById(R.id.rateOurApp);
         TextView faq = (TextView) findViewById(R.id.faq);
         TextView feedback = (TextView) findViewById(R.id.feedback);
@@ -121,14 +112,16 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         ParseUser user = ParseUser.getCurrentUser();
 
-        if (user == null)
-            {Utility.logout(); return;}
+        if (user == null) {
+            Utility.logout();
+            return;
+        }
 
         userId = user.getUsername();
         String role = user.getString(Constants.ROLE);
 
-        if ( !role.equals(Constants.TEACHER))
-            editSchool.setVisibility(View.GONE);
+        //  if ( !role.equals(Constants.TEACHER))
+        editSchool.setVisibility(View.GONE);
 
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -138,7 +131,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
      */
         name = user.getString(Constants.NAME);
         phone = user.getString(Constants.PHONE);
-        school = user.getString(Constants.SCHOOL);
+        //school = user.getString(Constants.SCHOOL);
 
         if (!UtilString.isBlank(name))
             name_textView.setText(name);
@@ -146,7 +139,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             phone_textView.setText(phone);
 
 
-        school1 = new School();
+        /*school1 = new School();
 
         if (!UtilString.isBlank(school)) {
 
@@ -156,7 +149,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             } else
                 school_textView.setText("");
         } else
-            school_textView.setText("");
+            school_textView.setText("");*/
 
     /*
      * set Profile Pic.
@@ -292,15 +285,15 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         editName.setOnClickListener(this);
         editPhone.setOnClickListener(this);
         editSchool.setOnClickListener(this);
-        changePassword.setOnClickListener(this);
+        //changePassword.setOnClickListener(this);
         rateOurApp.setOnClickListener(this);
         faq.setOnClickListener(this);
         feedback.setOnClickListener(this);
         signOut.setOnClickListener(this);
 
         //following handles update app action from profile page
-        if(getIntent().hasExtra("action")){
-            if(getIntent().getStringExtra("action").equals(Constants.PROFILE_PAGE_ACTION)){
+        if (getIntent().hasExtra("action")) {
+            if (getIntent().getStringExtra("action").equals(Constants.PROFILE_PAGE_ACTION)) {
                 //go to market
                 Uri uri = Uri.parse("market://details?id=" + getPackageName());
                 Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
@@ -421,11 +414,10 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                     user.saveInBackground(new SaveCallback() {
                                         @Override
                                         public void done(ParseException e) {
-                                            if(e == null){
+                                            if (e == null) {
                                                 name_textView.setText(value);
                                                 Utility.toast("Name updated !");
-                                            }
-                                            else{
+                                            } else {
                                                 e.printStackTrace();
                                                 Utility.toast("Name update failed !");
                                             }
@@ -617,19 +609,21 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         final String value = (String) parent.getItemAtPosition(position);
-                        Log.d("DEBUG_PROFILE_PAGE", "item clicked "  + value);
+                        Log.d("DEBUG_PROFILE_PAGE", "item clicked " + value);
                         schoolInput.setVisibility(View.GONE);
                         progressBar.setVisibility(View.VISIBLE); //show progress bar
 
                         new AsyncTask<Void, Void, Void>() {
                             ArrayList<String> schools;
+
                             @Override
-                            protected Void doInBackground( Void... voids ) {
-                                 schools = SchoolAutoComplete.schoolsNearby(value);
+                            protected Void doInBackground(Void... voids) {
+                                schools = SchoolAutoComplete.schoolsNearby(value);
                                 return null;
                             }
+
                             @Override
-                            protected void onPostExecute(Void result){
+                            protected void onPostExecute(Void result) {
                                 schoolsAdapter =
                                         new ArrayAdapter(actcontext, android.R.layout.simple_list_item_1, schools);
                                 schoolInput.setAdapter(schoolsAdapter);
@@ -648,7 +642,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                 schoolLayout.addView(schoolInput, schoolParmas);
                 schoolLayout.addView(progressBar, schoolParmas);
-                schoolLayout.addView(locationInput, schoolParmas);;
+                schoolLayout.addView(locationInput, schoolParmas);
+                ;
 
                 schoolDialog.setView(schoolLayout);
 
@@ -657,7 +652,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 schoolDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         String value = schoolInput.getText().toString();
-                        if(value.isEmpty()) {
+                        if (value.isEmpty()) {
                             showToast("please fill school name");
                             return;
                         }
@@ -717,7 +712,10 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             case R.id.signOut:
                 if (Utility.isInternetOn(this)) {
 
-                    {Utility.logout(); return;}
+                    {
+                        Utility.logout();
+                        return;
+                    }
                 } else {
                     Utility.toast("Check your Internet Connection.");
                 }
@@ -754,7 +752,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
       /*
        * Change Password
        */
-            case R.id.changePassword:
+           /* case R.id.changePassword:
 
                 ParseUser.requestPasswordResetInBackground(userId, new RequestPasswordResetCallback() {
                     public void done(ParseException e) {
@@ -770,7 +768,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 });
 
                 break;
-
+*/
             default:
                 break;
         }
@@ -904,7 +902,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         }
     }
 
-    public void showToast(String text){
+    public void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
     }
 

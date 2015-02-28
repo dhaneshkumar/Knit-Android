@@ -4,11 +4,9 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.widget.PopupMenu;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -16,12 +14,9 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.parse.ParseCloud;
@@ -37,6 +32,7 @@ import java.util.List;
 import BackGroundProcesses.MemberList;
 import additionals.InviteParents;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
+import joinclasses.JoinedClassInfo;
 import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -52,13 +48,13 @@ public class Subscribers extends ActionBarActivity {
     public static List<MemberDetails> memberDetails;
     private String classCode;
     private String className;
-    private String schoolName;
+   // private String schoolName;
     private Queries memberQuery;
     public static SmoothProgressBar mHeaderProgressBar;
     public static LinearLayout progressBarLayout;
     public static LinearLayout editProfileLayout;
     private ExpandableListView listv;
-    public static TextView schoolNameTV;
+   // public static TextView schoolNameTV;
 
     static String defaultSchoolName = "";
 
@@ -87,7 +83,7 @@ public class Subscribers extends ActionBarActivity {
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         editProfileLayout = (LinearLayout) findViewById(R.id.editLayout);
         TextView classNameTV = (TextView) findViewById(R.id.className);
-        schoolNameTV = (TextView) findViewById(R.id.school);
+      //  schoolNameTV = (TextView) findViewById(R.id.school);
         TextView subscriberTV = (TextView) findViewById(R.id.memberCount);
         final TextView classCodeTV = (TextView) findViewById(R.id.classcode);
 
@@ -99,7 +95,7 @@ public class Subscribers extends ActionBarActivity {
         if(!UtilString.isBlank(className))
             classNameTV.setText(className);
 
-        //setting school name
+     /*   //setting school name
         ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
         classQuery.fromLocalDatastore();
         classQuery.whereEqualTo("code", classCode);
@@ -122,7 +118,7 @@ public class Subscribers extends ActionBarActivity {
             schoolName = defaultSchoolName;
             schoolNameTV.setText(schoolName);
             e.printStackTrace();
-        }
+        }*/
 
         //setting member count
         int memberCount = 0;
