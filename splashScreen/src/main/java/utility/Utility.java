@@ -308,6 +308,7 @@ public class Utility extends MyActionBarActivity {
         String fname = filepath.substring(filepath.lastIndexOf("/") + 1);
         String targetPath = Utility.getWorkingAppDir() + "/media/" + fname;
 
+        Log.d("DEBUG_UTILITY", "savePicInAppFolder calling for a gallery image");
         ScalingUtilities.scaleAndSave(filepath, targetPath);
 
         /*Bitmap myBitmap = Utility.decodeFile(new File(filepath));

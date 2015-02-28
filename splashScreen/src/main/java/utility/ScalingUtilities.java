@@ -56,6 +56,7 @@ public class ScalingUtilities {
         takes the path of image on sdcard, scale the image and overwrite it
      */
     public static void scaleAndSave(String srcImagePath, String dstImagePath){
+        Log.d("DEBUG_SCALING", "scaleAndSave() : scrImagePath " + srcImagePath + " dstImagePath " + dstImagePath);
         final long startTime = SystemClock.uptimeMillis();
 
         // Part 1: Decode image

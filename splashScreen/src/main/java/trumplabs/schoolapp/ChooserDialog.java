@@ -198,14 +198,18 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
       Cursor cursor = currentActivity.getContentResolver().query(uri, null, null, null, null);
 
-     
+      boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
+        String tempTargetPath = null;
+        String targetPath = null;
+        String fileName = null;
+
       if (cursor != null) {
         cursor.moveToFirst();
 
         // _display_name contains image name
         int columnIndex = cursor.getColumnIndex("_display_name");
 
-        String fileName = cursor.getString(columnIndex);
+        fileName = cursor.getString(columnIndex);
 
         /*
          * photos app assign name of each image as image.jpg. So we randomly assigning same name to
@@ -217,12 +221,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         }
 
         imageName = fileName;
-        String targetPath = Utility.getWorkingAppDir() + "/media/" + fileName;
-
+        tempTargetPath = Utility.getWorkingAppDir() + "/media/" + fileName + "_temp.jpg";
+        targetPath = Utility.getWorkingAppDir() + "/media/" + fileName;
 
         /*
          * Storing file locally in /media folder
          */
+
         ParcelFileDescriptor parcelFileDescriptor = null;
         try {
           parcelFileDescriptor = currentActivity.getContentResolver().openFileDescriptor(uri, "r");
@@ -243,7 +248,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
               if (reader != null) {
                 BufferedOutputStream outStream;
                 try {
-                  outStream = new BufferedOutputStream(new FileOutputStream(targetPath));
+                  outStream = new BufferedOutputStream(new FileOutputStream(tempTargetPath));
                   byte[] buf = new byte[2048];
                   int len;
                   while ((len = reader.read(buf)) > 0) {
@@ -253,10 +258,9 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
                   if (outStream != null)
                     outStream.close();
 
-                  ScalingUtilities.scaleAndSave(targetPath, targetPath); //overwrite
 
-                  // creating thumbnail of that image
-                  Utility.createThumbnail(currentActivity, fileName);
+                    retrieveSuccess = true;
+
 
 
                 } catch (FileNotFoundException e) {
@@ -271,10 +275,19 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         } else
           flag = true;
 
-
       } else
         flag = true;
 
+      if(retrieveSuccess){
+          ScalingUtilities.scaleAndSave(tempTargetPath, targetPath); //overwrite
+          // creating thumbnail of that image
+          Utility.createThumbnail(currentActivity, fileName);
+          //delete the temporary image file from knit/media folder
+          File tempImageFile = new File(tempTargetPath);
+          if(tempImageFile.exists()){
+              tempImageFile.delete();
+          }
+      }
 
       return null;
     }
