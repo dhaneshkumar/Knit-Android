@@ -63,7 +63,7 @@ public class ScalingUtilities {
         Bitmap unscaledBitmap = ScalingUtilities.decodeFile(srcImagePath,
                 outWidth, outHeight, ScalingLogic.FIT);
 
-        Log.d("DEBUG_SCALING", "unscaled width/height " + unscaledBitmap.getWidth() + " " + unscaledBitmap.getHeight());
+//        Log.d("DEBUG_SCALING", "unscaled width/height " + unscaledBitmap.getWidth() + " " + unscaledBitmap.getHeight());
         // Part 2: Scale image
         Bitmap scaledBitmap = ScalingUtilities.createScaledBitmap(unscaledBitmap, outWidth,
                 outHeight, ScalingLogic.FIT);

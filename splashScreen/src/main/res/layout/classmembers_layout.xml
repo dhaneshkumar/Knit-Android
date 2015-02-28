@@ -25,8 +25,6 @@
         android:textColor="@color/white"
         android:visibility="gone" />
 
-
-
     <LinearLayout
         android:id="@+id/progressBarLayout"
         android:layout_width="match_parent"
@@ -89,7 +87,6 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true" />
 
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -100,8 +97,6 @@
                 android:layout_alignBottom="@+id/textView3"
                 android:layout_alignLeft="@+id/school"
                 android:layout_alignStart="@+id/school" />
-
-
 
             <TextView
                 android:layout_width="wrap_content"
@@ -164,9 +159,20 @@
         <library.ExpandableListView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:background="@color/lightbackgroundcolor"
             android:id="@+id/memberslistview"/>
+
+        <TextView
+            android:id="@+id/emptyTV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:paddingLeft="32dp"
+            android:paddingRight="32dp"
+            android:paddingBottom="32dp"
+            android:text="You don't have any subscriber for this class. Invite them to join your class."
+
+            />
 
     </LinearLayout>
     </ScrollView>

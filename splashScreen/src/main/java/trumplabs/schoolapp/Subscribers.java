@@ -54,6 +54,7 @@ public class Subscribers extends ActionBarActivity {
     public static LinearLayout progressBarLayout;
     public static LinearLayout editProfileLayout;
     private ExpandableListView listv;
+    private TextView emptyTV;
    // public static TextView schoolNameTV;
 
     static String defaultSchoolName = "";
@@ -86,6 +87,7 @@ public class Subscribers extends ActionBarActivity {
       //  schoolNameTV = (TextView) findViewById(R.id.school);
         TextView subscriberTV = (TextView) findViewById(R.id.memberCount);
         final TextView classCodeTV = (TextView) findViewById(R.id.classcode);
+        emptyTV = (TextView) findViewById(R.id.emptyTV);
 
         //setting class code
         if(!UtilString.isBlank(classCode))
@@ -128,6 +130,12 @@ public class Subscribers extends ActionBarActivity {
         } catch (ParseException e) {
             e.printStackTrace();
         }
+
+        if(memberCount == 0)
+            emptyTV.setVisibility(View.VISIBLE);
+        else
+            emptyTV.setVisibility(View.GONE);
+
         subscriberTV.setText(memberCount + " subscribers");
 
         classCodeTV.setOnClickListener(new View.OnClickListener() {
@@ -246,6 +254,12 @@ public class Subscribers extends ActionBarActivity {
 
         @Override
         public int getCount() {
+
+            if(memberDetails.size() == 0)
+                emptyTV.setVisibility(View.VISIBLE);
+            else
+                emptyTV.setVisibility(View.GONE);
+
             return memberDetails.size();
         }
 

@@ -13,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -689,14 +690,12 @@ public class Messages extends Fragment {
                     @Override
                     public void onClick(View v) {
                         /*
-         * Creating popmenu for selecting schools
+         * Creating popmenu for copying text
          */
                         PopupMenu menu = new PopupMenu(getActivity(), v);
-
                         menu.getMenuInflater().inflate(R.menu.copy_text, menu.getMenu());
-
+                        //menu.setWidth(ListPopupWindow.WRAP_CONTENT);
                         menu.show();
-
 
                         // setting menu click functionality
                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {

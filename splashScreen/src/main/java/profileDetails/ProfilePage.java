@@ -135,8 +135,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         if (!UtilString.isBlank(name))
             name_textView.setText(name);
-        if (!UtilString.isBlank(phone))
-            phone_textView.setText(phone);
+
+        phone_textView.setText(userId);
 
 
         /*school1 = new School();
@@ -222,15 +222,15 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                             if (names != null && names.length > 1) {
                                 String title = names[0].trim();
 
-                                if (title.equals("Mr")) {
+                                if (title.equals("Mr") || title.equals("Mr.")) {
                                     profileimgview.setImageResource(R.drawable.maleparentdp);
                                     user.put("sex", "M");
                                     user.saveEventually();
-                                } else if (title.equals("Mrs")) {
+                                } else if (title.equals("Mrs")|| title.equals("Mrs.")) {
                                     profileimgview.setImageResource(R.drawable.femaleparentdp);
                                     user.put("sex", "F");
                                     user.saveEventually();
-                                } else if (title.equals("Ms")) {
+                                } else if (title.equals("Ms")  || title.equals("Ms.")) {
                                     profileimgview.setImageResource(R.drawable.femaleparentdp);
                                     user.put("sex", "F");
                                     user.saveEventually();
@@ -257,15 +257,15 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                             if (names != null && names.length > 1) {
                                 String title = names[0].trim();
 
-                                if (title.equals("Mr")) {
+                                if (title.equals("Mr")|| title.equals("Mr.")) {
                                     profileimgview.setImageResource(R.drawable.maleteacherdp);
                                     user.put("sex", "M");
                                     user.saveEventually();
-                                } else if (title.equals("Ms")) {
+                                } else if (title.equals("Mrs") ||  title.equals("Mrs.")) {
                                     profileimgview.setImageResource(R.drawable.femaleteacherdp);
                                     user.put("sex", "F");
                                     user.saveEventually();
-                                } else if (title.equals("Ms")) {
+                                } else if (title.equals("Ms") || title.equals("Ms.")) {
                                     profileimgview.setImageResource(R.drawable.femaleteacherdp);
                                     user.put("sex", "F");
                                     user.saveEventually();
@@ -283,7 +283,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
      */
         profileimgview.setOnClickListener(this);
         editName.setOnClickListener(this);
-        editPhone.setOnClickListener(this);
+        //editPhone.setOnClickListener(this);
         editSchool.setOnClickListener(this);
         //changePassword.setOnClickListener(this);
         rateOurApp.setOnClickListener(this);
@@ -416,7 +416,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                         public void done(ParseException e) {
                                             if (e == null) {
                                                 name_textView.setText(value);
-                                                Utility.toast("Name updated !");
+                                                Utility.toastDone("Name updated !");
                                             } else {
                                                 e.printStackTrace();
                                                 Utility.toast("Name update failed !");
@@ -788,7 +788,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 public void done(com.parse.ParseException e) {
                     // TODO Auto-generated method stub
                     if (e == null) {
-                        Utility.toast("Profile Updated");
+                        Utility.toastDone("Profile Updated");
 
                         // updating locally
 
@@ -824,7 +824,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Utility.toast("Profile Pic Updated!!");
+                        Utility.toastDone("Profile Pic Updated!!");
 
 
                         ParseUser.getCurrentUser().put("pid", file);

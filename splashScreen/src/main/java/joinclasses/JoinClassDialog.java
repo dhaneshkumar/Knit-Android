@@ -297,7 +297,9 @@ public class JoinClassDialog extends DialogFragment {
         protected void onPostExecute(Boolean result) {
 
             if (result) {
-               // Utility.toast("ClassRoom Added.");
+
+                if(getActivity()!=null)
+                    Utility.toastDone("ClassRoom Joined");
 
 
                 //Refreshing joined class adapter

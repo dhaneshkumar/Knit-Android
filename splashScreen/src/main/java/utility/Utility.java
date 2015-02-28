@@ -122,8 +122,61 @@ public class Utility extends MyActionBarActivity {
             width = display.getWidth();
             height = display.getHeight();
         }
-/*
+
+
+
+
+        TextView tv = new TextView(Application.getAppContext());
+        // set the TextView properties like color, size etc
+        tv.setTextColor(Color.WHITE);
+        tv.setTextSize(16);
+        tv.setPadding(50, 20, 50, 20);
+
+        tv.setGravity(Gravity.CENTER);
+
+        // set the text you want to show in Toast
+        tv.setText(str);
+        layout.addView(tv);
+
+        Toast toast = new Toast(Application.getAppContext()); // context is object of Context write
+        // "this" if you are an Activity
+        // Set The layout as Toast View
+        toast.setView(layout);
+
+        // Position you toast here toast position is 50 dp from bottom you can give any integral value
+        toast.setGravity(Gravity.TOP, 0, height / 3);
+        toast.show();
+    }
+
+
+
+    public static void toastDone(String str) {
+        LinearLayout layout = new LinearLayout(Application.getAppContext());
+        layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+        layout.setBackgroundResource(R.drawable.round_corner_red_color);
+
+
+        WindowManager wm =
+                (WindowManager) Application.getAppContext().getSystemService(Context.WINDOW_SERVICE);
+        Display display = wm.getDefaultDisplay();
+
+        // finding width of screen
+
+        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+        int width;
+        int height;
+        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
+            Point size = new Point();
+            display.getSize(size);
+            width = size.x;
+            height = size.y;
+        } else {
+            width = display.getWidth();
+            height = display.getHeight();
+        }
+
         ImageView img = new ImageView(Application.getAppContext());
+
 
         int sdk = android.os.Build.VERSION.SDK_INT;
         if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
@@ -132,13 +185,15 @@ public class Utility extends MyActionBarActivity {
             img.setBackground( Application.getAppContext().getResources().getDrawable(R.drawable.done));
         }
 
-        layout.addView(img);*/
+        layout.addView(img);
+        layout.setPadding(12,8,0,0);
+
 
         TextView tv = new TextView(Application.getAppContext());
         // set the TextView properties like color, size etc
         tv.setTextColor(Color.WHITE);
         tv.setTextSize(16);
-        tv.setPadding(50, 20, 50, 20);
+        tv.setPadding(24, 20, 50, 20);
 
         tv.setGravity(Gravity.CENTER);
 
@@ -222,7 +277,7 @@ public class Utility extends MyActionBarActivity {
                 clipboard.setText(content);
             }
 
-            Utility.toast(label.trim() + " copied");
+            Utility.toastDone(label.trim() + " copied");
         }
     }
 
