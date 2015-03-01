@@ -51,7 +51,6 @@ public class SmsListener extends BroadcastReceiver {
                             if(code != null) {
                                 if (PhoneSignUpVerfication.verificationCodeET != null) {
                                     Log.d("DEBUG_SMS_LISTENER", "posting to PhoneSignUpVerfication");
-                                    Thread.sleep(5000);
                                     PhoneSignUpVerfication.verificationCodeET.post(new Runnable() {
                                         @Override
                                         public void run() {
