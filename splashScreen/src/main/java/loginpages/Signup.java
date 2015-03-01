@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import tutorial.ParentTutorial;
@@ -15,7 +16,7 @@ import tutorial.TeacherTutorial;
 /**
  * Created by Dhanesh on 1/12/2015.
  */
-public class Signup extends ActionBarActivity {
+public class Signup extends MyActionBarActivity {
     /*int backCount = 0;
     LinearLayout progressLayout;
     LinearLayout loginlayout;*/

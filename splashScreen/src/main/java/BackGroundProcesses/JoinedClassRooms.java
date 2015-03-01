@@ -70,6 +70,8 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   @Override
   protected void onPostExecute(String[] result) {
     onPostExecuteCore();
+
+
     super.onPostExecute(result);
   }
 }

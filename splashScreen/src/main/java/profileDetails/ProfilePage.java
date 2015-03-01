@@ -48,7 +48,6 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.List;
 
-import additionals.ReadSchoolFile;
 import additionals.SchoolAutoComplete;
 import baseclasses.MyActionBarActivity;
 import joinclasses.School;

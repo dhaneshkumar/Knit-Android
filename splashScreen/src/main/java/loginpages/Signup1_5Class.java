@@ -8,12 +8,13 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 
+import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import utility.Utility;
 
-public class Signup1_5Class extends ActionBarActivity {
+public class Signup1_5Class extends MyActionBarActivity {
 
   EditText email_etxt;
   EditText phone_etxt;

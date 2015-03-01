@@ -2,17 +2,26 @@ package joinclasses;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.ParseException;
@@ -43,26 +52,30 @@ public class JoinClassDialog extends DialogFragment {
     private EditText codeET;
     private EditText childET;
     private ImageView codeHelp;
-    private ImageView childHelp;
     private TextView joinButton;
     private TextView inviteButton;
     private String code;
     private String role;
     private LinearLayout progressLayout;
-    private LinearLayout contentLayout;
+    private RelativeLayout contentLayout;
     private String childName;
     private String userId;
     private Point p;
     private int height;
     private boolean callerflag= false;  // true if its called from "join suggestion" class.
     private Queries query;
+    private ImageView codeHead;
+    private TextView codePopupText;
+    private ImageView childInfo;
+    private ImageView childHead;
+    private TextView childPopupText;
 
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         //Creating new dialog box
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        View view =
+        final View view =
                 getActivity().getLayoutInflater().inflate(R.layout.join_class, null);
         builder.setView(view);
         dialog = builder.create();
@@ -73,20 +86,26 @@ public class JoinClassDialog extends DialogFragment {
         codeET = (EditText) view.findViewById(R.id.code);
         childET = (EditText) view.findViewById(R.id.child);
         codeHelp = (ImageView) view.findViewById(R.id.nameHelp);
-        childHelp = (ImageView) view.findViewById(R.id.childHelp);
         joinButton = (TextView) view.findViewById(R.id.join);
         inviteButton = (TextView) view.findViewById(R.id.invite);
         progressLayout = (LinearLayout) view.findViewById(R.id.progresslayout);
-        contentLayout = (LinearLayout) view.findViewById(R.id.createclasslayout);
+        contentLayout = (RelativeLayout) view.findViewById(R.id.createclasslayout);
         LinearLayout inviteLayout = (LinearLayout) view.findViewById(R.id.inviteLayout);
-        TextView codeHint = (TextView) view.findViewById(R.id.codeHelper);
+
+        codeHead = (ImageView) view.findViewById(R.id.popup_up);
+        codePopupText = (TextView) view.findViewById(R.id.popup_text);
+        childInfo = (ImageView) view.findViewById(R.id.childHelp);
+        childHead = (ImageView) view.findViewById(R.id.child_popup_up);
+        childPopupText = (TextView) view.findViewById(R.id.child_popup_text);
+
+
 
         //checking role and setting child name according to that
         role = ParseUser.getCurrentUser().getString(Constants.ROLE);
         if(role.equals(Constants.STUDENT)) {
             childName = ParseUser.getCurrentUser().getString("name");
             childET.setVisibility(View.GONE);
-            childHelp.setVisibility(View.GONE);
+            childInfo.setVisibility(View.GONE);
         }
 
         userId = ParseUser.getCurrentUser().getUsername();
@@ -101,7 +120,7 @@ public class JoinClassDialog extends DialogFragment {
 
             codeET.setVisibility(View.GONE);
             codeHelp.setVisibility(View.GONE);
-            codeHint.setVisibility(View.GONE);
+            childInfo.setVisibility(View.GONE);
             inviteLayout.setVisibility(View.GONE);
 
 
@@ -188,58 +207,52 @@ public class JoinClassDialog extends DialogFragment {
             }
         });
 
-        //get parameter "classCode" from caller to know if called to join a suggested class. If that is the case
-        //don't show class code, invite teacher details
-
-
-
-        // Get the x, y location and store it in the location[] array
-        // location[0] = x, location[1] = y.
-        ViewTreeObserver vto = codeHelp.getViewTreeObserver();
-        vto.addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                int[] location = new int[2];
-                codeHelp.getLocationOnScreen(location);
-                height = codeHelp.getHeight();
-
-                // Initialize the Point with x, and y positions
-                p = new Point();
-                p.x = location[0];
-                p.y = location[1];
-            }
-        });
-
-        final String txt =
-                "You need a class-code to join the class-room. If you don't have any, ask to teacher for it.";
-
 
         //setting help button clicked functionality
         codeHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (p != null) {
 
-                //    Utility.toast("yo clicked");
-
-                    Popup popup = new Popup();
-                    //popup.showPopup(getActivity(), p, true, 0, txt, height, 15, 400);
-                    //popup.showPopup();
-
-                   /* InputMethodManager inputMethodManager =
-                            (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-
-                    //hiding keyboard
-                    if (getActivity().getCurrentFocus() != null) {
-                        inputMethodManager.hideSoftInputFromWindow(getActivity().getCurrentFocus()
-                                .getApplicationWindowToken(), 0);
-                    }*/
+                if (codeHead.getVisibility() == View.VISIBLE) {
+                    // Its visible
+                    codeHead.setVisibility(View.GONE);
+                    codePopupText.setVisibility(View.GONE);
+                } else {
+                    // Either gone or invisible
+                    codeHead.setVisibility(View.VISIBLE);
+                    codePopupText.setVisibility(View.VISIBLE);
                 }
-                else
-                    Utility.toast("yo null clicked");
+
+
+                childHead.setVisibility(View.GONE);
+                childPopupText.setVisibility(View.GONE);
+
+
+
             }
         });
 
+        //setting help button clicked functionality
+        childInfo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (childHead.getVisibility() == View.VISIBLE) {
+                    // Its visible
+                    childHead.setVisibility(View.GONE);
+                    childPopupText.setVisibility(View.GONE);
+                }
+                else
+                {
+                    childHead.setVisibility(View.VISIBLE);
+                    childPopupText.setVisibility(View.VISIBLE);
+                }
+
+                codeHead.setVisibility(View.GONE);
+                codePopupText.setVisibility(View.GONE);
+
+            }
+        });
 
 
         return dialog;
@@ -276,7 +289,7 @@ public class JoinClassDialog extends DialogFragment {
 
 
                     if (result == 1) {
-                        //fetch class suggestions in background for this class explicitly TODO using cloud function for this codegroup
+                        //fetch class suggestions in background for this class explicitly
                        /* FetchSuggestionsOnJoin fetchSuggestionsOnJoin = new FetchSuggestionsOnJoin(code);
                         fetchSuggestionsOnJoin.execute();*/
                         return true;      //successfully joined class

@@ -47,11 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="loginpages.LoginPage"></activity>
-        <activity android:name="trumplabs.schoolapp.CreateClass"></activity>
-        <activity
-            android:name="trumplabs.schoolapp.ClassContainer"
-            android:windowSoftInputMode="stateHidden"></activity>
+                  android:name="loginpages.LoginPage"></activity>
         <activity android:name="trumplabs.schoolapp.MainActivity"></activity>
         <activity android:name="loginpages.Signup"></activity>
         <activity android:name="loginpages.Signup1Class"></activity>
@@ -63,7 +59,6 @@
         <activity android:name="loginpages.PhoneLoginPage"></activity>
 
         <activity android:name="loginpages.LoginPanda"></activity>
-        <activity android:name="loginpages.Test"></activity>
 
         <activity android:name="profileDetails.ProfilePage"></activity>
         <activity android:name="profileDetails.FAQs"></activity>
@@ -71,12 +66,9 @@
             android:name="loginpages.Signup2Class"
             android:windowSoftInputMode="stateVisible"></activity>
         <activity android:name="joinclasses.JoinClassesContainer"></activity>
-        <activity android:name="joinclasses.AddChildToClass"></activity>
         <activity android:name="utility.Utility"></activity>
         <activity android:name="utility.PushOpen"></activity>
         <activity android:name="additionals.InviteParents"></activity>
-        <activity android:name="additionals.ClassInstructions"></activity>
-        <activity android:name="additionals.ShareInstructions"></activity>
         <activity android:name="trumplabs.schoolapp.InviteTeacher"></activity>
         <activity android:name="joinclasses.JoinSuggestedClass"></activity>
         <activity android:name="joinclasses.JoinedClassInfo"></activity>

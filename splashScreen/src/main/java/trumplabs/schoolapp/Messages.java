@@ -1,10 +1,12 @@
 package trumplabs.schoolapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +28,7 @@ import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -692,29 +695,34 @@ public class Messages extends Fragment {
                         /*
          * Creating popmenu for copying text
          */
-                        PopupMenu menu = new PopupMenu(getActivity(), v);
-                        menu.getMenuInflater().inflate(R.menu.copy_text, menu.getMenu());
-                        //menu.setWidth(ListPopupWindow.WRAP_CONTENT);
-                        menu.show();
 
-                        // setting menu click functionality
-                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        LayoutInflater layoutInflater
+                                = (LayoutInflater) getActivity().getBaseContext()
+                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+                        final View popupView = layoutInflater.inflate(R.layout.copy_text, null);
+
+                        TextView copyTV = (TextView) popupView.findViewById(R.id.copyText);
+
+                        final PopupWindow popupWindow = new PopupWindow(
+                                popupView,
+                                LinearLayout.LayoutParams.WRAP_CONTENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+
+                        popupWindow.setBackgroundDrawable(new BitmapDrawable());
+                        popupWindow.setOutsideTouchable(true);
+
+                        copyTV.setOnClickListener(new OnClickListener() {
                             @Override
-                            public boolean onMenuItemClick(MenuItem item) {
-
-                                switch (item.getItemId()) {
-                                    case R.id.copy:
-
-                                        Utility.copyToClipBoard(getActivity(), "Message", message);
-                                        break;
-
-                                    default:
-                                        break;
-                                }
-                                return true;
+                            public void onClick(View v) {
+                                Utility.copyToClipBoard(getActivity(), "Message", message);
+                                popupWindow.dismiss();
                             }
                         });
+
+
+                        popupWindow.showAsDropDown(holder.copyLayout);
+
                     }
                 });
             }

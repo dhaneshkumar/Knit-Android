@@ -7,13 +7,14 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 
+import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 
 /**
  * Created by Dhanesh on 1/17/2015.
  */
-public class ParentTutorial extends ActionBarActivity{
+public class ParentTutorial extends MyActionBarActivity{
     public static ViewPager viewpager;
     static String role;
 

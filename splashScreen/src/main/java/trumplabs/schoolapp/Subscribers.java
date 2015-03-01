@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -31,8 +30,8 @@ import java.util.List;
 
 import BackGroundProcesses.MemberList;
 import additionals.InviteParents;
+import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import joinclasses.JoinedClassInfo;
 import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -43,7 +42,7 @@ import utility.Utility;
 /**
  * Show subscriber list of a class
  */
-public class Subscribers extends ActionBarActivity {
+public class Subscribers extends MyActionBarActivity {
     public static BaseAdapter myadapter;
     public static List<MemberDetails> memberDetails;
     private String classCode;
@@ -70,10 +69,12 @@ public class Subscribers extends ActionBarActivity {
         //Adding home back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        if(getIntent().getExtras() != null)
+        if(getIntent()!= null && getIntent().getExtras() != null)
         {
-            classCode = getIntent().getExtras().getString("classCode");
-            className = getIntent().getExtras().getString("className");
+            if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
+                classCode = getIntent().getExtras().getString("classCode");
+                className = getIntent().getExtras().getString("className");
+            }
         }
 
         intializeBackgroundParameters();
@@ -186,6 +187,31 @@ public class Subscribers extends ActionBarActivity {
             schoolNameTV.setText(schoolName);
             e.printStackTrace();
         }*/
+    }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+
+        savedInstanceState.putString("classCode", classCode);
+        savedInstanceState.putString("className", className);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+
+        if(UtilString.isBlank(classCode))
+            classCode = savedInstanceState.getString("classCode");
+
+        if(UtilString.isBlank(className))
+            className = savedInstanceState.getString("className");
     }
 
     /*

@@ -19,7 +19,7 @@ public class MyActionBarActivity extends ActionBarActivity{
         /*
          * Adding smooth transition
          */
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+       // overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         mMyApp = (Application)this.getApplicationContext();
     }
     

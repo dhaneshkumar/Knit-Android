@@ -18,6 +18,7 @@ import com.parse.ParseException;
 import java.util.HashMap;
 import java.util.List;
 
+import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
@@ -26,7 +27,7 @@ import utility.Utility;
 /**
  * Created by ashish on 26/2/15.
  */
-public class PhoneSignUpName extends ActionBarActivity {
+public class PhoneSignUpName extends MyActionBarActivity {
     Spinner titleSpinner;
     EditText displayNameET;
     EditText phoneNumberET;

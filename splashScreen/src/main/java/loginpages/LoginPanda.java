@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.TextView;
 
+import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.CreateClassDialog;
 import trumplabs.schoolapp.MainActivity;
@@ -15,7 +16,7 @@ import trumplabs.schoolapp.MainActivity;
 /**
  * Created by dhanesh on 21/1/15.
  */
-public class LoginPanda extends ActionBarActivity {
+public class LoginPanda extends MyActionBarActivity {
 
 
     @Override
