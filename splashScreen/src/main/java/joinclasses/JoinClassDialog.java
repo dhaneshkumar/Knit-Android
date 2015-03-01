@@ -251,8 +251,6 @@ public class JoinClassDialog extends DialogFragment {
                 codeHead.setVisibility(View.GONE);
                 codePopupText.setVisibility(View.GONE);
 
-
-
             }
         });
 
