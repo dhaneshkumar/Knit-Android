@@ -157,7 +157,6 @@ public class PhoneSignUpSchool extends MyActionBarActivity {
 
             Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode() with " + number);
             try {
-
                 success = ParseCloud.callFunction("genCode", param);
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -168,7 +167,7 @@ public class PhoneSignUpSchool extends MyActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result){
-            boolean isLogin = false; //flag indicating whether caller is login or not
+            /*boolean isLogin = false; //flag indicating whether caller is login or not
             if(callerId == 0) {
                 if (PhoneSignUpSchool.pdialog != null) {
                     PhoneSignUpSchool.pdialog.dismiss();
@@ -184,17 +183,19 @@ public class PhoneSignUpSchool extends MyActionBarActivity {
                     PhoneLoginPage.pdialog.dismiss();
                 }
                 isLogin = true;
-            }
+            }*/
 
             if(success) {
-                Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpVerfication.class);
+                /*Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpVerfication.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 nextIntent.putExtra("login", isLogin);
-                Application.getAppContext().startActivity(nextIntent);
+                Application.getAppContext().startActivity(nextIntent);*/
             }
             else{
                 SmsListener.unRegister();
-                Utility.toast("Oops ! some error occured. Try again");
+                Utility.toastLong("Oops ! some error occured. Try again");
+                PhoneSignUpVerfication.showError("Some unexpected error occured. Please try again");
+                PhoneSignUpVerfication.showResendAction();
             }
         }
     }

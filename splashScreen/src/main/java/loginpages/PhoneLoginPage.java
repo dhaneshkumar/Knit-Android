@@ -3,35 +3,20 @@ package loginpages;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.LogInCallback;
-import com.parse.ParseCloud;
-import com.parse.ParseException;
 import com.parse.ParseUser;
-
-import java.util.HashMap;
-import java.util.List;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
-import utility.Queries;
-import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 public class PhoneLoginPage extends MyActionBarActivity {
@@ -81,6 +66,12 @@ public class PhoneLoginPage extends MyActionBarActivity {
     return super.onCreateOptionsMenu(menu);
   }
 
+    public void onBackPressed() {
+        Intent intent = new Intent(getBaseContext(), Signup.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+    }
+
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
     FragmentManager fm = getSupportFragmentManager();
@@ -103,12 +94,18 @@ public class PhoneLoginPage extends MyActionBarActivity {
         if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
             Utility.toast("Incorrect Mobile Number");
         else {
-            pdialog = new ProgressDialog(this);
+            /*pdialog = new ProgressDialog(this);
             pdialog.setCancelable(false);
             pdialog.setMessage("Please Wait...");
-            pdialog.show();
+            pdialog.show();*/
+
+            Intent nextIntent = new Intent(this, PhoneSignUpVerfication.class);
+            //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            nextIntent.putExtra("login", true);
 
             PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, phoneNumber);
+            startActivity(nextIntent);
+
             generateVerificationCode.execute();
         }
     }

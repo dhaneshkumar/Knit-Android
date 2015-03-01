@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.LogInCallback;
@@ -28,7 +29,7 @@ import java.util.List;
 
 import additionals.SmsListener;
 import BackGroundProcesses.MemberList;
-import baseclasses.MyActionBarActivity;
+import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinedHelper;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -46,15 +47,16 @@ import utility.Utility;
 /**
  * Created by ashish on 26/2/15.
  */
-public class PhoneSignUpVerfication extends MyActionBarActivity {
+public class PhoneSignUpVerfication extends ActionBarActivity {
     public static EditText verificationCodeET;
     static ProgressDialog pdialog;
+    static SmoothProgressBar smoothProgressBar;
+    static TextView errorMsgTV;
+    static TextView resendActionTV;
 
     static String verificationCode;
     static Context activityContext;
     static Boolean isLogin;
-
-    static Boolean manualVerifyOngoing = true; //NOT used differently handle dialog when auto verify & manual verify is triggered
 
     private static CountDownTimer countDownTimer;
     TextView timerTV;
@@ -68,6 +70,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
         verificationCodeET = (EditText) findViewById(R.id.verificationCode);
         timerTV = (TextView) findViewById(R.id.timerText);
+        smoothProgressBar = (SmoothProgressBar) findViewById(R.id.progressHeader);
+        errorMsgTV = (TextView) findViewById(R.id.errorMessage);
+        resendActionTV = (TextView) findViewById(R.id.resendAction);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -75,9 +80,29 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             isLogin = getIntent().getExtras().getBoolean("login");
         }
 
-        countDownTimer = new MyCountDownTimer(1*60*1000, 1000); //5 minutes, tick every second
+        //Again send the verification code
+        resendActionTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                countDownTimer.start();
+                smoothProgressBar.setVisibility(View.VISIBLE);
+                errorMsgTV.setVisibility(View.INVISIBLE);
+
+                if(isLogin){
+                    PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, PhoneLoginPage.phoneNumber);
+                    generateVerificationCode.execute();
+                }
+                else{
+                    PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, PhoneSignUpName.phoneNumber);
+                    generateVerificationCode.execute();
+                }
+            }
+        });
+
+        countDownTimer = new MyCountDownTimer(5*60*1000, 1000); //5 minutes, tick every second
         countDownTimer.start();
-        timerTV.setText("1 : 00");
+        timerTV.setText("5 : 00");
+        smoothProgressBar.setVisibility(View.VISIBLE); //keep showing until timeout or error
     }
 
 
@@ -102,7 +127,6 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                     Utility.toast("Please enter the verification code");
                 }
                 else {
-                    manualVerifyOngoing = true;
                     pdialog = new ProgressDialog(activityContext);
                     pdialog.setCancelable(false);
                     pdialog.setMessage("Please Wait...");
@@ -124,14 +148,33 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
     }
 
     public static void smsListenerVerifyTask(String code){
-        countDownTimer.cancel();
         pdialog = new ProgressDialog(PhoneSignUpVerfication.activityContext);
         pdialog.setCancelable(false);
         pdialog.setMessage("Please Wait...");
         pdialog.show();
+
+        //countDownTimer.cancel();
+        //smoothProgressBar.setVisibility(View.GONE);
+
         Log.d("DEBUG_SMS_LISTENER", "triggering PhoneSignUpVerfication.VerifyCodeTask");
         VerifyCodeTask verifyCodeTask = new VerifyCodeTask(code);
         verifyCodeTask.execute();
+    }
+
+    public static void showError(String error){
+        if(errorMsgTV != null) {
+            errorMsgTV.setText(error);
+            errorMsgTV.setVisibility(View.VISIBLE);
+            smoothProgressBar.setVisibility(View.GONE);
+            countDownTimer.cancel();
+        }
+        else{
+            Log.d("DEBUG_SIGNUP_VER", "Can't show error as error textview NULL");
+        }
+    }
+
+    static void showResendAction(){
+        resendActionTV.setVisibility(View.VISIBLE);
     }
 
     public void onBackPressed() {
@@ -147,7 +190,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         @Override
         public void onFinish(){
             SmsListener.unRegister(); //stop listening for new messages
-            timerTV.setText("Sorry! Unable to verify automatically. Please enter code manually");
+            timerTV.setText("0 : 00");
+            showError("The verification code has expired. Please click on resend to retry");
+            showResendAction();
         }
 
         @Override
@@ -189,10 +234,6 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 param.put("os", "ANDROID");
 
                 param.put("name", PhoneSignUpName.displayName);
-
-                if (PhoneSignUpName.role.equals("teacher")) {
-                    param.put("school", PhoneSignUpSchool.schoolName);
-                }
 
                 param.put("role", PhoneSignUpName.role);
 
@@ -266,25 +307,38 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         protected void onPostExecute(Void result){
 
             if(networkError || verifyError || loginError || userAlreadyExistsError || userDoesNotExistsError){
-                if(pdialog != null && manualVerifyOngoing){
+                if(pdialog != null){
                     pdialog.dismiss();
-                    manualVerifyOngoing = false;
                 }
             }
             if(networkError){
-                Utility.toast("Oops ! Network Error");
+                Utility.toastLong("Oops ! Network Error");
+                showError("Network Error");
+                showResendAction();
             }
             else if(verifyError){
-                Utility.toast("Wrong verification code");
+                Utility.toastLong("Wrong verification code");
+                showError("Wrong verification code. Please re-enter code and try again");
             }
             else if(loginError){
-                Utility.toast("Error logging in");
+                Utility.toastLong("Error logging in");
+                showError("Some unexpected error occurred while logging in");
+                showResendAction();
             }
             else if(userAlreadyExistsError){
-                Utility.toast("This username already exists. Please try logging in");
+                Utility.toastLong("This number is already in use. Please recheck you number");
+                //take back ot Login Page
+                Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpName.class);
+                nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Application.getAppContext().startActivity(nextIntent);
+                //showError("This number is already in use. Please try logging in");
             }
             else if(userDoesNotExistsError){
-                Utility.toast("This user account does not exist. Please try signing up");
+                Utility.toastLong("No account for this number exists. Please recheck you number");
+                Intent nextIntent = new Intent(Application.getAppContext(), PhoneLoginPage.class);
+                nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                Application.getAppContext().startActivity(nextIntent);
+                //showError("No account for this number exists. Please try signing up");
             }
         }
     }
@@ -312,9 +366,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (pdialog != null && manualVerifyOngoing) {
+            if (pdialog != null) {
                 pdialog.dismiss();
-                manualVerifyOngoing = false;
             }
 
             //Switching to MainActivity
@@ -381,9 +434,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if(pdialog != null && manualVerifyOngoing){
+            if(pdialog != null){
                 pdialog.dismiss();
-                manualVerifyOngoing = false;
             }
             if(currentUser == null) return; //won't happen as called after successful login
 
