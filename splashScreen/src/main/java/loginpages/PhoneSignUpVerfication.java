@@ -58,8 +58,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static Context activityContext;
     static Boolean isLogin;
 
-    private static CountDownTimer countDownTimer;
-    TextView timerTV;
+    private static CountDownTimer countDownTimer = null;
+    static TextView timerTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +87,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 countDownTimer.start();
                 smoothProgressBar.setVisibility(View.VISIBLE);
                 errorMsgTV.setVisibility(View.INVISIBLE);
+                timerTV.setVisibility(View.VISIBLE);
+                resendActionTV.setVisibility(View.GONE);
 
                 if(isLogin){
                     PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, PhoneLoginPage.phoneNumber);
@@ -99,7 +101,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             }
         });
 
-        countDownTimer = new MyCountDownTimer(5*60*1000, 1000); //5 minutes, tick every second
+        if(countDownTimer == null) {
+            countDownTimer = new MyCountDownTimer(5 * 60 * 1000, 1000); //5 minutes, tick every second
+        }
         countDownTimer.start();
         timerTV.setText("5 : 00");
         smoothProgressBar.setVisibility(View.VISIBLE); //keep showing until timeout or error
@@ -166,7 +170,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             errorMsgTV.setText(error);
             errorMsgTV.setVisibility(View.VISIBLE);
             smoothProgressBar.setVisibility(View.GONE);
-            countDownTimer.cancel();
+            timerTV.setVisibility(View.GONE);
+                    countDownTimer.cancel();
         }
         else{
             Log.d("DEBUG_SIGNUP_VER", "Can't show error as error textview NULL");
@@ -178,6 +183,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     }
 
     public void onBackPressed() {
+        countDownTimer.cancel(); //to prevent multiple instances to simultaneously changing the time text
         SmsListener.unRegister(); //important so that it doesnot trigger when out of context
         super.onBackPressed();
     }
@@ -312,21 +318,21 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 }
             }
             if(networkError){
-                Utility.toastLong("Oops ! Network Error");
-                showError("Network Error");
+                Utility.toastLong("Sorry Network Error. Try Again");
+                showError("Network Error. Try again");
                 showResendAction();
             }
             else if(verifyError){
                 Utility.toastLong("Wrong verification code");
-                showError("Wrong verification code. Please re-enter code and try again");
+                showError("Wrong verification code.\n Please re-enter code and try again");
             }
             else if(loginError){
                 Utility.toastLong("Error logging in");
-                showError("Some unexpected error occurred while logging in");
+                showError("Some unexpected error occurred while logging in. \n Try again");
                 showResendAction();
             }
             else if(userAlreadyExistsError){
-                Utility.toastLong("This number is already in use. Please recheck you number");
+                Utility.toastLong("This number is already in use.\n Please recheck you number");
                 //take back ot Login Page
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpName.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -334,7 +340,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 //showError("This number is already in use. Please try logging in");
             }
             else if(userDoesNotExistsError){
-                Utility.toastLong("No account for this number exists. Please recheck you number");
+                Utility.toastLong("No account for this number exists.\n Please recheck you number");
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneLoginPage.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 Application.getAppContext().startActivity(nextIntent);

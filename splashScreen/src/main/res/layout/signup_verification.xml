@@ -16,16 +16,6 @@
         android:gravity="left"
         android:layout_marginTop="4dp"
         />
-    <TextView
-        android:id="@+id/timerText"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="4:23"
-        android:textSize="16sp"
-        android:layout_marginLeft="4dp"
-        android:gravity="center"
-        android:layout_marginTop="4dp"
-        />
 
     <TextView
         android:layout_width="match_parent"
@@ -61,49 +51,76 @@
         android:textColor="@color/black"
         android:textSize="14sp" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="match_parent">
+
     <RelativeLayout
-        android:layout_width="229dp"
-        android:layout_height="161dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+
+        android:background="@color/lightbackgroundcolor"
         android:layout_gravity="center_horizontal">
+
+        <TextView
+            android:id="@+id/timerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="4:23"
+            android:textSize="16sp"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:layout_marginTop="4dp"
+            />
+
         <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
             android:id="@+id/progressHeader"
             android:layout_width="match_parent"
             android:layout_height="4dp"
             style="@style/GNowProgressBar"
             android:visibility="visible"
+            android:layout_marginRight="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginTop="4dp"
             android:background="@color/white"
             android:indeterminate="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="122dp" />
+            android:layout_below="@+id/timerText"
+            />
     </RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_weight="1">
 
     <TextView
         android:id="@+id/errorMessage"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="ERROR OCCURED !"
+        android:text="ERROR !"
         android:textColor="@color/holo_red_dark"
-        android:textSize="14sp"
-        android:layout_marginLeft="4dp"
-        android:gravity="left"
+        android:textSize="12sp"
+        android:gravity="center"
         android:layout_marginTop="8dp"
         android:visibility="gone"
         />
     <TextView
         android:id="@+id/resendAction"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Resend Verification Code"
+        android:text="Resend Code"
         android:textColor="@color/buttoncolor"
-        android:textSize="14sp"
-        android:layout_marginLeft="4dp"
-        android:gravity="center"
-        android:layout_marginTop="8dp"
+        android:textSize="15sp"
+        android:layout_gravity="right"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
         android:visibility="gone"
         />
-
+    </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
