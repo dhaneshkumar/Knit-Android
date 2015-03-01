@@ -1,12 +1,14 @@
 package additionals;
 
 import android.content.Intent;
+import android.mtp.MtpConstants;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebView;
 
+import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.MainActivity;
@@ -14,7 +16,7 @@ import trumplabs.schoolapp.MainActivity;
 /**
  * Created by dhanesh on 19/1/15.
  */
-public class OpenURL extends ActionBarActivity {
+public class OpenURL extends MyActionBarActivity {
 
 
 

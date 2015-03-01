@@ -186,14 +186,15 @@ public class Utility extends MyActionBarActivity {
         }
 
         layout.addView(img);
-        layout.setPadding(12,8,0,0);
+        layout.setGravity(Gravity.CENTER);
+        layout.setPadding(16,6,4,6);
 
 
         TextView tv = new TextView(Application.getAppContext());
         // set the TextView properties like color, size etc
         tv.setTextColor(Color.WHITE);
         tv.setTextSize(16);
-        tv.setPadding(24, 20, 50, 20);
+        tv.setPadding(16, 20, 30, 20);
 
         tv.setGravity(Gravity.CENTER);
 

@@ -113,9 +113,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         }
 
-
-
-
         String userId = parseObject.getUsername();
         role = parseObject.getString(Constants.ROLE);
 

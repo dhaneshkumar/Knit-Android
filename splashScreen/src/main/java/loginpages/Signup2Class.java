@@ -46,7 +46,7 @@ import utility.Utility;
  * Signup class  : Crate new user
  *
  */
-public class Signup2Class extends ActionBarActivity {
+public class Signup2Class extends MyActionBarActivity {
     EditText password_etxt;
     EditText repassword_etxt;
     Button create_btn;

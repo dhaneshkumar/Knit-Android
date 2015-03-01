@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/lightbackgroundcolor"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    >
 
     <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
         android:id="@+id/ptr_progress"
@@ -170,7 +171,7 @@
             android:paddingLeft="32dp"
             android:paddingRight="32dp"
             android:paddingBottom="32dp"
-            android:text="You don't have any subscriber for this class. Invite them to join your class."
+            android:text="You don't have any subscriber for this class. \nInvite them to join your class."
 
             />
 

@@ -102,8 +102,14 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ccmsging_layout);
 
-        groupCode = getIntent().getExtras().getString("classCode");
-        grpName = getIntent().getExtras().getString("className");
+
+        if(getIntent()!= null && getIntent().getExtras() != null)
+        {
+            if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
+                groupCode = getIntent().getExtras().getString("classCode");
+                grpName = getIntent().getExtras().getString("className");
+            }
+        }
 
         selectedlistitems = new ArrayList<ParseObject>();
         myadapter = new myBaseAdapter();
@@ -192,6 +198,31 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
     }
 
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+
+        savedInstanceState.putString("groupCode", groupCode);
+        savedInstanceState.putString("grpName", grpName);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+
+        if(UtilString.isBlank(groupCode))
+            groupCode = savedInstanceState.getString("groupCode");
+
+        if(UtilString.isBlank(grpName))
+            grpName = savedInstanceState.getString("grpName");
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

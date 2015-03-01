@@ -17,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import baseclasses.MyActionBarActivity;
+import library.UtilString;
 import trumplab.textslate.R;
 import utility.Utility;
 
@@ -42,9 +43,12 @@ public class InviteParents extends MyActionBarActivity{
       textTV = (TextView) findViewById(R.id.content);
       imageView = (ImageView) findViewById(R.id.imageContent);
 
-      if(getIntent().getExtras()!= null) {
-          classCode = getIntent().getExtras().getString("classCode");
-          className = getIntent().getExtras().getString("className");
+      if(getIntent()!= null && getIntent().getExtras() != null)
+      {
+          if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
+              classCode = getIntent().getExtras().getString("classCode");
+              className = getIntent().getExtras().getString("className");
+          }
       }
 
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -200,6 +204,31 @@ public class InviteParents extends MyActionBarActivity{
       });
 
   }
+
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+
+        savedInstanceState.putString("classCode", classCode);
+        savedInstanceState.putString("className", className);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        // Restore UI state from the savedInstanceState.
+        // This bundle has also been passed to onCreate.
+
+        if(UtilString.isBlank(classCode))
+            classCode = savedInstanceState.getString("classCode");
+
+        if(UtilString.isBlank(className))
+            className = savedInstanceState.getString("className");
+    }
   
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {

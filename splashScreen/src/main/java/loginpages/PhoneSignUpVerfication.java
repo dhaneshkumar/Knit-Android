@@ -28,6 +28,7 @@ import java.util.List;
 
 import additionals.SmsListener;
 import BackGroundProcesses.MemberList;
+import baseclasses.MyActionBarActivity;
 import joinclasses.JoinedHelper;
 import library.UtilString;
 import notifications.AlarmReceiver;
@@ -45,7 +46,7 @@ import utility.Utility;
 /**
  * Created by ashish on 26/2/15.
  */
-public class PhoneSignUpVerfication extends ActionBarActivity {
+public class PhoneSignUpVerfication extends MyActionBarActivity {
     public static EditText verificationCodeET;
     static ProgressDialog pdialog;
 

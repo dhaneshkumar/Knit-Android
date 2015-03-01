@@ -28,6 +28,7 @@ import java.util.List;
 
 import additionals.SchoolAutoComplete;
 import additionals.SmsListener;
+import baseclasses.MyActionBarActivity;
 import library.DelayAutoCompleteTextView;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -38,7 +39,7 @@ import utility.Utility;
 /**
  * Created by ashish on 26/2/15.
  */
-public class PhoneSignUpSchool extends ActionBarActivity {
+public class PhoneSignUpSchool extends MyActionBarActivity {
     DelayAutoCompleteTextView locationInput;
     AutoCompleteTextView schoolNameView;
     ProgressBar loadingSchools;
