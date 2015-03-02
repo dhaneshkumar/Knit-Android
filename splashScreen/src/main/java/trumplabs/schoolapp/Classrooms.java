@@ -363,7 +363,12 @@ public class Classrooms extends Fragment {
 
                 intent.putExtra("classCode", joinedGroups.get(position).get(0));
                 intent.putExtra("className", joinedGroups.get(position).get(1));
-                intent.putExtra("assignedName", joinedGroups.get(position).get(2));
+                if(joinedGroups.get(position).size() > 2 && joinedGroups.get(position).get(2) != null){
+                    intent.putExtra("assignedName", joinedGroups.get(position).get(2));
+                }
+                else{
+                    intent.putExtra("assignedName", ParseUser.getCurrentUser().getString("name"));
+                }
                 startActivity(intent);
             }
         });
@@ -432,12 +437,12 @@ public class Classrooms extends Fragment {
 
             if(! role.equals(Constants.STUDENT)) {
                 child_textView.setTypeface(lightTypeFace);
-                if (joinedGroups.get(position).size() > 2) {
-
-                    if(joinedGroups.get(position).get(2) != null) {
+                if (joinedGroups.get(position).size() > 2 && joinedGroups.get(position).get(2) != null) {
                         String child = joinedGroups.get(position).get(2).toString().trim();
                         child_textView.setText("Assigned to : " + child);
-                    }
+                }
+                else{
+                    child_textView.setText("Assigned to : " + ParseUser.getCurrentUser().getString("name"));
                 }
             }
             else
