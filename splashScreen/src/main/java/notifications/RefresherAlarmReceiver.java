@@ -27,8 +27,6 @@ import utility.Utility;
  */
 
 public class RefresherAlarmReceiver extends WakefulBroadcastReceiver {
-    Context alarmContext;
-
     public RefresherAlarmReceiver() {
     }
 
@@ -36,8 +34,11 @@ public class RefresherAlarmReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning a thread for handling events");
-        alarmContext = context;
+        Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning Refresher thread");
+        spawnRefresherThread();
+    }
+
+    public static void spawnRefresherThread(){
         Runnable r = new Runnable() {
             @Override
             public void run() {
