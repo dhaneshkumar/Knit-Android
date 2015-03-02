@@ -104,6 +104,7 @@ public class PhoneSignUpName extends MyActionBarActivity {
         displayName = displayNameET.getText().toString();
         phoneNumber = phoneNumberET.getText().toString();
         titleSpinnerPosition = titleSpinner.getSelectedItemPosition();
+        title = titleSpinner.getSelectedItem().toString();
         if (UtilString.isBlank(displayName))
             Utility.toast("Incorrect Display Name");
         else if (titleSpinnerPosition == 0)
