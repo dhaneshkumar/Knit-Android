@@ -20,19 +20,16 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import additionals.InviteParents;
 import joinclasses.School;
 import library.UtilString;
-import notifications.AlarmReceiver;
+import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import utility.Queries;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 
@@ -362,7 +359,7 @@ public class CreateClassDialog extends DialogFragment{
                     //create class creation messages and notification
                     SessionManager session = new SessionManager(getActivity().getApplicationContext());
                     NotificationGenerator.generateNotification(getActivity().getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                    AlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
+                    EventCheckerAlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
                 }
 
                 codeTV.setText(classCode);

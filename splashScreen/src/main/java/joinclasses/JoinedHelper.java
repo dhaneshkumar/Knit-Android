@@ -2,7 +2,6 @@ package joinclasses;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -18,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
-import notifications.AlarmReceiver;
+import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -151,7 +150,7 @@ public class JoinedHelper {
             if(!defaultGroupFlag) {
                 //locally generating joining notification and inbox msg
                 NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
+                EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
             }
 
 

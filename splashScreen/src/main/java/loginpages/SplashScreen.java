@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import baseclasses.MyActionBarActivity;
+import notifications.AlarmTrigger;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.FontsOverride;
@@ -36,7 +37,9 @@ public class SplashScreen extends MyActionBarActivity {
   Animation animationFadeIn;
   private Handler mHandler = new Handler();
 
-  @Override
+    static boolean isRefresherAlarmTriggered = false; //flag telling whether alarm for event checker has been triggered or not
+
+    @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.logosplash);
@@ -56,9 +59,12 @@ public class SplashScreen extends MyActionBarActivity {
 
 
     /*
-     * Updating everything like inbox, classrooms, joinedgroups, memberlist in background
+     * Set refresher alarm to update everything in background
      */
-    Tools.updateMsgs();
+    if(!isRefresherAlarmTriggered){
+        AlarmTrigger.triggerRefresherAlarm(Application.getAppContext());
+        isRefresherAlarmTriggered = true;
+    }
 
     /*
      * Setting App opening count Each time app count increases by one

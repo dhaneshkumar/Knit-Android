@@ -378,8 +378,8 @@ public class Tools {
         });*/
       }
     };
-    Log.d("SPLASH_SCREEN_CALLING_REFRESHER", "calling refresher");
-    timer.schedule(doAsynchronousTask, 0, 15 * Constants.MINUTE_MILLISEC); // execute in every 15min starting right now
+    Log.d("DEBUG_SPLASH_SCREEN_CALLING_REFRESHER", "calling refresher");
+    timer.schedule(doAsynchronousTask, 0, 5 * Constants.MINUTE_MILLISEC); // execute in every 15min starting right now
 
   }
 

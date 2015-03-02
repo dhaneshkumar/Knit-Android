@@ -1,6 +1,5 @@
 package trumplabs.schoolapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -9,13 +8,9 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
-import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
 import android.view.Display;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -66,7 +61,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static LinearLayout editLayout;
     public static SmoothProgressBar mHeaderProgressBar;
 
-    static boolean isAlarmTriggered = false;
+    static boolean isEventCheckerAlarmTriggered = false; //flag telling whether alarm for event checker has been triggered or not
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -249,15 +244,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         }
 
-        if(!isAlarmTriggered){
+        if(!isEventCheckerAlarmTriggered){
             //Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "triggering alarm on app opening");
-            AlarmTrigger.triggerAlarm(getApplicationContext());
-            isAlarmTriggered = true;
+            AlarmTrigger.triggerEventCheckerAlarm(Application.getAppContext());
+            isEventCheckerAlarmTriggered = true;
         }
         else{
             //Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "alarm already triggered");
         }
-
     }
 
     @Override

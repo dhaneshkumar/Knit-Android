@@ -26,15 +26,12 @@ import android.widget.Toast;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseInstallation;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,8 +63,9 @@ public class Utility extends MyActionBarActivity {
         Context _context = Application.getAppContext();
         // After logout redirect user to Loing Activity
 
-        //cancel all alarms set for notification checking. Very first thing to do
-        AlarmTrigger.cancelAlarm(_context);
+        //cancel all alarms set. Very first thing to do
+        AlarmTrigger.cancelEventCheckerAlarm(_context);
+        AlarmTrigger.cancelRefresherAlarm(_context);
 
         SessionManager session = new SessionManager(Application.getAppContext());
         session.reSetAppOpeningCount();
