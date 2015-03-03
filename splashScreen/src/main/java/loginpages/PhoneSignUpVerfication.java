@@ -38,6 +38,7 @@ import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
+import utility.Tools;
 import utility.Utility;
 
 /**
@@ -136,6 +137,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     Utility.toast("Please enter the 4-digit verification code");
                 }
                 else {
+                    Tools.hideKeyboard(this);
                     pdialog = new ProgressDialog(activityContext);
                     pdialog.setCancelable(true);
                     pdialog.setCanceledOnTouchOutside(false);
