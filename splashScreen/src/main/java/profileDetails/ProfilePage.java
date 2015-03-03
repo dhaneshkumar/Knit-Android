@@ -327,7 +327,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
+        //RESULT_CANCELED is 0, RESULT_OK is -1
         if (requestCode == 301) {
+            Log.d("DEBUG_PROFILE_PAGE", "request code 301 with resultCode=" + resultCode);
             switch (resultCode) {
                 case Activity.RESULT_OK:
                     Uri selectedImg = intent.getData();
@@ -337,20 +339,28 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     break;
             }
         } else if (requestCode == 302) {
-            File thumbnailFile = new File(filePath);
-            Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-            profileimgview.setImageBitmap(myBitmap);
-            // //update the profile picture on server
-            try {
-                updateProfilePic(filePath, userId);
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            Log.d("DEBUG_PROFILE_PAGE", "request code 302 with resultCode=" + resultCode);
+            switch (resultCode) {
+                case Activity.RESULT_OK:
+                    File thumbnailFile = new File(filePath);
+                    Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                    profileimgview.setImageBitmap(myBitmap);
+                    // //update the profile picture on server
+                    try {
+                        updateProfilePic(filePath, userId);
+                    } catch (IOException e) {
+                        // TODO Auto-generated catch block
+                        e.printStackTrace();
+                    }
+                    break;
+                case Activity.RESULT_CANCELED:
+                    break;
             }
         }
     }
 
     public void doCrop(Uri uriOfImageToCrop) {
+        Log.d("DEBUG_PROFILE_PAGE", "into doCrop");
         final Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setData(uriOfImageToCrop);
         intent.putExtra("outputX", 200);
