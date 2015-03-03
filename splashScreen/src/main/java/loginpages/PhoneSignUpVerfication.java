@@ -137,7 +137,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 }
                 else {
                     pdialog = new ProgressDialog(activityContext);
-                    pdialog.setCancelable(false);
+                    pdialog.setCancelable(true);
+                    pdialog.setCanceledOnTouchOutside(false);
                     pdialog.setMessage("Please Wait...");
                     pdialog.show();
 
@@ -283,18 +284,19 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                                     }
                                 } else {
                                     // The token could not be validated.
+                                    Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user null");
                                     loginError = true;
                                 }
                             }
                             else{
-                                Log.d("Network error", "verify error");
+                                Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
                                 loginError = true;
                             }
                         }
                     });
                 }
                 else{
-                    Log.d("DEBUG_SIGNUP_VERIFICATION", "verify error");
+                    Log.d("DEBUG_SIGNUP_VERIFICATION", "verifyCode error");
                     verifyError = true;
                 }
             } catch (ParseException e) {
@@ -309,14 +311,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     networkError = true;
                 }
                 e.printStackTrace();
-                return null;
             }
+            Log.d("DEBUG_SIGNUP_VERIFICATION", "background : returning null");
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result){
-
+            Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask");
             if(networkError || verifyError || loginError || userAlreadyExistsError || userDoesNotExistsError){
                 if(pdialog != null){
                     pdialog.dismiss();
