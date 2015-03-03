@@ -8,9 +8,10 @@
     android:layout_height="match_parent">
 
     <TextView
+        android:id="@+id/autodetectLine"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="We are trying to autodetect verification code sent to your phone."
+        android:text="We are trying to autodetect verification code sent to 8976208510"
         android:textSize="14sp"
         android:layout_marginLeft="4dp"
         android:gravity="left"
@@ -30,7 +31,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter code below and click Verify button"
+        android:text="Enter the 4-digit code below and click on Verify"
         android:textSize="14sp"
         android:layout_marginLeft="4dp"
         android:gravity="left"
@@ -42,12 +43,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Class-code"
+        android:hint="Verification code"
         android:background="@drawable/apptheme_edit_text_holo_light"
         android:paddingLeft="16dp"
         android:paddingRight="1dp"
         android:inputType="number"
-        android:maxLength="10"
+        android:maxLength="4"
         android:textColor="@color/black"
         android:textSize="14sp" />
 

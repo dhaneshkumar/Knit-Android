@@ -49,6 +49,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static SmoothProgressBar smoothProgressBar;
     static TextView errorMsgTV;
     static TextView resendActionTV;
+    TextView autodetectLine;
 
     static String verificationCode;
     static Context activityContext;
@@ -69,11 +70,19 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         smoothProgressBar = (SmoothProgressBar) findViewById(R.id.progressHeader);
         errorMsgTV = (TextView) findViewById(R.id.errorMessage);
         resendActionTV = (TextView) findViewById(R.id.resendAction);
+        autodetectLine = (TextView) findViewById(R.id.autodetectLine);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             isLogin = getIntent().getExtras().getBoolean("login");
+        }
+
+        if(isLogin){
+            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneLoginPage.phoneNumber);
+        }
+        else{
+            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneSignUpName.phoneNumber);
         }
 
         //Again send the verification code
@@ -123,8 +132,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.verify:
                 verificationCode = verificationCodeET.getText().toString();
-                if(UtilString.isBlank(verificationCode)){
-                    Utility.toast("Please enter the verification code");
+                if(UtilString.isBlank(verificationCode) || verificationCode.length() != 4){
+                    Utility.toast("Please enter the 4-digit verification code");
                 }
                 else {
                     pdialog = new ProgressDialog(activityContext);
