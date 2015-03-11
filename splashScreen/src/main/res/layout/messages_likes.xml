@@ -3,24 +3,25 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/greyoutline"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
-    android:orientation="vertical">
+    android:layout_marginTop="@dimen/msg_margin_bottom"
+    android:layout_marginBottom="@dimen/msg_margin_bottom"
+    android:orientation="vertical"
+    >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="1dp"
         android:orientation="vertical"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp">
+        android:paddingTop="@dimen/msg_margin"
+        android:paddingBottom="@dimen/msg_margin">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:layout_marginBottom="16dp"
+            android:paddingLeft="@dimen/msg_margin"
+            android:paddingRight="@dimen/msg_margin"
+            android:layout_marginBottom="@dimen/msg_margin"
             android:layout_weight="1">
 
             <ImageView
@@ -112,9 +113,9 @@
             android:id="@+id/msgs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:layout_marginBottom="4dp"
+            android:paddingLeft="@dimen/msg_margin"
+            android:paddingRight="@dimen/msg_margin"
             android:text="Make sure that your child starts reading poems everyday. This will help greatly in building personality and improving language."
             android:textColor="@color/txtgreyDark"
             android:textSize="15sp" />
@@ -123,7 +124,7 @@
             android:id="@+id/imagefrmlayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingTop="8dp"
+            android:paddingTop="@dimen/msg_margin_bottom"
             android:visibility="gone">
 
             <LinearLayout
@@ -161,9 +162,9 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:layout_marginTop="@dimen/msg_margin_bottom"
+            android:paddingLeft="@dimen/msg_margin"
+            android:paddingRight="@dimen/msg_margin"
             android:orientation="horizontal">
 
 
@@ -228,7 +229,6 @@
                     android:layout_height="24dp"
                     android:layout_gravity="center"
                     android:src="@drawable/ic_action_help"></ImageView>
-
 
             </LinearLayout>
 

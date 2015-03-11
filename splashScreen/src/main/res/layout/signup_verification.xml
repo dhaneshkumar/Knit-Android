@@ -3,28 +3,57 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:padding="@dimen/signup_margin"
     android:background="@color/lightbackgroundcolor"
     android:layout_height="match_parent">
+    <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
+        android:id="@+id/progressHeader"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        style="@style/GNowProgressBar"
+        android:visibility="visible"
+        android:background="@color/white"
+        android:indeterminate="true"
+        android:layout_below="@+id/timerText"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:padding="@dimen/signup_margin"
+        android:background="@color/lightbackgroundcolor"
+        android:layout_height="wrap_content">
+
 
     <TextView
+        android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="We are trying to autodetect verification code sent to your phone."
         android:textSize="14sp"
         android:layout_marginLeft="4dp"
         android:gravity="left"
-        android:layout_marginTop="4dp"
         />
 
-    <TextView
+        <TextView
+            android:id="@+id/timerText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="4:23"
+            android:layout_marginLeft="4dp"
+            android:textSize="18sp"
+            android:textColor="@color/black"
+            android:layout_centerVertical="true"
+            android:layout_marginTop="12dp"
+            />
+
+        <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="OR"
         android:gravity="center"
         android:textSize="14sp"
         android:textColor="@color/black"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         />
 
     <TextView
@@ -51,60 +80,25 @@
         android:textColor="@color/black"
         android:textSize="14sp" />
 
-    <LinearLayout
+    </LinearLayout>
+
+
+    <TextView
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="1dp"
+        android:layout_marginTop="32dp"
+        android:background="#DADADA"
+        />
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-
-        android:background="@color/lightbackgroundcolor"
-        android:layout_gravity="center_horizontal">
-
-        <TextView
-            android:id="@+id/timerText"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="4:23"
-            android:textSize="16sp"
-            android:layout_centerVertical="true"
-            android:gravity="center"
-            android:layout_marginTop="4dp"
-            />
-
-        <fr.castorflex.android.smoothprogressbar.SmoothProgressBar
-            android:id="@+id/progressHeader"
-            android:layout_width="match_parent"
-            android:layout_height="4dp"
-            style="@style/GNowProgressBar"
-            android:visibility="visible"
-            android:layout_marginRight="32dp"
-            android:layout_marginLeft="32dp"
-            android:layout_marginTop="4dp"
-            android:background="@color/white"
-            android:indeterminate="true"
-            android:layout_below="@+id/timerText"
-            />
-    </RelativeLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:orientation="vertical"
-        android:gravity="center"
-        android:layout_weight="1">
 
     <TextView
         android:id="@+id/errorMessage"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="ERROR !"
-        android:textColor="@color/holo_red_dark"
-        android:textSize="12sp"
-        android:gravity="center"
+        android:textColor="@color/grey_light"
+        android:textSize="16sp"
+        android:padding="32dp"
         android:layout_marginTop="8dp"
         android:visibility="gone"
         />
@@ -121,6 +115,3 @@
         android:visibility="gone"
         />
     </LinearLayout>
-    </LinearLayout>
-
-</LinearLayout>

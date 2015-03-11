@@ -9,15 +9,27 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
+import android.util.TypedValue;
+import android.view.Display;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,6 +38,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +88,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     public static LinearLayout profileLayout;
     private ArrayAdapter schoolsAdapter;
     private Context actcontext;
+    private Point p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,6 +121,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         profile.setTypeface(typeFace);
         account.setTypeface(typeFace);
         about.setTypeface(typeFace);
+
+
+
 
 
         ParseUser user = ParseUser.getCurrentUser();
@@ -312,6 +329,16 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     }
 
 
+
+
+
+
+
+
+
+
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -492,6 +519,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 nameDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.dismiss();
+                        Log.d("action", getSupportActionBar().getHeight()+" ");
+
                     }
                 });
 
@@ -910,5 +939,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         Intent intent = new Intent(ProfilePage.this, MainActivity.class);
         startActivity(intent);
     }
+
+
 
 }

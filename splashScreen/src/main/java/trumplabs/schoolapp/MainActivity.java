@@ -258,6 +258,29 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             //Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "alarm already triggered");
         }
 
+
+        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
+        int actionBarHeight = sessionManager.getActionBarHeight();
+
+        if(actionBarHeight == 0) {
+            //Storing action bar height locally
+            Thread thread = new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        while (true) {
+                            sleep(1000);
+                            sessionManager.setActionBarHeight(getSupportActionBar().getHeight());
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            thread.start();
+        }
+
     }
 
     @Override

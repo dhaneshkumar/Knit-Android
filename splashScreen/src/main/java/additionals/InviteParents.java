@@ -55,12 +55,12 @@ public class InviteParents extends MyActionBarActivity{
       getSupportActionBar().setTitle("Invite Parents");
 
       final String smsContent = "To subscribe via SMS, send " +
-              " <font color='#000000'> "+classCode+" &lt;SPACE&gt; name</font>" +" to "+
+              " <font color='#000000'> "+classCode+" &lt;SPACE&gt; NAME</font>" +" to "+
               " <font color='#000000'>9243000080 </font>";
 
       final String androidContent = "Install "+
               " <font color='#000000'>Knit messaging </font>" +
-              " form playstore and enter the "+ classCode+" to join.";
+              " form playstore and enter the <font color='#000000'>"+ classCode+"</font> to join.";
 
       textTV.setText(Html.fromHtml(smsContent), TextView.BufferType.SPANNABLE);
 

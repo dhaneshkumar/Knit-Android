@@ -11,6 +11,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -128,6 +129,10 @@ public class CreateClassDialog extends DialogFragment{
                         Utility.toast(updatedName + " class already exist");
                         return;
                     }
+
+                    //to hide keyboard when showing dialog fragment
+                    getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
 
                     if (Utility.isInternetOn(getActivity())) {
                         createGroup jg = new createGroup();

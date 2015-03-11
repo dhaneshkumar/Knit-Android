@@ -1,73 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:background="@color/lightbackgroundcolor"
-    >
+    android:gravity="center"
+    android:orientation="vertical">
 
     <TextView
         android:layout_width="match_parent"
-        android:layout_weight="2"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
         android:gravity="center"
-        android:layout_height="0dp"
-        android:text="We have added you to \n Mr. Kio's Classroom"
+        android:text="Signup successful!"
+        android:textColor="@color/buttoncolor"
+        android:textSize="20dp" />
+
+    <TextView
         android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="We have added you to \n Mr. Kio's Classroom"
         android:textColor="@color/black"
-        android:textSize="24dp"
-        android:layout_gravity="center_horizontal" />
+        android:paddingBottom="8dp"
+        android:textSize="20dp" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:gravity="center_horizontal"
         android:layout_weight="4"
-        >
-       <ImageView
-           android:layout_width="245dp"
-           android:layout_height="200dp"
-           android:background="@drawable/panda"
+        android:gravity="center_horizontal">
 
-           />
-        
-        </LinearLayout>
+        <ImageView
+            android:layout_width="245dp"
+            android:layout_height="200dp"
+            android:background="@drawable/panda"
+
+            />
+
+    </LinearLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_weight="2"
         android:background="@color/buttoncolor"
         android:gravity="center"
-        android:orientation="horizontal"
-        android:layout_weight="2">
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Kio is your panda friend. He will help you to use Knit. He has proven skills in guidance. We hope you like him."
-            android:textColor="@color/white"
-            android:textSize="16sp"
             android:layout_weight="2"
+            android:gravity="center"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
-            android:gravity="center" />
+            android:text="Kio is your panda friend. He will help you to use Knit. He has proven skills in guidance. We hope you like him."
+            android:textColor="@color/white"
+            android:textSize="16sp" />
 
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+            android:gravity="center"
+            android:orientation="vertical">
 
             <TextView
                 android:id="@+id/next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Next"
                 android:background="@drawable/signup_bakcground"
-                android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
+                android:paddingTop="8dp"
+                android:text="Next"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
         </LinearLayout>

@@ -3,9 +3,25 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:padding="@dimen/signup_margin"
     android:background="@color/lightbackgroundcolor"
     android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/internetbar"
+        android:layout_width="match_parent"
+        android:layout_height="24dp"
+        android:background="@color/internetbarcolor"
+        android:gravity="center"
+        android:text="No internet Connection"
+        android:textColor="@color/white"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:padding="@dimen/signup_margin"
+        android:background="@color/lightbackgroundcolor"
+        android:layout_height="match_parent">
 
 
     <EditText
@@ -35,3 +51,4 @@
         android:textSize="14sp"
         android:layout_height="wrap_content" />
 </LinearLayout>
+    </LinearLayout>

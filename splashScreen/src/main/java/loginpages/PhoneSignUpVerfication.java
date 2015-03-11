@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -73,12 +74,24 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         smoothProgressBar = (SmoothProgressBar) findViewById(R.id.progressHeader);
         errorMsgTV = (TextView) findViewById(R.id.errorMessage);
         resendActionTV = (TextView) findViewById(R.id.resendAction);
+        TextView header = (TextView) findViewById(R.id.header);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             isLogin = getIntent().getExtras().getBoolean("login");
         }
+
+
+        String headerText = "We are trying to autodetect verification code sent to ";
+        if(isLogin)
+            headerText += " <font color='#000000'>"+  PhoneLoginPage.phoneNumber +" </font>";
+        else
+            headerText += " <font color='#000000'>"+  PhoneSignUpName.phoneNumber +" </font>";
+
+        header.setText(Html.fromHtml(headerText), TextView.BufferType.SPANNABLE);
+
+
 
         //Again send the verification code
         resendActionTV.setOnClickListener(new View.OnClickListener() {
@@ -272,7 +285,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                                         session.setSignUpAccount();
 
                                         // The current user is now set to user. Do registration in default class
-                                        Log.d("DEBUG_SIGNUP_VERIFICATION", "calling storeSchoolInBackground");
                                         StoreSchoolInBackground storeSchoolInBackground = new StoreSchoolInBackground();
                                         storeSchoolInBackground.execute();
                                     }
@@ -289,11 +301,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     });
                 }
                 else{
-                    Log.d("DEBUG_SIGNUP_VERIFICATION", "verify error");
                     verifyError = true;
                 }
             } catch (ParseException e) {
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "network error with message " + e.getMessage() + " code "  + e.getCode());
                 if(e.getMessage().equals("USER_DOESNOT_EXISTS")){
                     userDoesNotExistsError = true;
                 }
@@ -418,10 +428,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
 
                 installation.save();
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "installation save success");
             } catch (ParseException e1) {
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "installation save FAILED");
-                System.out.println("Install failed not saved");
                 e1.getCode();
                 e1.getMessage();
                 e1.printStackTrace();

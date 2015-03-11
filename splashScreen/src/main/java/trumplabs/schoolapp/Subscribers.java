@@ -54,6 +54,7 @@ public class Subscribers extends MyActionBarActivity {
     public static LinearLayout editProfileLayout;
     private ExpandableListView listv;
     private TextView emptyTV;
+    public static TextView subscriberTV;
    // public static TextView schoolNameTV;
 
     static String defaultSchoolName = "";
@@ -86,7 +87,7 @@ public class Subscribers extends MyActionBarActivity {
         editProfileLayout = (LinearLayout) findViewById(R.id.editLayout);
         TextView classNameTV = (TextView) findViewById(R.id.className);
       //  schoolNameTV = (TextView) findViewById(R.id.school);
-        TextView subscriberTV = (TextView) findViewById(R.id.memberCount);
+         subscriberTV = (TextView) findViewById(R.id.memberCount);
         final TextView classCodeTV = (TextView) findViewById(R.id.classcode);
         emptyTV = (TextView) findViewById(R.id.emptyTV);
 

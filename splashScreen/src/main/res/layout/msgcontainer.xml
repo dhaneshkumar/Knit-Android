@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@color/lightbackgroundcolor"
     android:gravity="center_horizontal"
+    android:id="@+id/msgCntLayout"
     android:orientation="vertical" >
 
     <android.support.v4.widget.SwipeRefreshLayout

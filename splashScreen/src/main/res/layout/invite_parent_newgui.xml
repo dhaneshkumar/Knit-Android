@@ -13,34 +13,24 @@
         android:background="@color/white"
         android:orientation="vertical">
 
+
         <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:gravity="center"
-            android:padding="12dp"
             android:text="This is how parents will join your class"
-            android:textColor="@color/grey"
-            android:textSize="14sp" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center"
-            android:orientation="vertical">
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:gravity="center"
                 android:layout_height="0dp"
-                android:layout_weight="10"
+                android:layout_weight="4"
+                android:background="@color/lightbackgroundcolor"
                 android:orientation="vertical">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@color/lightbackgroundcolor"
-                    android:gravity="center"
-                    android:orientation="vertical">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -100,7 +90,6 @@
                         android:layout_marginRight="16dp"
                         android:background="@drawable/sms_mobile" />
 
-                </LinearLayout>
             </LinearLayout>
 
 
@@ -109,7 +98,7 @@
                 android:layout_height="0dp"
                 android:orientation="vertical"
                 android:gravity="center"
-                android:layout_weight="7">
+                android:layout_weight="3">
 
                 <TextView
                     android:id="@+id/recommended"
@@ -118,11 +107,11 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_marginTop="16dp"
-                    android:background="#DADADA"
+                    android:background="@color/buttoncolor"
                     android:gravity="center"
                     android:padding="12dp"
                     android:text="Receive Instructions (recommended)"
-                    android:textColor="@color/black"
+                    android:textColor="@color/white"
                     android:textSize="14sp" />
 
                 <TextView
@@ -132,7 +121,7 @@
                     android:layout_marginRight="16dp"
                     android:gravity="center"
                     android:padding="12dp"
-                    android:text="and share code via "
+                    android:text="You can also share code via "
                     android:textColor="@color/grey"
                     android:textSize="12sp" />
 
@@ -140,6 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="16dp"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginRight="16dp">
 
                     <LinearLayout
@@ -206,5 +196,4 @@
             </LinearLayout>
         </LinearLayout>
 
-    </LinearLayout>
 </ScrollView>

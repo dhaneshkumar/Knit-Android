@@ -217,7 +217,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/text_left_margin"
-                            android:text="Assiciated Name : "
+                            android:text="Associated Name : "
                             android:textColor="@color/profile_heading"
                             android:textSize="15sp" />
                         <TextView
