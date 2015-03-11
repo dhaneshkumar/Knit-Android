@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -83,17 +84,12 @@ public class Outbox extends Fragment {
         outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
         outboxLayout = (LinearLayout) getActivity().findViewById(R.id.outboxmsg);
 
-        //retrieving lcoally stored outbox messges
-        groupDetails = query.getLocalOutbox();
-        if (groupDetails == null) {
-            groupDetails = new ArrayList<ParseObject>();
-            outboxLayout.setVisibility(View.VISIBLE);
-        } else if (groupDetails.size() == 0)
-            outboxLayout.setVisibility(View.VISIBLE);
-        else
-            outboxLayout.setVisibility(View.GONE);
-        if (groupDetails == null)
-            groupDetails = new ArrayList<ParseObject>();
+
+
+
+        //fetching locally stored outbox messages
+        GetLocalOutboxMsgInBackground getLocalOutboxMsg = new GetLocalOutboxMsgInBackground();
+        getLocalOutboxMsg.execute();
 
         //setting recycle view & layout
         mLayoutManager = new LinearLayoutManager(getActivity());
@@ -398,6 +394,12 @@ public class Outbox extends Fragment {
 
         @Override
         public int getItemCount() {
+
+        if (groupDetails.size() == 0)
+                outboxLayout.setVisibility(View.VISIBLE);
+        else
+                outboxLayout.setVisibility(View.GONE);
+
             return groupDetails.size();
         }
     }
@@ -515,6 +517,28 @@ stop swipe refreshlayout
             e.printStackTrace();
         }
         Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
+    }
+
+
+
+    class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            //retrieving lcoally stored outbox messges
+            groupDetails = query.getLocalOutbox();
+            if (groupDetails == null)
+                groupDetails = new ArrayList<ParseObject>();
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Outbox.myadapter.notifyDataSetChanged();
+            super.onPostExecute(aVoid);
+        }
     }
 
 

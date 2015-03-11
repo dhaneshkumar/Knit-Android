@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -98,25 +99,6 @@ public class Messages extends Fragment {
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);
         mainLayout = (LinearLayout)  getActivity().findViewById(R.id.msgCntLayout);
 
-        PopupWindow popUp = new PopupWindow(getActivity());
-        LinearLayout layout = new LinearLayout(getActivity());
-
-        TextView tv = new TextView(getActivity());
-
-
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        tv.setText("No Internet Connection");
-        layout.addView(tv, params);
-        tv.setPadding(32,32,32,32);
-        popUp.setContentView(layout);
-        // popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
-        //mainLayout.addView(but, params);
-
-        popUp.showAtLocation(mainLayout, Gravity.NO_GRAVITY, 100, 100);
-
-
-
 
       /*
       Check for push open
@@ -197,20 +179,11 @@ public class Messages extends Fragment {
 
         userId = parseObject.getUsername();
 
-        query = new Queries();
-        try {
-            msgs = query.getLocalInboxMsgs();
-            updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
-        } catch (ParseException e) {
-        }
 
-        if (msgs == null) {
-            msgs = new ArrayList<ParseObject>();
-            inemptylayout.setVisibility(View.VISIBLE);
-        } else if (msgs.size() == 0)
-            inemptylayout.setVisibility(View.VISIBLE);
-        else
-            inemptylayout.setVisibility(View.GONE);
+        //fetch local messages in background
+        query = new Queries();
+        GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
+        getLocalInboxMsg.execute();
 
 
         // Collections.reverse(msgs);
@@ -452,6 +425,12 @@ public class Messages extends Fragment {
 
         @Override
         public int getItemCount() {
+
+        if (msgs.size() == 0)
+            inemptylayout.setVisibility(View.VISIBLE);
+        else
+            inemptylayout.setVisibility(View.GONE);
+
             return msgs.size();
         }
 
@@ -1068,5 +1047,34 @@ public class Messages extends Fragment {
         else
         {Utility.logout(); return;}
     }
+
+
+
+    class GetLocalInboxMsgInBackground extends AsyncTask<Void, Void, Void>
+    {
+        @Override
+        protected Void doInBackground(Void... params) {
+
+
+            try {
+                msgs = query.getLocalInboxMsgs();
+                updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
+            } catch (ParseException e) {
+            }
+
+            if (msgs == null)
+                msgs = new ArrayList<ParseObject>();
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Messages.myadapter.notifyDataSetChanged();
+            super.onPostExecute(aVoid);
+        }
+    }
+
 
 }

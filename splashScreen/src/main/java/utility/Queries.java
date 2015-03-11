@@ -1,5 +1,6 @@
 package utility;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.parse.ParseCloud;
@@ -35,6 +36,8 @@ public class Queries {
             Utility.logout();
         userId = userObject.getUsername();
     }
+
+
 
     public List<ParseObject> getLocalInboxMsgs() throws ParseException {
 
