@@ -456,9 +456,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
               /*
                 * Joining default groups
                 */
-            joinDefaultGroup joinGroup = new joinDefaultGroup();
+            JoinDefaultGroup joinGroup = new JoinDefaultGroup();
             joinGroup.execute();
-
             return null;
         }
 
@@ -491,9 +490,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
     }
 
-    static class joinDefaultGroup extends AsyncTask<Void, Void, Void> {
+    public static class JoinDefaultGroup extends AsyncTask<Void, Void, Void> {
         @Override
         protected Void doInBackground(Void... params) {
+            doInBackgroudCore();
+            return null;
+        }
+
+        public void doInBackgroudCore(){
             ParseUser user = ParseUser.getCurrentUser();
             if (user != null) {
 
@@ -507,9 +511,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 }
                 childName = UtilString.parseString(childName);
 
-                JoinedHelper.joinClass(code, childName, true);
+                int result = JoinedHelper.joinClass(code, childName, true);
+                if(result > 0){//1 or 2, set default class join flag
+                    SessionManager session = new SessionManager(Application.getAppContext());
+
+                    Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinDefaultGroup : result = " + result);
+                    session.setDefaultClassJoinStatus();
+                }
             }
-            return null;
         }
     }
 }

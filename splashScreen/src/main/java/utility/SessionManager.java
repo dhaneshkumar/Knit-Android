@@ -170,6 +170,20 @@ public class SessionManager {
     editor.commit();
   }
 
+  public boolean getDefaultClassJoinStatus(){
+      return pref.getBoolean("default-class-join-status", false);
+  }
+
+    public void setDefaultClassJoinStatus(){
+        editor.putBoolean("default-class-join-status", true);
+        editor.commit();
+    }
+
+    public void reSetDefaultClassJoinStatus(){
+        editor.putBoolean("default-class-join-status", false);
+        editor.commit();
+    }
+
   public void setAlarmEventState(String eventId, boolean state){
     editor.putBoolean(eventId, state);
     editor.commit();
@@ -211,10 +225,10 @@ public class SessionManager {
     }
   
   /*
-   * Check whether default group exist or not
+   * Check whether default group exist or not. This not used - use getDefaultClassJoinStatus, etc ...
    */
 
-  public void setDefaultClassExtst() {
+  /*public void setDefaultClassExtst() {
 
     editor.putBoolean(DEFAULT_CLASS_EXIST, true);
     editor.commit();
@@ -231,7 +245,7 @@ public class SessionManager {
     editor.putBoolean(DEFAULT_CLASS_EXIST, false);
     editor.commit();
 
-  }
+  }*/
 
 
     /*
