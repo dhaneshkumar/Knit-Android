@@ -69,9 +69,10 @@ public class SplashScreen extends MyActionBarActivity {
     /*
      * Setting App opening count Each time app count increases by one
      */
-    SessionManager session = new SessionManager(Application.getAppContext());
-    session.setAppOpeningCount();
-
+        SessionManager session = new SessionManager(Application.getAppContext());
+    if(ParseUser.getCurrentUser() != null){ //only if logged in
+        session.setAppOpeningCount();
+    }
 
     /*
      * Setting parse analytics

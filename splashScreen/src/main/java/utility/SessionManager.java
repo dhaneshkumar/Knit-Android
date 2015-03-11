@@ -103,18 +103,22 @@ public class SessionManager {
    */
   public void setAppOpeningCount() {
     int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
-    
+    Log.d("DEBUG_SESSION_MANAGER", "setAppOpeningCount from " + openingCount);
+
     openingCount++;
     editor.putInt(APP_OPENING_COUNT, openingCount);
     editor.commit();
   }
 
   public void reSetAppOpeningCount() {
+    Log.d("DEBUG_SESSION_MANAGER", "resetAppOpeningCount");
     editor.putInt(APP_OPENING_COUNT, 0);
     editor.commit();
   }
+
   public int getAppOpeningCount() {
     int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
+    Log.d("DEBUG_SESSION_MANAGER", "getAppOpeningCount = " + openingCount);
     return openingCount;
   }
 

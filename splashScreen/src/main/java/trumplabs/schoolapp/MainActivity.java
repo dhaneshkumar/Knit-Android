@@ -85,12 +85,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Check for app reinstallation. In case of reinstallation or delete data appOpeningCount set to zero.
         So, we retrieve all data from server.
          */
-        SessionManager session = new SessionManager(Application.getAppContext());
+        final SessionManager session = new SessionManager(Application.getAppContext());
         int appOpeningCount = session.getAppOpeningCount();
-        if (appOpeningCount == 0 || appOpeningCount == 1) {
-            session.setAppOpeningCount();
+        if (appOpeningCount == 0) {
 
             if (!session.getSignUpAccount()) {
+                session.setAppOpeningCount();
                 //Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress");
                 progressBarLayout.setVisibility(View.VISIBLE);
                 editLayout.setVisibility(View.GONE);
@@ -99,7 +99,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 Runnable r = new Runnable() {
                     @Override
                     public void run() {
-                        new Refresher(2);
+                        new Refresher(session.getAppOpeningCount());
                     }
                 };
                 Thread t = new Thread(r);
