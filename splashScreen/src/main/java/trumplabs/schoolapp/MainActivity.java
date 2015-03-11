@@ -88,9 +88,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         final SessionManager session = new SessionManager(Application.getAppContext());
         int appOpeningCount = session.getAppOpeningCount();
         if (appOpeningCount == 0) {
-
+            session.setAppOpeningCount();
             if (!session.getSignUpAccount()) {
-                session.setAppOpeningCount();
                 //Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress");
                 progressBarLayout.setVisibility(View.VISIBLE);
                 editLayout.setVisibility(View.GONE);
