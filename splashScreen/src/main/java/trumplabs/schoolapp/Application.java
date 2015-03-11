@@ -38,8 +38,11 @@ public class Application extends android.app.Application {
 	// Specify an Activity to handle all pushes by   default.
 	//PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class);
 	PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class,getResources().getIdentifier("notifications", "drawable", getPackageName()));
+
+
+	/*Not using this as saving parseinstallation in cloud
 	ParseInstallation.getCurrentInstallation().saveEventually();
-    
+    */
    
   }
   

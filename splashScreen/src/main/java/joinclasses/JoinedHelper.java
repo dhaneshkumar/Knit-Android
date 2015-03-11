@@ -61,12 +61,12 @@ public class JoinedHelper {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("classCode", classcode);
         params.put("associateName", childname);
-        params.put("installationObjectId", ParseInstallation.getCurrentInstallation().getObjectId());
+        params.put("installationObjectId", ParseInstallation.getCurrentInstallation().getString("id"));
 
         if(ParseInstallation.getCurrentInstallation() != null)
         {
-            if(ParseInstallation.getCurrentInstallation().getObjectId() != null)
-                Log.d("JOIN", ParseInstallation.getCurrentInstallation().getObjectId());
+            if(ParseInstallation.getCurrentInstallation().getString("id") != null)
+                Log.d("JOIN", ParseInstallation.getCurrentInstallation().getString("id"));
             else {
                 Log.d("JOIN", "object id : null ");
 
@@ -81,8 +81,6 @@ public class JoinedHelper {
 
         try {
             result = ParseCloud.callFunction("joinClass", params);
-
-
             Log.d("join", "class joining");
         } catch (ParseException e) {
             e.printStackTrace();

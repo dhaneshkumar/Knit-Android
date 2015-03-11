@@ -18,12 +18,9 @@ import android.widget.TextView;
 import com.parse.LogInCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import additionals.SmsListener;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -36,7 +33,6 @@ import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import utility.Config;
-import utility.Queries;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -281,8 +277,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
                                         // The current user is now set to user. Do registration in default class
                                         Log.d("DEBUG_SIGNUP_VERIFICATION", "calling storeSchoolInBackground");
-                                        StoreSchoolInBackground storeSchoolInBackground = new StoreSchoolInBackground();
-                                        storeSchoolInBackground.execute();
+                                        PostSignUpTask postSignUpTask = new PostSignUpTask();
+                                        postSignUpTask.execute();
                                     }
                                 } else {
                                     // The token could not be validated.
@@ -368,10 +364,20 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         protected Void doInBackground(Void... params) {
             Utility.updateCurrentTime(user);
+            /* no need to refresh channels
             Queries query = new Queries();
             try {
                 query.refreshChannels();
             } catch (ParseException e1) {
+            }*/
+
+            Utility.setNewIdFlagInstallation();
+            boolean installationStatus = Utility.checkParseInstallation();
+            if(installationStatus){
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostLoginTask : installation save SUCCESS");
+            }
+            else{
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostLoginTask : installation save FAILED");
             }
 
             LoginPage.setDefaultGroupCheck(user);
@@ -391,7 +397,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
     }
 
-    static class StoreSchoolInBackground extends AsyncTask<Void, Void, Void>
+    static class PostSignUpTask extends AsyncTask<Void, Void, Void>
     {
         ParseUser currentUser;
         @Override
@@ -414,7 +420,15 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             Utility.updateCurrentTime(currentUser);
 
 
-            //storing username in parseInstallation table
+            Utility.setNewIdFlagInstallation();
+            boolean installationStatus = Utility.checkParseInstallation();
+            if(installationStatus){
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save SUCCESS");
+            }
+            else{
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save FAILED");
+            }
+            /*//storing username in parseInstallation table
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("username", currentUser.getUsername());
             List<String> channelList = new ArrayList<String>();
@@ -434,7 +448,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 e1.getCode();
                 e1.getMessage();
                 e1.printStackTrace();
-            }
+            }*/
 
               /*
                 * Joining default groups

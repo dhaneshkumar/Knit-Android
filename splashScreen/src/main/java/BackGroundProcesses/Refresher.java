@@ -38,8 +38,8 @@ public class Refresher {
 
         if (freshUser != null) {
 
-
             final SessionManager sm = new SessionManager(Application.getAppContext());
+            Utility.checkParseInstallation(); //important for upgrade issues. This will be called first time app is launched after update
       /*
        * Storing current time stamp
        */
@@ -88,10 +88,11 @@ public class Refresher {
             joinClass.doInBackgroundCore();
             joinClass.onPostExecuteHelper();
 
+            /*
             //Checking for correct channels (It should match to joined groups entries)
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
 
-            //update channels
+            //update channels NOT REQUIRED Now ParseInstallation updates handled in server
             updateChannels();
 
             //Checking for username in parseinstallation entry
@@ -99,7 +100,7 @@ public class Refresher {
             if(installation.getString("username") == null) {
                 installation.put("username", freshUser.getUsername());
                 installation.saveEventually();
-            }
+            }*/
 
             //Refresh local outbox data, if not in valid state clear and fetch new.
             //If already present then no need to fetch outbox messages
@@ -141,13 +142,13 @@ public class Refresher {
                 }
 
 
-                if (installation.getString("username") == null) {
+                /*if (installation.getString("username") == null) {
                     installation.put("username", freshUser.getUsername());
                     try {
                         installation.save();
                     } catch (ParseException e1) {
                     }
-                }
+                }*/
             }
 
         } else {
@@ -213,6 +214,7 @@ public class Refresher {
 
 
 
+    //not used. All ParseInstallation updates handled in cloud code during signup/signin and logout
     private void updateChannels() {
         List<String> channelList = new ArrayList<String>();
         List<List<String>> joinedGroups;
