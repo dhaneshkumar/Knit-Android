@@ -110,7 +110,9 @@
                 <action android:name="NOTIFICATION_DELETED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="notifications.AlarmReceiver" >
+        <receiver android:name="notifications.EventCheckerAlarmReceiver">
+        </receiver>
+        <receiver android:name="notifications.RefresherAlarmReceiver" >
         </receiver>
     </application>
 

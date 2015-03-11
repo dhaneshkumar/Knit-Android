@@ -13,34 +13,27 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.parse.LogInCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import additionals.SmsListener;
-import BackGroundProcesses.MemberList;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinedHelper;
 import library.UtilString;
-import notifications.AlarmReceiver;
+import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import utility.Config;
-import utility.Queries;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -54,6 +47,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static SmoothProgressBar smoothProgressBar;
     static TextView errorMsgTV;
     static TextView resendActionTV;
+    TextView autodetectLine;
 
     static String verificationCode;
     static Context activityContext;
@@ -75,6 +69,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         errorMsgTV = (TextView) findViewById(R.id.errorMessage);
         resendActionTV = (TextView) findViewById(R.id.resendAction);
         TextView header = (TextView) findViewById(R.id.header);
+        autodetectLine = (TextView) findViewById(R.id.autodetectLine);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -92,6 +87,13 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         header.setText(Html.fromHtml(headerText), TextView.BufferType.SPANNABLE);
 
 
+
+        if(isLogin){
+            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneLoginPage.phoneNumber);
+        }
+        else{
+            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneSignUpName.phoneNumber);
+        }
 
         //Again send the verification code
         resendActionTV.setOnClickListener(new View.OnClickListener() {
@@ -140,12 +142,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         switch (item.getItemId()) {
             case R.id.verify:
                 verificationCode = verificationCodeET.getText().toString();
-                if(UtilString.isBlank(verificationCode)){
-                    Utility.toast("Please enter the verification code");
+                if(UtilString.isBlank(verificationCode) || verificationCode.length() != 4){
+                    Utility.toast("Please enter the 4-digit verification code");
                 }
                 else {
+                    Tools.hideKeyboard(this);
                     pdialog = new ProgressDialog(activityContext);
-                    pdialog.setCancelable(false);
+                    pdialog.setCancelable(true);
+                    pdialog.setCanceledOnTouchOutside(false);
                     pdialog.setMessage("Please Wait...");
                     pdialog.show();
 
@@ -285,25 +289,29 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                                         session.setSignUpAccount();
 
                                         // The current user is now set to user. Do registration in default class
-                                        StoreSchoolInBackground storeSchoolInBackground = new StoreSchoolInBackground();
-                                        storeSchoolInBackground.execute();
+                                        Log.d("DEBUG_SIGNUP_VERIFICATION", "calling storeSchoolInBackground");
+                                        PostSignUpTask postSignUpTask = new PostSignUpTask();
+                                        postSignUpTask.execute();
                                     }
                                 } else {
                                     // The token could not be validated.
+                                    Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user null");
                                     loginError = true;
                                 }
                             }
                             else{
-                                Log.d("Network error", "verify error");
+                                Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
                                 loginError = true;
                             }
                         }
                     });
                 }
                 else{
+                    Log.d("DEBUG_SIGNUP_VERIFICATION", "verifyCode error");
                     verifyError = true;
                 }
             } catch (ParseException e) {
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "network error with message " + e.getMessage() + " code "  + e.getCode());
                 if(e.getMessage().equals("USER_DOESNOT_EXISTS")){
                     userDoesNotExistsError = true;
                 }
@@ -314,14 +322,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     networkError = true;
                 }
                 e.printStackTrace();
-                return null;
             }
+            Log.d("DEBUG_SIGNUP_VERIFICATION", "background : returning null");
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result){
-
+            Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask");
             if(networkError || verifyError || loginError || userAlreadyExistsError || userDoesNotExistsError){
                 if(pdialog != null){
                     pdialog.dismiss();
@@ -369,10 +377,20 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         protected Void doInBackground(Void... params) {
             Utility.updateCurrentTime(user);
+            /* no need to refresh channels
             Queries query = new Queries();
             try {
                 query.refreshChannels();
             } catch (ParseException e1) {
+            }*/
+
+            Utility.setNewIdFlagInstallation();
+            boolean installationStatus = Utility.checkParseInstallation();
+            if(installationStatus){
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostLoginTask : installation save SUCCESS");
+            }
+            else{
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostLoginTask : installation save FAILED");
             }
 
             LoginPage.setDefaultGroupCheck(user);
@@ -392,7 +410,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
     }
 
-    static class StoreSchoolInBackground extends AsyncTask<Void, Void, Void>
+    static class PostSignUpTask extends AsyncTask<Void, Void, Void>
     {
         ParseUser currentUser;
         @Override
@@ -415,7 +433,15 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             Utility.updateCurrentTime(currentUser);
 
 
-            //storing username in parseInstallation table
+            Utility.setNewIdFlagInstallation();
+            boolean installationStatus = Utility.checkParseInstallation();
+            if(installationStatus){
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save SUCCESS");
+            }
+            else{
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save FAILED");
+            }
+            /*//storing username in parseInstallation table
             ParseInstallation installation = ParseInstallation.getCurrentInstallation();
             installation.put("username", currentUser.getUsername());
             List<String> channelList = new ArrayList<String>();
@@ -428,11 +454,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
 
                 installation.save();
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "installation save success");
             } catch (ParseException e1) {
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "installation save FAILED");
+                System.out.println("Install failed not saved");
                 e1.getCode();
                 e1.getMessage();
                 e1.printStackTrace();
-            }
+            }*/
 
               /*
                 * Joining default groups
@@ -455,15 +484,15 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             //here create welcome notification and message
             if(currentUser.getString("role").equals("teacher")){
                 NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, currentUser);
+                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, currentUser);
             }
             else if(currentUser.getString("role").equals("parent")){
                 NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, currentUser);
+                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, currentUser);
             }
             else{
                 NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, currentUser);
+                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, currentUser);
             }
 
             //Switching to MainActivity

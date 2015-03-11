@@ -33,15 +33,12 @@ import android.widget.Toast;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseInstallation;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -69,14 +66,91 @@ public class Utility extends MyActionBarActivity {
             System.out.println(str);
     }
 
+    /*
+        clear extra fields : "id"
+        set flag "newIdFlag" to true in parseInstallation indicating a signup/singin and that
+        not to put old objectId into "id" field as that objectId row might have been deleted on
+        cloud server.
+     */
+    public static void setNewIdFlagInstallation(){
+        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+
+        if(parseInstallation != null){
+            parseInstallation.remove("id"); //remove id key so that in checkParseInstallation,
+                                            // we don't get a false indication that id is set
+            parseInstallation.put("newIdFlag", true);
+            try{
+                parseInstallation.pin();
+                Log.d("DEBUG_UTILITY", "setNewIdFlagInstallation : remove id field; set newIdFlag successfully");
+            }
+            catch (com.parse.ParseException e){
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /*
+        check if local parseinstallation has "id" field set which implies that cloud database
+        has an entry corresponding to it(this id is the object id in cloud database).
+        If not, use "appInstallation" cloud function to create an entry
+        on cloud.
+     */
+    public static boolean checkParseInstallation(){
+        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+
+        if(parseInstallation == null){ //this should never ever happen
+            Log.d("DEBUG_UTILITY", "checkParseInstallation : getCurrentInstallation() returned null");
+            return false;
+        }
+
+        if(parseInstallation.getString("id") != null){  //this single handedly means that installation is all set.
+                                                        // This is cleared during singup/signin to
+                                                        // prevent use of stale ids
+            return true; //we're done
+        }
+
+        // Since "id" is not set : Handle Upgrade to new version if newIdFlag not set & if objectId set,
+        // and use it to set "id" field
+        if(!parseInstallation.getBoolean("newIdFlag") && parseInstallation.getObjectId() != null){
+            parseInstallation.put("id", parseInstallation.getObjectId());
+            try{
+                parseInstallation.pin();
+                Log.d("DEBUG_UTILITY", "checkParseInstallation : setting id using already existing objectId");
+                return true; //success
+            }
+            catch (com.parse.ParseException e){
+                e.printStackTrace();
+            }
+        }
+
+        //Since neither id nor objectId set, call the cloud function.
+        Log.d("DEBUG_UTILITY", "checkParseInstalltion : calling appInstallation cloud function");
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("deviceType", "android");
+        param.put("installationId", parseInstallation.getInstallationId());
+
+        try{
+            String id = ParseCloud.callFunction("appInstallation", param);
+            parseInstallation.put("id", id);
+            parseInstallation.pin();
+            Log.d("DEBUG_UTILITY", "checkParseInstalltion : success cloud function with id " + id);
+            return true;
+        }
+        catch (com.parse.ParseException e){
+            Log.d("DEBUG_UTILITY", "checkParseInstallation : failure cloud function");
+            e.printStackTrace();
+            return false;
+        }
+    }
 
     public static void logout() {
 
         Context _context = Application.getAppContext();
         // After logout redirect user to Loing Activity
 
-        //cancel all alarms set for notification checking. Very first thing to do
-        AlarmTrigger.cancelAlarm(_context);
+        //cancel all alarms set. Very first thing to do
+        AlarmTrigger.cancelEventCheckerAlarm(_context);
+        AlarmTrigger.cancelRefresherAlarm(_context);
 
         SessionManager session = new SessionManager(Application.getAppContext());
         session.reSetAppOpeningCount();
@@ -96,10 +170,16 @@ public class Utility extends MyActionBarActivity {
 
         ParseInstallation pi = ParseInstallation.getCurrentInstallation();
 
-        List<List<String>> joinedGroups = new ArrayList<List<String>>();
-        pi.put("channels", joinedGroups);
-        pi.saveInBackground();
+        HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("installationObjectId", pi.getString("id"));
 
+        try{
+            boolean logoutSuccess = ParseCloud.callFunction("appLogout", param);
+            Log.d("DEBUG_UTILITY", "logout() - appLogout cloud function result is " + logoutSuccess);
+        }
+        catch (com.parse.ParseException e){
+            e.printStackTrace();
+        }
 
         // Staring Login Activity
         _context.startActivity(i);

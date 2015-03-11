@@ -106,11 +106,11 @@ public class LoginPage extends MyActionBarActivity {
                  * Adding channels & storing group member data locally
                  */
 
-                Queries query = new Queries();
+                /*Queries query = new Queries();
                 try {
                   query.refreshChannels();
                 } catch (ParseException e1) {
-                }
+                }*/
 
                 /*
                  * Checking for existence of default group.

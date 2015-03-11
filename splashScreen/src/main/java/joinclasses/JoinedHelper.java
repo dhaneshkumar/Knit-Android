@@ -2,7 +2,6 @@ package joinclasses;
 
 import android.os.AsyncTask;
 import android.util.Log;
-import android.view.View;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -18,7 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
-import notifications.AlarmReceiver;
+import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -62,12 +61,12 @@ public class JoinedHelper {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("classCode", classcode);
         params.put("associateName", childname);
-        params.put("installationObjectId", ParseInstallation.getCurrentInstallation().getObjectId());
+        params.put("installationObjectId", ParseInstallation.getCurrentInstallation().getString("id"));
 
         if(ParseInstallation.getCurrentInstallation() != null)
         {
-            if(ParseInstallation.getCurrentInstallation().getObjectId() != null)
-                Log.d("JOIN", ParseInstallation.getCurrentInstallation().getObjectId());
+            if(ParseInstallation.getCurrentInstallation().getString("id") != null)
+                Log.d("JOIN", ParseInstallation.getCurrentInstallation().getString("id"));
             else {
                 Log.d("JOIN", "object id : null ");
 
@@ -82,8 +81,6 @@ public class JoinedHelper {
 
         try {
             result = ParseCloud.callFunction("joinClass", params);
-
-
             Log.d("join", "class joining");
         } catch (ParseException e) {
             e.printStackTrace();
@@ -150,8 +147,8 @@ public class JoinedHelper {
 
             if(!defaultGroupFlag) {
                 //locally generating joining notification and inbox msg
-                NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
+                NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
             }
 
 

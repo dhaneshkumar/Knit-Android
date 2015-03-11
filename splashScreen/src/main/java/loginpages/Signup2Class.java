@@ -2,10 +2,7 @@ package loginpages;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -14,29 +11,23 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.parse.ParseException;
-import com.parse.ParseFile;
 import com.parse.ParseInstallation;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SignUpCallback;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import baseclasses.MyActionBarActivity;
 import joinclasses.JoinedHelper;
-import joinclasses.School;
 import library.UtilString;
-import notifications.AlarmReceiver;
+import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import utility.Config;
 import utility.Queries;
-import utility.Queries2;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -259,15 +250,15 @@ public class Signup2Class extends MyActionBarActivity {
             //here create welcome notification and message
             if(user.getString("role").equals("teacher")){
                 NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
+                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
             }
             else if(user.getString("role").equals("parent")){
                 NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, user);
+                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, user);
             }
             else{
                 NotificationGenerator.generateNotification(getApplicationContext(), Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                AlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, user);
+                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, user);
             }
 
             //Switching to MainActivity

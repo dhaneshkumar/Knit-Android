@@ -139,12 +139,12 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             //storing app members
             if (appMembersList != null) {
 
-                Log.d("MEMBER", "members " + appMembersList.size() );
+                Log.d("DEBUG_MEMBER", "members " + appMembersList.size() );
 
                 for (int i = 0; i < appMembersList.size(); i++) {
                     ParseObject appMembers = appMembersList.get(i);
                     appMembers.put("userId", user.getUsername());
-                    Log.d("MEMBER", "members " + appMembers.getString("name") + "  :  " + appMembers.getString("status") );
+                    Log.d("DEBUG_MEMBER", "members " + appMembers.getString("name") + "  :  " + appMembers.getString("status") );
                 }
                 try {
                     ParseObject.pinAll(appMembersList);
@@ -175,6 +175,7 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
 
     @Override
     protected void onPostExecute(String[] strings) {
+        Log.d("DEBUG_MEMBER", "members onPostExecute()");
 
         //updating listview items of member list.
         List<MemberDetails> updatedLocalMemberList = queries.getLocalClassMembers(groupCode);

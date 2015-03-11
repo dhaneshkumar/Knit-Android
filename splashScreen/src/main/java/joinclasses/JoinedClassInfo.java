@@ -356,7 +356,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             //setting parameters
             HashMap<String, Object> param = new HashMap<String, Object>();
             param.put("classcode", classCode);
-            param.put("installationObjectId", ParseInstallation.getCurrentInstallation().getObjectId());
+            param.put("installationObjectId", ParseInstallation.getCurrentInstallation().getString("id"));
 
             try {
                 success = ParseCloud.callFunction("leaveClass", param);

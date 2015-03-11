@@ -38,8 +38,8 @@ public class Refresher {
 
         if (freshUser != null) {
 
-
             final SessionManager sm = new SessionManager(Application.getAppContext());
+            Utility.checkParseInstallation(); //important for upgrade issues. This will be called first time app is launched after update
       /*
        * Storing current time stamp
        */
@@ -48,7 +48,6 @@ public class Refresher {
 
             freshUser.fetchInBackground();
 
-            if (appOpeningCount > 0) {
                 Log.d("DEBUG_REFRESHER",  "calling background tasks");
 
 
@@ -56,85 +55,52 @@ public class Refresher {
         /*
          * Updating inbox msgs
          */
-                Log.d("DEBUG_REFRESHER", "calling Inbox execute()");
+            Log.d("DEBUG_REFRESHER", "calling Inbox execute()");
 
-                Inbox newInboxMsg = new Inbox(null);
-                newInboxMsg.doInBackgroundCore();
-                newInboxMsg.onPostExecuteHelper(); //done
-                newInboxMsg.syncOtherInboxDetails();
+            Inbox newInboxMsg = new Inbox(null);
+            newInboxMsg.doInBackgroundCore();
+            newInboxMsg.onPostExecuteHelper(); //done
+            newInboxMsg.syncOtherInboxDetails();
 
-       /*
-        *   Updating counts for outbox messages
-        *
-        */
-                Outbox.refreshCountCore(); //simple function
+           /*
+            *   Updating counts for outbox messages
+            *
+            */
+            Outbox.refreshCountCore(); //simple function
 
-        /*
-            Update total count of outbox messages
-         */
-                Outbox.updateOutboxTotalMessages(); //simple function
+            /*
+                Update total count of outbox messages
+             */
+            Outbox.updateOutboxTotalMessages(); //simple function
 
-        /*
-         * Updating created class rooms list
-         */
+            /*
+             * Updating created class rooms list
+             */
 
-                CreatedClassRooms createdClassList = new CreatedClassRooms();
-                createdClassList.doInBackgroundCore();
-                createdClassList.onPostExecuteCoreHelper(); //done
+            CreatedClassRooms createdClassList = new CreatedClassRooms();
+            createdClassList.doInBackgroundCore();
+            createdClassList.onPostExecuteCoreHelper(); //done
 
              /*
              * Updating joined classes teacher details(name, profile pic)
              */
-                final JoinedClassRooms joinClass = new JoinedClassRooms();
-                joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper();
+            final JoinedClassRooms joinClass = new JoinedClassRooms();
+            joinClass.doInBackgroundCore();
+            joinClass.onPostExecuteHelper();
 
-                /*
-                If its new user then refresh on evry app openingtime,
-                After 50 opening count, refresh this suggestion list on interval of 10 opening counts
-                 */
-               /* if (appOpeningCount <= 50) {
-                    UpdateSuggestions updateSuggestions = new UpdateSuggestions();
-                    String userId = updateSuggestions.doInBackgroundCore();
-                    updateSuggestions.onPostExecuteHelper(userId);
-                } else {
-                    if (appOpeningCount % 10 == 0) {
-                        UpdateSuggestions updateSuggestions = new UpdateSuggestions();
-                        String userId = updateSuggestions.doInBackgroundCore();
-                        updateSuggestions.onPostExecuteHelper(userId);
-                    }
-                }*/
+            /*
+            //Checking for correct channels (It should match to joined groups entries)
+            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
 
+            //update channels NOT REQUIRED Now ParseInstallation updates handled in server
+            updateChannels();
 
-                //Checking for correct channels (It should match to joined groups entries)
-                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
+            //Checking for username in parseinstallation entry
 
-                //update channels
-                updateChannels();
-
-                //Checking for username in parseinstallation entry
-
-                if(installation.getString("username") == null) {
-                    installation.put("username", freshUser.getUsername());
-                    installation.saveEventually();
-                }
-
-            } else {
-
-                sm.setAppOpeningCount();
-                //sequentially execute following
-
-                //call inbox
-                Inbox newInboxMsg = new Inbox(null);
-                newInboxMsg.doInBackgroundCore();
-                newInboxMsg.onPostExecuteHelper(); //done
-                newInboxMsg.syncOtherInboxDetails();
-
-                //call created classrooms
-                CreatedClassRooms createdClassList = new CreatedClassRooms();
-                createdClassList.doInBackgroundCore();
-                createdClassList.onPostExecuteCoreHelper(); //done
-            }
+            if(installation.getString("username") == null) {
+                installation.put("username", freshUser.getUsername());
+                installation.saveEventually();
+            }*/
 
             //Refresh local outbox data, if not in valid state clear and fetch new.
             //If already present then no need to fetch outbox messages
@@ -163,9 +129,9 @@ public class Refresher {
                 getServerFAQs faqs = new getServerFAQs(freshUser.getString("role"));
                 faqs.doInBackgroundCore(); //no on-post-execute in this
 
-        /*
-         * saving user's mobile model no.
-         */
+                /*
+                 * saving user's mobile model no.
+                 */
 
                 if (freshUser.getString("MODEL") == null && android.os.Build.MODEL != null) {
                     freshUser.put("MODEL", android.os.Build.MODEL);
@@ -175,15 +141,14 @@ public class Refresher {
                     }
                 }
 
-                ParseInstallation installation = ParseInstallation.getCurrentInstallation();
 
-                if (installation.getString("username") == null) {
+                /*if (installation.getString("username") == null) {
                     installation.put("username", freshUser.getUsername());
                     try {
                         installation.save();
                     } catch (ParseException e1) {
                     }
-                }
+                }*/
             }
 
         } else {
@@ -249,6 +214,7 @@ public class Refresher {
 
 
 
+    //not used. All ParseInstallation updates handled in cloud code during signup/signin and logout
     private void updateChannels() {
         List<String> channelList = new ArrayList<String>();
         List<List<String>> joinedGroups;

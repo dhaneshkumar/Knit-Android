@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
 import utility.Config;
 import utility.Queries;
@@ -87,6 +88,9 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
                 sentMsg.put("creationTime", outboxMsg.getCreatedAt());
                 sentMsg.put("senderId", outboxMsg.getString("senderId"));
                 sentMsg.put("userId", userId);
+                sentMsg.put(Constants.LIKE_COUNT, outboxMsg.getInt(Constants.LIKE_COUNT)); //0 if like_count not defined
+                sentMsg.put(Constants.CONFUSED_COUNT, outboxMsg.getInt(Constants.CONFUSED_COUNT));
+                sentMsg.put(Constants.SEEN_COUNT, outboxMsg.getInt(Constants.SEEN_COUNT));
 
                 if (outboxMsg.get("attachment") != null)
                     sentMsg.put("attachment", outboxMsg.get("attachment"));

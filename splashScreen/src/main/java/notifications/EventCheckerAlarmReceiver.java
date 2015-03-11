@@ -25,7 +25,7 @@ import utility.Utility;
  * Created by ashish on 18/1/15.
  */
 
-public class AlarmReceiver extends WakefulBroadcastReceiver {
+public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
     SessionManager session;
 
     static long teacherConfusingMsgThreshold = 5; //how may confused_count to call a post confusing(greater than or equal to)
@@ -67,7 +67,7 @@ public class AlarmReceiver extends WakefulBroadcastReceiver {
     Context alarmContext;
 
     Queries queryInstance;
-    public AlarmReceiver() {
+    public EventCheckerAlarmReceiver() {
         queryInstance = new Queries();
     }
 
