@@ -47,7 +47,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static SmoothProgressBar smoothProgressBar;
     static TextView errorMsgTV;
     static TextView resendActionTV;
-    TextView autodetectLine;
 
     static String verificationCode;
     static Context activityContext;
@@ -69,7 +68,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         errorMsgTV = (TextView) findViewById(R.id.errorMessage);
         resendActionTV = (TextView) findViewById(R.id.resendAction);
         TextView header = (TextView) findViewById(R.id.header);
-        autodetectLine = (TextView) findViewById(R.id.autodetectLine);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -86,14 +84,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         header.setText(Html.fromHtml(headerText), TextView.BufferType.SPANNABLE);
 
-
-
-        if(isLogin){
-            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneLoginPage.phoneNumber);
-        }
-        else{
-            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneSignUpName.phoneNumber);
-        }
 
         //Again send the verification code
         resendActionTV.setOnClickListener(new View.OnClickListener() {
