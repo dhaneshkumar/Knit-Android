@@ -143,8 +143,8 @@ public class NotificationGenerator {
             else if(notEntity.action.equals(Constants.INVITE_PARENT_ACTION)){
                 Log.d("DEBUG_NOTIFICATION_GEN", "invite parent action");
                 if(extras != null){
-                    clickIntent.putExtra("grpCode", extras.getString("grpCode"));
-                    clickIntent.putExtra("grpName", extras.getString("grpName"));
+                    clickIntent.putExtra("classCode", extras.getString("grpCode"));
+                    clickIntent.putExtra("className", extras.getString("grpName"));
                     PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                     mBuilder.setContentIntent(overrideClickPendingIntent);
                     mBuilder.addAction(R.drawable.fwd, "INVITE", overrideClickPendingIntent);
