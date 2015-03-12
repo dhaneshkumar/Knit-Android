@@ -423,7 +423,7 @@ public class Classrooms extends Fragment {
 
             String grooupCode = joinedGroups.get(position).get(0);
 
-            Log.d("join", "class code : " + grooupCode + " - "+ Str);
+            Log.d("classrooms", "class code : " + grooupCode + " - "+ Str);
 
 
             final List<String> group = new ArrayList<String>();
@@ -463,8 +463,7 @@ public class Classrooms extends Fragment {
                 child_textView.setText("Assigned to : " + ParseUser.getCurrentUser().getString("name"));
 
 
-                Log.d("join", "Default class code : " + grooupCode);
-
+                Log.d("classrooms", "Default class code : " + grooupCode);
             }
             else
             {

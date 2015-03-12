@@ -10,9 +10,9 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import loginpages.PhoneSignUpVerfication;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
@@ -122,6 +122,12 @@ public class Refresher {
             }
             else{
                 Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
+            }
+
+            if(!sm.getDefaultClassJoinStatus()){//if false
+                Log.d("DEBUG_REFRESHER", "default class not joined. Doing so");
+                PhoneSignUpVerfication.JoinDefaultGroup joinDefaultGroup= new PhoneSignUpVerfication.JoinDefaultGroup();
+                joinDefaultGroup.doInBackgroudCore(); //flag set inside this method here on success
             }
 
 

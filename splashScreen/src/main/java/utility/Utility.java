@@ -147,7 +147,7 @@ public class Utility extends MyActionBarActivity {
         session.reSetAppOpeningCount();
         session.reSetSignUpAccount();
         session.reSetChildList();
-        session.reSetDefaultClassExtst();
+        session.reSetDefaultClassJoinStatus();
         session.reSetAppMemberVersion();
         session.reSetSmsMemberVersion();
 

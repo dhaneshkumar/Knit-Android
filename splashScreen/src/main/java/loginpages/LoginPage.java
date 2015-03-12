@@ -185,7 +185,7 @@ public class LoginPage extends MyActionBarActivity {
 
         if (defaultGroupCode.equals(joinedGroupList.get(i).get(0))) {
           SessionManager session = new SessionManager(Application.getAppContext());
-          session.setDefaultClassExtst();
+          session.setDefaultClassJoinStatus();
 
           break;
         }
