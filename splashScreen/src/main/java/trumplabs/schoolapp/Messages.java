@@ -422,10 +422,14 @@ public class Messages extends Fragment {
         @Override
         public int getItemCount() {
 
-        if (msgs.size() == 0)
-            inemptylayout.setVisibility(View.VISIBLE);
-        else
-            inemptylayout.setVisibility(View.GONE);
+            if(msgs == null){
+                msgs = new ArrayList<ParseObject>();
+            }
+
+            if (msgs.size() == 0)
+                inemptylayout.setVisibility(View.VISIBLE);
+            else
+                inemptylayout.setVisibility(View.GONE);
 
             return msgs.size();
         }

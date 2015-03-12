@@ -397,6 +397,10 @@ public class Outbox extends Fragment {
         @Override
         public int getItemCount() {
 
+        if (groupDetails == null){
+            groupDetails = new ArrayList<ParseObject>();
+        }
+
         if (groupDetails.size() == 0)
                 outboxLayout.setVisibility(View.VISIBLE);
         else
