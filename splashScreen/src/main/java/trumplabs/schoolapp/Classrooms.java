@@ -187,13 +187,13 @@ public class Classrooms extends Fragment {
                     sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
 
 
-                Utility utility = new Utility();
+              //  Utility utility = new Utility();
 
-                if(utility.isInternetExist(getActivity())) {
+              //  if(utility.isInternetExist(getActivity())) {
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     CreateClassDialog createClassDialog = new CreateClassDialog();
                     createClassDialog.show(fm, "create Class");
-                }
+              //  }/************************************************************************************************************************
             }
         });
 
@@ -211,13 +211,9 @@ public class Classrooms extends Fragment {
                 if(actionBarHeight == 0)
                     sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
 
-                Utility utility = new Utility();
-
-                if(utility.isInternetExist(getActivity())) {
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                     joinClassDialog.show(fm, "Join Class");
-                }
             }
         });
 
@@ -232,7 +228,9 @@ public class Classrooms extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                if (Utility.isInternetOn(getActivity())) {
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(getActivity())) {
 
                     //showing refreshing bar
                     if (MainActivity.mHeaderProgressBar != null) {
@@ -248,8 +246,6 @@ public class Classrooms extends Fragment {
                     joinClass.execute();
 
 
-                } else {
-                    Utility.toast("Check your Internet connection");
                 }
                 break;
             default:

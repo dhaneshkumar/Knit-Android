@@ -248,7 +248,9 @@ public class Subscribers extends MyActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                if (Utility.isInternetOn(this)) {
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(this)) {
 
                     //showing progress bar
                     if (mHeaderProgressBar != null) {
@@ -339,7 +341,9 @@ public class Subscribers extends MyActionBarActivity {
                     alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
 
-                                if (Utility.isInternetOn(Subscribers.this)) {
+                            Utility utility = new Utility();
+
+                            if(utility.isInternetExist(Subscribers.this)) {
                                     RemoveChild removeChild = new RemoveChild(memberDetails.get(position), name);
                                     removeChild.execute();
 

@@ -61,11 +61,19 @@ public class RecommendationDialog extends DialogFragment {
                     Utility.toast("Enter your Email-ID");
                 else
                 {
-                    progressLayout.setVisibility(View.VISIBLE);
-                    contentLayout.setVisibility(View.GONE);
+                    Utility utility = new Utility();
 
-                    SendInstructions sendInstructions = new SendInstructions();
-                    sendInstructions.execute();
+                    if(utility.isInternetExist(getActivity())) {
+                        progressLayout.setVisibility(View.VISIBLE);
+                        contentLayout.setVisibility(View.GONE);
+
+                        SendInstructions sendInstructions = new SendInstructions();
+                        sendInstructions.execute();
+                    }
+                    else
+                    {
+                        Utility.toast("No Internet Connection");
+                    }
 
                 }
             }

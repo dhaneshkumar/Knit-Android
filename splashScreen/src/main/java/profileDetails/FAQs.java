@@ -61,8 +61,8 @@ public class FAQs extends MyActionBarActivity {
       if (faqList == null || faqList.size() == 0) {
 
 
-        if (Utility.isInternetOn(this)) {
-
+          Utility utility = new Utility();
+          if(utility.isInternetExist(this)){
           editLayout.setVisibility(View.GONE);
           progressLayout.setVisibility(View.VISIBLE);
 

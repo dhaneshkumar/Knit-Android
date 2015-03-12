@@ -22,6 +22,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +35,8 @@ import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
+
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -693,6 +696,8 @@ public class Utility extends MyActionBarActivity {
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View layout = layoutInflater.inflate(R.layout.no_internet_connection, null);
+        final TextView tv1 = (TextView) layout.findViewById(R.id.noInternet);
+
 
         // Creating the PopupWindow
         final PopupWindow popup = new PopupWindow(context);
@@ -717,7 +722,7 @@ public class Utility extends MyActionBarActivity {
         }
 
         popup.setWidth(measuredWidth);
-        popup.setHeight(70);
+        popup.setHeight(100);
        // popup.setFocusable(true);
 
         // Clear the default translucent background

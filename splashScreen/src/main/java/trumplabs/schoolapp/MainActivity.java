@@ -280,7 +280,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     @Override
     protected void onResume() {
         super.onResume();
-        Utility.isInternetOn(this);
+        //Utility.isInternetOn(this);
     }
 
     @Override

@@ -16,6 +16,8 @@
         android:text="Knit"
         android:layout_centerVertical="true"
         android:textSize="16sp"
+        android:singleLine="true"
+        android:ems="10"
         android:textColor="@color/black"
         />
 

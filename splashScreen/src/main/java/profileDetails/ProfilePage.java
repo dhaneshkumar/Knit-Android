@@ -313,7 +313,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 //go to market
                 Uri uri = Uri.parse("market://details?id=" + getPackageName());
                 Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
-                if (Utility.isInternetOn(this)) {
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(this)) {
                     try {
                         startActivity(myAppLinkToMarket);
                     } catch (ActivityNotFoundException e) {
@@ -439,7 +441,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                         final String value = nameInput.getText().toString();
 
                         if (!UtilString.isBlank(value)) {
-                            if (Utility.isInternetOn(ProfilePage.this)) {
+                            Utility utility = new Utility();
+
+                            if(utility.isInternetExist(ProfilePage.this)) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(nameInput.getWindowToken(), 0);
@@ -563,7 +567,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                         String value = input.getText().toString();
 
                         if (!UtilString.isBlank(value)) {
-                            if (Utility.isInternetOn(ProfilePage.this)) {
+                            Utility utility = new Utility();
+
+                            if(utility.isInternetExist(ProfilePage.this)) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
@@ -696,7 +702,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                         }
                         if (!UtilString.isBlank(value)) {
                             value = value.trim();
-                            if (Utility.isInternetOn(ProfilePage.this)) {
+                            Utility utility = new Utility();
+
+                            if(utility.isInternetExist(ProfilePage.this)) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(schoolInput.getWindowToken(), 0);
@@ -748,14 +756,13 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
        * sign out
        */
             case R.id.signOut:
-                if (Utility.isInternetOn(this)) {
+                Utility utility = new Utility();
+                if(utility.isInternetExist(ProfilePage.this)) {
 
                     {
                         Utility.logout();
                         return;
                     }
-                } else {
-                    Utility.toast("Check your Internet Connection.");
                 }
                 break;
 
@@ -766,14 +773,13 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 Uri uri = Uri.parse("market://details?id=" + getPackageName());
                 Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
 
-                if (Utility.isInternetOn(this)) {
+                Utility utility1 = new Utility();
+                if(utility1.isInternetExist(ProfilePage.this)) {
 
                     try {
                         startActivity(myAppLinkToMarket);
                     } catch (ActivityNotFoundException e) {
                     }
-                } else {
-                    Utility.toast("Check your Internet Connection.");
                 }
                 break;
 
