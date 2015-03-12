@@ -156,7 +156,9 @@ public class Outbox extends Fragment {
                     MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
                 // mHeaderProgressBar.setVisibility(View.GONE);
-                if (Utility.isInternetOn(getActivity())) {
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(getActivity())) {
 
                     //code to refresh outbox
                     refreshCountInBackground();
@@ -415,7 +417,9 @@ public class Outbox extends Fragment {
 
             //on refresh option selected from options menu
             case R.id.refresh:
-                if (Utility.isInternetOn(getActivity())) {
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(getActivity())) {
 
                     /*if (outboxRefreshLayout != null) {
                         runSwipeRefreshLayout(outboxRefreshLayout, 10);
@@ -425,8 +429,6 @@ public class Outbox extends Fragment {
                     refreshCountInBackground();
                     //stop refreshing in above method inside view.post
 
-                } else {
-                    Utility.toast("Check your Internet connection");
                 }
                 break;
             default:

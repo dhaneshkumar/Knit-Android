@@ -34,7 +34,7 @@ public class JoinClassesContainer extends MyActionBarActivity  {
   @Override
   protected void onResume() {
     super.onResume();
-    Utility.isInternetOn(this);
+
   }
 
   

@@ -225,7 +225,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginLeft="@dimen/text_left_margin"
-                            android:text="Chotu"
+                            android:text="Knit"
+                            android:singleLine="true"
                             android:textColor="@color/profile_heading"
                             android:textSize="15sp" />
                     </LinearLayout>

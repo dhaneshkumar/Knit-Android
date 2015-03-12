@@ -72,10 +72,6 @@ public class Messages extends Fragment {
     public static SwipeRefreshLayout mPullToRefreshLayout;
     private LinearLayout inemptylayout;
     private Queries query  ;
-    private boolean checkInternet = false;
-    // public static LinearLayout progressbar;
-    static Button notifCount;
-    static int mNotifCount = 0;
     private LruCache<String, Bitmap> mMemoryCache;
     private Typeface typeFace;
     String userId;
@@ -112,7 +108,8 @@ public class Messages extends Fragment {
                     intent.putExtra("pushOpen", false);
                     getActivity().setIntent(intent);
 
-                    if (Utility.isInternetOn(getActivity())) {
+                    Utility utility = new Utility();
+                    if(utility.isInternetExist(getActivity())) {
                         if (mPullToRefreshLayout != null) {
                             runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                         }
@@ -284,11 +281,10 @@ public class Messages extends Fragment {
 
                 Utility.ls(" pull to refresh starting ... ");
                 // mHeaderProgressBar.setVisibility(View.GONE);
-                checkInternet = Utility.isInternetOn(getActivity());
-                if (Utility.isInternetOn(getActivity())) {
 
+                Utility utility = new Utility();
 
-                    Utility.ls(" inbox has to sstart ... ");
+                if(utility.isInternetExist(getActivity())) {                   Utility.ls(" inbox has to sstart ... ");
                     Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
 
                     Inbox newInboxMsg = new Inbox(msgs);
@@ -814,7 +810,8 @@ public class Messages extends Fragment {
 
 
                 } else {
-                    if (Utility.isInternetOn(getActivity())) {
+                    Utility utility = new Utility();
+                    if(utility.isInternetExist(getActivity())) {
                         // Have to download image from server
                         ParseFile imagefile = (ParseFile) msgObject.get("attachment");
                         holder.uploadprogressbar.setVisibility(View.VISIBLE);
@@ -917,7 +914,9 @@ public class Messages extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                if (Utility.isInternetOn(getActivity())) {
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(getActivity())) {
                     Utility.ls(" option selected  ... ");
 
                     if (mPullToRefreshLayout != null) {
@@ -935,8 +934,6 @@ public class Messages extends Fragment {
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
                 }
-                else
-                    Utility.toast("Check your Internet Connection");
 
                 break;
             default:

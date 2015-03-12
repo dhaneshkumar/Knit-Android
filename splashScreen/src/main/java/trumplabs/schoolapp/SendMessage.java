@@ -291,7 +291,9 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 builder.setMessage("Delete Class? Are you sure?")
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
-                                if (!Utility.isInternetOn(SendMessage.this)) {
+                                Utility utility = new Utility();
+
+                                if(utility.isInternetExist(SendMessage.this)) {
                                     Utility.toast("No internet!! Can't delete!");
                                     return;
                                 }
@@ -715,8 +717,9 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 typedtxt = typedmsg.getText().toString().trim();  //message to send
 
                 //check internet connection
-                if (!Utility.isInternetOn(SendMessage.this)) {
-                    Utility.toast("No internet Connection!");
+                Utility utility = new Utility();
+
+                if(!utility.isInternetExist(SendMessage.this)) {
                     return;
                 }
                 if (!typedtxt.equals("") && sendimgpreview.getVisibility() == View.GONE) {
@@ -865,7 +868,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     // message was not sent
                     groupDetails.remove(groupDetails1); //removing entry from list view
                     myadapter.notifyDataSetChanged();
-                    Utility.toast("oops, Message wasn't sent. Try Again!");
+                    Utility.toast("Oops! Message wasn't sent. Try Again!");
                     updProgressBar.setVisibility(View.GONE);
                     e.printStackTrace();
 

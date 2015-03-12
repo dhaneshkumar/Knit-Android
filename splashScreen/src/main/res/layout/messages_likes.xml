@@ -42,10 +42,10 @@
                 android:layout_marginRight="4dp"
                 android:layout_toRightOf="@+id/image"
                 android:ellipsize="end"
-                android:maxEms="10"
+                android:maxEms="9"
                 android:textColor="#363636"
                 android:singleLine="true"
-                android:text="ENGLISH"
+                android:text="ENGLISH gfddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
@@ -86,9 +86,10 @@
                 android:ellipsize="end"
                 android:gravity="bottom"
                 android:maxEms="10"
+                android:layout_marginRight="20dp"
                 android:paddingBottom="2dp"
                 android:singleLine="true"
-                android:text="Ms Seema"
+                android:text="Ms Seema gffffffffffffffffffffffffffffffffffffffffffffffffffd"
                 android:textColor="@color/darkergrey"
                 android:textSize="12sp" />
 
