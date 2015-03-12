@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,6 +50,7 @@ import java.util.Date;
 import java.util.List;
 
 import BackGroundProcesses.Inbox;
+import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -76,6 +79,7 @@ public class Messages extends Fragment {
     private Typeface typeFace;
     String userId;
     public static int totalInboxMessages; //total pinned messages in inbox
+    LinearLayout mainLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -89,8 +93,30 @@ public class Messages extends Fragment {
         mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
         mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
 
+
         listv = (RecyclerView) getActivity().findViewById(R.id.msg_list);
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);
+        mainLayout = (LinearLayout)  getActivity().findViewById(R.id.msgCntLayout);
+
+        PopupWindow popUp = new PopupWindow(getActivity());
+        LinearLayout layout = new LinearLayout(getActivity());
+
+        TextView tv = new TextView(getActivity());
+
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        tv.setText("No Internet Connection");
+        layout.addView(tv, params);
+        tv.setPadding(32,32,32,32);
+        popUp.setContentView(layout);
+        // popUp.showAtLocation(layout, Gravity.BOTTOM, 10, 10);
+        //mainLayout.addView(but, params);
+
+        popUp.showAtLocation(mainLayout, Gravity.NO_GRAVITY, 100, 100);
+
+
+
 
       /*
       Check for push open
@@ -118,6 +144,16 @@ public class Messages extends Fragment {
                 }
             }
         }
+
+
+        getActivity().findViewById(R.id.inemptylink).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                JoinClassDialog joinClassDialog = new JoinClassDialog();
+                joinClassDialog.show(fm, "Join Class");
+            }
+        });
 
 
         typeFace =
@@ -696,7 +732,35 @@ public class Messages extends Fragment {
          * Creating popmenu for copying text
          */
 
-                        LayoutInflater layoutInflater
+                        //Defualt copy text menu
+                        PopupMenu menu = new PopupMenu(getActivity(), v);
+
+                        menu.getMenuInflater().inflate(R.menu.copy_text, menu.getMenu());
+
+                        menu.show();
+
+
+                        // setting menu click functionality
+                        menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+
+                            @Override
+                            public boolean onMenuItemClick(MenuItem item) {
+
+                                switch (item.getItemId()) {
+                                    case R.id.copy:
+
+                                        Utility.copyToClipBoard(getActivity(), "Message", message);
+                                        break;
+
+                                    default:
+                                        break;
+                                }
+                                return true;
+                            }
+                        });
+
+                        //smaller copy-text menu
+                      /*  LayoutInflater layoutInflater
                                 = (LayoutInflater) getActivity().getBaseContext()
                                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -721,7 +785,12 @@ public class Messages extends Fragment {
                         });
 
 
-                        popupWindow.showAsDropDown(holder.copyLayout);
+                        popupWindow.showAsDropDown(holder.copyLayout);*/
+
+
+
+
+
 
                     }
                 });

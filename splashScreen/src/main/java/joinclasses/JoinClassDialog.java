@@ -170,6 +170,9 @@ public class JoinClassDialog extends DialogFragment {
                     //hiding keyboard
                    // if(getActivity() != null)
                      //   Tools.hideKeyboard(getActivity());
+                    //to hide keyboard when showing dialog fragment
+                    getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
 
                     //checking for internet connection
                     if (Utility.isInternetOn(getActivity())) {

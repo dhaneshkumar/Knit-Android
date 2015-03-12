@@ -7,6 +7,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -46,7 +47,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static SmoothProgressBar smoothProgressBar;
     static TextView errorMsgTV;
     static TextView resendActionTV;
-    TextView autodetectLine;
 
     static String verificationCode;
     static Context activityContext;
@@ -67,7 +67,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         smoothProgressBar = (SmoothProgressBar) findViewById(R.id.progressHeader);
         errorMsgTV = (TextView) findViewById(R.id.errorMessage);
         resendActionTV = (TextView) findViewById(R.id.resendAction);
-        autodetectLine = (TextView) findViewById(R.id.autodetectLine);
+        TextView header = (TextView) findViewById(R.id.header);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -75,12 +75,15 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             isLogin = getIntent().getExtras().getBoolean("login");
         }
 
-        if(isLogin){
-            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneLoginPage.phoneNumber);
-        }
-        else{
-            autodetectLine.setText("We are trying to autodetect verification code sent to " + PhoneSignUpName.phoneNumber);
-        }
+
+        String headerText = "We are trying to autodetect verification code sent to ";
+        if(isLogin)
+            headerText += " <font color='#000000'>"+  PhoneLoginPage.phoneNumber +" </font>";
+        else
+            headerText += " <font color='#000000'>"+  PhoneSignUpName.phoneNumber +" </font>";
+
+        header.setText(Html.fromHtml(headerText), TextView.BufferType.SPANNABLE);
+
 
         //Again send the verification code
         resendActionTV.setOnClickListener(new View.OnClickListener() {

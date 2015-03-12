@@ -49,5 +49,16 @@
         android:textColor="@color/black"
         android:textSize="16sp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="0dp"
+        android:textSize="11sp"
+        android:textColor="@color/grey_light"
+        android:layout_marginLeft="4dp"
+        android:text="*You may receive a verification call/sms on this number"
+        />
+
+
 
 </LinearLayout>

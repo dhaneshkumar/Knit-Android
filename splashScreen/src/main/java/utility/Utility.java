@@ -8,18 +8,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +54,8 @@ import loginpages.Signup;
 import notifications.AlarmTrigger;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MainActivity;
 
 public class Utility extends MyActionBarActivity {
 
@@ -148,8 +157,7 @@ public class Utility extends MyActionBarActivity {
         session.reSetSignUpAccount();
         session.reSetChildList();
         session.reSetDefaultClassJoinStatus();
-        session.reSetAppMemberVersion();
-        session.reSetSmsMemberVersion();
+        session.reSetActionBarHeight();
 
         Intent i = new Intent(_context, Signup.class);
         // Closing all the Activities
@@ -430,6 +438,27 @@ public class Utility extends MyActionBarActivity {
         return false;
     }
 
+
+
+    public  boolean isInternetExist(Activity activity) {
+        ConnectivityManager connec =
+                (ConnectivityManager) Application.getAppContext().getSystemService(
+                        Context.CONNECTIVITY_SERVICE);
+        // ARE WE CONNECTED TO THE NET
+        if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
+                || connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) {
+
+            return true;
+        } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
+                || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
+
+            showPopup(activity);
+            return false;
+        }
+
+        return false;
+    }
+
     public static String generateCode() {
         int max = 99999;
         int min = 10001;
@@ -652,5 +681,96 @@ public class Utility extends MyActionBarActivity {
         Calendar origin = Calendar.getInstance();
         origin.set(2011, 0, 1, 0, 0);//2011(year), 0(January month), 1(Day), 0(hour), 0(minute)
         return origin.getTime();
+    }
+
+
+
+
+
+    // The method that displays the popup.
+    public void showPopup(Activity context) {
+
+        LayoutInflater layoutInflater = (LayoutInflater) context
+                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View layout = layoutInflater.inflate(R.layout.no_internet_connection, null);
+
+        // Creating the PopupWindow
+        final PopupWindow popup = new PopupWindow(context);
+        popup.setContentView(layout);
+
+        /*
+        Getting screen width in pixels
+         */
+        int measuredWidth = 0;
+        int measuredHeight = 0;
+        WindowManager w = context.getWindowManager();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            Point size = new Point();
+            w.getDefaultDisplay().getSize(size);
+            measuredWidth = size.x;
+            measuredHeight = size.y;
+        } else {
+            Display d = w.getDefaultDisplay();
+            measuredWidth = d.getWidth();
+            measuredHeight = d.getHeight();
+        }
+
+        popup.setWidth(measuredWidth);
+        popup.setHeight(70);
+       // popup.setFocusable(true);
+
+        // Clear the default translucent background
+        popup.setBackgroundDrawable(new BitmapDrawable());
+
+
+        //finding statusbar height
+        int statusBarHeight = 0;
+        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
+        }
+
+
+
+
+        //finding action bar height
+        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
+        int actionBarHeight = sessionManager.getActionBarHeight();
+        if (actionBarHeight == 0) {
+            final TypedValue tv = new TypedValue();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                if (context.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
+                    actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
+            }
+            else if (context.getTheme().resolveAttribute( android.support.v7.appcompat.R.attr.actionBarSize, tv, true))
+            {
+                actionBarHeight = TypedValue.complexToDimensionPixelSize( tv.data,context.getResources().getDisplayMetrics());
+            }
+        }
+
+
+        //  Log.d("ACTION", "StatusBar Height= " + statusBarHeight + " , TitleBar Height = " + titleBarHeight);
+        Log.d("ACTION","action bar height : " + actionBarHeight);
+
+        Point p = new Point();
+        p.x = 0;
+        p.y = statusBarHeight + actionBarHeight;
+
+        // Displaying the popup at the specified location, + offsets.
+        popup.showAtLocation(layout, Gravity.NO_GRAVITY, p.x , p.y);
+
+        //Auto hide popup after 5 seconds.
+        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                //Do something here
+                if(popup != null)
+                    popup.dismiss();
+            }
+        }, 3000);
+
+
+
     }
 }

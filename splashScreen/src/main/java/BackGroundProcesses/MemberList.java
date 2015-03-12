@@ -192,6 +192,17 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
         if (Classrooms.createdClassAdapter != null)
             Classrooms.createdClassAdapter.notifyDataSetChanged();
 
+        int memberCount = 0;
+        Queries memberQuery = new Queries();
+        try {
+            memberCount = memberQuery.getMemberCount(groupCode);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if(Subscribers.subscriberTV != null)
+            Subscribers.subscriberTV.setText(memberCount + " subscribers");
+
         super.onPostExecute(strings);
     }
 }

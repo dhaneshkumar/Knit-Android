@@ -41,6 +41,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
 import utility.Queries;
+import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 
@@ -177,9 +178,22 @@ public class Classrooms extends Fragment {
         createClassTV.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                CreateClassDialog createClassDialog = new CreateClassDialog();
-                createClassDialog.show(fm, "create Class");
+
+                //setting action bar height locally
+                final SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                int actionBarHeight = sessionManager.getActionBarHeight();
+
+                if(actionBarHeight == 0)
+                    sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
+
+
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(getActivity())) {
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    CreateClassDialog createClassDialog = new CreateClassDialog();
+                    createClassDialog.show(fm, "create Class");
+                }
             }
         });
 
@@ -189,14 +203,28 @@ public class Classrooms extends Fragment {
         joinClassTV.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm = getActivity().getSupportFragmentManager();
-                JoinClassDialog joinClassDialog = new JoinClassDialog();
-                joinClassDialog.show(fm, "Join Class");
+
+                //setting action bar height locally
+                final SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                int actionBarHeight = sessionManager.getActionBarHeight();
+
+                if(actionBarHeight == 0)
+                    sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
+
+                Utility utility = new Utility();
+
+                if(utility.isInternetExist(getActivity())) {
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm, "Join Class");
+                }
             }
         });
 
         initialiseListViewMethods();
         super.onActivityCreated(savedInstanceState);
+
+
     }
 
 

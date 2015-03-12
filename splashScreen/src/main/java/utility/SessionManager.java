@@ -37,14 +37,12 @@ public class SessionManager {
   int PRIVATE_MODE = 0;
 
   private static final String PREF_NAME = "AndroidHivePref";
-  public static final String CURRENT_TIME = "current_time";
   public static final String APP_OPENING_COUNT = "app_opening_count";
   public static final String SIGNUP = "signUP";
   public static final String CHILD_NAME_LIST ="childNameList";
   public static final String DEFAULT_CLASS_EXIST = "defaultClasExist";
   public static final String TIME_DELTA = "time_delta";
-  public static final String APP_MEMBER_VERSION = "app_member_version";
-  public static final String SMS_MEMBER_VERSION = "sms_member_version";
+  public static final String ACTIONBAR_HEIGHT = "actionBarHeight";
 
   public SessionManager() {}
 
@@ -282,43 +280,23 @@ public class SessionManager {
      return null;
     }
 
-
-
-  /*
-  * Maintaining app member version count
-  */
-    public void setAppMemberVersion(int version) {
-
-        editor.putInt(APP_MEMBER_VERSION, version);
-        editor.commit();
-    }
-
-    public void reSetAppMemberVersion() {
-        editor.putInt(APP_MEMBER_VERSION, 0);
-        editor.commit();
-    }
-    public int getAppMemberVersion() {
-        int version = pref.getInt(APP_MEMBER_VERSION, 0);
-        return version;
-    }
-
-
+/***************************************************************************************/
 
     /*
-    * Maintaining sms member version count
+    * Maintaining action bar height
     */
-    public void setSmsMemberVersion(int version) {
+    public void setActionBarHeight(int height) {
 
-        editor.putInt(SMS_MEMBER_VERSION, version);
+        editor.putInt(ACTIONBAR_HEIGHT, height);
         editor.commit();
     }
 
-    public void reSetSmsMemberVersion() {
-        editor.putInt(SMS_MEMBER_VERSION, 0);
+    public void reSetActionBarHeight() {
+        editor.putInt(ACTIONBAR_HEIGHT, 0);
         editor.commit();
     }
-    public int getSmsMemberVersion() {
-        int version = pref.getInt(SMS_MEMBER_VERSION, 0);
+    public int getActionBarHeight() {
+        int version = pref.getInt(ACTIONBAR_HEIGHT, 0);
         return version;
     }
 }

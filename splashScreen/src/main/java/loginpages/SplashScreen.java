@@ -21,6 +21,7 @@ import baseclasses.MyActionBarActivity;
 import notifications.AlarmTrigger;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FontsOverride;
 import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
@@ -50,12 +51,9 @@ public class SplashScreen extends MyActionBarActivity {
     // setting new font
     FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Roboto-Regular.ttf");
 
-
-
     // seetting up animation effect
     animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
     logoLayout.startAnimation(animationFadeIn);
-
 
 
     /*
@@ -126,6 +124,10 @@ public class SplashScreen extends MyActionBarActivity {
         try {
           // waits for 800ms
           sleep(1000);
+
+            Constants.actionBarHeight = getSupportActionBar().getHeight();
+
+            Log.d("action", "refresher action bar :" + getSupportActionBar().getHeight());
 
           // start loginpage activity
 
