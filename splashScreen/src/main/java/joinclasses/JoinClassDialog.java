@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -168,8 +169,12 @@ public class JoinClassDialog extends DialogFragment {
                     }
 
                     //hiding keyboard
-                   // if(getActivity() != null)
-                     //   Tools.hideKeyboard(getActivity());
+                    if(getActivity() != null)
+                    {
+                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(joinButton.getWindowToken(), 0);
+                    }
+
                     //to hide keyboard when showing dialog fragment
                     getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
@@ -270,18 +275,21 @@ public class JoinClassDialog extends DialogFragment {
      */
     class AddChild_Background extends AsyncTask<Void, Void, Boolean> {
         boolean classExist; //flag to test whether class already added in user's joined-group or not
+        boolean classCodeNotExist;
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            if (userId != null && childName != null) {
+            if (userId != null && (!UtilString.isBlank(childName))) {
 
                 /*
                 * Retrieving user details
                 */
                 childName = childName.trim();
+                childName = UtilString.changeFirstToCaps(childName);
                 childName = UtilString.parseString(childName);
 
                 classExist = false; //setting flag initially false
+                classCodeNotExist = false; //Assuming class code exist
                 /*
                 * Change first letter to caps
                 */
@@ -301,7 +309,12 @@ public class JoinClassDialog extends DialogFragment {
                     else if (result == 2) {
                         classExist = true;    //already joined
                         return false;
-                    } else
+                    }
+                    else if(result ==3) {
+                        classCodeNotExist = true;
+                        return false;
+                    }
+                    else
                         return false;       //failed to join
 
                 } else
@@ -360,9 +373,11 @@ public class JoinClassDialog extends DialogFragment {
                 dialog.dismiss();
 
             } else {
-                if (classExist) {
+                if (classExist)
                     Utility.toast("Class room Already added.");
-                } else
+                else if(classCodeNotExist)
+                    Utility.toast("Entered class-code doesn't exist. \n Please enter correct code");
+                else
                     Utility.toast("Sorry, Something went wrong. Try Again.");
 
                 progressLayout.setVisibility(View.GONE);

@@ -45,7 +45,7 @@
                 android:maxEms="9"
                 android:textColor="#363636"
                 android:singleLine="true"
-                android:text="ENGLISH gfddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+                android:text="ENGLISH "
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
@@ -89,7 +89,7 @@
                 android:layout_marginRight="20dp"
                 android:paddingBottom="2dp"
                 android:singleLine="true"
-                android:text="Ms Seema gffffffffffffffffffffffffffffffffffffffffffffffffffd"
+                android:text="Ms Seema "
                 android:textColor="@color/darkergrey"
                 android:textSize="12sp" />
 

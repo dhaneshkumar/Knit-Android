@@ -10,26 +10,15 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Point;
-import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -38,7 +27,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,7 +38,6 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.RequestPasswordResetCallback;
 import com.parse.SaveCallback;
 
 import java.io.File;
@@ -67,6 +54,7 @@ import joinclasses.School;
 import library.DelayAutoCompleteTextView;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.ChooserDialog;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
@@ -83,12 +71,10 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     private String name;
     private String phone;
     public static String school;
-    private School school1;
     public static LinearLayout progressBarLayout;
     public static LinearLayout profileLayout;
     private ArrayAdapter schoolsAdapter;
     private Context actcontext;
-    private Point p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -331,16 +317,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     }
 
 
-
-
-
-
-
-
-
-
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -378,7 +354,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     try {
                         updateProfilePic(filePath, userId);
                     } catch (IOException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
                     break;
@@ -415,6 +390,15 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
                 photoPickerIntent.setType("image/*");
                 startActivityForResult(photoPickerIntent, 301);
+
+               /* FragmentManager fm = getSupportFragmentManager();
+                ChooserDialog openchooser = new ChooserDialog();
+                Bundle args = new Bundle();
+                args.putString("flag", "PROFILE");
+
+                openchooser.setArguments(args);
+
+                openchooser.show(fm, "Add Image");*/
                 break;
 
             case R.id.editName:
@@ -463,65 +447,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                             }
                                         }
                                     });
-
-                  /*
-                   * updatin creator in codegroup
-                   */
-
-                                    /*
-                                    ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-                                    query.whereEqualTo("senderId", userId);
-                                    query.findInBackground(new FindCallback<ParseObject>() {
-                                        public void done(List<ParseObject> itemList, ParseException e) {
-                                            if (e == null) {
-                                                if (itemList != null) {
-                                                    for (int i = 0; i < itemList.size(); i++) {
-                                                        itemList.get(i).put("Creator", value);
-                                                        itemList.get(i).saveEventually();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });
-                                    */
-
-                  /*
-                   * updating name in Group member class. Not needed as now using associated name instead of parent's name
-                   */
-
-                                    /*ParseQuery<ParseObject> memberQuery = ParseQuery.getQuery("GroupMembers");
-                                    memberQuery.whereEqualTo("emailId", userId);
-                                    memberQuery.findInBackground(new FindCallback<ParseObject>() {
-                                        public void done(List<ParseObject> itemList, ParseException e) {
-                                            if (e == null) {
-                                                if (itemList != null) {
-                                                    for (int i = 0; i < itemList.size(); i++) {
-                                                        itemList.get(i).put("name", value);
-                                                        itemList.get(i).saveEventually();
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    });*/
-
-                  /*
-                   * updating Creator in GroupDetails class
-                   */
-
-                                    // ParseQuery<ParseObject> msgQuery = ParseQuery.getQuery("GroupDetails");
-                                    // msgQuery.whereEqualTo("senderId", userId);
-                                    // msgQuery.findInBackground(new FindCallback<ParseObject>() {
-                                    // public void done(List<ParseObject> itemList, ParseException e) {
-                                    // if (e == null) {
-                                    // if (itemList != null) {
-                                    // for (int i = 0; i < itemList.size(); i++) {
-                                    // itemList.get(i).put("Creator", value);
-                                    // itemList.get(i).saveEventually();
-                                    // }
-                                    // }
-                                    // }
-                                    // }
-                                    // });
 
 
                                 }
@@ -747,8 +672,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
        */
             case R.id.feedback:
                 FeedBackClass feedBack = new FeedBackClass();
-                FragmentManager fm = getSupportFragmentManager();
-                feedBack.show(fm, "FeedBackClass");
+                FragmentManager fm1 = getSupportFragmentManager();
+                feedBack.show(fm1, "FeedBackClass");
 
                 break;
 

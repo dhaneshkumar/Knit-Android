@@ -15,12 +15,16 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import baseclasses.MyActionBarActivity;
@@ -61,15 +65,33 @@ public class FAQs extends MyActionBarActivity {
       if (faqList == null || faqList.size() == 0) {
 
 
-          Utility utility = new Utility();
-          if(utility.isInternetExist(this)){
-          editLayout.setVisibility(View.GONE);
-          progressLayout.setVisibility(View.VISIBLE);
 
-          GetServerFaqs serverFaqs =
-              new GetServerFaqs(ParseUser.getCurrentUser().getString("role"));
-          serverFaqs.execute();
-        }
+
+          //Storing action bar height locally
+          Thread thread = new Thread() {
+              @Override
+              public void run() {
+                  try {
+                      while (true) {
+                          sleep(800);
+                          Utility utility = new Utility();
+                          if(utility.isInternetExist(FAQs.this)){
+                              editLayout.setVisibility(View.GONE);
+                              progressLayout.setVisibility(View.VISIBLE);
+
+                              GetServerFaqs serverFaqs =
+                                      new GetServerFaqs(ParseUser.getCurrentUser().getString("role"));
+                              serverFaqs.execute();
+                          }
+                      }
+                  } catch (InterruptedException e) {
+                      e.printStackTrace();
+                  }
+              }
+          };
+
+          thread.start();
+
       }
 
     } catch (ParseException e) {
@@ -179,15 +201,25 @@ public class FAQs extends MyActionBarActivity {
 
     @Override
     protected Void doInBackground(Void... params) {
-      ParseQuery<ParseObject> query = ParseQuery.getQuery("FAQs");
-      query.orderByAscending(Constants.TIMESTAMP);
-
-      if (role.equals("Parent"))
-        query.whereEqualTo("role", role);
 
       List<ParseObject> faqs = null;
       try {
-        faqs = query.find();
+
+        HashMap<String, Date> param = new HashMap<>();
+
+          Date d = null;
+          try {
+              SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+              // here set the pattern as you date in string was containing like date/month/year
+
+              d = sdf.parse("20/01/2014");
+          } catch (java.text.ParseException e) {
+              e.printStackTrace();
+          }
+
+          param.put("date", d);
+          faqs = ParseCloud.callFunction("faq", param);
+
       } catch (ParseException e) {
       }
 

@@ -191,7 +191,7 @@ public class InviteTeacher extends MyActionBarActivity {
                     Utility.toast("Please enter atleast phone number or email");
                 else {
                     Utility utility = new Utility();
-                    if(utility.isInternetExist(InviteTeacher.this)) {
+                    if(! utility.isInternetExist(InviteTeacher.this)) {
                         break;
                     }
 

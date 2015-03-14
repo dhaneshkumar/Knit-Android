@@ -187,7 +187,11 @@ public class JoinedClassInfo extends MyActionBarActivity {
         }
 
         //set ui elements
-        setTitle(className);
+
+        setTitle(UtilString.appendDots(className,20));
+
+
+
         classNameTV.setText(className);
 
         if(classCode.equals(Config.defaultParentGroupCode) || classCode.equals(Config.defaultTeacherGroupCode))
@@ -230,6 +234,8 @@ public class JoinedClassInfo extends MyActionBarActivity {
                         String newAssignedName = input.getText().toString();
 
                         if (!UtilString.isBlank(newAssignedName)) {
+
+                            newAssignedName = UtilString.changeFirstToCaps(newAssignedName);
                             Utility utility = new Utility();
 
                             if(utility.isInternetExist(JoinedClassInfo.this)) {
@@ -282,7 +288,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
-                    Utility.toast("WhatsApp not installed !");
+                    Utility.toast("Sorry! WhatsApp not installed");
                 }
             }
         });

@@ -72,6 +72,7 @@
                 android:text="KNIT 2A"
                 android:textColor="@color/black"
                 android:textSize="18sp"
+                android:paddingRight="72dp"
                 />
 
             <TextView
@@ -95,7 +96,6 @@
                 android:text="0 subscribers"
                 android:textSize="11sp"
                 android:layout_below="@+id/className"
-                android:layout_alignBottom="@+id/textView3"
                 android:layout_alignLeft="@+id/school"
                 android:layout_alignStart="@+id/school" />
 

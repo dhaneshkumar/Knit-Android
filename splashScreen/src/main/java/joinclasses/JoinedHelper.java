@@ -85,7 +85,9 @@ public class JoinedHelper {
         } catch (ParseException e) {
             e.printStackTrace();
 
-            Log.d("join", "class joining failed 0 --");
+            if(e.getMessage().equals("No such class exits"))
+                return 3;
+
             return 0;
         }
 

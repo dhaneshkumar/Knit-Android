@@ -260,8 +260,6 @@ public class Subscribers extends MyActionBarActivity {
                     //refreshing member list in background
                     MemberList memberList = new MemberList(classCode);
                     memberList.execute();
-                } else {
-                    Utility.toast("Check your Internet connection");
                 }
                 break;
 
@@ -502,6 +500,9 @@ public class Subscribers extends MyActionBarActivity {
 
                             if(isRemoved){
                                 obj.fetch();        //retrieving updates from server
+
+                                /*******    check whether fetched obj saved automatically or not ********/
+                                memberDetails = memberQuery.getLocalClassMembers(classCode);
                                 return true;
                             }
                         }
@@ -524,10 +525,27 @@ public class Subscribers extends MyActionBarActivity {
                     Classrooms.createdClassAdapter.notifyDataSetChanged();
 
 
+                //updating member count display view
+                int memberCount = 0;
+
+                try {
+                    memberCount = memberQuery.getMemberCount(classCode);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if(memberCount == 0)
+                    emptyTV.setVisibility(View.VISIBLE);
+                else
+                    emptyTV.setVisibility(View.GONE);
+
+                subscriberTV.setText(memberCount + " subscribers");
+
+
                 Utility.toast(memberName +" successfully removed from your classroom.");
             }
             else
-                Utility.toast("Sorry, something went wrong. Try Again");
+                Utility.toast("Sorry, something went wrong.\n Try Again");
 
             progressBarLayout.setVisibility(View.GONE);
             editProfileLayout.setVisibility(View.VISIBLE);

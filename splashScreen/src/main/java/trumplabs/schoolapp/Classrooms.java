@@ -33,6 +33,7 @@ import BackGroundProcesses.CreatedClassRooms;
 import BackGroundProcesses.JoinedClassRooms;
 import BackGroundProcesses.UpdateSuggestions;
 import joinclasses.JoinClassDialog;
+import joinclasses.JoinClassesContainer;
 import joinclasses.JoinSuggestedClass;
 import joinclasses.JoinedClassInfo;
 import joinclasses.JoinedHelper;
@@ -186,14 +187,9 @@ public class Classrooms extends Fragment {
                 if(actionBarHeight == 0)
                     sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
 
-
-              //  Utility utility = new Utility();
-
-              //  if(utility.isInternetExist(getActivity())) {
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     CreateClassDialog createClassDialog = new CreateClassDialog();
                     createClassDialog.show(fm, "create Class");
-              //  }/************************************************************************************************************************
             }
         });
 
@@ -208,9 +204,15 @@ public class Classrooms extends Fragment {
                 final SessionManager sessionManager = new SessionManager(Application.getAppContext());
                 int actionBarHeight = sessionManager.getActionBarHeight();
 
-                if(actionBarHeight == 0)
-                    sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
+                if(actionBarHeight == 0) {
 
+                    //In case of teacher classroom is inside MainActivity activity but for parents, its in JoinClassContainer activity
+
+                    if(ParseUser.getCurrentUser().getString("role").equals(Constants.TEACHER))
+                        sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
+                    else
+                        sessionManager.setActionBarHeight(((JoinClassesContainer) getActivity()).getSupportActionBar().getHeight());
+                }
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                     joinClassDialog.show(fm, "Join Class");

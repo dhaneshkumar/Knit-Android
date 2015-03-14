@@ -293,8 +293,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                             public void onClick(DialogInterface dialog, int id) {
                                 Utility utility = new Utility();
 
-                                if(utility.isInternetExist(SendMessage.this)) {
-                                    Utility.toast("No internet!! Can't delete!");
+                                if(! utility.isInternetExist(SendMessage.this)) {
+                                    Utility.toast("No internet Connection! Can't delete your class");
                                     return;
                                 }
 
