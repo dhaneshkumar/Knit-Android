@@ -33,8 +33,10 @@ public class Queries {
 
     public Queries() {
         ParseUser userObject = ParseUser.getCurrentUser();
-        if (userObject == null)
+        if (userObject == null) {
             Utility.logout();
+            return;
+        }
         userId = userObject.getUsername();
     }
 

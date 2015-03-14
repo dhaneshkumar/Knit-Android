@@ -64,34 +64,12 @@ public class FAQs extends MyActionBarActivity {
 
       if (faqList == null || faqList.size() == 0) {
 
+          editLayout.setVisibility(View.GONE);
+          progressLayout.setVisibility(View.VISIBLE);
 
-
-
-          //Storing action bar height locally
-          Thread thread = new Thread() {
-              @Override
-              public void run() {
-                  try {
-                      while (true) {
-                          sleep(800);
-                          Utility utility = new Utility();
-                          if(utility.isInternetExist(FAQs.this)){
-                              editLayout.setVisibility(View.GONE);
-                              progressLayout.setVisibility(View.VISIBLE);
-
-                              GetServerFaqs serverFaqs =
-                                      new GetServerFaqs(ParseUser.getCurrentUser().getString("role"));
-                              serverFaqs.execute();
-                          }
-                      }
-                  } catch (InterruptedException e) {
-                      e.printStackTrace();
-                  }
-              }
-          };
-
-          thread.start();
-
+          GetServerFaqs serverFaqs =
+              new GetServerFaqs(ParseUser.getCurrentUser().getString("role"));
+          serverFaqs.execute();
       }
 
     } catch (ParseException e) {
