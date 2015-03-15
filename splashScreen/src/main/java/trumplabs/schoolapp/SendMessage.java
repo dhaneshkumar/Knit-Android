@@ -102,7 +102,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ccmsging_layout);
 
-
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
             if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {

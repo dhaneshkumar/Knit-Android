@@ -40,8 +40,6 @@ public class Queries {
         userId = userObject.getUsername();
     }
 
-
-
     public List<ParseObject> getLocalInboxMsgs() throws ParseException {
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");

@@ -1068,7 +1068,15 @@ public class Messages extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
+
             Messages.myadapter.notifyDataSetChanged();
+
+            if (msgs.size() == 0)
+                inemptylayout.setVisibility(View.VISIBLE);
+            else
+                inemptylayout.setVisibility(View.GONE);
+
+
             super.onPostExecute(aVoid);
         }
     }

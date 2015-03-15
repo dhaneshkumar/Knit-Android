@@ -37,7 +37,7 @@
      </string-array>
 
     <string-array name="title">
-        <item>Title</item>
+        <item>Select Title</item>
         <item>Mr.</item>
         <item>Ms.</item>
         <item>Mrs.</item>

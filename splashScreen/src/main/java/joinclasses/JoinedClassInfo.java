@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -227,6 +228,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
                 final EditText input = new EditText(activityContext);
                 input.setText(assignedName);
+                input.setTextColor(Color.BLACK);
                 layout.addView(input, params);
                 alert.setView(layout);
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

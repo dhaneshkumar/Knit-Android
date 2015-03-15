@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -61,6 +62,11 @@ public class PhoneSignUpName extends MyActionBarActivity {
             phoneNumberET.setText(phoneNumber);
             titleSpinner.setSelection(titleSpinnerPosition);
         }
+
+
+        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.title, R.layout.spinner_item);
+        titleSpinner.setAdapter(adapter);
+
     }
 
     void resetFields(){

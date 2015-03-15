@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -416,6 +417,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 nameParams.setMargins(30, 30, 30, 30);
 
                 final EditText nameInput = new EditText(this);
+                nameInput.setTextColor(Color.BLACK);
                 nameInput.setText(name);
                 nameLayout.addView(nameInput, nameParams);
                 nameDialog.setView(nameLayout);

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+<style name="AppBaseTheme" parent="Theme.AppCompat.Light">
+    <item name="colorPrimary">@color/color_primary</item>
+    <item name="colorPrimaryDark">@color/color_secondary</item>
+    <item name="android:navigationBarColor">@color/color_secondary</item>
+    <item name="colorControlNormal">@color/white</item>
+    <item name="android:textColorPrimary">@color/white</item>
+    <item name="android:textColorSecondary">@color/white</item>
+    <item name="android:itemTextAppearance">@style/TextAppearance</item>
+    <item name="colorAccent">@color/color_secondary</item>
+</style>
+
+    <style name="TextAppearance">
+        <item name="android:textColor">@android:color/black</item>
+    </style>
+
+</resources>
