@@ -58,7 +58,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
     //time interval before event is supposed to occur
     static long parentNoActivityInterval = 5 * Constants.HOUR_MILLISEC; //5 hours
     static long teacherNoActivityInterval = 1 * Constants.HOUR_MILLISEC; //1 hours
-    static long teacherNoSubInterval = 3 * Constants.DAY_MILLISECgit; //3 days
+    static long teacherNoSubInterval = 3 * Constants.DAY_MILLISEC; //3 days
     static long teacherNoMsgInterval = 5 * Constants.DAY_MILLISEC; //5 days
     static long teacherSendingDailyTipInterval = 3 * Constants.DAY_MILLISEC; //3 days of first classroom creation
     static long tip1Interval = 1 * Constants.HOUR_MILLISEC; //1 hour
