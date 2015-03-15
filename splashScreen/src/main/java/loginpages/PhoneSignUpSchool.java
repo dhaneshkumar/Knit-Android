@@ -140,6 +140,8 @@ public class PhoneSignUpSchool extends MyActionBarActivity {
 
     public static class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
         Boolean success = false;
+        Boolean networkError = false;
+
         int callerId;
         String number;
         public GenerateVerificationCode(int id, String num){ //id identifies the caller, num the phone number
@@ -159,6 +161,10 @@ public class PhoneSignUpSchool extends MyActionBarActivity {
             try {
                 success = ParseCloud.callFunction("genCode", param);
             } catch (ParseException e) {
+                Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());
+                if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    networkError = true;
+                }
                 e.printStackTrace();
                 return null;
             }
@@ -193,9 +199,16 @@ public class PhoneSignUpSchool extends MyActionBarActivity {
             }
             else{
                 SmsListener.unRegister();
-                Utility.toastLong("Oops ! some error occured. Try again");
+                String toastMsg = "Oops ! some error occured";
+                String errorMsg = "Some unexpected error occured. Please try again";
+                if(networkError){
+                    toastMsg = "Connection failure";
+                    errorMsg = "Unable to establish connection. Please try again";
+                }
+
+                Utility.toastLong(toastMsg);
                 //show error and hide timer as sms was not sent successfully
-                PhoneSignUpVerfication.showError("Some unexpected error occured. Please try again", true);
+                PhoneSignUpVerfication.showError(errorMsg, true);
                 PhoneSignUpVerfication.showResendAction();
             }
         }

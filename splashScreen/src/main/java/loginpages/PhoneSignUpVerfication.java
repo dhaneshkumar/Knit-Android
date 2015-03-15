@@ -229,6 +229,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         Boolean verifyError = false; //code verification status
         Boolean userDoesNotExistsError = false; //user doesnot exist - during login
         Boolean userAlreadyExistsError = false; //user already exists - during sigup
+        Boolean unexpectedError = false;
+
+        Boolean taskSuccess = false;
 
         String code;
 
@@ -275,6 +278,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                         public void done(ParseUser user, ParseException e) {
                             if(e == null) {
                                 if (user != null) {
+                                    taskSuccess = true;
                                     if(isLogin){
                                         PostLoginTask postLoginTask = new PostLoginTask(user);
                                         postLoginTask.execute();
@@ -296,7 +300,12 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                             }
                             else{
                                 Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
-                                loginError = true;
+                                if(e.getCode() == ParseException.CONNECTION_FAILED){
+                                    networkError = true;
+                                }
+                                else {
+                                    loginError = true;
+                                }
                             }
                         }
                     });
@@ -307,6 +316,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 }
             } catch (ParseException e) {
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "network error with message " + e.getMessage() + " code "  + e.getCode());
+                if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    networkError = true;
+                }
                 if(e.getMessage().equals("USER_DOESNOT_EXISTS")){
                     userDoesNotExistsError = true;
                 }
@@ -314,7 +326,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     userAlreadyExistsError = true;
                 }
                 else {
-                    networkError = true;
+                    unexpectedError = true;
                 }
                 e.printStackTrace();
             }
@@ -325,14 +337,19 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         @Override
         protected void onPostExecute(Void result){
             Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask");
-            if(networkError || verifyError || loginError || userAlreadyExistsError || userDoesNotExistsError){
+            if(!taskSuccess){
                 if(pdialog != null){
                     pdialog.dismiss();
                 }
             }
             if(networkError){
-                Utility.toastLong("Sorry Network Error. Try Again");
-                showError("Network Error. Try again", false);
+                Utility.toastLong("Connection failure");
+                showError("Unable to establish connection. Please try again", false);
+                showResendAction();
+            }
+            else if(unexpectedError){
+                Utility.toastLong("Oops ! some error occured.");
+                showError( "Some unexpected error occured. Please try again", false);
                 showResendAction();
             }
             else if(verifyError){
