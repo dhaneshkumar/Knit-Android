@@ -32,7 +32,10 @@ public class PhoneLoginPage extends MyActionBarActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.phone_login_page);
 
-    ParseUser user = ParseUser.getCurrentUser();
+
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+      ParseUser user = ParseUser.getCurrentUser();
     if (user != null) {
       startActivity(new Intent(getBaseContext(), SplashScreen.class));
       Intent intent = new Intent(getBaseContext(), MainActivity.class);

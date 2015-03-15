@@ -118,6 +118,9 @@ public class PhoneSignUpName extends MyActionBarActivity {
             pdialog.setMessage("Please Wait...");
             pdialog.show();*/
 
+            //Changing first letter to caps
+            displayName = UtilString.changeFirstToCaps(displayName);
+
             Intent nextIntent = new Intent(this, PhoneSignUpVerfication.class);
             //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             nextIntent.putExtra("login", false);

@@ -10,6 +10,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,8 +33,10 @@ public class Queries {
 
     public Queries() {
         ParseUser userObject = ParseUser.getCurrentUser();
-        if (userObject == null)
+        if (userObject == null) {
             Utility.logout();
+            return;
+        }
         userId = userObject.getUsername();
     }
 
@@ -143,6 +146,8 @@ public class Queries {
         while (i < m && j < n) {
             Date globalDate = globalMsg.get(i).getCreatedAt();
             Date localDate = localMsg.get(j).getDate("creationTime");
+
+
 
             if (globalDate.compareTo(localDate) == 1 || globalDate.compareTo(localDate) == 0) {
                 result.add(globalMsg.get(i));
@@ -502,6 +507,8 @@ public class Queries {
                             String child = childList.get(j);
 
                             if (!UtilString.isBlank(child)) {
+
+                                child = UtilString.changeFirstToCaps(child);
                                 MemberDetails member =
                                         new MemberDetails(members.getObjectId(), MemberDetails.APP_MEMBER, child);
                                 memberList.add(member);
@@ -548,6 +555,7 @@ public class Queries {
            */
                     String child = smsMembers.getString("subscriber");
                     if (!UtilString.isBlank(child)) {
+                        child = UtilString.changeFirstToCaps(child);
                         MemberDetails member =
                                 new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child);
                         memberList.add(member);

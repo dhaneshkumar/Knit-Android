@@ -32,16 +32,22 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.ScalingUtilities;
 import utility.Utility;
 
+/**
+ * Show dialog to select photo from gallery or camera
+ */
 public class ChooserDialog extends DialogFragment implements OnClickListener {
   File imageFile;
   String capturedimagename;
   CommunicatorInterface activity;
   Activity currentActivity;
   boolean flag = false;
+    boolean profileCall;  //It tells about caller activity : SendMessage(false) or ProfilePage(true)
+    String filePath;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -58,8 +64,22 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     builder.setView(view);
     Dialog dialog = builder.create();
     dialog.show();
+
+      if(getArguments() != null) {
+          String flag = getArguments().getString("flag");
+          if(flag.equals("PROFILE"))
+          {
+              profileCall = true;
+          }
+          else
+              profileCall = false;
+      }
+      else
+          profileCall = false;
+
     return dialog;
   }
+
 
   @Override
   public void onClick(View v) {
@@ -130,21 +150,23 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
       switch (resultCode) {
         case Activity.RESULT_OK:
           if (imageFile != null && imageFile.exists()) {
-              Utility.savePicInAppFolder(Utility.getWorkingAppDir() + "/media/" + capturedimagename);
+
+              filePath = Utility.getWorkingAppDir() + "/media/" + capturedimagename;
+
+              Utility.savePicInAppFolder(filePath);
               Utility.createThumbnail(getActivity(), capturedimagename);
+
+            /*  if(profileCall) {
+                  Uri selectedImg = intent.getData();
+
+                 // doCrop(selectedImg);
+              }*/
+
+
+
               activity.sendImagePic(capturedimagename);
           }
-            else
-          {
-              Log.d("camera", "after activity :   imagefile is null");
 
-              if(capturedimagename != null)
-              {
-                  Log.d("camera", "after activity :   " + capturedimagename);
-              }
-              else
-                  Log.d("camera", "after activity :   capturedimagename is null");
-          }
 
           break;
         case Activity.RESULT_CANCELED:
@@ -159,9 +181,14 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
 
           // changing visibility option of progressbar and imageview
-          SendMessage.picProgressBarLayout.setVisibility(View.VISIBLE);
-            SendMessage.sendimgpreview.setVisibility(View.GONE);
 
+          if(!profileCall) {
+              if (SendMessage.picProgressBarLayout != null)
+                  SendMessage.picProgressBarLayout.setVisibility(View.VISIBLE);
+
+              if (SendMessage.sendimgpreview != null)
+                  SendMessage.sendimgpreview.setVisibility(View.GONE);
+          }
           /*
            * Executing background class to load image in imageview from gallery and photos app
            */
@@ -174,8 +201,46 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
           break;
       }
     }
-    getDialog().dismiss();
+    else if (requestCode == 110) {
+          switch (resultCode) {
+              case Activity.RESULT_OK:
+                  if (imageFile != null && imageFile.exists()) {
+
+                      activity.sendImagePic(capturedimagename);
+                  }
+
+
+                  break;
+              case Activity.RESULT_CANCELED:
+                  break;
+          }
+
+
+
+      }
+      getDialog().dismiss();
   }
+
+
+    public void doCrop(Uri uriOfImageToCrop) {
+        Log.d("DEBUG_PROFILE_PAGE", "into doCrop");
+        final Intent intent = new Intent("com.android.camera.action.CROP");
+        intent.setData(uriOfImageToCrop);
+        intent.putExtra("outputX", 200);
+        intent.putExtra("outputY", 200);
+        intent.putExtra("aspectX", 1);
+        intent.putExtra("aspectY", 1);
+        intent.putExtra("scale", true);
+        intent.putExtra("noFaceDetection", true);
+
+        File file = new File(filePath);
+        if (file.exists())
+            file.delete();
+        intent.putExtra("output", Uri.fromFile(file));
+        startActivityForResult(intent, 110);
+    }
+
+
 
   public interface CommunicatorInterface {
     void sendImagePic(String imgname);
@@ -299,9 +364,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
 
       // changing visibility option
-        SendMessage.picProgressBarLayout.setVisibility(View.GONE);
-        SendMessage.sendimgpreview.setVisibility(View.VISIBLE);
+        if(!profileCall) {
+            if (SendMessage.picProgressBarLayout != null)
+                SendMessage.picProgressBarLayout.setVisibility(View.GONE);
 
+            if (SendMessage.sendimgpreview != null)
+                SendMessage.sendimgpreview.setVisibility(View.VISIBLE);
+        }
 
       if (flag) {
         Utility.toast("Connect to Internet for downloading the image");

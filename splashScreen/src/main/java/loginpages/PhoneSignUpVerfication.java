@@ -246,7 +246,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 param.put("modal", model);
                 param.put("os", "ANDROID");
 
-                param.put("name", PhoneSignUpName.displayName);
+                param.put("name", PhoneSignUpName.title + " " + PhoneSignUpName.displayName);
 
                 param.put("role", PhoneSignUpName.role);
 

@@ -25,7 +25,7 @@ public class MyActionBarActivity extends ActionBarActivity{
     
     protected void onResume() {
         super.onResume();
-        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+      //  overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         mMyApp.setCurrentActivity(this);
     }
     protected void onPause() {

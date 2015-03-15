@@ -8,6 +8,7 @@
         android:text="Knit"
         android:id="@+id/className"
         android:textSize="20sp"
+        android:singleLine="true"
         android:textColor="@color/white"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"

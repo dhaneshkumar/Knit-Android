@@ -7,11 +7,15 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import additionals.InviteParents;
 import additionals.OpenURL;
 import library.UtilString;
+import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Constants;
@@ -88,6 +92,56 @@ public class PushOpen extends ActionBarActivity {
             i.putExtra("action", action);
         }
         else { //normal notification
+
+
+            if(type.equals(Constants.USER_REMOVED_NOTIFICATION)){
+
+                //send removal message locally to user
+                //update user's joined group list
+
+                String classCode = getIntent().getExtras().getString("classCode");
+                String className = getIntent().getExtras().getString("className");
+
+
+                Log.d("removed_notification", "notification received");
+
+                if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
+
+                    ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
+                    query.fromLocalDatastore();
+                    query.whereEqualTo("code", classCode);
+
+                    Log.d("removed_notification", "notification & class code received ");
+
+                    ParseUser user = ParseUser.getCurrentUser();
+
+                    //updating user entry
+                    if (user != null) {
+                        try {
+                            user.fetch();
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        //locally generating removal message
+                        ParseObject codeGroupObject = null;
+                        try {
+                            codeGroupObject = query.getFirst();
+
+                            if (codeGroupObject != null) {
+                                EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.RemovalMsg, classCode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
+                                Log.d("removed_notification", "local message sent ");
+                            }
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+                else
+                    Log.d("removed_notification", "notification - class code null");
+            }
+
             i = new Intent(this, MainActivity.class);
             ParseUser user = ParseUser.getCurrentUser();
             if (user != null && user.getString("role").equals(Constants.TEACHER))

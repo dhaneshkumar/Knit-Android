@@ -2,6 +2,7 @@ package trumplabs.schoolapp;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -12,6 +13,7 @@ import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -31,6 +33,7 @@ import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import utility.Queries;
 import utility.SessionManager;
+import utility.Tools;
 import utility.Utility;
 
 
@@ -142,8 +145,11 @@ public class CreateClassDialog extends DialogFragment{
                          * Hidding the keyboard from screen
                          */
 
-                        /*if(getActivity() != null)
-                            Tools.hideKeyboard(getActivity());*/
+                        if(getActivity() != null)
+                        {
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(createclassbtn.getWindowToken(), 0);
+                        }
 
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);

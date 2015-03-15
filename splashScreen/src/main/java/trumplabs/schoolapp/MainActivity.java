@@ -28,6 +28,7 @@ import com.parse.ParseUser;
 import java.lang.reflect.Field;
 
 import BackGroundProcesses.Refresher;
+import additionals.RateAppDialog;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
@@ -273,6 +274,15 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             };
 
             thread.start();
+        }
+
+
+        //show rate app dialog after using 10 times app
+        if(appOpeningCount == 10) {
+            FragmentManager fm = getSupportFragmentManager();
+            RateAppDialog rateAppDialog = new RateAppDialog();
+            rateAppDialog.show(fm, "rate app");
+            session.setAppOpeningCount();
         }
 
     }

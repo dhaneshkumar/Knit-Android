@@ -25,9 +25,9 @@
             android:layout_below="@+id/head"
             android:paddingBottom="16dp"
             android:paddingLeft="16dp"
-            android:paddingRight="16dp"
+            android:paddingRight="72dp"
             android:paddingTop="16dp"
-            android:text="Rahul's Mom"
+            android:text="Rahul"
             android:textColor="@color/black"
             android:textSize="16sp" />
 

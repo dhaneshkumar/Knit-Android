@@ -35,5 +35,28 @@ public class UtilString {
    
     return userName;
   }
+
+    /**
+     *
+     * @param str - input string
+     * @param noOfLetterToShow : how to letter display in final string [default :20]
+     * @return dot appended string
+     */
+    public static String appendDots(String str, int noOfLetterToShow)
+    {
+        if(isBlank(str))
+            return "...";
+
+
+        if(str.length()> noOfLetterToShow + 2)
+        {
+            String newStr = str.substring(0,noOfLetterToShow);
+            newStr += "...";
+            return newStr;
+        }
+        else
+            return  str;
+
+    }
   
 }

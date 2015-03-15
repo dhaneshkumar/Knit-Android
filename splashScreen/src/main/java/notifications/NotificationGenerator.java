@@ -37,6 +37,7 @@ public class NotificationGenerator {
     private static int TRANSITION_NOTIFICATION_ID = 1;
     private static int UPDATE_NOTIFICATION_ID = 2;
     private static int LINK_NOTIFICATION_ID = 3;
+    private static int USER_REMOVED_NOTIFICATION_ID = 4;
 
     public static int count = 0;
     private NotificationManager notificationManager;
@@ -190,6 +191,33 @@ public class NotificationGenerator {
 
             notificationManager.notify(LINK_NOTIFICATION_ID, mBuilder.build());
         }
+        else if(notEntity.type.equals(Constants.USER_REMOVED_NOTIFICATION)){
+            Log.d("DEBUG_NOTIFICATION_GENERATOR", "user removed notification");
+            transitionNotification = notEntity;
+
+            //set title, content
+            NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
+            bigTextStyle.setBigContentTitle(notEntity.groupName);
+            bigTextStyle.bigText(notEntity.contentText);
+
+            mBuilder.setStyle(bigTextStyle);
+
+            //add actions
+            mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
+            mBuilder.addAction(R.drawable.fwd, "INBOX", clickPendingIntent);
+
+            if(extras != null){
+                clickIntent.putExtra("classCode", extras.getString("grpCode"));
+                clickIntent.putExtra("className", extras.getString("grpName"));
+                PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                mBuilder.setContentIntent(overrideClickPendingIntent);
+            }
+
+            notificationManager.notify(USER_REMOVED_NOTIFICATION_ID, mBuilder.build());
+
+
+
+        }
     }
 
     private static final String NOTIFICATION_DELETED_ACTION = "NOTIFICATION_DELETED";
@@ -249,6 +277,10 @@ public class NotificationGenerator {
             }
             else if(type.equals(Constants.LINK_NOTIFICATION)){
                 notificationId = LINK_NOTIFICATION_ID;
+                //do nothing
+            }
+            else if(type.equals(Constants.USER_REMOVED_NOTIFICATION)){
+                notificationId = UPDATE_NOTIFICATION_ID;
                 //do nothing
             }
             else{

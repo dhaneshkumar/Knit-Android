@@ -3,6 +3,7 @@ package BackGroundProcesses;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
@@ -10,6 +11,8 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import loginpages.PhoneSignUpVerfication;
@@ -132,8 +135,8 @@ public class Refresher {
 
 
             if (appOpeningCount % utility.Config.faqRefreshingcount == 0) {
-                getServerFAQs faqs = new getServerFAQs(freshUser.getString("role"));
-                faqs.doInBackgroundCore(); //no on-post-execute in this
+               // getServerFAQs faqs = new getServerFAQs(freshUser.getString("role"));
+               //faqs.doInBackgroundCore(); //no on-post-execute in this
 
                 /*
                  * saving user's mobile model no.
@@ -147,14 +150,6 @@ public class Refresher {
                     }
                 }
 
-
-                /*if (installation.getString("username") == null) {
-                    installation.put("username", freshUser.getUsername());
-                    try {
-                        installation.save();
-                    } catch (ParseException e1) {
-                    }
-                }*/
             }
 
         } else {
@@ -181,15 +176,37 @@ public class Refresher {
         }
 
         public void doInBackgroundCore(){
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("FAQs");
-            query.orderByAscending(Constants.TIMESTAMP);
 
-            if (role.equals("Parent"))
-                query.whereEqualTo("role", role);
+
+            ParseQuery<ParseObject> query = ParseQuery.getQuery("FAQs");
+            query.fromLocalDatastore();
+            query.orderByDescending(Constants.TIMESTAMP);
+            query.whereEqualTo("userId", freshUser.getUsername());
+
+            Date latestDate = null;
+
+            ParseObject msg = null;
+            try {
+                msg = query.getFirst();
+
+                if(msg != null)
+                {
+                    latestDate = msg.getDate(Constants.TIMESTAMP);
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            HashMap<String, Date> param = new HashMap<>();
+
+            if(latestDate != null)
+                param.put("date", latestDate);
+
 
             List<ParseObject> faqs = null;
             try {
-                faqs = query.find();
+
+                faqs = ParseCloud.callFunction("faq", param);
             } catch (ParseException e) {
             }
 
@@ -201,7 +218,6 @@ public class Refresher {
                         faq.put("userId", ParseUser.getCurrentUser().getUsername());
 
                     try {
-                        faq.unpin();
                         faq.pin();
                     } catch (ParseException e1) {
                     }
