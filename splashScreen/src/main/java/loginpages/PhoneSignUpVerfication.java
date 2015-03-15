@@ -274,41 +274,38 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 Boolean success = (Boolean) result.get("flag");
                 String sessionToken = (String) result.get("sessionToken");
                 if(success != null && success && sessionToken != null){
-                    ParseUser.becomeInBackground(sessionToken, new LogInCallback() {
-                        public void done(ParseUser user, ParseException e) {
-                            if(e == null) {
-                                if (user != null) {
-                                    taskSuccess = true;
-                                    if(isLogin){
-                                        PostLoginTask postLoginTask = new PostLoginTask(user);
-                                        postLoginTask.execute();
-                                    }
-                                    else {
-                                        SessionManager session = new SessionManager(Application.getAppContext());
-                                        session.setSignUpAccount();
+                    try{
+                        ParseUser user = ParseUser.become(sessionToken);
+                        if (user != null) {
+                            taskSuccess = true;
+                            if(isLogin){
+                                PostLoginTask postLoginTask = new PostLoginTask(user);
+                                postLoginTask.execute();
+                            }
+                            else {
+                                SessionManager session = new SessionManager(Application.getAppContext());
+                                session.setSignUpAccount();
 
-                                        // The current user is now set to user. Do registration in default class
-                                        Log.d("DEBUG_SIGNUP_VERIFICATION", "calling storeSchoolInBackground");
-                                        PostSignUpTask postSignUpTask = new PostSignUpTask();
-                                        postSignUpTask.execute();
-                                    }
-                                } else {
-                                    // The token could not be validated.
-                                    Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user null");
-                                    loginError = true;
-                                }
+                                // The current user is now set to user. Do registration in default class
+                                Log.d("DEBUG_SIGNUP_VERIFICATION", "calling storeSchoolInBackground");
+                                PostSignUpTask postSignUpTask = new PostSignUpTask();
+                                postSignUpTask.execute();
                             }
-                            else{
-                                Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
-                                if(e.getCode() == ParseException.CONNECTION_FAILED){
-                                    networkError = true;
-                                }
-                                else {
-                                    loginError = true;
-                                }
-                            }
+                        } else {
+                            // The token could not be validated.
+                            Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user null");
+                            loginError = true;
                         }
-                    });
+                    }
+                    catch (ParseException e){
+                        Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
+                        if(e.getCode() == ParseException.CONNECTION_FAILED){
+                            networkError = true;
+                        }
+                        else {
+                            loginError = true;
+                        }
+                    }
                 }
                 else{
                     Log.d("DEBUG_SIGNUP_VERIFICATION", "verifyCode error");
@@ -336,7 +333,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result){
-            Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask");
+            Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
             if(!taskSuccess){
                 if(pdialog != null){
                     pdialog.dismiss();
