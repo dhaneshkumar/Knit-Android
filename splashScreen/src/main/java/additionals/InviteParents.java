@@ -52,7 +52,7 @@ public class InviteParents extends MyActionBarActivity{
       }
 
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-      getSupportActionBar().setTitle("Invite Parents");
+      getSupportActionBar().setTitle("Invite Parents & Students");
 
       final String smsContent = "To subscribe via SMS, send " +
               " <font color='#000000'> "+classCode+" &lt;SPACE&gt; NAME</font>" +" to "+

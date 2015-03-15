@@ -152,7 +152,7 @@
                 android:layout_height="match_parent"
                 android:gravity="center"
                 android:layout_marginLeft="4dp"
-                android:text="Invite Parents"
+                android:text="Invite Parents &amp; Students"
                 android:textColor="@color/white"
                 android:textSize="16sp" />
         </LinearLayout>
