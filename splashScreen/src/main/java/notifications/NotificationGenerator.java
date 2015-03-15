@@ -207,16 +207,13 @@ public class NotificationGenerator {
             mBuilder.addAction(R.drawable.fwd, "INBOX", clickPendingIntent);
 
             if(extras != null){
-                clickIntent.putExtra("classCode", extras.getString("grpCode"));
-                clickIntent.putExtra("className", extras.getString("grpName"));
-                PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-                mBuilder.setContentIntent(overrideClickPendingIntent);
+                //run PushOpen.UserRemovedTask to generate local msg in background
+                String classCode = extras.getString("classCode");
+                PushOpen.UserRemovedTask userRemovedTask = new PushOpen.UserRemovedTask(groupName, classCode);
+                userRemovedTask.execute();
             }
 
             notificationManager.notify(USER_REMOVED_NOTIFICATION_ID, mBuilder.build());
-
-
-
         }
     }
 
