@@ -111,7 +111,7 @@ public class PhoneSignUpName extends MyActionBarActivity {
             Utility.toast("Choose a title!");
         else if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
             Utility.toast("Incorrect Mobile Number");
-        else{
+        else if(Utility.isInternetExist(this)) {
             //Removed school input page. So directly go to verification page
             /*pdialog = new ProgressDialog(this);
             pdialog.setCancelable(false);
@@ -129,6 +129,9 @@ public class PhoneSignUpName extends MyActionBarActivity {
             startActivity(nextIntent);
 
             generateVerificationCode.execute();
+        }
+        else{
+            Utility.toast("Check your Internet connection");
         }
     }
 }

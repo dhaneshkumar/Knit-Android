@@ -236,9 +236,8 @@ public class JoinedClassInfo extends MyActionBarActivity {
                         if (!UtilString.isBlank(newAssignedName)) {
 
                             newAssignedName = UtilString.changeFirstToCaps(newAssignedName);
-                            Utility utility = new Utility();
 
-                            if(utility.isInternetExist(JoinedClassInfo.this)) {
+                            if(Utility.isInternetExist(JoinedClassInfo.this)) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(input.getWindowToken(), 0);

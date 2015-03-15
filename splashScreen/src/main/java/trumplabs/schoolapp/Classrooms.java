@@ -230,9 +230,8 @@ public class Classrooms extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                Utility utility = new Utility();
 
-                if(utility.isInternetExist(getActivity())) {
+                if(Utility.isInternetExist(getActivity())) {
 
                     //showing refreshing bar
                     if (MainActivity.mHeaderProgressBar != null) {

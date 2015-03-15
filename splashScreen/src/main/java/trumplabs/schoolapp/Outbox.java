@@ -156,9 +156,8 @@ public class Outbox extends Fragment {
                     MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
                 // mHeaderProgressBar.setVisibility(View.GONE);
-                Utility utility = new Utility();
 
-                if(utility.isInternetExist(getActivity())) {
+                if(Utility.isInternetExist(getActivity())) {
 
                     //code to refresh outbox
                     refreshCountInBackground();
@@ -417,9 +416,8 @@ public class Outbox extends Fragment {
 
             //on refresh option selected from options menu
             case R.id.refresh:
-                Utility utility = new Utility();
 
-                if(utility.isInternetExist(getActivity())) {
+                if(Utility.isInternetExist(getActivity())) {
 
                     /*if (outboxRefreshLayout != null) {
                         runSwipeRefreshLayout(outboxRefreshLayout, 10);

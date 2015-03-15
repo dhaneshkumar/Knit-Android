@@ -180,8 +180,7 @@ public class JoinClassDialog extends DialogFragment {
 
 
                     //checking for internet connection
-                    Utility utility = new Utility();
-                    if(utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist(getActivity())) {
 
                         //calling background function to join clas
                         AddChild_Background rcb = new AddChild_Background();

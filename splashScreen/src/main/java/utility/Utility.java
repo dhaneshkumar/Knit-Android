@@ -443,7 +443,7 @@ public class Utility extends MyActionBarActivity {
 
 
 
-    public  boolean isInternetExist(Activity activity) {
+    public static boolean isInternetExist(Activity activity) {
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
@@ -691,7 +691,7 @@ public class Utility extends MyActionBarActivity {
 
 
     // The method that displays the popup.
-    public void showPopup(Activity context) {
+    public static void showPopup(Activity context) {
 
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -772,6 +772,7 @@ public class Utility extends MyActionBarActivity {
                 //Do something here
                 if(popup != null)
                     popup.dismiss();
+
             }
         }, 3000);
 

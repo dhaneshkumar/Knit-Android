@@ -61,9 +61,7 @@ public class RecommendationDialog extends DialogFragment {
                     Utility.toast("Enter your Email-ID");
                 else
                 {
-                    Utility utility = new Utility();
-
-                    if(utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist(getActivity())) {
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);
 

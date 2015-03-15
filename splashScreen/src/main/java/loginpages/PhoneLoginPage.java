@@ -94,9 +94,10 @@ public class PhoneLoginPage extends MyActionBarActivity {
 
     void next(){
         phoneNumber = phoneNumberET.getText().toString();
-        if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
+        if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10) {
             Utility.toast("Incorrect Mobile Number");
-        else {
+        }
+        else if(Utility.isInternetExist(this)) {
             /*pdialog = new ProgressDialog(this);
             pdialog.setCancelable(false);
             pdialog.setMessage("Please Wait...");
@@ -110,6 +111,9 @@ public class PhoneLoginPage extends MyActionBarActivity {
             startActivity(nextIntent);
 
             generateVerificationCode.execute();
+        }
+        else {
+            Utility.toast("Check your Internet connection");
         }
     }
 }

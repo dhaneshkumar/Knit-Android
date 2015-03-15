@@ -194,7 +194,8 @@ public class PhoneSignUpSchool extends MyActionBarActivity {
             else{
                 SmsListener.unRegister();
                 Utility.toastLong("Oops ! some error occured. Try again");
-                PhoneSignUpVerfication.showError("Some unexpected error occured. Please try again");
+                //show error and hide timer as sms was not sent successfully
+                PhoneSignUpVerfication.showError("Some unexpected error occured. Please try again", true);
                 PhoneSignUpVerfication.showResendAction();
             }
         }

@@ -135,7 +135,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 if(UtilString.isBlank(verificationCode) || verificationCode.length() != 4){
                     Utility.toast("Please enter the 4-digit verification code");
                 }
-                else {
+                else if(Utility.isInternetExist(this)) {
                     Tools.hideKeyboard(this);
                     pdialog = new ProgressDialog(activityContext);
                     pdialog.setCancelable(true);
@@ -145,6 +145,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
                     VerifyCodeTask verifyCodeTask = new VerifyCodeTask(verificationCode);
                     verifyCodeTask.execute();
+                }
+                else {
+                    Utility.toast("Check your Internet connection");
                 }
                 break;
 
@@ -172,13 +175,15 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         verifyCodeTask.execute();
     }
 
-    public static void showError(String error){
+    public static void showError(String error, boolean timerCancel){
         if(errorMsgTV != null) {
             errorMsgTV.setText(error);
             errorMsgTV.setVisibility(View.VISIBLE);
             smoothProgressBar.setVisibility(View.GONE);
-            timerTV.setVisibility(View.GONE);
-                    countDownTimer.cancel();
+            if(timerCancel) {
+                timerTV.setVisibility(View.GONE);
+                countDownTimer.cancel();
+            }
         }
         else{
             Log.d("DEBUG_SIGNUP_VER", "Can't show error as error textview NULL");
@@ -204,7 +209,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         public void onFinish(){
             SmsListener.unRegister(); //stop listening for new messages
             timerTV.setText("0 : 00");
-            showError("The verification code has expired. Please click on resend to retry");
+            showError("The verification code has expired. Please click on resend to retry", true);
             showResendAction();
         }
 
@@ -243,7 +248,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 String model = "NA";
                 if (android.os.Build.MODEL != null)
                     model = android.os.Build.MODEL;
-                param.put("modal", model);
+                param.put("model", model);
                 param.put("os", "ANDROID");
 
                 param.put("name", PhoneSignUpName.title + " " + PhoneSignUpName.displayName);
@@ -327,20 +332,20 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             }
             if(networkError){
                 Utility.toastLong("Sorry Network Error. Try Again");
-                showError("Network Error. Try again");
+                showError("Network Error. Try again", false);
                 showResendAction();
             }
             else if(verifyError){
                 Utility.toastLong("Wrong verification code");
-                showError("Wrong verification code.\n Please re-enter code and try again");
+                showError("Wrong verification code.\nPlease re-enter code and try again", false);
             }
             else if(loginError){
-                Utility.toastLong("Error logging in");
-                showError("Some unexpected error occurred while logging in. \n Try again");
+                Utility.toastLong("Error logging in"); //code was verified but login unsuccessful
+                showError("Some unexpected error occurred while logging in.\nTry again", true);
                 showResendAction();
             }
             else if(userAlreadyExistsError){
-                Utility.toastLong("This number is already in use.\n Please recheck you number");
+                Utility.toastLong("This number is already in use.\nPlease recheck you number");
                 //take back ot Login Page
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpName.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -348,7 +353,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 //showError("This number is already in use. Please try logging in");
             }
             else if(userDoesNotExistsError){
-                Utility.toastLong("No account for this number exists.\n Please recheck you number");
+                Utility.toastLong("No account for this number exists.\nPlease recheck you number");
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneLoginPage.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 Application.getAppContext().startActivity(nextIntent);

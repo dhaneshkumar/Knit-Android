@@ -134,9 +134,8 @@ public class CreateClassDialog extends DialogFragment{
                     getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
-                    Utility utility = new Utility();
 
-                    if(utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist(getActivity())) {
                         createGroup jg = new createGroup();
                         jg.execute();
 

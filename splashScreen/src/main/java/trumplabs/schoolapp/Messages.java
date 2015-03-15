@@ -108,8 +108,7 @@ public class Messages extends Fragment {
                     intent.putExtra("pushOpen", false);
                     getActivity().setIntent(intent);
 
-                    Utility utility = new Utility();
-                    if(utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist(getActivity())) {
                         if (mPullToRefreshLayout != null) {
                             runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                         }
@@ -282,9 +281,8 @@ public class Messages extends Fragment {
                 Utility.ls(" pull to refresh starting ... ");
                 // mHeaderProgressBar.setVisibility(View.GONE);
 
-                Utility utility = new Utility();
 
-                if(utility.isInternetExist(getActivity())) {                   Utility.ls(" inbox has to sstart ... ");
+                if(Utility.isInternetExist(getActivity())) {                   Utility.ls(" inbox has to sstart ... ");
                     Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
 
                     Inbox newInboxMsg = new Inbox(msgs);
@@ -810,8 +808,7 @@ public class Messages extends Fragment {
 
 
                 } else {
-                    Utility utility = new Utility();
-                    if(utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist(getActivity())) {
                         // Have to download image from server
                         ParseFile imagefile = (ParseFile) msgObject.get("attachment");
                         holder.uploadprogressbar.setVisibility(View.VISIBLE);
@@ -914,9 +911,8 @@ public class Messages extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                Utility utility = new Utility();
 
-                if(utility.isInternetExist(getActivity())) {
+                if(Utility.isInternetExist(getActivity())) {
                     Utility.ls(" option selected  ... ");
 
                     if (mPullToRefreshLayout != null) {

@@ -79,9 +79,7 @@ public class Signup2Class extends MyActionBarActivity {
         create_btn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
-                Utility utility = new Utility();
-
-                if(utility.isInternetExist(Signup2Class.this)) {
+                if(Utility.isInternetExist(Signup2Class.this)) {
 
                     //Varifying password match
                     passwordtxt = password_etxt.getText().toString().trim();
