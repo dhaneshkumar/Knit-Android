@@ -48,8 +48,9 @@ public class PushOpen extends ActionBarActivity {
 
 
                 if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
-                    i.putExtra("className", classCode);
-                    i.putExtra("classCode", className);
+                    Log.d("DEBUG_PUSH_OPEN", "invite parent action " + classCode + " " + className);
+                    i.putExtra("classCode", classCode);
+                    i.putExtra("className", className);
                 }
                 else
                     i = new Intent(this, MainActivity.class); //go to main activity
