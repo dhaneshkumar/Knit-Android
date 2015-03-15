@@ -141,6 +141,7 @@
                     android:layout_width="96dp"
                     android:layout_height="48dp"
                     android:text="View"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
 
                 <Button
@@ -148,6 +149,7 @@
                     android:layout_width="96dp"
                     android:layout_height="48dp"
                     android:text="Remove"
+                    android:textColor="@color/black"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>

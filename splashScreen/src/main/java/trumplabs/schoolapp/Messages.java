@@ -77,6 +77,7 @@ public class Messages extends Fragment {
     String userId;
     public static int totalInboxMessages; //total pinned messages in inbox
     LinearLayout mainLayout;
+    boolean refreshServerMessage;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -100,6 +101,7 @@ public class Messages extends Fragment {
       Check for push open
        */
 
+        refreshServerMessage = false;
         if(getActivity().getIntent() != null) {
             if (getActivity().getIntent().getExtras() != null) {
                 Intent intent = getActivity().getIntent();
@@ -113,9 +115,13 @@ public class Messages extends Fragment {
                             runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                         }
 
-                        Log.d("DEBUG_MESSAGES", "calling Inbox execute() on activity created");
-                        Inbox newInboxMsg = new Inbox(msgs);
-                        newInboxMsg.execute();
+                        refreshServerMessage = true;
+                        /*
+                        flag set to fetch messages from server.
+                        In case of teacher, fetching locally and from server both are async task, which causing problem(index outofbound exception)
+                         so need to call them serially.
+                         Hence first call local async task then server async task.
+                         */
                     }
                 } else {
                     Log.d("DEBUG_MESSAGES", "pushOpen flag false");
@@ -178,8 +184,39 @@ public class Messages extends Fragment {
 
         //fetch local messages in background
         query = new Queries();
-        GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
-        getLocalInboxMsg.execute();
+
+        /*
+        If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
+         */
+        String role = ParseUser.getCurrentUser().getString("role");
+        if(role.equals("teacher"))
+        {
+            GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
+            getLocalInboxMsg.execute();
+        }
+        else
+        {
+            try {
+                msgs = query.getLocalInboxMsgs();
+                updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
+            } catch (ParseException e) {
+            }
+
+            if (msgs == null)
+                msgs = new ArrayList<ParseObject>();
+
+            if (msgs.size() == 0)
+                inemptylayout.setVisibility(View.VISIBLE);
+            else
+                inemptylayout.setVisibility(View.GONE);
+
+
+            if(refreshServerMessage) {
+                Inbox newInboxMsg = new Inbox(msgs);
+                newInboxMsg.execute();
+                refreshServerMessage = false;
+            }
+        }
 
 
         // Collections.reverse(msgs);
@@ -312,7 +349,6 @@ public class Messages extends Fragment {
 
 
                 // stop refreshing bar after some certain interval
-
 
             }
         });
@@ -487,7 +523,6 @@ public class Messages extends Fragment {
         public void onBindViewHolder(final ViewHolder holder, final int position) {
 
             final ParseObject msgObject = msgs.get(position);
-
 
       /*
        * Set likes and confused count
@@ -693,14 +728,13 @@ public class Messages extends Fragment {
             final String message = msgObject.getString("title");
             if (UtilString.isBlank(message)) {
                 holder.msgslist.setVisibility(View.GONE);
-             //   holder.copyLayout.setVisibility(View.GONE);
+                holder.copyLayout.setVisibility(View.GONE);
             }
             else
             {
-
                 holder.msgslist.setVisibility(View.VISIBLE);
                 holder.msgslist.setText(message);
-               // holder.copyLayout.setVisibility(View.VISIBLE);
+                holder.copyLayout.setVisibility(View.VISIBLE);
 
                 holder.copyLayout.setOnClickListener(new OnClickListener() {
                     @Override
@@ -708,14 +742,11 @@ public class Messages extends Fragment {
                         /*
          * Creating popmenu for copying text
          */
-
                         //Defualt copy text menu
                         PopupMenu menu = new PopupMenu(getActivity(), v);
 
                         menu.getMenuInflater().inflate(R.menu.copy_text, menu.getMenu());
-
                         menu.show();
-
 
                         // setting menu click functionality
                         menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
@@ -726,8 +757,8 @@ public class Messages extends Fragment {
                                 switch (item.getItemId()) {
                                     case R.id.copy:
 
-                                        Utility.copyToClipBoard(getActivity(), "Message", message);
-                                        break;
+                                       Utility.toast(message);
+                                       break;
 
                                     default:
                                         break;
@@ -1075,6 +1106,15 @@ public class Messages extends Fragment {
                 inemptylayout.setVisibility(View.VISIBLE);
             else
                 inemptylayout.setVisibility(View.GONE);
+
+
+            if(refreshServerMessage)
+            {
+                refreshServerMessage = false;
+
+                Inbox newInboxMsg = new Inbox(msgs);
+                newInboxMsg.execute();
+            }
 
 
             super.onPostExecute(aVoid);

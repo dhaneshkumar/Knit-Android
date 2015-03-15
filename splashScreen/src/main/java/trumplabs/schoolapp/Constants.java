@@ -108,5 +108,6 @@ public class Constants {
 
     public static int actionBarHeight = 0;
     public static String SENT_MESSAGE_TABLE = "SentMessages";
+    public static int SUBSCRIBER_MIN_LIMIT = 1;
 
 }

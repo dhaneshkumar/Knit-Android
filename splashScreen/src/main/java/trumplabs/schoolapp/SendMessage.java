@@ -59,6 +59,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import BackGroundProcesses.MemberList;
 import additionals.InviteParents;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -66,6 +67,7 @@ import trumplab.textslate.R;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
+import utility.Tools;
 import utility.Utility;
 
 /**
@@ -177,6 +179,10 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         v.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //hide keyword before transition
+                Tools.hideKeyboard(SendMessage.this);
+
                 Intent intent = new Intent(SendMessage.this, Subscribers.class);
                 intent.putExtra("className", grpName);
                 intent.putExtra("classCode", groupCode);
@@ -188,6 +194,9 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         inviteLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //hide keyword before transition
+                Tools.hideKeyboard(SendMessage.this);
                 Intent intent = new Intent(SendMessage.this, InviteParents.class);
                 intent.putExtra("classCode", groupCode);
                 intent.putExtra("className", grpName);
@@ -254,6 +263,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
      * openchooser.show(fm, "Chooser Dialog"); break;
      */
             case android.R.id.home:
+                Tools.hideKeyboard(SendMessage.this);
                 onBackPressed();
                 break;
             case R.id.copyCode:
@@ -658,6 +668,26 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
             @Override
             public void onClick(View v) {
+
+                /*
+                For sending a message, you need atleast 1 subscriber
+                 */
+                int memberCount = 0;
+
+                try {
+                    Queries memberQuery = new Queries();
+                    memberCount = memberQuery.getMemberCount(groupCode);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if(memberCount < Constants.SUBSCRIBER_MIN_LIMIT )
+                {
+                    Utility.toastLong("Your class doesn't has any subscribers. So, first invite them");
+                    return;
+                }
+
+
                 int hourOfDay = -1;
                 if(session != null) {
                     //using local time instead of session.getCurrentTime
