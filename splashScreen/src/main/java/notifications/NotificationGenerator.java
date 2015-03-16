@@ -115,7 +115,7 @@ public class NotificationGenerator {
                 inboxStyle.setBigContentTitle("Knit");
                 for(int i=0; i<normalNotificationList.size(); i++){
                     NotificationEntity entity = normalNotificationList.get(i);
-                    inboxStyle.addLine(entity.groupName + " " + entity.contentText);
+                    inboxStyle.addLine(entity.groupName + " : " + entity.contentText);
                 }
                 mBuilder.setStyle(inboxStyle);
             }
