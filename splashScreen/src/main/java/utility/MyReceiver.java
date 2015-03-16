@@ -66,7 +66,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
                     action = json.getString("action");
                 }
 
-                if(type.equalsIgnoreCase(Constants.USER_REMOVED_NOTIFICATION)){
+                if(type != null && type.equalsIgnoreCase(Constants.USER_REMOVED_NOTIFICATION)){
                     Bundle params = new Bundle();
                     params.putString("classCode", json.getString("groupCode"));
                     NotificationGenerator.generateNotification(context, contentText, groupName, type, action, params);
