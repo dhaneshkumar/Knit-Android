@@ -757,7 +757,7 @@ public class Messages extends Fragment {
                                 switch (item.getItemId()) {
                                     case R.id.copy:
 
-                                       Utility.toast(message);
+                                        Utility.copyToClipBoard(getActivity(), "Message", message);
                                        break;
 
                                     default:

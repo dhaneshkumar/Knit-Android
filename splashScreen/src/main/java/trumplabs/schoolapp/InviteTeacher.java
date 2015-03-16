@@ -22,6 +22,7 @@ import java.util.HashMap;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import utility.Tools;
 import utility.Utility;
 
 /**
@@ -173,6 +174,7 @@ public class InviteTeacher extends MyActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                Tools.hideKeyboard(InviteTeacher.this);
                 onBackPressed();
                 break;
             case  R.id.submit:

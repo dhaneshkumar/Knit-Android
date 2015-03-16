@@ -49,6 +49,6 @@
             android:paddingBottom="4dp"
             android:paddingRight="16dp"
             android:paddingTop="4dp"
-            android:src="@drawable/remove" />
+            android:src="@drawable/delete" />
     </RelativeLayout>
 </LinearLayout>

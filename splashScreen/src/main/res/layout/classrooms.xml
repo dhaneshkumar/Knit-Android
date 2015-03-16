@@ -24,6 +24,9 @@
         android:paddingRight="16dp"
         android:orientation="vertical">
 
+
+
+
         <TextView
             android:id="@+id/createdClassTextView"
             android:layout_width="match_parent"

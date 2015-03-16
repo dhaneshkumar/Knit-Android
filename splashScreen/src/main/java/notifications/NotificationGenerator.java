@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.BitmapFactory;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -64,7 +65,13 @@ public class NotificationGenerator {
         NotificationCompat.Builder  mBuilder = new NotificationCompat.Builder(context);
         mBuilder.setAutoCancel(true);
 
-        mBuilder.setSmallIcon(R.drawable.notification);
+        if(Build.VERSION.SDK_INT <21)
+            mBuilder.setSmallIcon(R.drawable.notification);
+        else {
+            mBuilder.setSmallIcon(R.drawable.notification_lollipop);
+            mBuilder.setColor(context.getResources().getColor(R.color.buttoncolor) );
+        }
+
         //in large icon, set icons of sender person
       //  mBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.notification));
         mBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS);
