@@ -385,9 +385,16 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             TextView seenCountArea = (TextView) row.findViewById(R.id.seen);
 
 
-            likeCountArea.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT)));
-            confusedCountArea.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT)));
-            seenCountArea.setText("seen by " + Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT)));
+            int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
+            int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
+            int seenCount = Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT));
+            if(seenCount < likeCount + confusedCount){ //for consistency(SC >= LC + CC) - might not be correct though
+                seenCount = likeCount + confusedCount;
+            }
+
+            likeCountArea.setText("" + likeCount);
+            confusedCountArea.setText("" + confusedCount);
+            seenCountArea.setText("seen by " + seenCount);
 
             String className= null;
             //setting class name

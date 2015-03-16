@@ -278,9 +278,16 @@ public class Outbox extends Fragment {
 
             }
 
-            holder.likes.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT)));
-            holder.confused.setText("" + Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT)));
-            holder.seen.setText("seen by " + Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT)));
+            int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
+            int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
+            int seenCount = Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT));
+            if(seenCount < likeCount + confusedCount){//for consistency(SC >= LC + CC) - might not be correct though
+                seenCount = likeCount + confusedCount;
+            }
+
+            holder.likes.setText("" + likeCount);
+            holder.confused.setText("" + confusedCount);
+            holder.seen.setText("seen by " + seenCount);
 
             //setting background color of circular image
             GradientDrawable gradientdrawable = (GradientDrawable) holder.classimage.getBackground();
