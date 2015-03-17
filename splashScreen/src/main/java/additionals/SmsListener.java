@@ -27,7 +27,8 @@ public class SmsListener extends BroadcastReceiver {
     private SharedPreferences preferences;
 
     String startMsgContent = "Your requested verification code is";
-    String senderCore = "TXTSLT";
+    String senderCore1 = "TXTSLT";
+    String senderCore2 = "myKNIT";
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -44,7 +45,7 @@ public class SmsListener extends BroadcastReceiver {
                         msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
                         msgFrom = msgs[i].getOriginatingAddress();
                         String msgBody = msgs[i].getMessageBody();
-                        if(msgFrom.contains(senderCore) && msgBody.startsWith(startMsgContent)){
+                        if((msgFrom.contains(senderCore1) || msgFrom.contains(senderCore2)) && msgBody.startsWith(startMsgContent)){
                             Log.d("DEBUG_SMS_LISTENER", "FOUND : msgBody " + msgBody + " msgFrom " + msgFrom);
                             isListeningOn = false;
                             final String code = extractCode(msgBody);
