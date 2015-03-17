@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
+import android.util.Log;
 import android.view.Display;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -33,6 +34,7 @@ import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
+import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
@@ -289,6 +291,31 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                 user.put("APP_RATED", true);
                 user.saveEventually();
+            }
+        }
+
+        //check if parent/student has just signed up and show join class dialog
+        Intent intent = getIntent();
+        if(intent != null && intent.getExtras() != null) {
+            Log.d("DEBUG_MAIN", "extras non null");
+            String signup = intent.getExtras().getString("flag");
+            if(signup != null){
+                Log.d("DEBUG_MAIN", "signup flag is " + signup + "; role " + role);
+            }
+            else{
+                Log.d("DEBUG_MAIN", "signup flag is null; role is" + role);
+            }
+
+            if(!UtilString.isBlank(signup) && signup.equalsIgnoreCase("SIGNUP")) {
+                intent.putExtra("flag", "false"); //set flag to something else
+                setIntent(intent);
+
+                if (role.equalsIgnoreCase("student") || role.equalsIgnoreCase("parent")) {
+                    Log.d("DEBUG_MAIN", "creating join class dialog");
+                    FragmentManager fm = getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm, "Join Class");
+                }
             }
         }
     }

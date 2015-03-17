@@ -118,7 +118,8 @@ public class Messages extends Fragment {
                          Hence first call local async task then server async task.
                          */
                     }
-                } else {
+                }
+                else{
                     Log.d("DEBUG_MESSAGES", "pushOpen flag false");
                 }
             }
