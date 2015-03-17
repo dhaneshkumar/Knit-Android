@@ -212,6 +212,7 @@ public class Utility extends MyActionBarActivity {
                     }
                 }
             }
+            Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
             if(success) {
                 Context _context = Application.getAppContext();
                 Intent i = new Intent(_context, Signup.class);
