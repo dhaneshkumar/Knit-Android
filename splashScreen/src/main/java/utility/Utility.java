@@ -807,13 +807,15 @@ public class Utility extends MyActionBarActivity {
             @Override
             public void run() {
                 //Do something here
-                if(popup != null)
-                    popup.dismiss();
-
+                try{
+                    if(popup != null && popup.isShowing()) {
+                        popup.dismiss();
+                    }
+                } catch (IllegalArgumentException e){
+                    e.printStackTrace();
+                } catch (Exception e){
+                }
             }
         }, 3000);
-
-
-
     }
 }
