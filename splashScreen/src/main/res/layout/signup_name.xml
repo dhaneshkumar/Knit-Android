@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:entries="@array/title"
         android:background="@drawable/apptheme_spinner_default_holo_light"
-        android:paddingLeft="8dp"
         android:paddingRight="1dp"
         android:textColor="@color/black"
         android:prompt="@string/prompt_choice"

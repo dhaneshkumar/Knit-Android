@@ -63,6 +63,9 @@ public class Outbox extends Fragment {
     private static SwipeRefreshLayout outboxRefreshLayout;
     public static LinearLayout outboxLayout;
     public static int totalOutboxMessages = 15; //total pinned outbox messages(across all classes)
+    private ImageView outbox_headup;
+    private LinearLayout outbox_instructions;
+    private TextView outbox_ok;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -83,8 +86,9 @@ public class Outbox extends Fragment {
         outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_outbox);
         outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
         outboxLayout = (LinearLayout) getActivity().findViewById(R.id.outboxmsg);
-
-
+        outbox_headup = (ImageView) getActivity().findViewById(R.id.outbox_uphead);
+        outbox_instructions = (LinearLayout) getActivity().findViewById(R.id.outbox_instruction);
+        outbox_ok = (TextView) getActivity().findViewById(R.id.outbox_ok);
 
 
         //fetching locally stored outbox messages
@@ -189,6 +193,45 @@ public class Outbox extends Fragment {
             }
         });
 
+
+
+        if(Constants.signup_outbox)
+        {
+            outbox_headup.setVisibility(View.VISIBLE);
+            outbox_instructions.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            outbox_headup.setVisibility(View.GONE);
+            outbox_instructions.setVisibility(View.GONE);
+        }
+
+        outbox_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(Constants.signup_inbox)
+                {
+                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+
+                        if(Constants.signup_inbox)
+                        {
+                                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                                MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                                MainActivity.viewpager.setCurrentItem(2);
+                        }
+                        else if(Constants.signup_classrooms) {
+                                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                                MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                                MainActivity.viewpager.setCurrentItem(0);
+                        }
+                    }
+                }
+
+                outbox_instructions.setVisibility(View.GONE);
+                outbox_headup.setVisibility(View.GONE);
+                Constants.signup_outbox = false;
+            }
+        });
     }
 
 

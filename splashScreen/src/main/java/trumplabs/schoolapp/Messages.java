@@ -78,6 +78,9 @@ public class Messages extends Fragment {
     public static int totalInboxMessages; //total pinned messages in inbox
     LinearLayout mainLayout;
     boolean refreshServerMessage;
+    private ImageView inbox_headup;
+    private LinearLayout inbox_instructions;
+    private TextView inbox_ok;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -94,7 +97,9 @@ public class Messages extends Fragment {
         listv = (RecyclerView) getActivity().findViewById(R.id.msg_list);
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);
         mainLayout = (LinearLayout)  getActivity().findViewById(R.id.msgCntLayout);
-
+        inbox_headup = (ImageView) getActivity().findViewById(R.id.inbox_uphead);
+        inbox_instructions = (LinearLayout) getActivity().findViewById(R.id.inbox_instruction);
+        inbox_ok = (TextView) getActivity().findViewById(R.id.inbox_ok);
 
       /*
       Check for push open
@@ -351,6 +356,45 @@ public class Messages extends Fragment {
 
                 // stop refreshing bar after some certain interval
 
+            }
+        });
+
+
+        if(Constants.signup_inbox)
+        {
+            inbox_instructions.setVisibility(View.VISIBLE);
+            inbox_headup.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            inbox_instructions.setVisibility(View.GONE);
+            inbox_headup.setVisibility(View.GONE);
+        }
+
+        inbox_ok.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
+                if(Constants.signup_classrooms)
+                {
+                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                        MainActivity.viewpager.setCurrentItem(0);
+                    }
+                }
+                else if(Constants.signup_outbox) {
+                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                        MainActivity.viewpager.setCurrentItem(1);
+                    }
+                }
+
+                inbox_headup.setVisibility(View.GONE);
+                inbox_instructions.setVisibility(View.GONE);
+                Constants.signup_inbox = false;
             }
         });
     }

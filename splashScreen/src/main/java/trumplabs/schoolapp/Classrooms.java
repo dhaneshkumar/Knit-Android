@@ -18,6 +18,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -71,7 +72,9 @@ public class Classrooms extends Fragment {
     private TextView joinClassTV;
     public static TextView createdClassTV;
     private TextView joinedClassTV;
-    //private TextView suggestedClassTV;
+    private ImageView classroom_headup;
+    private LinearLayout classroom_instruction;
+    private TextView classroom_ok;
 
 
     @Override
@@ -95,6 +98,9 @@ public class Classrooms extends Fragment {
         joinedClassTV = (TextView) getActivity().findViewById(R.id.joinedClassTextView);
         createClassTV = (TextView) getActivity().findViewById(R.id.createClassTV);
         joinClassTV = (TextView) getActivity().findViewById(R.id.joinClassTV);
+        classroom_headup = (ImageView) getActivity().findViewById(R.id.classroom_uphead);
+        classroom_instruction = (LinearLayout) getActivity().findViewById(R.id.classroom_instruction);
+        classroom_ok = (TextView) getActivity().findViewById(R.id.classroom_ok);
 
         //Setting condensed font
         Typeface typeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/roboto-condensed.bold.ttf");
@@ -117,6 +123,9 @@ public class Classrooms extends Fragment {
                         args.putString("flag", "SIGNUP");
                         createClassDialog.setArguments(args);
                         createClassDialog.show(fm, "create Class");
+
+
+
                     }
                     else if(signup.equals("CREATE_CLASS")) {
                         FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -220,6 +229,47 @@ public class Classrooms extends Fragment {
         });
 
         initialiseListViewMethods();
+
+
+        if(Constants.signup_classrooms)
+        {
+            classroom_instruction.setVisibility(View.VISIBLE);
+            classroom_headup.setVisibility(View.VISIBLE);
+        }
+        else
+        {
+            classroom_instruction.setVisibility(View.GONE);
+            classroom_headup.setVisibility(View.GONE);
+        }
+
+
+        classroom_ok.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(Constants.signup_outbox)
+                {
+                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                        MainActivity.viewpager.setCurrentItem(1);
+                    }
+                }
+                else if(Constants.signup_inbox) {
+                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                        MainActivity.viewpager.setCurrentItem(2);
+                    }
+                }
+
+                classroom_instruction.setVisibility(View.GONE);
+                classroom_headup.setVisibility(View.GONE);
+                Constants.signup_classrooms = false;
+            }
+        });
+
+
         super.onActivityCreated(savedInstanceState);
 
 

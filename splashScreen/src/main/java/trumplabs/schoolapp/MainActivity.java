@@ -316,6 +316,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                     joinClassDialog.show(fm, "Join Class");
                 }
+
+               Constants.signup_classrooms= true;
+               Constants.signup_inbox= true;
+               Constants.signup_outbox = true;
             }
         }
     }

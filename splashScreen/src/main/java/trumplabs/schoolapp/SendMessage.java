@@ -688,9 +688,9 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     e.printStackTrace();
                 }
 
-                if(memberCount < Constants.SUBSCRIBER_MIN_LIMIT )
+                if(memberCount < Config.SUBSCRIBER_MIN_LIMIT )
                 {
-                    Utility.toastLong("Your class doesn't has any subscribers. So, first invite them");
+                    Utility.toastLong("You don't have any subscriber right now. Invite subscribers to start messaging.");
                     return;
                 }
 
