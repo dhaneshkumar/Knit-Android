@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
+import loginpages.Signup;
 import trumplab.textslate.R;
 import utility.Tools;
 import utility.Utility;
@@ -89,13 +90,13 @@ public class InviteTeacher extends MyActionBarActivity {
             Log.d("DEBUG_INVITE_TEACHER", "inviting in asynctask");
             ParseUser user = ParseUser.getCurrentUser();
 
-            if (user == null)
-                {Utility.logout(); return null;}
-
-            String senderId = user.getUsername();
-
             HashMap<String, String> parameters = new HashMap<String, String>();
-            parameters.put("senderId", senderId);
+
+            if (user != null) {
+                String senderId = user.getUsername();
+                parameters.put("senderId", senderId);
+            }
+
             parameters.put("schoolName", schoolName);
             parameters.put("teacherName", teacherName);
             parameters.put("childName", childName);
@@ -139,10 +140,14 @@ public class InviteTeacher extends MyActionBarActivity {
                 alert.setView(layout);
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
-                        String value = input.getText().toString();
-
-                        Intent intent = new Intent(InviteTeacher.this, MainActivity.class);
-                        startActivity(intent);
+                        if(ParseUser.getCurrentUser() == null) {
+                            Intent intent = new Intent(InviteTeacher.this, Signup.class);
+                            startActivity(intent);
+                        }
+                        else{
+                            Intent intent = new Intent(InviteTeacher.this, MainActivity.class);
+                            startActivity(intent);
+                        }
                     }
                 });
 
@@ -189,7 +194,7 @@ public class InviteTeacher extends MyActionBarActivity {
                     Utility.toast("Enter school name");
                 else if (UtilString.isBlank(teacherName))
                     Utility.toast("Enter teacher name");
-                else if (UtilString.isBlank(phoneNo) && UtilString.isBlank(email))
+                else if ((UtilString.isBlank(phoneNo) || phoneNo.length() != 10) && UtilString.isBlank(email))
                     Utility.toast("Please enter atleast phone number or email");
                 else {
                     if(! Utility.isInternetExist(InviteTeacher.this)) {

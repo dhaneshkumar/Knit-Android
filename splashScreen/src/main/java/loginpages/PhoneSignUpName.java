@@ -47,6 +47,11 @@ public class PhoneSignUpName extends MyActionBarActivity {
     static String title = "";
     static ProgressDialog pdialog;
 
+    //first class details
+    static String classCode = "";
+    static String className = "";
+    static String teacherName = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -65,6 +70,9 @@ public class PhoneSignUpName extends MyActionBarActivity {
         if(getIntent() != null && getIntent().getExtras() != null) {
             resetFields();
             role = getIntent().getExtras().getString("role");
+            className = getIntent().getExtras().getString("className");
+            teacherName = getIntent().getExtras().getString("teacherName");
+            classCode = getIntent().getExtras().getString("classCode");
         }
         else{//on press back from next activity. Use previous values to show
             displayNameET.setText(displayName);
@@ -77,8 +85,8 @@ public class PhoneSignUpName extends MyActionBarActivity {
         }
         else{
             classDetailsLayout.setVisibility(View.VISIBLE);
-            classNameTV.setText(PhoneSignUpClassDetails.className);
-            teacherNameTV.setText(PhoneSignUpClassDetails.teacherName);
+            classNameTV.setText(className);
+            teacherNameTV.setText(teacherName);
         }
 
 

@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ public class PhoneSignUpClassDetails extends MyActionBarActivity {
     TextView classNameTV;
     TextView teacherNameTV;
     EditText childNameET;
+    LinearLayout childDetailsLayout;
 
     static String role = "";
     static String className = "";
@@ -48,6 +50,7 @@ public class PhoneSignUpClassDetails extends MyActionBarActivity {
         classNameTV = (TextView) findViewById(R.id.className);
         teacherNameTV = (TextView) findViewById(R.id.teacherName);
         childNameET = (EditText) findViewById(R.id.childName);
+        childDetailsLayout = (LinearLayout) findViewById(R.id.childDetails);
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             resetFields();
@@ -55,6 +58,10 @@ public class PhoneSignUpClassDetails extends MyActionBarActivity {
             className = getIntent().getExtras().getString("className");
             teacherName = getIntent().getExtras().getString("teacherName");
             classCode = getIntent().getExtras().getString("classCode");
+        }
+
+        if(role.equalsIgnoreCase("student")){
+            childDetailsLayout.setVisibility(View.GONE);
         }
 
         classNameTV.setText(className);
@@ -94,12 +101,15 @@ public class PhoneSignUpClassDetails extends MyActionBarActivity {
 
     void next(){
         childName = childNameET.getText().toString();
-        if (UtilString.isBlank(childName)) {
+        if (role.equalsIgnoreCase("parent") && UtilString.isBlank(childName)) {
             Utility.toast("Enter child name !");
         }
         else{
             Intent intent = new Intent(this, PhoneSignUpName.class);
             intent.putExtra("role", role);
+            intent.putExtra("classCode", classCode);
+            intent.putExtra("teacherName", teacherName);
+            intent.putExtra("className", className);
             startActivity(intent);
         }
     }
