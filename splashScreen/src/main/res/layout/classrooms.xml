@@ -24,8 +24,51 @@
         android:paddingRight="16dp"
         android:orientation="vertical">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/white"
+            android:layout_gravity="center"
+            />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:padding="16dp"
+            android:orientation="vertical"
+            >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Here you find all your created and joined classrooms. If you want to send a new message, just on created classrooms  and start sending "
+                android:textColor="@color/black"
+                android:textSize="16sp"
+                />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/lightbackgroundcolor"
+                />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Okay, got it!"
+                android:layout_gravity="right"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:textSize="16sp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:textColor="@color/white"
+                android:background="@drawable/round_corner_button_color"
+                />
+
+            </LinearLayout>
 
         <TextView
             android:id="@+id/createdClassTextView"

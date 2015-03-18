@@ -69,7 +69,7 @@ public class NotificationGenerator {
             mBuilder.setSmallIcon(R.drawable.notification);
         else {
             mBuilder.setSmallIcon(R.drawable.notification_lollipop);
-            mBuilder.setColor(context.getResources().getColor(R.color.buttoncolor) );
+            mBuilder.setColor(context.getResources().getColor(R.color.color_secondary) );
         }
 
         //in large icon, set icons of sender person
