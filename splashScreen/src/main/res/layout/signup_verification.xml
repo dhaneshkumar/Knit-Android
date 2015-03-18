@@ -24,68 +24,90 @@
         android:layout_height="wrap_content">
 
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Auto-detecting an SMS code sent to"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="4dp"
+            android:gravity="center"
+            />
     <TextView
         android:id="@+id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="We are trying to autodetect verification code sent to 8976208510"
-        android:textSize="14sp"
-        android:layout_marginLeft="4dp"
-        android:gravity="left"
+        android:text="8976208590"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:gravity="center"
         />
+
 
         <TextView
             android:id="@+id/timerText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="4:23"
-            android:layout_marginLeft="4dp"
-            android:textSize="18sp"
+            android:textSize="16sp"
             android:textColor="@color/black"
-            android:layout_centerVertical="true"
-            android:layout_marginTop="12dp"
+            android:layout_margin="32dp"
+            android:gravity="center"
             />
 
-        <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="OR"
-        android:gravity="center"
-        android:textSize="14sp"
-        android:textColor="@color/black"
-        android:layout_marginTop="4dp"
-        />
+
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enter the 4-digit code below and click on Verify"
+        android:text="You can also enter the code manually"
         android:textSize="14sp"
         android:layout_marginLeft="4dp"
-        android:gravity="left"
+        android:gravity="center"
         android:layout_marginTop="8dp"
         />
 
     <EditText
         android:id="@+id/verificationCode"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
-        android:hint="Verification code"
+        android:hint="Enter code"
         android:background="@drawable/apptheme_edit_text_holo_light"
         android:paddingLeft="16dp"
-        android:paddingRight="1dp"
+        android:paddingRight="16dp"
         android:inputType="number"
+        android:layout_gravity="center"
         android:maxLength="4"
         android:textColor="@color/black"
         android:textSize="14sp" />
 
+
+        <TextView
+            android:id="@+id/resendAction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Resend Code"
+            android:textColor="@color/buttoncolor"
+            android:textSize="15sp"
+            android:layout_gravity="center"
+            android:padding="16dp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone"
+            />
+
     </LinearLayout>
 
 
+    <LinearLayout
+        android:orientation="vertical"
+        android:gravity="bottom"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_gravity="bottom"
         android:layout_marginTop="32dp"
         android:background="#DADADA"
         />
@@ -102,16 +124,6 @@
         android:layout_marginTop="8dp"
         android:visibility="gone"
         />
-    <TextView
-        android:id="@+id/resendAction"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Resend Code"
-        android:textColor="@color/buttoncolor"
-        android:textSize="15sp"
-        android:layout_gravity="right"
-        android:padding="16dp"
-        android:layout_marginTop="16dp"
-        android:visibility="gone"
-        />
+
+    </LinearLayout>
     </LinearLayout>

@@ -7,6 +7,39 @@
     android:background="@color/lightbackgroundcolor"
     android:layout_height="match_parent">
 
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@color/white"
+        >
+
+        <TextView
+            android:id="@+id/className"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:text="ENGLISH 5A"
+            android:textColor="@color/black"
+            />
+        <TextView
+            android:id="@+id/teacherName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="by Mr. Dhanesh Kumar"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@color/white"
+        >
     <Spinner
         android:id="@+id/mr_spinner"
         style="@style/Widget.AppCompat.Spinner"
@@ -59,6 +92,6 @@
         android:text="*You may receive a verification call/sms on this number"
         />
 
-
+</LinearLayout>
 
 </LinearLayout>
