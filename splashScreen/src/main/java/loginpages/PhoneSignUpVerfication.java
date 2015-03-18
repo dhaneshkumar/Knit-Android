@@ -78,9 +78,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         String headerText;
         if(isLogin)
-            headerText =  PhoneLoginPage.phoneNumber ;
+            headerText = "+91"+ PhoneLoginPage.phoneNumber ;
         else
-            headerText =  PhoneSignUpName.phoneNumber;
+            headerText =  "+91" + PhoneSignUpName.phoneNumber;
 
         header.setText(Html.fromHtml(headerText), TextView.BufferType.SPANNABLE);
 

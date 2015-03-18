@@ -179,7 +179,7 @@ public class InviteParents extends MyActionBarActivity{
              // sendIntent.setData(Uri.parse("test@gmail.com"));
               sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
             //  sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "test@gmail.com" });
-              sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Invitation to use Knit");
+              sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Use Knit-Messaging");
               sendIntent.putExtra(Intent.EXTRA_TEXT, teacherInvitesparentContent);
               startActivity(sendIntent);
           }

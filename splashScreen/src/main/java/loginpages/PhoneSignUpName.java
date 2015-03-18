@@ -1,7 +1,11 @@
 package loginpages;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -11,6 +15,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
@@ -153,14 +158,45 @@ public class PhoneSignUpName extends MyActionBarActivity {
             //Changing first letter to caps
             displayName = UtilString.changeFirstToCaps(displayName);
 
-            Intent nextIntent = new Intent(this, PhoneSignUpVerfication.class);
-            //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            nextIntent.putExtra("login", false);
 
-            PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(1, phoneNumber);
-            startActivity(nextIntent);
+            String  msg = "Please confirm your number \n" + "+91"+phoneNumber;
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            View view =
+                    getLayoutInflater().inflate(R.layout.signup_phone_dialog, null);
+            builder.setView(view);
+            final Dialog dialog = builder.create();
+            dialog.show();
 
-            generateVerificationCode.execute();
+            TextView edit = (TextView) view.findViewById(R.id.edit);
+            TextView nextButton = (TextView) view.findViewById(R.id.nextButton);
+            TextView header = (TextView) view.findViewById(R.id.header);
+
+            header.setText(msg);
+
+            nextButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent nextIntent = new Intent(PhoneSignUpName.this, PhoneSignUpVerfication.class);
+                    //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    nextIntent.putExtra("login", false);
+
+                    PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(1, phoneNumber);
+                    startActivity(nextIntent);
+
+                    generateVerificationCode.execute();
+                }
+            });
+
+
+
+            edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
+                }
+            });
+
+
         }
         else{
             Utility.toast("Check your Internet connection");
