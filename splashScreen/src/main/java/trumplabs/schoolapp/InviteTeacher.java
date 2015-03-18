@@ -138,6 +138,8 @@ public class InviteTeacher extends MyActionBarActivity {
                 input.setText(text);
                 layout.addView(input, params);
                 alert.setView(layout);
+
+                Tools.hideKeyboard(InviteTeacher.this);
                 alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         if(ParseUser.getCurrentUser() == null) {
