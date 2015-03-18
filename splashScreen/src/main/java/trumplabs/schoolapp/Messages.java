@@ -91,7 +91,6 @@ public class Messages extends Fragment {
         mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
         mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
 
-
         listv = (RecyclerView) getActivity().findViewById(R.id.msg_list);
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);
         mainLayout = (LinearLayout)  getActivity().findViewById(R.id.msgCntLayout);
@@ -111,10 +110,6 @@ public class Messages extends Fragment {
                     getActivity().setIntent(intent);
 
                     if(Utility.isInternetExist(getActivity())) {
-                        if (mPullToRefreshLayout != null) {
-                            runSwipeRefreshLayout(mPullToRefreshLayout, 10);
-                        }
-
                         refreshServerMessage = true;
                         /*
                         flag set to fetch messages from server.
@@ -123,7 +118,8 @@ public class Messages extends Fragment {
                          Hence first call local async task then server async task.
                          */
                     }
-                } else {
+                }
+                else{
                     Log.d("DEBUG_MESSAGES", "pushOpen flag false");
                 }
             }
@@ -212,6 +208,11 @@ public class Messages extends Fragment {
 
 
             if(refreshServerMessage) {
+                Log.d("DEBUG_MESSAGES", "showing mPullToRefreshLayout");
+                if (mPullToRefreshLayout != null) {
+                    runSwipeRefreshLayout(mPullToRefreshLayout, 10);
+                }
+
                 Inbox newInboxMsg = new Inbox(msgs);
                 newInboxMsg.execute();
                 refreshServerMessage = false;
@@ -950,7 +951,6 @@ public class Messages extends Fragment {
                         Utility.ls(" option selected pull to refresh starting ... ");
                         if(mPullToRefreshLayout.isRefreshing())
                             mPullToRefreshLayout.setRefreshing(false);
-                        mPullToRefreshLayout.setRefreshing(true);
                         runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                     }
                     else
@@ -1028,6 +1028,8 @@ public class Messages extends Fragment {
 
         if (mPullToRefreshLayout == null)
             return;
+
+        mPullToRefreshLayout.setRefreshing(true);
 
         if (MainActivity.mHeaderProgressBar != null)
             MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
@@ -1111,6 +1113,10 @@ public class Messages extends Fragment {
             if(refreshServerMessage)
             {
                 refreshServerMessage = false;
+
+                if (mPullToRefreshLayout != null) {
+                    runSwipeRefreshLayout(mPullToRefreshLayout, 10);
+                }
 
                 Inbox newInboxMsg = new Inbox(msgs);
                 newInboxMsg.execute();

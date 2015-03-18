@@ -12,6 +12,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
@@ -22,7 +23,6 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,15 +36,12 @@ import com.parse.ParseCloud;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
-import org.w3c.dom.Text;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -55,10 +52,9 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import loginpages.Signup;
 import notifications.AlarmTrigger;
+import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 
 public class Utility extends MyActionBarActivity {
 
@@ -146,46 +142,88 @@ public class Utility extends MyActionBarActivity {
         }
     }
 
-    public static void logout() {
+    public static void logout() {//default called from everywhere except ProfilePage
+        LogoutTask logoutTask = new LogoutTask(false);
+        logoutTask.execute();
+    }
 
-        Context _context = Application.getAppContext();
-        // After logout redirect user to Loing Activity
+    public static void logoutProfilePage(){
+        LogoutTask logoutTask = new LogoutTask(true);
+        logoutTask.execute();
+    }
 
-        //cancel all alarms set. Very first thing to do
-        AlarmTrigger.cancelEventCheckerAlarm(_context);
-        AlarmTrigger.cancelRefresherAlarm(_context);
+    public static class LogoutTask extends AsyncTask<Void, Void, Void> {
+        boolean isForeground; //whether logout explicitly called
+        boolean success; //for static classes, explicitly initialize the variables
+        LogoutTask(boolean isFore){
+            success = false;
+            isForeground = isFore;
 
-        SessionManager session = new SessionManager(Application.getAppContext());
-        session.reSetAppOpeningCount();
-        session.reSetSignUpAccount();
-        session.reSetChildList();
-        session.reSetDefaultClassJoinStatus();
-        session.reSetActionBarHeight();
-
-        Intent i = new Intent(_context, Signup.class);
-        // Closing all the Activities
-        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
-        // Add new Flag to start new Activity
-        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-        ParseUser.logOut();
-
-        ParseInstallation pi = ParseInstallation.getCurrentInstallation();
-
-        HashMap<String, Object> param = new HashMap<String, Object>();
-        param.put("installationObjectId", pi.getString("id"));
-
-        try{
-            boolean logoutSuccess = ParseCloud.callFunction("appLogout", param);
-            Log.d("DEBUG_UTILITY", "logout() - appLogout cloud function result is " + logoutSuccess);
-        }
-        catch (com.parse.ParseException e){
-            e.printStackTrace();
+            if(isForeground){
+                if(ProfilePage.profileLayout!= null){
+                    ProfilePage.profileLayout.setVisibility(View.GONE);
+                    ProfilePage.progressBarLayout.setVisibility(View.VISIBLE);
+                }
+            }
         }
 
-        // Staring Login Activity
-        _context.startActivity(i);
+        @Override
+        protected Void doInBackground(Void... params) {
+            Context _context = Application.getAppContext();
+            // After logout redirect user to Loing Activity
+
+            //cancel all alarms set. Very first thing to do
+            AlarmTrigger.cancelEventCheckerAlarm(_context);
+            AlarmTrigger.cancelRefresherAlarm(_context);
+
+            SessionManager session = new SessionManager(Application.getAppContext());
+            session.reSetAppOpeningCount();
+            session.reSetSignUpAccount();
+            session.reSetChildList();
+            session.reSetDefaultClassJoinStatus();
+            session.reSetActionBarHeight();
+
+            ParseInstallation pi = ParseInstallation.getCurrentInstallation();
+
+            HashMap<String, Object> param = new HashMap<String, Object>();
+            param.put("installationObjectId", pi.getString("id"));
+
+            try{
+                boolean logoutSuccess = ParseCloud.callFunction("appLogout", param);
+                Log.d("DEBUG_UTILITY", "logout() - appLogout cloud function result is " + logoutSuccess);
+                ParseUser.logOut();
+                success = true;
+                return null;
+            }
+            catch (com.parse.ParseException e){
+                e.printStackTrace();
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            if(isForeground){
+                if(ProfilePage.profileLayout!= null){
+                    ProfilePage.profileLayout.setVisibility(View.VISIBLE);
+                    ProfilePage.progressBarLayout.setVisibility(View.GONE);
+                    if(!success){
+                        Utility.toast("Unable to logout !");
+                    }
+                }
+            }
+            Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
+            if(success) {
+                Context _context = Application.getAppContext();
+                Intent i = new Intent(_context, Signup.class);
+                // Closing all the Activities
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                // Add new Flag to start new Activity
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                _context.startActivity(i);
+            }
+        }
     }
 
 
@@ -770,13 +808,15 @@ public class Utility extends MyActionBarActivity {
             @Override
             public void run() {
                 //Do something here
-                if(popup != null)
-                    popup.dismiss();
-
+                try{
+                    if(popup != null && popup.isShowing()) {
+                        popup.dismiss();
+                    }
+                } catch (IllegalArgumentException e){
+                    e.printStackTrace();
+                } catch (Exception e){
+                }
             }
         }, 3000);
-
-
-
     }
 }
