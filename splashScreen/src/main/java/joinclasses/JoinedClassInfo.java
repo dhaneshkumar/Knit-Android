@@ -62,6 +62,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
     LinearLayout whatsAppSection;
     LinearLayout classInfoLayout;
     LinearLayout progressBarLayout;
+    LinearLayout demoLayout;
 
     String className;
     String classCode;
@@ -100,6 +101,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         subCodeTV = (TextView) findViewById(R.id.subCode);
         classInfoLayout = (LinearLayout) findViewById(R.id.classInfoLayout);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
+        demoLayout = (LinearLayout) findViewById(R.id.demo_layout);
 
         whatsAppSection = (LinearLayout) findViewById(R.id.whatsAppSection);
 
@@ -199,7 +201,9 @@ public class JoinedClassInfo extends MyActionBarActivity {
         {
             classCodeTV.setVisibility(View.GONE);
             subCodeTV.setVisibility(View.GONE);
+            demoLayout.setVisibility(View.VISIBLE);
         }
+
         classCodeTV.setText(classCode);
         assignedNameTV.setText(assignedName);
         teacherNameTV.setText(teacherName);
@@ -283,13 +287,18 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     }*/
 
                    // trimSchoolName = trimSchoolName + "...";
-                    sendIntent.putExtra(Intent.EXTRA_TEXT, "I have joined " + className +
-                            " class(code " + classCode + ") on KNIT App by " + teacherName +". Please join this class ! ");
+
+                    String parentInviteParentContent = "I have just joined " + className +" classroom of "+ teacherName+" on Knit Messaging. You can also join this class using the class-code "+ classCode +
+                            ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
+                            "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
+
+
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, parentInviteParentContent);
                     startActivity(sendIntent);
 
                 } catch (PackageManager.NameNotFoundException e) {
                     e.printStackTrace();
-                    Utility.toast("Sorry! WhatsApp not installed");
+                    Utility.toast("Sorry! WhatsApp not installed on this phone");
                 }
             }
         });

@@ -27,7 +27,7 @@
             android:layout_weight="1"
             android:textSize="32sp"
             android:textColor="@color/black"
-            android:text="Parents never miss" />
+            android:text="Subscribers never miss" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -110,7 +110,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Every announcement\n is sent to parent's phone.\n They will never miss."
+            android:text="Every announcement\n is sent to parent or student's phone.\n They will never miss."
             android:textColor="@color/white"
             android:textSize="19sp"
             android:paddingLeft="16dp"

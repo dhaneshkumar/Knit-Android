@@ -19,7 +19,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="This is how parents will join your class"
+            android:text="This is how parents/students will join your class"
             android:textColor="@color/black"
             android:textSize="16sp" />
 
@@ -110,9 +110,9 @@
                     android:background="@color/buttoncolor"
                     android:gravity="center"
                     android:padding="12dp"
-                    android:text="Receive Instructions (recommended)"
+                    android:text="Receive Instructions"
                     android:textColor="@color/white"
-                    android:textSize="14sp" />
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"

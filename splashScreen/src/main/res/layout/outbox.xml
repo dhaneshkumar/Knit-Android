@@ -52,15 +52,15 @@
                 android:id="@+id/outbox_ok"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Okay, got it!"
+                android:text="Okay, got it."
                 android:layout_gravity="right"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"
-                android:textSize="16sp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:textSize="14sp"
                 android:paddingLeft="12dp"
                 android:paddingRight="12dp"
                 android:textColor="@color/white"
-                android:background="@drawable/round_corner_button_color"
+                android:background="@color/buttoncolor"
                 />
 
         </LinearLayout>
