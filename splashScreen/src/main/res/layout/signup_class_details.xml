@@ -52,6 +52,7 @@
         android:background="@drawable/apptheme_edit_text_holo_light"
         android:paddingLeft="16dp"
         android:singleLine="true"
+        android:textColor="@color/black"
         android:textSize="16sp"
         android:paddingRight="16dp"
         />

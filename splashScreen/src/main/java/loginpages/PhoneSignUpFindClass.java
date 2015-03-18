@@ -147,6 +147,7 @@ public class PhoneSignUpFindClass extends MyActionBarActivity {
     }
 
     void next(){
+        codeErrorTV.setVisibility(View.GONE);
         classCode = codeET.getText().toString();
         if (UtilString.isBlank(classCode) || classCode.length() != 7)
             Utility.toast("Enter Correct Class Code");
