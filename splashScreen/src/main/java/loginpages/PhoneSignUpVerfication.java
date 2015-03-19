@@ -565,7 +565,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 }
                 String code = PhoneSignUpName.classCode; //for both parent/student
 
-                int result = JoinedHelper.joinClass(code, childName, true);
+                int result = JoinedHelper.joinClass(code, childName, false);
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinFirstClass : " + code + " " + childName + " result=" + result);
             }
         }
