@@ -208,6 +208,9 @@ public class PhoneSignUpFindClass extends MyActionBarActivity {
                 //go to next activity setting bundle using codegroup object
                 Log.d("DEBUG_FIND_CLASS", "starting signup class details activity");
                 Intent intent = new Intent(PhoneSignUpFindClass.this, PhoneSignUpClassDetails.class);
+                if(role.equalsIgnoreCase("student")){
+                    intent = new Intent(PhoneSignUpFindClass.this, PhoneSignUpName.class);
+                }
                 intent.putExtra("role", role);
                 intent.putExtra("teacherName", group.getString("Creator"));
                 intent.putExtra("className", group.getString("name"));

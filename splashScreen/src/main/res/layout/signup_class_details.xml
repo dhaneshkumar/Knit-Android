@@ -33,6 +33,7 @@
 </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/childDetails"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical"

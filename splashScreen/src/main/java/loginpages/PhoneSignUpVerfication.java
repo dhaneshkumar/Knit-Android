@@ -557,8 +557,13 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             ParseUser user = ParseUser.getCurrentUser();
             if (user != null) {
 
-                String childName = PhoneSignUpClassDetails.childName;
-                String code = PhoneSignUpClassDetails.classCode;
+                String role = user.getString("role");
+
+                String childName = PhoneSignUpClassDetails.childName; //get child name
+                if(role.equalsIgnoreCase("student")) {
+                    childName = user.getString("name"); //user itself is the student
+                }
+                String code = PhoneSignUpName.classCode; //for both parent/student
 
                 int result = JoinedHelper.joinClass(code, childName, true);
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinFirstClass : " + code + " " + childName + " result=" + result);
