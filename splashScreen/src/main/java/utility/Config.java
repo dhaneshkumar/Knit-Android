@@ -40,7 +40,7 @@ public class Config {
     public static final String RemovalMsg = "You have been removed from this classroom. You won't receive any notification from this class from now onwards.";
     public static final int faqRefreshingcount = 20;
 
-  public static final int senderPicUpdationCount = 5; // #appOpening count
+  public static final int senderPicUpdationCount = 5; //   #appOpening count
 
 
   public static int messageNormalStartTime = 7; //7 AM (7 hours)
