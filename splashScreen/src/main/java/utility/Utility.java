@@ -143,21 +143,23 @@ public class Utility extends MyActionBarActivity {
     }
 
     public static void logout() {//default called from everywhere except ProfilePage
-        LogoutTask logoutTask = new LogoutTask(false);
+        LogoutTask logoutTask = new LogoutTask(false, Application.getAppContext());
         logoutTask.execute();
     }
 
-    public static void logoutProfilePage(){
-        LogoutTask logoutTask = new LogoutTask(true);
+    public static void logoutProfilePage(Context context){
+        LogoutTask logoutTask = new LogoutTask(true, context);
         logoutTask.execute();
     }
 
     public static class LogoutTask extends AsyncTask<Void, Void, Void> {
         boolean isForeground; //whether logout explicitly called
         boolean success; //for static classes, explicitly initialize the variables
-        LogoutTask(boolean isFore){
+        Context _context;
+        LogoutTask(boolean isFore, Context context){
             success = false;
             isForeground = isFore;
+            _context = context;
 
             if(isForeground){
                 if(ProfilePage.profileLayout!= null){
@@ -212,15 +214,13 @@ public class Utility extends MyActionBarActivity {
                     }
                 }
             }
-            Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
-            if(success) {
-                Context _context = Application.getAppContext();
+            if(!isForeground || success) {//either 1) called due to parseuser null or 2) success flag set
+                Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
                 Intent i = new Intent(_context, Signup.class);
                 // Closing all the Activities
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-
                 // Add new Flag to start new Activity
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
                 _context.startActivity(i);
             }
         }
