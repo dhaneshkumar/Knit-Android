@@ -477,6 +477,11 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 */
             JoinDefaultGroup joinGroup = new JoinDefaultGroup();
             joinGroup.execute();
+
+            if(currentUser.getString("role").equalsIgnoreCase("parent") || currentUser.getString("role").equalsIgnoreCase("student")){
+                JoinFirstClass joinFirstClass = new JoinFirstClass(); //code and child name from PhoneSignUpClassDetails
+                joinFirstClass.execute();
+            }
             return null;
         }
 
@@ -537,6 +542,26 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinDefaultGroup : result = " + result);
                     session.setDefaultClassJoinStatus();
                 }
+            }
+        }
+    }
+
+    public static class JoinFirstClass extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            doInBackgroudCore();
+            return null;
+        }
+
+        public void doInBackgroudCore(){
+            ParseUser user = ParseUser.getCurrentUser();
+            if (user != null) {
+
+                String childName = PhoneSignUpClassDetails.childName;
+                String code = PhoneSignUpClassDetails.classCode;
+
+                int result = JoinedHelper.joinClass(code, childName, true);
+                Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinFirstClass : " + code + " " + childName + " result=" + result);
             }
         }
     }

@@ -18,6 +18,7 @@ import com.parse.ParseQuery;
 
 import java.util.List;
 
+import loginpages.PhoneSignUpFindClass;
 import loginpages.PhoneSignUpName;
 import loginpages.Signup1Class;
 import trumplab.textslate.R;
@@ -104,7 +105,7 @@ public class Free extends Fragment {
                 }
                 else
                 {
-                    Intent intent = new Intent(getActivity(),PhoneSignUpName.class);
+                    Intent intent = new Intent(getActivity(), PhoneSignUpFindClass.class);
                     intent.putExtra("role", role);
                     startActivity(intent);
                 }

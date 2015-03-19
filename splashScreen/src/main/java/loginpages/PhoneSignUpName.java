@@ -9,9 +9,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -33,6 +36,9 @@ public class PhoneSignUpName extends MyActionBarActivity {
     EditText displayNameET;
     EditText phoneNumberET;
 
+    TextView classNameTV;
+    TextView teacherNameTV;
+    LinearLayout classDetailsLayout;
 
     static String role = "";
     static String displayName = "";
@@ -51,6 +57,9 @@ public class PhoneSignUpName extends MyActionBarActivity {
         displayNameET = (EditText) findViewById(R.id.displaynameid);
         phoneNumberET = (EditText) findViewById(R.id.phoneid);
 
+        classNameTV = (TextView) findViewById(R.id.className);
+        teacherNameTV = (TextView) findViewById(R.id.teacherName);
+        classDetailsLayout = (LinearLayout) findViewById(R.id.classDetails);
 
 
         if(getIntent() != null && getIntent().getExtras() != null) {
@@ -61,6 +70,15 @@ public class PhoneSignUpName extends MyActionBarActivity {
             displayNameET.setText(displayName);
             phoneNumberET.setText(phoneNumber);
             titleSpinner.setSelection(titleSpinnerPosition);
+        }
+
+        if(role.equals("teacher")){
+            classDetailsLayout.setVisibility(View.GONE);
+        }
+        else{
+            classDetailsLayout.setVisibility(View.VISIBLE);
+            classNameTV.setText(PhoneSignUpClassDetails.className);
+            teacherNameTV.setText(PhoneSignUpClassDetails.teacherName);
         }
 
 
@@ -76,11 +94,11 @@ public class PhoneSignUpName extends MyActionBarActivity {
         titleSpinnerPosition = 0;
     }
 
-    public void onBackPressed() {
+    /*public void onBackPressed() {
         Intent intent = new Intent(getBaseContext(), Signup.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
