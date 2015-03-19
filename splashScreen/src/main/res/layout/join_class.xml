@@ -263,7 +263,7 @@
                     android:paddingTop="8dp"
                     android:maxWidth="240dp"
                     android:visibility="gone"
-                    android:text="You need a class-code to join the class-room. If you don't have any, ask to teacher for it."
+                    android:text="You need a class-code to join the class-room. If you don't have any, ask your teacher for it."
                     android:textColor="@color/white"
                     android:textSize="13sp"
                     android:layout_below="@+id/popup_up"

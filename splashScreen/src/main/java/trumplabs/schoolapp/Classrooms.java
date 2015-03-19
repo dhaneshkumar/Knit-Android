@@ -116,7 +116,7 @@ public class Classrooms extends Fragment {
         }
         else
         {
-            cardContent.setText("Here you will see your created and joined classrooms. You can also join new classrooms.");
+            cardContent.setText("Here you will see your joined classrooms. You can also join new classrooms.");
         }
 
 
