@@ -312,8 +312,34 @@ public class Subscribers extends MyActionBarActivity {
             final String name = ((MemberDetails) getItem(position)).getChildName();
             membername.setText(name);
             ImageView option_imageView = (ImageView) row.findViewById(R.id.joinOpt);
+            ImageView memberIcon = (ImageView) row.findViewById(R.id.memberIcon);
 
             row.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline));
+
+
+            MemberDetails member = memberDetails.get(position);
+            if (member != null) {
+                String type = member.getType();
+
+                if (type.equals(MemberDetails.APP_MEMBER)) {
+                    int sdk = android.os.Build.VERSION.SDK_INT;
+                    if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                        memberIcon.setBackgroundDrawable( getResources().getDrawable(R.drawable.android) );
+                    } else {
+                        memberIcon.setBackground( getResources().getDrawable(R.drawable.android));
+                    }
+                }
+                else
+                {
+                    int sdk = android.os.Build.VERSION.SDK_INT;
+                    if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
+                        memberIcon.setBackgroundDrawable( getResources().getDrawable(R.drawable.sms) );
+                    } else {
+                        memberIcon.setBackground( getResources().getDrawable(R.drawable.sms));
+                    }
+                }
+                }
+
 
         /*
            * Setting options for items
@@ -492,7 +518,7 @@ public class Subscribers extends MyActionBarActivity {
                             param.put("classname", className);
                             param.put("number", number);
                             param.put("usertype", "sms");
-                            isRemoved = ParseCloud.callFunction("removechild", param);
+                            isRemoved = ParseCloud.callFunction("removeMember", param);
 
                             if(isRemoved){
                                 obj.fetch();        //retrieving updates from server

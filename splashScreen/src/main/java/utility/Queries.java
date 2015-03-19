@@ -549,7 +549,7 @@ public class Queries {
         smsQuery.addAscendingOrder("subscriber");
         smsQuery.whereEqualTo("userId", userId);
         smsQuery.whereEqualTo("cod", groupCode); // "cod" - as written in table
-        smsQuery.whereEqualTo("status", "null");
+        smsQuery.whereEqualTo("status", null);
 
         List<ParseObject> smsUsersList = null;
         try {
@@ -574,6 +574,16 @@ public class Queries {
                                 new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child);
                         memberList.add(member);
                     }
+                    else
+                    {
+                        if(!UtilString.isBlank(smsMembers.getString("number"))) {
+                            child = smsMembers.getString("number");
+                            MemberDetails member =
+                                    new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child);
+                            memberList.add(member);
+                        }
+                    }
+
                 }
             }
         } catch (ParseException e) {

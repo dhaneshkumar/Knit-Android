@@ -38,7 +38,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@+id/joinOpt"
-            android:src="@drawable/android" />
+            android:background="@drawable/android" />
 
         <ImageView
             android:id="@+id/joinOpt"
