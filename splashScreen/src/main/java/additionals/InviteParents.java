@@ -64,6 +64,10 @@ public class InviteParents extends MyActionBarActivity{
 
       textTV.setText(Html.fromHtml(smsContent), TextView.BufferType.SPANNABLE);
 
+      final String teacherInvitesparentContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
+              ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
+              "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
+
 
 
       //click on sms textview icon
@@ -125,7 +129,7 @@ public class InviteParents extends MyActionBarActivity{
           }
       });
 
-      final String sharingContent = "Hey, Use Knit";
+
 
 
       //share via whatsapp
@@ -140,7 +144,7 @@ public class InviteParents extends MyActionBarActivity{
                   sendIntent.setType("text/plain");
 
 
-                  sendIntent.putExtra(Intent.EXTRA_TEXT, sharingContent);
+                  sendIntent.putExtra(Intent.EXTRA_TEXT, teacherInvitesparentContent);
                   startActivity(sendIntent);
 
               } catch (PackageManager.NameNotFoundException e) {
@@ -160,7 +164,7 @@ public class InviteParents extends MyActionBarActivity{
               sendIntent.addCategory(Intent.CATEGORY_DEFAULT);
               sendIntent.setType("vnd.android-dir/mms-sms");
               sendIntent.setData(Uri.parse("sms:"));
-              sendIntent.putExtra("sms_body", sharingContent);
+              sendIntent.putExtra("sms_body", teacherInvitesparentContent);
               startActivity(sendIntent);
           }
       });
@@ -176,7 +180,7 @@ public class InviteParents extends MyActionBarActivity{
               sendIntent.setClassName("com.google.android.gm", "com.google.android.gm.ComposeActivityGmail");
             //  sendIntent.putExtra(Intent.EXTRA_EMAIL, new String[] { "test@gmail.com" });
               sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Invitation to use Knit");
-              sendIntent.putExtra(Intent.EXTRA_TEXT, sharingContent);
+              sendIntent.putExtra(Intent.EXTRA_TEXT, teacherInvitesparentContent);
               startActivity(sendIntent);
           }
       });
@@ -185,7 +189,7 @@ public class InviteParents extends MyActionBarActivity{
     copy.setOnClickListener(new OnClickListener() {
         @Override
         public void onClick(View v) {
-            Utility.copyToClipBoard(InviteParents.this, "Instructions", sharingContent);
+            Utility.copyToClipBoard(InviteParents.this, "Instructions", teacherInvitesparentContent);
         }
     });
 

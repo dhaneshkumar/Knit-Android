@@ -305,6 +305,30 @@
                 </RelativeLayout>
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/demo_layout"
+                    android:orientation="vertical"
+                    android:visibility="gone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/profile_tail_bar"
+                    android:text="" />
+
+                    <TextView
+                        android:layout_marginTop="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/demo_class_content"
+                        android:textColor="@color/black"
+                        android:textSize="15sp"
+                        />
+                    </LinearLayout>
+
+
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

@@ -75,6 +75,7 @@ public class Classrooms extends Fragment {
     private ImageView classroom_headup;
     private LinearLayout classroom_instruction;
     private TextView classroom_ok;
+    private TextView cardContent;
 
 
     @Override
@@ -101,11 +102,22 @@ public class Classrooms extends Fragment {
         classroom_headup = (ImageView) getActivity().findViewById(R.id.classroom_uphead);
         classroom_instruction = (LinearLayout) getActivity().findViewById(R.id.classroom_instruction);
         classroom_ok = (TextView) getActivity().findViewById(R.id.classroom_ok);
+        cardContent = (TextView) getActivity().findViewById(R.id.card_content);
 
         //Setting condensed font
         Typeface typeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/roboto-condensed.bold.ttf");
         createdClassTV.setTypeface(typeFace);
         joinedClassTV.setTypeface(typeFace);
+
+
+        if(ParseUser.getCurrentUser().getString("role").equals("teacher"))
+        {
+            cardContent.setText("Here you will see your created and joined classrooms. You can also join and create new classrooms.");
+        }
+        else
+        {
+            cardContent.setText("Here you will see your created and joined classrooms. You can also join new classrooms.");
+        }
 
 
         //signup check
@@ -116,23 +128,11 @@ public class Classrooms extends Fragment {
                 String signup = getActivity().getIntent().getExtras().getString("flag");
                 if(!UtilString.isBlank(signup))
                 {
-                    if(signup.equals("SIGNUP")) {
-                        FragmentManager fm = getActivity().getSupportFragmentManager();
-                        CreateClassDialog createClassDialog = new CreateClassDialog();
-                        Bundle args = new Bundle();
-                        args.putString("flag", "SIGNUP");
-                        createClassDialog.setArguments(args);
-                        createClassDialog.show(fm, "create Class");
-
-
-
-                    }
-                    else if(signup.equals("CREATE_CLASS")) {
+                   if(signup.equals("CREATE_CLASS")) {
                         FragmentManager fm = getActivity().getSupportFragmentManager();
                         CreateClassDialog createClassDialog = new CreateClassDialog();
                         createClassDialog.show(fm, "create Class");
                     }
-
                     getActivity().getIntent().putExtra("flag", "false"); // resetting flag
                 }
             }

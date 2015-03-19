@@ -108,7 +108,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Personal information\n is never shared with parents.\n Knit is safe."
+            android:text="Personal information\n is never shared with parents or students.\n Knit is safe."
             android:textColor="@color/white"
             android:textSize="19sp"
             android:paddingLeft="16dp"

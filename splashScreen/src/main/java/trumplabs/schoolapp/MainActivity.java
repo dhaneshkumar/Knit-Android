@@ -203,7 +203,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
-
                 /*
                 scrolling from one tab to other
                  */
@@ -310,11 +309,20 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 intent.putExtra("flag", "false"); //set flag to something else
                 setIntent(intent);
 
-                if (role.equalsIgnoreCase("student") || role.equalsIgnoreCase("parent")) {
+              /*  if (role.equalsIgnoreCase("student") || role.equalsIgnoreCase("parent")) {
                     Log.d("DEBUG_MAIN", "creating join class dialog");
                     FragmentManager fm = getSupportFragmentManager();
                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                     joinClassDialog.show(fm, "Join Class");
+                }*/
+                if(role.equalsIgnoreCase("teacher"))
+                {
+                    FragmentManager fm = getSupportFragmentManager();
+                    CreateClassDialog createClassDialog = new CreateClassDialog();
+                    Bundle args = new Bundle();
+                    args.putString("flag", "SIGNUP");
+                    createClassDialog.setArguments(args);
+                    createClassDialog.show(fm, "create Class");
                 }
 
                Constants.signup_classrooms= true;

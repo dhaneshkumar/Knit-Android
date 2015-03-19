@@ -76,11 +76,11 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
 
 
-        String headerText = "We are trying to autodetect verification code sent to ";
+        String headerText;
         if(isLogin)
-            headerText += " <font color='#000000'>"+  PhoneLoginPage.phoneNumber +" </font>";
+            headerText =  PhoneLoginPage.phoneNumber ;
         else
-            headerText += " <font color='#000000'>"+  PhoneSignUpName.phoneNumber +" </font>";
+            headerText =  PhoneSignUpName.phoneNumber;
 
         header.setText(Html.fromHtml(headerText), TextView.BufferType.SPANNABLE);
 

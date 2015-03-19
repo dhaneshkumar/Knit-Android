@@ -109,13 +109,9 @@ public class Constants {
     public static int actionBarHeight = 0;
     public static final String SENT_MESSAGE_TABLE = "SentMessages";
 
-    public static String teacherInvitesparentContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode JAI4958 \n" +
-            "Download android app at:http://goo.gl/BzJzXN \n" +
-            "Or you can visit following link: http://www.knitapp.co.in/~user/Ts12345.";
 
-    public static String parentInviteParentContent = "I have just joined \"ZZZZ\" classroom of \"Mr. XYZ\" on Knit Messaging. You can also join this class using the class-code \"JAI4958\". \n" +
-            "Download android app at:http://goo.gl/BzJzXN\n" +
-            "Or you can visit following link:  http://www.knitapp.co.in/~user/Ts12345. ";
+
+
 
 
     public static boolean signup_classrooms =false;
