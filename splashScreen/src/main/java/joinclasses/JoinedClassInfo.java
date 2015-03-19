@@ -69,6 +69,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
     //static String schoolName;
     String assignedName;
     String teacherName;
+    TextView seperator;
 
     static String defaultSchoolName = "";
 
@@ -102,6 +103,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         classInfoLayout = (LinearLayout) findViewById(R.id.classInfoLayout);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         demoLayout = (LinearLayout) findViewById(R.id.demo_layout);
+        seperator = (TextView) findViewById(R.id.seperator);
 
         whatsAppSection = (LinearLayout) findViewById(R.id.whatsAppSection);
 
@@ -202,6 +204,8 @@ public class JoinedClassInfo extends MyActionBarActivity {
             classCodeTV.setVisibility(View.GONE);
             subCodeTV.setVisibility(View.GONE);
             demoLayout.setVisibility(View.VISIBLE);
+            assignedNameContainer.setVisibility(View.GONE);
+            seperator.setVisibility(View.GONE);
         }
 
         classCodeTV.setText(classCode);
@@ -221,6 +225,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         ParseUser user = ParseUser.getCurrentUser();
         if(user != null && user.getString("role").equalsIgnoreCase("student")){
             assignedNameContainer.setVisibility(View.GONE);
+            seperator.setVisibility(View.GONE);
         }
 
         assignedNameContainer.setOnClickListener(new View.OnClickListener(){
