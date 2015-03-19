@@ -216,6 +216,13 @@ public class JoinedClassInfo extends MyActionBarActivity {
             }
         });
 
+
+        //hide assigned name container for students
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user != null && user.getString("role").equalsIgnoreCase("student")){
+            assignedNameContainer.setVisibility(View.GONE);
+        }
+
         assignedNameContainer.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v){
