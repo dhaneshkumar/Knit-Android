@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import library.UtilString;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MemberDetails;
 
@@ -185,9 +186,24 @@ public class Queries {
         if (msgList == null)
             msgList = new ArrayList<ParseObject>();
 
+        SessionManager sessionManager = new SessionManager(Application.getAppContext());
+        ParseUser user = ParseUser.getCurrentUser();
 
-        //newTimeStamp has been set in getLocalInboxMessages() method
-        //if newTimeStamp is null this means that there are no local messages and we're fetching old+new messages
+        if(user == null) return msgList; //won't happen in general
+
+
+        //newTimeStamp has been set in getLocalInboxMsgs
+        //If no local messages :
+        //      if sign up mode, set timestamp as user's creation time.
+        //      Otherwise use showLatestMessagesWithLimit for login mode
+
+        if(newTimeStamp == null && sessionManager.getSignUpAccount()){
+            Log.d("DEBUG_QUERIES_SERVER_MSGS", "timestamp null with SIGNUP mode. Using user's creation time as timestamp");
+            newTimeStamp = user.getCreatedAt();
+        }
+
+        //newTimeStamp has been appropriately set handling cases
+        //if newTimeStamp is null this means that (no local messages + login mode) and we're fetching old+new messages
         //if newTimeStamp is NOT null, fetch all new messages with timestamp > newTimeStamp
 
         if(newTimeStamp == null){
