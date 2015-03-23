@@ -110,7 +110,7 @@
                     android:id="@+id/child"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:hint="Associated Name"
+                    android:hint="Child Name"
                     android:inputType="textCapWords"
                     android:paddingLeft="16dp"
                     android:paddingRight="1dp"
