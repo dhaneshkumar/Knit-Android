@@ -41,7 +41,7 @@ public class SoloPhoneLoginPageTest extends ActivityInstrumentationTestCase2<Pho
         assertEquals("987", phoneNum);
 
         solo.clickOnText("Next"); //NOTE THAT THIS IS CASE SENSITIVE
-        assertTrue(solo.searchText("Incorrect Mobile Number")); //Should toast this since only 3 digit in mobile number
+        assertTrue(solo.waitForText("Incorrect Mobile Number", 0, 5000)); //Should toast this since only 3 digit in mobile number
     }
 
     public void testSoloOldLogin(){
