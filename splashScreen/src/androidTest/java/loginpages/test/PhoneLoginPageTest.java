@@ -1,4 +1,4 @@
-package trumplabs.schoolapp.test;
+package loginpages.test;
 
 import android.app.Activity;
 import android.app.Instrumentation;

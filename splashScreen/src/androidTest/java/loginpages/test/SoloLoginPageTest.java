@@ -1,4 +1,4 @@
-package trumplabs.schoolapp.test;
+package loginpages.test;
 
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
@@ -34,6 +34,7 @@ public class SoloLoginPageTest extends ActivityInstrumentationTestCase2<LoginPag
     //Note that functions are executed in order of their names(alphabetically increasing)
     public void test0_ForgotCorrectEmail(){
         solo.clickOnText("Forgot?");
+        assertTrue(solo.waitForDialogToOpen(5000));
         //forgot password dialog shown now
         EditText emailTV = (EditText) solo.getView(R.id.emailid_forgot);
         TextView sendButton = (TextView) solo.getView(R.id.button_forgotpass);
@@ -46,6 +47,7 @@ public class SoloLoginPageTest extends ActivityInstrumentationTestCase2<LoginPag
 
     public void test1_ForgotWrongEmail(){
         solo.clickOnText("Forgot?");
+        assertTrue(solo.waitForDialogToOpen(5000));
         //forgot password dialog shown now
         EditText emailTV = (EditText) solo.getView(R.id.emailid_forgot);
         TextView sendButton = (TextView) solo.getView(R.id.button_forgotpass);
