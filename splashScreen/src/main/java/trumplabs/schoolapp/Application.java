@@ -9,12 +9,31 @@ import com.parse.ParseCrashReporting;
 import com.parse.ParseInstallation;
 import com.parse.PushService;
 
+import java.util.Calendar;
+import java.util.Date;
+
 import utility.Config;
 
 public class Application extends android.app.Application {
 	
 	 private static Context context;
 	 private Activity mCurrentActivity = null;
+
+     public static boolean mainActivityVisible = false; //whether MainActivity is visible or not.
+     public static Date lastTimeInboxSync = null;
+     public static Date lastTimeOutboxSync = null;
+        /*this is the last time when inbox/outbox were refreshed - either
+        1) manually by clicking on refresh button
+        2) or by Refresher in background
+        3) or in onCreate of the MainActivity fragments
+
+        It is required to make sure that 1) and 3) occur only if time gap is Config.inboxOutboxUpdateGap or more
+
+        initialized to null*/
+     public static Date lastTimeJoinedSync = null;
+        /*
+            Similar to above but for updating joined class details such as name and profile pic of teachers
+         */
 
   public Application() {
 	  Parse.enableLocalDatastore(this);
@@ -28,7 +47,6 @@ public class Application extends android.app.Application {
     
  // Enable Crash Reporting on parse analytics
     ParseCrashReporting.enable(this);
-    
 
 	// Initialize the Parse SDK.
    
@@ -38,12 +56,6 @@ public class Application extends android.app.Application {
 	// Specify an Activity to handle all pushes by   default.
 	//PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class);
 	PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class,getResources().getIdentifier("notifications", "drawable", getPackageName()));
-
-
-	/*Not using this as saving parseinstallation in cloud
-	ParseInstallation.getCurrentInstallation().saveEventually();
-    */
-   
   }
   
   

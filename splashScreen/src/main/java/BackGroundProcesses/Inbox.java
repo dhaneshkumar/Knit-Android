@@ -6,8 +6,10 @@ import android.view.View;
 
 import com.parse.ParseObject;
 
+import java.util.Calendar;
 import java.util.List;
 
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
@@ -32,7 +34,11 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
   }
 
   public void doInBackgroundCore(){
-      Utility.ls("inbox running....");
+      //set lastTimeInboxSync
+      Application.lastTimeInboxSync = Calendar.getInstance().getTime();
+
+      Log.d("DEBUG_INBOX", "fetching new messages and setting lastTimeInboxSync");
+
       int initialSize = -1;
       if(msgs != null)
       {
@@ -96,13 +102,12 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       }
   }
 
+    //notifies the adapter also
   public void syncOtherInboxDetails(){
       Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
       SeenHandler seenHandler = new SeenHandler();
       seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
-
       SyncMessageDetails.syncStatus();
-      SyncMessageDetails.fetchLikeConfusedCountInbox();
 
       if(Messages.mPullToRefreshLayout != null){
           Messages.mPullToRefreshLayout.post(new Runnable() {
@@ -116,6 +121,11 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
           });
       }
   }
+    //doesn't notify the adapter
+    public void fetchLikeConfusedCountInbox(){
+        SyncMessageDetails.fetchLikeConfusedCountInbox();
+    }
+
 
   @Override
   protected void onPostExecute(String[] result) {
@@ -123,11 +133,12 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       super.onPostExecute(result);
 
       /* Handle 'seen' of messages. Assume for now that since app is opened, user would have
-    seen the new messages. Do this in a seperate thread */
+         seen the new messages. Do this in a seperate thread */
       Runnable r = new Runnable() {
           @Override
           public void run(){
-            syncOtherInboxDetails();
+              fetchLikeConfusedCountInbox();
+              syncOtherInboxDetails();
           }
       };
 

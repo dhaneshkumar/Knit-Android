@@ -99,31 +99,6 @@ public class Subscribers extends MyActionBarActivity {
         if(!UtilString.isBlank(className))
             classNameTV.setText(className);
 
-     /*   //setting school name
-        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
-        classQuery.fromLocalDatastore();
-        classQuery.whereEqualTo("code", classCode);
-        try{
-            ParseObject codegroup = classQuery.getFirst();
-            schoolName = codegroup.getString("schoolName"); //this is a new field. If not present, fetch and store locally
-            if(schoolName == null){
-                //fetch school name from id using asynctask
-                Log.d("DEBUG_SUBSCRIBERS", "schoolName not in codegroup. Fetching...");
-                JoinedClassInfo.GetSchoolName getSchoolNameTask = new JoinedClassInfo.GetSchoolName(codegroup, 2);
-                getSchoolNameTask.execute();
-            }
-            else{
-                Log.d("DEBUG_SUBSCRIBERS", "schoolName already there " + schoolName);
-                schoolNameTV.setText(schoolName);
-            }
-        }
-        catch (ParseException e){
-            Log.d("DEBUG_SUBSCRIBERS", "local query into Codegroup failed");
-            schoolName = defaultSchoolName;
-            schoolNameTV.setText(schoolName);
-            e.printStackTrace();
-        }*/
-
         //setting member count
         int memberCount = 0;
 
@@ -163,31 +138,8 @@ public class Subscribers extends MyActionBarActivity {
             }
         });
 
-        /*
-        //setting school name
-        //get details(schoolName, profile pic, assigned name) from Codegroup and User table
-        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
-        classQuery.fromLocalDatastore();
-        classQuery.whereEqualTo("code", classCode);
-        String schoolName = "";
-
-        try{
-            ParseObject codegroup = classQuery.getFirst();
-            schoolName = codegroup.getString("schoolName"); //this is a new field. If not present, fetch and store locally
-            if(schoolName == null){
-                //fetch school name from id using asynctask
-                JoinedClassInfo.GetSchoolName getSchoolNameTask = new JoinedClassInfo.GetSchoolName(codegroup, 2);
-                getSchoolNameTask.execute();
-            }
-            else{
-                Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName already there " + schoolName);
-                schoolNameTV.setText(schoolName);
-            }
-        }
-        catch (ParseException e){
-            schoolNameTV.setText(schoolName);
-            e.printStackTrace();
-        }*/
+        Log.d("DEBUG_SUBSCRIBERS", "calling refresh in onCreate()");
+        refresh(); //called every time activity is created. Can do better
     }
 
 
@@ -248,17 +200,7 @@ public class Subscribers extends MyActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
-                if(Utility.isInternetExist(this)) {
-
-                    //showing progress bar
-                    if (mHeaderProgressBar != null) {
-                        Tools.runSmoothProgressBar(mHeaderProgressBar, 10);
-                    }
-
-                    //refreshing member list in background
-                    MemberList memberList = new MemberList(classCode);
-                    memberList.execute();
-                }
+                refresh();
                 break;
 
             case android.R.id.home:
@@ -271,6 +213,19 @@ public class Subscribers extends MyActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    void refresh(){
+        if(Utility.isInternetExist(this)) {
+
+            //showing progress bar
+            if (mHeaderProgressBar != null) {
+                Tools.runSmoothProgressBar(mHeaderProgressBar, 10);
+            }
+
+            //refreshing member list in background
+            MemberList memberList = new MemberList(classCode);
+            memberList.execute();
+        }
+    }
 
     /*
     Adapter to show member list
