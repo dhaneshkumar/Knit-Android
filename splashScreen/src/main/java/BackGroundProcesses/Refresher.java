@@ -1,24 +1,16 @@
 package BackGroundProcesses;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
-import com.parse.ParseCloud;
-import com.parse.ParseException;
-import com.parse.ParseInstallation;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 
 import loginpages.PhoneSignUpVerfication;
 import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
+import utility.Config;
 import utility.Queries2;
 import utility.SessionManager;
 import utility.Utility;
@@ -49,63 +41,55 @@ public class Refresher {
             Utility.updateCurrentTimeInBackground(freshUser);
 
 
-            freshUser.fetchInBackground();
+            freshUser.fetchIfNeededInBackground();
 
-                Log.d("DEBUG_REFRESHER",  "calling background tasks");
-
-
-
+            Log.d("DEBUG_REFRESHER",  "calling background tasks");
         /*
          * Updating inbox msgs
          */
-            Log.d("DEBUG_REFRESHER", "calling Inbox execute()");
+            Log.d("DEBUG_REFRESHER", "Attempting calling Inbox execute()");
 
             Inbox newInboxMsg = new Inbox(null);
-            newInboxMsg.doInBackgroundCore();
-            newInboxMsg.onPostExecuteHelper(); //done
-            newInboxMsg.syncOtherInboxDetails();
+            if(Application.mainActivityVisible && isSufficientGapInbox()) {
+                newInboxMsg.doInBackgroundCore();
+                newInboxMsg.onPostExecuteHelper(); //done
+                newInboxMsg.fetchLikeConfusedCountInbox();
+            }
+            else{
+                Log.d("DEBUG_REFRESHER", "refresher skipping inbox update : visible " + Application.mainActivityVisible + " gap " +  isSufficientGapInbox());
+            }
+
+            newInboxMsg.syncOtherInboxDetails(); //called always in background but sends only dirty data
+                                                 // (modified like, seen, confused status) if any
 
            /*
-            *   Updating counts for outbox messages
-            *
+            *   Updating counts for outbox messages only if main activity visible and sufficent gap since last update
             */
-            Outbox.refreshCountCore(); //simple function
+            if(Application.mainActivityVisible && isSufficientGapOutbox()) {
+                Outbox.refreshCountCore();
+            }
+            else{
+                Log.d("DEBUG_REFRESHER", "refresher skipping Outbox update : visible " + Application.mainActivityVisible + " gap " + isSufficientGapOutbox());
+            }
 
             /*
                 Update total count of outbox messages
              */
-            Outbox.updateOutboxTotalMessages(); //simple function
-
-            /*
-             * Updating created class rooms list
-             */
-
-            CreatedClassRooms createdClassList = new CreatedClassRooms();
-            createdClassList.doInBackgroundCore();
-            createdClassList.onPostExecuteCoreHelper(); //done
+            Outbox.updateOutboxTotalMessages(); //simple local function
 
              /*
-             * Updating joined classes teacher details(name, profile pic)
+             * Updating joined classes teacher details(name, profile pic) if gap is larger than Config.joinedClassUpdateGap
              */
-            final JoinedClassRooms joinClass = new JoinedClassRooms();
-            joinClass.doInBackgroundCore();
-            joinClass.onPostExecuteHelper();
+            if(isSufficientGapJoined()) {
+                final JoinedClassRooms joinClass = new JoinedClassRooms();
+                joinClass.doInBackgroundCore();
+                joinClass.onPostExecuteHelper();
+            }
+            else{
+                Log.d("DEBUG_REFRESHER", "refresher joined classes update : gap " + isSufficientGapJoined());
+            }
 
-            /*
-            //Checking for correct channels (It should match to joined groups entries)
-            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-
-            //update channels NOT REQUIRED Now ParseInstallation updates handled in server
-            updateChannels();
-
-            //Checking for username in parseinstallation entry
-
-            if(installation.getString("username") == null) {
-                installation.put("username", freshUser.getUsername());
-                installation.saveEventually();
-            }*/
-
-            //Refresh local outbox data, if not in valid state clear and fetch new.
+            //Refresh local outbox data, if not in valid state, clear and fetch new.
             //If already present then no need to fetch outbox messages
             if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
                 if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
@@ -132,26 +116,6 @@ public class Refresher {
                 PhoneSignUpVerfication.JoinDefaultGroup joinDefaultGroup= new PhoneSignUpVerfication.JoinDefaultGroup();
                 joinDefaultGroup.doInBackgroudCore(); //flag set inside this method here on success
             }
-
-
-            if (appOpeningCount % utility.Config.faqRefreshingcount == 0) {
-               // getServerFAQs faqs = new getServerFAQs(freshUser.getString("role"));
-               //faqs.doInBackgroundCore(); //no on-post-execute in this
-
-                /*
-                 * saving user's mobile model no.
-                 */
-
-                if (freshUser.getString("MODEL") == null && android.os.Build.MODEL != null) {
-                    freshUser.put("MODEL", android.os.Build.MODEL);
-                    try {
-                        freshUser.save();
-                    } catch (ParseException e1) {
-                    }
-                }
-
-            }
-
         } else {
             Log.d("DEBUG_REFRESHER", "User NULL");
             SessionManager session = new SessionManager(Application.getAppContext());
@@ -161,100 +125,30 @@ public class Refresher {
         Log.d("DEBUG_REFRESHER", "Leaving Refresher Thread");
     }
 
-
-
     /*
-     * getting faq from server
-     */
-    class getServerFAQs extends AsyncTask<Void, Void, String[]> {
-
-        private String role;
-
-
-        public getServerFAQs(String role) {
-            this.role = role;
+        check if since last time when inbox refreshed, difference is more than 15 minutes
+    */
+    public static boolean isSufficientGapInbox(){
+        Date currentTime = Calendar.getInstance().getTime();
+        if(Application.lastTimeInboxSync == null || (currentTime.getTime() - Application.lastTimeInboxSync.getTime() > Config.inboxOutboxUpdateGap)){
+            return true;
         }
-
-        public void doInBackgroundCore(){
-
-
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("FAQs");
-            query.fromLocalDatastore();
-            query.orderByDescending(Constants.TIMESTAMP);
-            query.whereEqualTo("userId", freshUser.getUsername());
-
-            Date latestDate = null;
-
-            ParseObject msg = null;
-            try {
-                msg = query.getFirst();
-
-                if(msg != null)
-                {
-                    latestDate = msg.getDate(Constants.TIMESTAMP);
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            HashMap<String, Date> param = new HashMap<>();
-
-            if(latestDate != null)
-                param.put("date", latestDate);
-
-
-            List<ParseObject> faqs = null;
-            try {
-
-                faqs = ParseCloud.callFunction("faq", param);
-            } catch (ParseException e) {
-            }
-
-            if (faqs != null) {
-                for (int i = 0; i < faqs.size(); i++) {
-                    ParseObject faq = faqs.get(i);
-
-                    if (ParseUser.getCurrentUser().getUsername() != null)
-                        faq.put("userId", ParseUser.getCurrentUser().getUsername());
-
-                    try {
-                        faq.pin();
-                    } catch (ParseException e1) {
-                    }
-                }
-            }
-
-            return;
-        }
-
-        @Override
-        protected String[] doInBackground(Void... params) {
-            doInBackgroundCore();
-            return  null;
-        }
+        return false;
     }
 
-
-
-    //not used. All ParseInstallation updates handled in cloud code during signup/signin and logout
-    private void updateChannels() {
-        List<String> channelList = new ArrayList<String>();
-        List<List<String>> joinedGroups;
-        joinedGroups = freshUser.getList("joined_groups");
-
-        if (joinedGroups != null) {
-            for (int i = 0; i < joinedGroups.size(); i++) {
-                channelList.add(joinedGroups.get(i).get(0));
-            }
-
-            ParseInstallation pi = ParseInstallation.getCurrentInstallation();
-
-            if (pi != null && channelList.size() > 0) {
-                pi.put("channels", channelList);
-                if(pi.getString("username") == null)
-                    pi.put("username", freshUser.getUsername());
-                pi.saveEventually();
-            }
+    public static boolean isSufficientGapOutbox(){
+        Date currentTime = Calendar.getInstance().getTime();
+        if(Application.lastTimeOutboxSync == null || (currentTime.getTime() - Application.lastTimeOutboxSync.getTime() > Config.inboxOutboxUpdateGap)){
+            return true;
         }
+        return false;
+    }
+
+    public static boolean isSufficientGapJoined(){
+        Date currentTime = Calendar.getInstance().getTime();
+        if(Application.lastTimeJoinedSync == null || (currentTime.getTime() - Application.lastTimeJoinedSync.getTime() > Config.joinedClassUpdateGap)){
+            return true;
+        }
+        return false;
     }
 }

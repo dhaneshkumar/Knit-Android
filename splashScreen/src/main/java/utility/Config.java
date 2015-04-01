@@ -6,11 +6,11 @@ public class Config {
    * Parse Configurations
    */
   
-  //public static final String APP_ID="jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //raven
+//  public static final String APP_ID="jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //raven
   //public static final String APP_ID = "7kuBxdNpJ5ZW5rcyYrpw3vlxsTLuHbuqtTd65ErZ"; // test_raven
     public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
 
-  //public static final String CLIENT_KEY= "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // raven
+//  public static final String CLIENT_KEY= "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // raven
   //public static final String CLIENT_KEY = "bmfdNqrZY0olJgsezG5ZRiBN1OPO4TqO1pH46PU9"; // test_raven
   public static final String CLIENT_KEY = "4LnlMXS6hFUunIZ6cS3F7IcLrWGuzOIkyLldkxQJ"; // development_knit
 
@@ -47,7 +47,6 @@ public class Config {
   public static int messageNormalEndTime = 22;  //10 PM(22 hours)
   public static String messageTimeWarning = "This might not be the right time to send a message.\nSend anyway?";
 
-
-  public static int updateSuggestionLimit =70;
-  public static int updateSuggestionInterval =20;
+  public static long inboxOutboxUpdateGap = 5 * Constants.MINUTE_MILLISEC; //time gap between two updates of inbox/outbox to be called in when app is foreground
+  public static long joinedClassUpdateGap = 10 * Constants.MINUTE_MILLISEC; //time gap between two updates of joined class details i.e name, profile pic. can be called in background refresher thread
 }

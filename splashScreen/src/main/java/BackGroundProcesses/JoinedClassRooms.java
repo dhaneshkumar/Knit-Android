@@ -8,6 +8,7 @@ import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import trumplabs.schoolapp.Application;
@@ -35,6 +36,10 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   }
 
   public void doInBackgroundCore(){
+      //set lastTimeInboxSync
+      Application.lastTimeJoinedSync = Calendar.getInstance().getTime();
+
+      Log.d("DEBUG_JOINED", "fetching name/pic updates and setting lastTimeJoinedSync");
 
     //validating current user
     ParseUser user = ParseUser.getCurrentUser();

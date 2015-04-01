@@ -335,7 +335,15 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     @Override
     protected void onResume() {
         super.onResume();
-        //Utility.isInternetOn(this);
+        Application.mainActivityVisible = true;
+        Log.d("DEBUG_MAIN_ACTIVITY", "visibility TRUE");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Application.mainActivityVisible = false;
+        Log.d("DEBUG_MAIN_ACTIVITY", "visibility FALSE");
     }
 
     @Override

@@ -38,9 +38,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import BackGroundProcesses.Refresher;
 import BackGroundProcesses.SyncMessageDetails;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -232,6 +234,16 @@ public class Outbox extends Fragment {
                 Constants.signup_outbox = false;
             }
         });
+
+        if(Refresher.isSufficientGapOutbox() && Utility.isInternetExist(getActivity())){
+            Log.d("DEBUG_MESSAGES", "calling Outbox update since sufficient gap");
+            outboxRefreshLayout.setRefreshing(true);
+            //update outbox in background
+            refreshCountInBackground();
+        }
+        else{
+            Log.d("DEBUG_MESSAGES", "skipping outbox update : gap " + Refresher.isSufficientGapOutbox());
+        }
     }
 
 
@@ -508,7 +520,10 @@ public class Outbox extends Fragment {
     }
 
     public static void refreshCountCore(){
-        Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox");
+        //set lastTimeOutboxSync
+        Application.lastTimeOutboxSync = Calendar.getInstance().getTime();
+
+        Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox and setting lastTimeOutboxSync");
         SyncMessageDetails.fetchLikeConfusedCountOutbox();
         //following is the onpostexecute thing
         refreshSelf();

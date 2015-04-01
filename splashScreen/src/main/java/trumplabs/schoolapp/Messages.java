@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.List;
 
 import BackGroundProcesses.Inbox;
+import BackGroundProcesses.Refresher;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
@@ -115,6 +116,7 @@ public class Messages extends Fragment {
                     getActivity().setIntent(intent);
 
                     if(Utility.isInternetExist(getActivity())) {
+                        Log.d("DEBUG_MESSAGES", "calling Inbox async task because of pushOpen flag");
                         refreshServerMessage = true;
                         /*
                         flag set to fetch messages from server.
@@ -127,6 +129,16 @@ public class Messages extends Fragment {
                 else{
                     Log.d("DEBUG_MESSAGES", "pushOpen flag false");
                 }
+            }
+        }
+
+
+        if(!refreshServerMessage) {//if pushOpen flag not set in intent
+            if (Refresher.isSufficientGapInbox() && Utility.isInternetExist(getActivity())) {
+                Log.d("DEBUG_MESSAGES", "calling Inbox async task since sufficient gap");
+                refreshServerMessage = true; //we are calling inbox if gap is sufficient
+            } else {
+                Log.d("DEBUG_MESSAGES", "skipping Inbox async : gap " + Refresher.isSufficientGapInbox());
             }
         }
 
