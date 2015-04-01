@@ -237,7 +237,16 @@ public class Outbox extends Fragment {
 
         if(Refresher.isSufficientGapOutbox() && Utility.isInternetExist(getActivity())){
             Log.d("DEBUG_MESSAGES", "calling Outbox update since sufficient gap");
-            outboxRefreshLayout.setRefreshing(true);
+
+            if(outboxRefreshLayout!=null){
+                outboxRefreshLayout.postDelayed(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        outboxRefreshLayout.setRefreshing(true);
+                    }
+                }, 1000);
+            }
             //update outbox in background
             refreshCountInBackground();
         }

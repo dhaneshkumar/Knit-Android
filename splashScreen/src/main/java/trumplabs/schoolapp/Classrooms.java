@@ -498,7 +498,7 @@ public class Classrooms extends Fragment {
 
             String grooupCode = joinedGroups.get(position).get(0);
 
-            Log.d("classrooms", "class code : " + grooupCode + " - "+ Str);
+//            Log.d("classrooms", "class code : " + grooupCode + " - "+ Str);
 
 
             final List<String> group = new ArrayList<String>();
