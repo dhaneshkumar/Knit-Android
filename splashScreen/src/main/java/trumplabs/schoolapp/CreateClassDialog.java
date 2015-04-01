@@ -38,8 +38,9 @@ import utility.Utility;
 
 
 /**
- * Created by Dhanesh on 19/2/15.
+ * Show dialog to create a new classrooom
  */
+
 public class CreateClassDialog extends DialogFragment{
     private Dialog dialog;
     private TextView schoolButton;
@@ -64,6 +65,7 @@ public class CreateClassDialog extends DialogFragment{
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
+        //creating new alertdialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View view =
                 getActivity().getLayoutInflater().inflate(R.layout.create_class_popup, null);
@@ -71,6 +73,7 @@ public class CreateClassDialog extends DialogFragment{
         dialog = builder.create();
         dialog.show();
 
+        //Initializing gui elements
         query = new Queries();
         schoolButton = (TextView) view.findViewById(R.id.school);
         standardButton = (TextView) view.findViewById(R.id.standard);
@@ -85,8 +88,11 @@ public class CreateClassDialog extends DialogFragment{
         TextView classHeading = (TextView) view.findViewById(R.id.heading);
 
 
-       // School school = new School();
         user = ParseUser.getCurrentUser();
+
+
+        //Code to ask school details, which is not getting used now.
+        // School school = new School();
        /* selectedSchool = school.getSchoolName(user.getString("school"));
         if (selectedSchool != null)
             schoolButton.setText(selectedSchool);
@@ -96,7 +102,7 @@ public class CreateClassDialog extends DialogFragment{
         selectedDivison = "NA";
         selectedStandard = "NA";*/
 
-        //signup check.
+        //flag to tell whether user has signup or not
         if(getArguments() != null) {
             String flag = getArguments().getString("flag");
             if(flag.equals("SIGNUP"))
@@ -106,6 +112,7 @@ public class CreateClassDialog extends DialogFragment{
         }
 
 
+        //setting create button click functionality
         createclassbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -122,8 +129,8 @@ public class CreateClassDialog extends DialogFragment{
                     updatedName += selectedDivison;
 */
 
+                //Checking newly created class already exist or not
                 if (!UtilString.isBlank(className)) {
-
                     if(query.checkClassNameExist(updatedName))
                     {
                         Utility.toast(updatedName + " class already exist");
@@ -134,7 +141,7 @@ public class CreateClassDialog extends DialogFragment{
                     getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
 
-
+                    //calling creteGroup class to create new class in background
                     if(Utility.isInternetExist(getActivity())) {
                         createGroup jg = new createGroup();
                         jg.execute();
@@ -316,7 +323,6 @@ public class CreateClassDialog extends DialogFragment{
 
 
             ParseObject codeGroupObject = null;
-
 
             //calling parse cloud function to create class
             try {
