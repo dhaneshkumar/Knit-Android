@@ -264,6 +264,11 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 } else {
                     param.put("sex", "F");
                 }
+
+                if(PhoneSignUpName.mLastLocation != null){
+                    param.put("lat", PhoneSignUpName.mLastLocation.getLatitude());
+                    param.put("long", PhoneSignUpName.mLastLocation.getLongitude());
+                }
             }
             else{
                 param.put("number", PhoneLoginPage.phoneNumber);

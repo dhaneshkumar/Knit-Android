@@ -88,8 +88,14 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
   public void onPostExecuteCore(){
       Constants.updatedTimestamp = false;
 
+      //
       if(MainActivity.mHeaderProgressBar != null)
           MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+      if (MainActivity.progressBarLayout != null)
+          MainActivity.progressBarLayout.setVisibility(View.GONE);
+      if (MainActivity.editLayout != null)
+          MainActivity.editLayout.setVisibility(View.VISIBLE);
+
       if(Messages.myadapter != null)
           Messages.myadapter.notifyDataSetChanged();
       if(Messages.mPullToRefreshLayout != null)
@@ -137,8 +143,8 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       Runnable r = new Runnable() {
           @Override
           public void run(){
+              syncOtherInboxDetails(); //order is important since first we should convey dirty like/confused status and then fetch updated counts
               fetchLikeConfusedCountInbox();
-              syncOtherInboxDetails();
           }
       };
 

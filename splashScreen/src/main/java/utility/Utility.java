@@ -34,7 +34,11 @@ import android.widget.Toast;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseInstallation;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -47,6 +51,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -173,6 +178,10 @@ public class Utility extends MyActionBarActivity {
         protected Void doInBackground(Void... params) {
             Context _context = Application.getAppContext();
             // After logout redirect user to Loing Activity
+
+            Application.lastTimeJoinedSync = null;
+            Application.lastTimeInboxSync = null;
+            Application.lastTimeOutboxSync = null;
 
             //cancel all alarms set. Very first thing to do
             AlarmTrigger.cancelEventCheckerAlarm(_context);
@@ -818,5 +827,26 @@ public class Utility extends MyActionBarActivity {
                 }
             }
         }, 3000);
+    }
+
+    public static JSONObject parseObjectToJson(ParseObject parseObject){
+        JSONObject jsonObject = new JSONObject();
+        Set<String> keys = parseObject.keySet();
+        for (String key : keys) {
+            Object objectValue = parseObject.get(key);
+
+            try{
+                if(objectValue == null){
+                    jsonObject.put(key, "#NULL");
+                }
+                else{
+                    jsonObject.put(key, objectValue.toString());
+                }
+            }
+            catch (JSONException e){
+                e.printStackTrace();
+            }
+        }
+        return jsonObject;
     }
 }

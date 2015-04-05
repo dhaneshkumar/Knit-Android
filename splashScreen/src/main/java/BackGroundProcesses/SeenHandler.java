@@ -57,31 +57,39 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         seenQuery.fromLocalDatastore();
         seenQuery.whereEqualTo(Constants.SEEN_STATUS, 0);
         seenQuery.whereMatches(Constants.USER_ID, username);
-        seenQuery.setLimit(Config.inboxMsgCount); //at max this many
-
-        List<ParseObject> msgPinPending = new ArrayList<ParseObject>();
+        seenQuery.setLimit(Config.inboxMsgRefreshTotal); //at max this many
 
         try{
             List<ParseObject> newSeenMessages = seenQuery.find();
-            Log.d("DEBUG_SEEN_HANDLER", "newSeenMessages count " + newSeenMessages.size());
-            for(int i=0; i < newSeenMessages.size(); i++){
-                Log.d("DEBUG_SEEN_HANDLER", "Sending seen");
-                ParseObject msg = newSeenMessages.get(i);
-                HashMap<String, String> parameters = new HashMap<String, String>();
-                parameters.put("objectId", msg.getObjectId());
-                Integer res = ParseCloud.callFunction("seenCountIncrement", parameters);
-                //res is number returned
-                Log.d("DEBUG_SEEN_HANDLER", "Received result " + res);
-                if(res >= 0){
-                    msg.put(Constants.SEEN_STATUS, 1); //Notified to cloud
-                    msgPinPending.add(msg);
-                }
-            }
-            //now pin all at once using pinAll call
-            ParseObject.pinAll(msgPinPending);
 
+            Log.d("DEBUG_SEEN_HANDLER", "syncSeenJob() newSeenMessages count " + newSeenMessages.size());
+            if(newSeenMessages.size() == 0){
+                return;
+            }
+
+            ArrayList<String> newSeenObjectIds = new ArrayList<>();
+
+            for(int i=0; i < newSeenMessages.size(); i++){
+                newSeenObjectIds.add(newSeenMessages.get(i).getObjectId());
+            }
+
+            HashMap<String, Object> parameters = new HashMap<>();
+            parameters.put("array", newSeenObjectIds);
+
+            boolean result = ParseCloud.callFunction("updateSeenCount", parameters);
+            Log.d("DEBUG_SEEN_HANDLER", "syncSeenJob() : updateSeenCount result " + result);
+            if(result){
+                //change seen status of messages
+                for(int i=0; i < newSeenMessages.size(); i++){
+                    ParseObject msg = newSeenMessages.get(i);
+                    msg.put(Constants.SEEN_STATUS, 1);
+                }
+                //now pin all at once using pinAll call
+                ParseObject.pinAll(newSeenMessages);
+            }
         }
         catch(ParseException e){
+            e.printStackTrace();
         }
     }
 
