@@ -18,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import BackGroundProcesses.CreatedClassRooms;
 import library.UtilString;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
@@ -240,6 +241,12 @@ public class Queries2 {
             final SessionManager sm = new SessionManager(Application.getAppContext());
             sm.setCodegroupLocalState(1, userId); //set the flag locally that outbox data is valid
             Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "Pinned all. State changed to 1");
+
+            //Fetch subscriber list once and for all in the same thread user for fetching all class details
+            Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "fetching subscriber list of all created classes once");
+            CreatedClassRooms createdClassList = new CreatedClassRooms();
+            createdClassList.doInBackgroundCore();
+            createdClassList.onPostExecuteCoreHelper();
         }
         catch (ParseException e){
             e.printStackTrace();

@@ -50,7 +50,11 @@ public class Refresher {
             Log.d("DEBUG_REFRESHER", "Attempting calling Inbox execute()");
 
             Inbox newInboxMsg = new Inbox(null);
-            if(Application.mainActivityVisible && isSufficientGapInbox()) {
+            newInboxMsg.syncOtherInboxDetails(); //called always in background but sends only dirty data
+            // (modified like, seen, confused status) if any
+            // this should be called before fetching like/confused counts
+
+            if((Application.mainActivityVisible && isSufficientGapInbox())) { //or if just signed in
                 newInboxMsg.doInBackgroundCore();
                 newInboxMsg.onPostExecuteHelper(); //done
                 newInboxMsg.fetchLikeConfusedCountInbox();
@@ -59,13 +63,10 @@ public class Refresher {
                 Log.d("DEBUG_REFRESHER", "refresher skipping inbox update : visible " + Application.mainActivityVisible + " gap " +  isSufficientGapInbox());
             }
 
-            newInboxMsg.syncOtherInboxDetails(); //called always in background but sends only dirty data
-                                                 // (modified like, seen, confused status) if any
-
            /*
             *   Updating counts for outbox messages only if main activity visible and sufficent gap since last update
             */
-            if(Application.mainActivityVisible && isSufficientGapOutbox()) {
+            if((Application.mainActivityVisible && isSufficientGapOutbox())) {
                 Outbox.refreshCountCore();
             }
             else{

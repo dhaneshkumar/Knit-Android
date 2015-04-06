@@ -33,7 +33,10 @@ public class Constants {
   public static final String SEEN_COUNT = "seen_count";
   public static final String LIKE = "like"; //local
   public static final String CONFUSING = "confusing"; //local
-  public static final String GROUP_DETAILS = "GroupDetails";
+  public static final String SYNCED_LIKE = "synced_like"; //local like status last synced
+  public static final String SYNCED_CONFUSING = "synced_confusing"; //local
+
+    public static final String GROUP_DETAILS = "GroupDetails";
   public static final String DIRTY_BIT = "dirty_bit"; //local
   public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
   public static final String USER_ID = "userId"; //local  user id
@@ -53,7 +56,8 @@ public class Constants {
    public static final String CONFUSED_STATUS = "confused_status";
 
 
-  /*
+
+    /*
    * Database table names
    */
   public static final String MESSAGE_NEEDERS= "Messageneeders";

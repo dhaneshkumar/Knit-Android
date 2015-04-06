@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -21,6 +22,9 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
@@ -36,7 +40,8 @@ import utility.Utility;
 /**
  * Created by ashish on 26/2/15.
  */
-public class PhoneSignUpName extends MyActionBarActivity {
+public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
     Spinner titleSpinner;
     EditText displayNameET;
     EditText phoneNumberET;
@@ -57,6 +62,8 @@ public class PhoneSignUpName extends MyActionBarActivity {
     static String className = "";
     static String teacherName = "";
 
+    static GoogleApiClient mGoogleApiClient = null;
+    static Location mLastLocation = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +105,7 @@ public class PhoneSignUpName extends MyActionBarActivity {
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.title, R.layout.spinner_item);
         titleSpinner.setAdapter(adapter);
 
+        buildGoogleApiClient();
     }
 
     void resetFields(){
@@ -201,5 +209,40 @@ public class PhoneSignUpName extends MyActionBarActivity {
         else{
             Utility.toast("Check your Internet connection");
         }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.d("DEBUG_LOCATION", "onConnected() entered");
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            Log.d("DEBUG_LOCATION", "onConnected() : location : " + String.valueOf(mLastLocation.getLatitude())
+                    + ", " + String.valueOf(mLastLocation.getLongitude()));
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // At least one of the API client connect attempts failed
+        // No client is connected
+        Log.d("DEBUG_LOCATION", "onConnectionFailed()");
+    }
+
+    @Override
+    public void onConnectionSuspended(int result) {
+        // At least one of the API client connect attempts failed
+        // No client is connected
+        Log.d("DEBUG_LOCATION", "onConnectionSuspended()");
     }
 }

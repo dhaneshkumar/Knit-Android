@@ -229,11 +229,15 @@ public class Queries {
                             if(msgState.getString("message_id").equals(msg.getObjectId())){
                                 msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
                                 msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
+                                msg.put(Constants.SYNCED_LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
+                                msg.put(Constants.SYNCED_CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
                                 break;
                             }
                             //default
                             msg.put(Constants.LIKE, false);
                             msg.put(Constants.CONFUSING, false);
+                            msg.put(Constants.SYNCED_LIKE, false);
+                            msg.put(Constants.SYNCED_CONFUSING, false);
                         }
                         msg.put(Constants.USER_ID, userId);
                         msg.put(Constants.DIRTY_BIT, false);
@@ -265,6 +269,8 @@ public class Queries {
                         ParseObject msg = allMessages.get(i);
                         msg.put(Constants.LIKE, false);
                         msg.put(Constants.CONFUSING, false);
+                        msg.put(Constants.SYNCED_LIKE, false);
+                        msg.put(Constants.SYNCED_CONFUSING, false);
 
                         msg.put(Constants.USER_ID, userId);
                         msg.put(Constants.DIRTY_BIT, false);

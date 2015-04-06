@@ -1051,12 +1051,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                                     } catch (ParseException e1) {
                                     }
 
-                                    //updating local time
-                                    SessionManager sm = new SessionManager(Application.getAppContext());
-                                    if (createdAt != null) {
-                                        sm.setCurrentTime(createdAt);
-                                    }
-
                                     //showing popup
                                     Utility.toastDone("Notification Sent");
 
@@ -1073,7 +1067,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                                         if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
                                             Outbox.outboxLayout.setVisibility(View.GONE);
                                     }
-
                                 }
                             }
                         }

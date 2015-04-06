@@ -88,8 +88,14 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
   public void onPostExecuteCore(){
       Constants.updatedTimestamp = false;
 
+      //
       if(MainActivity.mHeaderProgressBar != null)
           MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+      if (MainActivity.progressBarLayout != null)
+          MainActivity.progressBarLayout.setVisibility(View.GONE);
+      if (MainActivity.editLayout != null)
+          MainActivity.editLayout.setVisibility(View.VISIBLE);
+
       if(Messages.myadapter != null)
           Messages.myadapter.notifyDataSetChanged();
       if(Messages.mPullToRefreshLayout != null)
@@ -124,6 +130,17 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
     //doesn't notify the adapter
     public void fetchLikeConfusedCountInbox(){
         SyncMessageDetails.fetchLikeConfusedCountInbox();
+        if(Messages.mPullToRefreshLayout != null){
+            Messages.mPullToRefreshLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
+                    if(Messages.myadapter != null){
+                        Messages.myadapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
     }
 
 
@@ -137,8 +154,8 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
       Runnable r = new Runnable() {
           @Override
           public void run(){
+              syncOtherInboxDetails(); //order is important since first we should convey dirty like/confused status and then fetch updated counts
               fetchLikeConfusedCountInbox();
-              syncOtherInboxDetails();
           }
       };
 

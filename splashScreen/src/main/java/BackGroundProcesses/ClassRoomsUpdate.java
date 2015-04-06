@@ -211,28 +211,30 @@ public class ClassRoomsUpdate {
 
 
     public static void downloadProfileImage(final ParseObject dirtyUser) {
-        final String senderId = dirtyUser.getString("username");
+        String senderId = dirtyUser.getString("username");
         final ParseFile senderImagefile = dirtyUser.getParseFile("pid");
 
         Log.d("DEBUG_CLASS_ROOMS_UPDATE", "downloadProfileImage() : start downloading pic for " + senderId);
 
         if (senderImagefile != null && (!UtilString.isBlank(senderId))) {
+            final String senderIdTrimmed = senderId.replaceAll("@", "");
             senderImagefile.getDataInBackground(new GetDataCallback() {
                 public void done(byte[] data, ParseException e) {
                     if (e == null) {
                         //Image download successful
                         FileOutputStream fos;
                         try {
+
+                            String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + senderIdTrimmed + "_PC.jpg";
                             fos =
-                                    new FileOutputStream(Utility.getWorkingAppDir() + "/thumbnail/" + senderId
-                                            + "_PC.jpg");
+                                    new FileOutputStream(filePath);
                             try {
                                 fos.write(data);
 
                                 //download and save is success. Set dirty bit to false and pin
                                 dirtyUser.put("dirty", false);
                                 dirtyUser.pin();
-                                Log.d("DEBUG_CLASS_ROOMS_UPDATE", "downloadProfileImage() : profile pic download and save successful " + senderId);
+                                Log.d("DEBUG_CLASS_ROOMS_UPDATE", "downloadProfileImage() : profile pic download and save successful in " + filePath);
                             } catch (IOException e1) {
                                 e1.printStackTrace();
                             } catch (ParseException e1) {

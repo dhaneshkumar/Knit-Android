@@ -92,7 +92,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         So, we retrieve all data from server.
          */
         final SessionManager session = new SessionManager(Application.getAppContext());
-        int appOpeningCount = session.getAppOpeningCount();
+        final int appOpeningCount = session.getAppOpeningCount();
         if (appOpeningCount == 0) {
             session.setAppOpeningCount();
             if (!session.getSignUpAccount()) {
@@ -104,7 +104,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 Runnable r = new Runnable() {
                     @Override
                     public void run() {
-                        new Refresher(session.getAppOpeningCount());
+                        new Refresher(appOpeningCount);
                     }
                 };
                 Thread t = new Thread(r);
@@ -289,7 +289,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 FragmentManager fm = getSupportFragmentManager();
                 RateAppDialog rateAppDialog = new RateAppDialog();
                 rateAppDialog.show(fm, "rate app");
-                session.setAppOpeningCount();
 
                 user.put("APP_RATED", true);
                 user.saveEventually();

@@ -27,6 +27,7 @@ public class Config {
   public static String role;
   public static final int outboxMsgRefreshPerClass = 2; //how many sent messages per class will
                                                         //be updated for like/confused/seen count
+  public static final int outboxMsgRefreshTotal = 10; //how many latest sent messages will be updated for like/confused
   public static final int outboxMsgMaxFetchCount = 100; //max how many outbox messages to fetch on first time app is opened
 
     public static final int inboxMsgRefreshTotal= 10; //how many of the latest inbox messages(total) will
@@ -51,5 +52,5 @@ public class Config {
   public static String messageTimeWarning = "This might not be the right time to send a message.\nSend anyway?";
 
   public static long inboxOutboxUpdateGap = 5 * Constants.MINUTE_MILLISEC; //time gap between two updates of inbox/outbox to be called in when app is foreground
-  public static long joinedClassUpdateGap = 10 * Constants.MINUTE_MILLISEC; //time gap between two updates of joined class details i.e name, profile pic. can be called in background refresher thread
+  public static long joinedClassUpdateGap = 20 * Constants.MINUTE_MILLISEC; //time gap between two updates of joined class details i.e name, profile pic. can be called in background refresher thread
 }
