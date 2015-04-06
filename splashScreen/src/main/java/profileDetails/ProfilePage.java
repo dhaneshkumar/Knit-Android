@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
@@ -316,6 +317,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 }
             }
         }
+        FacebookSdk.sdkInitialize(getApplicationContext());
     }
 
 

@@ -4,6 +4,7 @@ package trumplabs.schoolapp;
 import android.app.Activity;
 import android.content.Context;
 
+import com.facebook.FacebookSdk;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseInstallation;
@@ -44,13 +45,16 @@ public class Application extends android.app.Application {
   {
     super.onCreate();
     FontsOverride.setDefaultFont(this, "MONOSPACE","fonts/Roboto-Regular.ttf");
-    
+
+
+
  // Enable Crash Reporting on parse analytics
     ParseCrashReporting.enable(this);
 
 	// Initialize the Parse SDK.
    
-	Parse.initialize(this, Config.APP_ID, Config.CLIENT_KEY); 
+	Parse.initialize(this, Config.APP_ID, Config.CLIENT_KEY);
+
 	Application.context = getApplicationContext();
 
 	// Specify an Activity to handle all pushes by   default.

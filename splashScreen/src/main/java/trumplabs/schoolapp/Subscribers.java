@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -139,6 +140,8 @@ public class Subscribers extends MyActionBarActivity {
                 startActivity(intent);
             }
         });
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
         Log.d("DEBUG_SUBSCRIBERS", "calling refresh in onCreate()");
         refresh(); //called every time activity is created. Can do better

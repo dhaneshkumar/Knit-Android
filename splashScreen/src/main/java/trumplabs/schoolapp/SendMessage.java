@@ -37,6 +37,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
@@ -204,6 +205,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 startActivity(intent);
             }
         });
+
+        FacebookSdk.sdkInitialize(getApplicationContext());
 
     }
 

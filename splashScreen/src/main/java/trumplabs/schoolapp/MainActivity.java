@@ -332,6 +332,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                Constants.signup_outbox = true;
             }
         }
+        FacebookSdk.sdkInitialize(getApplicationContext());
     }
 
     @Override

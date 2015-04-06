@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -73,7 +74,7 @@ public class InviteTeacher extends MyActionBarActivity {
         //setting title of activity
         getSupportActionBar().setTitle("Invite Teacher");
 
-
+        FacebookSdk.sdkInitialize(getApplicationContext());
     };
 
 
