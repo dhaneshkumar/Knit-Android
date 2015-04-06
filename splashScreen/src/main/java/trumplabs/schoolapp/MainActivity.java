@@ -23,7 +23,9 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.facebook.FacebookSdk;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.parse.ParseUser;
 
 import java.lang.reflect.Field;
@@ -38,6 +40,7 @@ import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
+import utility.Config;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -336,6 +339,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     protected void onResume() {
         super.onResume();
         Application.mainActivityVisible = true;
+        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
         Log.d("DEBUG_MAIN_ACTIVITY", "visibility TRUE");
     }
 
@@ -343,6 +347,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     protected void onPause() {
         super.onPause();
         Application.mainActivityVisible = false;
+        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
         Log.d("DEBUG_MAIN_ACTIVITY", "visibility FALSE");
     }
 

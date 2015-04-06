@@ -16,6 +16,7 @@ public class Config {
   //public static final String CLIENT_KEY = "bmfdNqrZY0olJgsezG5ZRiBN1OPO4TqO1pH46PU9"; // test_raven
   public static final String CLIENT_KEY = "4LnlMXS6hFUunIZ6cS3F7IcLrWGuzOIkyLldkxQJ"; // development_knit
 
+    public static final String FB_APP_ID = "689390944539813";
     public static int SUBSCRIBER_MIN_LIMIT = 1;
 
   public static final String defaultParentGroupCode = "TS29734"; // raven

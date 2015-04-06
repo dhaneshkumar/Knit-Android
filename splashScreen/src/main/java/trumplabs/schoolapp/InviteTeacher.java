@@ -13,6 +13,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -23,6 +24,7 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import loginpages.Signup;
 import trumplab.textslate.R;
+import utility.Config;
 import utility.Tools;
 import utility.Utility;
 
@@ -76,6 +78,23 @@ public class InviteTeacher extends MyActionBarActivity {
 
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //facebook ad tracking
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //facebook tracking : time spent on app by people
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+    }
 
 
 

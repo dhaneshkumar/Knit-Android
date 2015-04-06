@@ -37,6 +37,7 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseCloud;
@@ -207,6 +208,23 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     }
 
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //facebook ad tracking
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //facebook tracking : time spent on app by people
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {

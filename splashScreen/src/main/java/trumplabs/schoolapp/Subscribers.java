@@ -18,6 +18,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -35,6 +36,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
+import utility.Config;
 import utility.Queries;
 import utility.Tools;
 import utility.Utility;
@@ -142,6 +144,25 @@ public class Subscribers extends MyActionBarActivity {
         refresh(); //called every time activity is created. Can do better
     }
 
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //facebook ad tracking
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //facebook tracking : time spent on app by people
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+    }
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {

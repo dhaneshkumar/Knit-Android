@@ -19,11 +19,15 @@ android {
 
 }
 
+
+repositories { mavenCentral() }
+
 dependencies {
     compile project(':library')
     compile project(':main')
     compile 'com.android.support:appcompat-v7:21.0.3'
     compile 'com.android.support:recyclerview-v7:21.0.0'
+    compile 'com.facebook.android:facebook-android-sdk:4.0.0'
     compile files('libs/bolts-android-1.1.4.jar')
     compile files('libs/common-lang3.jar')
     compile files('libs/json-simple-1.1.1.jar')

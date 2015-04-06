@@ -32,6 +32,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.appevents.AppEventsLogger;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -59,6 +60,7 @@ import trumplabs.schoolapp.ChooserDialog;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
+import utility.Config;
 import utility.Utility;
 
 public class ProfilePage extends MyActionBarActivity implements OnClickListener {
@@ -314,6 +316,25 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 }
             }
         }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        //facebook ad tracking
+        // Logs 'install' and 'app activate' App Events.
+        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        //facebook tracking : time spent on app by people
+        // Logs 'app deactivate' App Event.
+        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
     }
 
 
