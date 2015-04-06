@@ -3,6 +3,7 @@ package loginpages;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -102,15 +103,14 @@ public class LoginPage extends MyActionBarActivity {
                 //update current server time
                 Utility.updateCurrentTime(user);
 
-                /*
-                 * Adding channels & storing group member data locally
-                 */
-
-                /*Queries query = new Queries();
-                try {
-                  query.refreshChannels();
-                } catch (ParseException e1) {
-                }*/
+                  Utility.setNewIdFlagInstallation();
+                  boolean installationStatus = Utility.checkParseInstallation();
+                  if(installationStatus){
+                      Log.d("DEBUG_LOGIN_OLD", "installation save SUCCESS");
+                  }
+                  else{
+                      Log.d("DEBUG_LOGIN_OLD", "installation save FAILED");
+                  }
 
                 /*
                  * Checking for existence of default group.
@@ -120,9 +120,6 @@ public class LoginPage extends MyActionBarActivity {
 
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
-
-
-
               } else {
                   e.printStackTrace();
                 getSupportActionBar().show();
@@ -133,7 +130,6 @@ public class LoginPage extends MyActionBarActivity {
             }
           });
         }
-
       }
     });
   };

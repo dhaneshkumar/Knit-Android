@@ -152,7 +152,7 @@ public class SyncMessageDetails {
         ArrayList<String> msgIds = new ArrayList<>();
         for(int i=0; i<msgs.size(); i++){
             msgIds.add(msgs.get(i).getObjectId());
-            Log.d("DEBUG_SYNC", "LOCAL MSG (before) " + Utility.parseObjectToJson(msgs.get(i)));
+            //Log.d("DEBUG_SYNC", "LOCAL MSG (before) " + Utility.parseObjectToJson(msgs.get(i)));
         }
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
@@ -170,7 +170,7 @@ public class SyncMessageDetails {
                         msg.put(Constants.LIKE_COUNT, counts.get(1));
                         msg.put(Constants.CONFUSED_COUNT, counts.get(2));
                         msg.put(Constants.SEEN_COUNT, counts.get(0));
-                        Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
+                        //Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }
 
@@ -256,7 +256,7 @@ public class SyncMessageDetails {
                         msg.put(Constants.LIKE_COUNT, counts.get(1));
                         msg.put(Constants.CONFUSED_COUNT, counts.get(2));
                         msg.put(Constants.SEEN_COUNT, counts.get(0));
-                        Log.d("DEBUG_SYNC", "Updated outbox msg " + Utility.parseObjectToJson(msg));
+                        //Log.d("DEBUG_SYNC", "Updated outbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }
 
