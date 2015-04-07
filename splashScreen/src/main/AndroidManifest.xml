@@ -49,10 +49,63 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
+
+            <intent-filter
+                >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+                <data android:scheme="http"
+                    android:host="www.knitapp.co.in"
+                    android:pathPattern=".*"
+                    />
+            </intent-filter>
+
+            <intent-filter
+                >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+                <data android:scheme="http"
+                    android:host="knitapp.co.in"
+                    android:pathPattern=".*"
+                    />
+            </intent-filter>
+
+            <intent-filter
+                >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <data android:scheme="knit101"
+                      android:host="index" />
+
+            </intent-filter>
+
         </activity>
         <activity
                   android:name="loginpages.LoginPage"></activity>
-        <activity android:name="trumplabs.schoolapp.MainActivity"></activity>
+
+        <activity android:name="trumplabs.schoolapp.MainActivity">
+
+            <intent-filter
+                >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <data android:scheme="knit101"
+                    android:host="dashboard" />
+
+            </intent-filter>
+
+        </activity>
         <activity android:name="loginpages.Signup"></activity>
         <activity android:name="loginpages.Signup1Class"></activity>
         <activity android:name="loginpages.Signup1_5Class"></activity>
@@ -67,7 +120,20 @@
 
         <activity android:name="loginpages.LoginPanda"></activity>
 
-        <activity android:name="profileDetails.ProfilePage"></activity>
+        <activity android:name="profileDetails.ProfilePage">
+            <intent-filter
+                >
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <data android:scheme="knit101"
+                    android:host="profile" />
+
+            </intent-filter>
+
+        </activity>
         <activity android:name="profileDetails.FAQs"></activity>
         <activity
             android:name="loginpages.Signup2Class"
