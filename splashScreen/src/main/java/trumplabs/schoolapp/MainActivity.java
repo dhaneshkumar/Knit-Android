@@ -32,6 +32,7 @@ import java.lang.reflect.Field;
 
 import BackGroundProcesses.Refresher;
 import additionals.RateAppDialog;
+import additionals.SpreadWordDialog;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
@@ -280,6 +281,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             thread.start();
         }
 
+      /*  //show recommend app dialog
+        if(appOpeningCount == 5 || appOpeningCount == 20) {
+
+                FragmentManager fm = getSupportFragmentManager();
+                SpreadWordDialog spreadWordDialog = new SpreadWordDialog();
+                spreadWordDialog.show(fm, "recommend app");
+        }*/
 
         //show rate app dialog after using 10 times app
         if(appOpeningCount == 10) {
@@ -292,6 +300,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                 user.put("APP_RATED", true);
                 user.saveEventually();
+
             }
         }
 
@@ -387,11 +396,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 break;
             case R.id.spread:
 
-                String link = "Hey, You must try this great parent-teacher communication app. https://play.google.com/store/apps/details?id=trumplab.textslate";
                 Intent i=new Intent(android.content.Intent.ACTION_SEND);
                 i.setType("text/plain");
                 i.putExtra(android.content.Intent.EXTRA_SUBJECT,"Knit");
-                i.putExtra(android.content.Intent.EXTRA_TEXT, link);
+                i.putExtra(android.content.Intent.EXTRA_TEXT, Constants.spreadWordContent);
                 startActivity(Intent.createChooser(i,"Share via"));
 
                 break;

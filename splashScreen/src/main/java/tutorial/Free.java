@@ -20,7 +20,6 @@ import java.util.List;
 
 import loginpages.PhoneSignUpFindClass;
 import loginpages.PhoneSignUpName;
-import loginpages.Signup1Class;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 
@@ -137,9 +136,9 @@ public class Free extends Fragment {
         protected void onPostExecute(Void result) {
 
             if(getActivity() != null) {
-                Intent intent = new Intent(getActivity(), Signup1Class.class);
+              /*  Intent intent = new Intent(getActivity(), Signup1Class.class);
                 intent.putExtra("role", Constants.TEACHER);
-                startActivity(intent);
+                startActivity(intent);*/
             }
 
         }

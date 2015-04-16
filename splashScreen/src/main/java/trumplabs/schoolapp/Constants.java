@@ -112,6 +112,7 @@ public class Constants {
 
     public static int actionBarHeight = 0;
     public static final String SENT_MESSAGE_TABLE = "SentMessages";
+    public static final String spreadWordContent = "Hey, I recently started using Knit Messaging. It's a great app for teachers to communicate with either students or their parents. You must try this out. http://tinyurl.com/knit-messaging";
 
 
 

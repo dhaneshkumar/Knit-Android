@@ -37,7 +37,6 @@ public class JoinSuggestedClass extends MyActionBarActivity {
     private TextView classNameView;
     private TextView teacherNameView;
     private TextView classCodeView;
-    private Button joinButton;
     private TextView ignoreView;
     private ImageView profileImageView;
     public static
@@ -60,7 +59,6 @@ public class JoinSuggestedClass extends MyActionBarActivity {
         classNameView = (TextView) findViewById(R.id.classname);
         classCodeView = (TextView) findViewById(R.id.classcode);
         teacherNameView = (TextView) findViewById(R.id.teacher);
-        joinButton = (Button) findViewById(R.id.join_button);
         ignoreView = (TextView) findViewById(R.id.ignore);
         schoolNameTV = (TextView) findViewById(R.id.schoolName);
         joinLayout = (LinearLayout) findViewById(R.id.join);

@@ -170,7 +170,7 @@ public class Outbox extends Fragment {
 
                     //stop the refresh in refresCountInBackground() method in the view.post
 
-                    /*//start handler for 10 secs.  <to stop refreshbar>
+                    //start handler for 10 secs.  <to stop refreshbar>
                     final Handler h = new Handler() {
                         @Override
                         public void handleMessage(Message message) {
@@ -178,7 +178,7 @@ public class Outbox extends Fragment {
                             outboxRefreshLayout.setRefreshing(false);
                         }
                     };
-                    h.sendMessageDelayed(new Message(), 10000);*/
+                    h.sendMessageDelayed(new Message(), 10000);
                 } else {
 
                     //start handler for 2 secs.  <to stop refreshbar>
@@ -243,6 +243,9 @@ public class Outbox extends Fragment {
 
                     @Override
                     public void run() {
+                        if (outboxRefreshLayout != null) {
+                            runSwipeRefreshLayout(outboxRefreshLayout, 10);
+                        }
                         outboxRefreshLayout.setRefreshing(true);
                     }
                 }, 1000);
@@ -490,10 +493,11 @@ public class Outbox extends Fragment {
 
                 if(Utility.isInternetExist(getActivity())) {
 
-                    /*if (outboxRefreshLayout != null) {
+                    if (outboxRefreshLayout != null) {
                         runSwipeRefreshLayout(outboxRefreshLayout, 10);
-                    }*/
+                    }
                     outboxRefreshLayout.setRefreshing(true);
+
                    //update outbox in background
                     refreshCountInBackground();
                     //stop refreshing in above method inside view.post

@@ -208,6 +208,21 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
+        try {
+            Queries memberQuery = new Queries();
+            int memberCount = memberQuery.getMemberCount(groupCode);
+            
+            if(memberCount == 0 )
+            {
+                MemberList memberList = new MemberList(groupCode);
+                memberList.execute();
+            }
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+
     }
 
 

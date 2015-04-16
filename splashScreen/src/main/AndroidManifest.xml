@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="trumplab.textslate"
-    android:versionCode="23"
-    android:versionName="4.0.1.1">
+    android:versionCode="24"
+    android:versionName="4.0.1.2">
 
     <uses-sdk
         android:minSdkVersion="11"
@@ -107,8 +107,6 @@
 
         </activity>
         <activity android:name="loginpages.Signup"></activity>
-        <activity android:name="loginpages.Signup1Class"></activity>
-        <activity android:name="loginpages.Signup1_5Class"></activity>
 
         <activity android:name="loginpages.PhoneSignUpName"></activity>
         <activity android:name="loginpages.PhoneSignUpSchool"></activity>
@@ -135,9 +133,6 @@
 
         </activity>
         <activity android:name="profileDetails.FAQs"></activity>
-        <activity
-            android:name="loginpages.Signup2Class"
-            android:windowSoftInputMode="stateVisible"></activity>
         <activity android:name="joinclasses.JoinClassesContainer"></activity>
         <activity android:name="utility.Utility"></activity>
         <activity android:name="utility.PushOpen"></activity>

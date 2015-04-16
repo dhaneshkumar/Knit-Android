@@ -15,8 +15,10 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import BackGroundProcesses.UpdateAllClassSubscribers;
 import baseclasses.MyActionBarActivity;
 import notifications.AlarmTrigger;
 import trumplab.textslate.R;
@@ -63,6 +65,12 @@ public class SplashScreen extends MyActionBarActivity {
         AlarmTrigger.triggerRefresherAlarm(Application.getAppContext());
         isRefresherAlarmTriggered = true;
     }
+
+     /*
+        Refreshing subscriber list of all classrooms in background
+         */
+        UpdateAllClassSubscribers updateAllClassSubscribers = new UpdateAllClassSubscribers();
+        updateAllClassSubscribers.execute();
 
     /*
      * Setting App opening count Each time app count increases by one

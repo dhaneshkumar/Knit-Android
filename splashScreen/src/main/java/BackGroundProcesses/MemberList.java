@@ -21,7 +21,7 @@ import trumplabs.schoolapp.Subscribers;
 import utility.Queries;
 
 /**
- * Fetch updated group members from server in background
+ * Fetch updated group members from server of a class in background
  * @param-groupCode
  */
 public class MemberList extends AsyncTask<Void, Void, String[]> {
