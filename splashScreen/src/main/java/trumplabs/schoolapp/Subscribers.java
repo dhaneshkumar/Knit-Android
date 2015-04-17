@@ -143,8 +143,8 @@ public class Subscribers extends MyActionBarActivity {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        Log.d("DEBUG_SUBSCRIBERS", "calling refresh in onCreate()");
-        refresh(); //called every time activity is created. Can do better
+        //Log.d("DEBUG_SUBSCRIBERS", "calling refresh in onCreate()");
+        //refresh(); //called every time activity is created. Can do better
     }
 
 

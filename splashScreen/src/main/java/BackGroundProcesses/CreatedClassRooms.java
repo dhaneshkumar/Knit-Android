@@ -89,16 +89,10 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
       if (user != null) {
           List<List<String>> createdGroupList = user.getList(Constants.CREATED_GROUPS);
           if (createdGroupList != null) {
-       /* ClassMembers classMembers = new ClassMembers();
-        classMembers.intializeBackgroundParameters();*/
-
-              for (int i = 0; i < createdGroupList.size(); i++) {
 
                   //updating member list
-                  MemberList memberList = new MemberList(createdGroupList.get(i).get(0));
+                  MemberList memberList = new MemberList();
                   memberList.execute();
-
-              }
           }
       }
   }

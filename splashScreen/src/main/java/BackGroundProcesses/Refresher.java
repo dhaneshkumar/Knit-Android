@@ -38,10 +38,10 @@ public class Refresher {
       /*
        * Storing current time stamp
        */
-            Utility.updateCurrentTimeInBackground(freshUser);
-
-
-            freshUser.fetchIfNeededInBackground();
+            if(Application.mainActivityVisible) {
+                    Utility.updateCurrentTimeInBackground(freshUser);
+                    freshUser.fetchIfNeededInBackground();
+            }
 
             Log.d("DEBUG_REFRESHER",  "calling background tasks");
         /*

@@ -28,6 +28,7 @@ import trumplabs.schoolapp.FontsOverride;
 import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
 import utility.Tools;
+import utility.Utility;
 
 /**
  * Used to display splash screen on opening the app. It also start a background process to update
@@ -53,10 +54,16 @@ public class SplashScreen extends MyActionBarActivity {
     // setting new font
     FontsOverride.setDefaultFont(this, "MONOSPACE", "fonts/Roboto-Regular.ttf");
 
-    // seetting up animation effect
+    // setting up animation effect
     animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
     logoLayout.startAnimation(animationFadeIn);
 
+        ParseUser freshUser = ParseUser.getCurrentUser();
+
+        if(freshUser != null) {
+            Utility.updateCurrentTimeInBackground(freshUser);
+            freshUser.fetchIfNeededInBackground();
+        }
 
     /*
      * Set refresher alarm to update everything in background
@@ -69,8 +76,7 @@ public class SplashScreen extends MyActionBarActivity {
      /*
         Refreshing subscriber list of all classrooms in background
          */
-        UpdateAllClassSubscribers updateAllClassSubscribers = new UpdateAllClassSubscribers();
-        updateAllClassSubscribers.execute();
+        UpdateAllClassSubscribers.update();
 
     /*
      * Setting App opening count Each time app count increases by one

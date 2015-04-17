@@ -125,8 +125,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         return true;
     }
 
-
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

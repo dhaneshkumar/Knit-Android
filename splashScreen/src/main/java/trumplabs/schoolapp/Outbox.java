@@ -619,6 +619,15 @@ stop swipe refreshlayout
         @Override
         protected void onPostExecute(Void aVoid) {
             Outbox.myadapter.notifyDataSetChanged();
+
+            if (groupDetails == null){
+                groupDetails = new ArrayList<ParseObject>();
+            }
+
+            if (groupDetails.size() == 0)
+                outboxLayout.setVisibility(View.VISIBLE);
+            else
+                outboxLayout.setVisibility(View.GONE);
             super.onPostExecute(aVoid);
         }
     }

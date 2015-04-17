@@ -24,36 +24,27 @@ import utility.Queries;
  * Fetch updated group members from server of a class in background
  * @param-groupCode
  */
-public class MemberList extends AsyncTask<Void, Void, String[]> {
+public class MemberList_old extends AsyncTask<Void, Void, String[]> {
 
-    private Queries queries;
     private String groupCode;
+    private Queries queries;
 
-    public MemberList(){
-        this.groupCode =null;
+    public MemberList_old(String groupCode) {
+        this.groupCode = groupCode;
         this.queries = new Queries();
-
-    };
-
-    public MemberList(String groupCode) {
-        this.queries = new Queries();
-        this.groupCode= groupCode;
     }
 
     @Override
     protected String[] doInBackground(Void... params) {
-        doInBackgroundCore();
-        return null;
-    }
 
-    public void doInBackgroundCore()
-    {
         Date updatedTime = null;  //last updated time of members
         ParseUser user = ParseUser.getCurrentUser();
+
 
         //retrieving last updated time of app members
         ParseQuery<ParseObject> appQuery = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
         appQuery.fromLocalDatastore();
+        appQuery.whereEqualTo("code", groupCode);
         appQuery.whereEqualTo("userId", user.getUsername());
         appQuery.orderByDescending("updatedAt");
 
@@ -70,6 +61,7 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
         //retrieving last updated time of sms members
         ParseQuery<ParseObject> smsQuery = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
         appQuery.fromLocalDatastore();
+        appQuery.whereEqualTo("cod", groupCode);
         appQuery.whereEqualTo("userId", user.getUsername());
         appQuery.orderByDescending("updatedAt");
 
@@ -94,24 +86,45 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             e.printStackTrace();
         }
 
+      /*
+      Checking whether updatedTime is null or not.
+      If it's null then set it to createdAt of this codegroup entry
+       */
+        if (updatedTime == null) {
+            //retrieving codegroup entry of given class
+            ParseQuery<ParseObject> codeQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
+            codeQuery.fromLocalDatastore();
+            codeQuery.whereEqualTo("code", groupCode);
+            codeQuery.whereEqualTo("userId", user.getUsername());
+
+            ParseObject obj = null;
+            try {
+                obj = codeQuery.getFirst();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            if (obj != null) {
+                updatedTime = obj.getCreatedAt();
+            }
+
+
+        }
+
+
+        // Log.d("MEMBER", "members " + updatedTime.toString());
 
         //calling parse cloud functions to fetch new member updates
         HashMap<String, Object> param = new HashMap<String, Object>();
+        param.put("classcode", groupCode);
 
-        if (updatedTime != null) {
+        if (updatedTime != null)
             param.put("date", updatedTime);
-            Log.d("SUBSCRIBER_DEBUG", updatedTime.toString());
-        }
-        else
-            param.put("date", user.getCreatedAt());
-
-
 
         HashMap<String, Object> memberList = null;
 
         try {
-            memberList = ParseCloud.callFunction("showAllSubscribers", param);
-            Log.d("SUBSCRIBER_DEBUG", "calling show all subscribers");
+            memberList = ParseCloud.callFunction("showSubscribers", param);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -155,15 +168,20 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
                 }
             }
         }
-        else
-            Log.d("SUBSCRIBER_DEBUG", "got zero members");
 
-
+        return null;
     }
 
 
-    public static void onPostExecuteCore()
-    {
+    @Override
+    protected void onPostExecute(String[] strings) {
+        Log.d("DEBUG_MEMBER", "members onPostExecute()");
+
+        //updating listview items of member list.
+        List<MemberDetails> updatedLocalMemberList = queries.getLocalClassMembers(groupCode);
+        if (updatedLocalMemberList != null) {
+            Subscribers.memberDetails = updatedLocalMemberList;
+        }
 
         if (Subscribers.mHeaderProgressBar != null)
             Subscribers.mHeaderProgressBar.setVisibility(View.GONE);
@@ -174,36 +192,20 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
         if (Classrooms.createdClassAdapter != null)
             Classrooms.createdClassAdapter.notifyDataSetChanged();
 
-    }
-
-    @Override
-    protected void onPostExecute(String[] strings) {
-        Log.d("DEBUG_MEMBER", "members onPostExecute()");
-
-
-        if(groupCode != null)
-        {
-            //updating listview items of member list.
-            List<MemberDetails> updatedLocalMemberList = queries.getLocalClassMembers(groupCode);
-            if (updatedLocalMemberList != null) {
-                Subscribers.memberDetails = updatedLocalMemberList;
-            }
-
-
-            int memberCount = 0;
-            Queries memberQuery = new Queries();
-            try {
-                memberCount = memberQuery.getMemberCount(groupCode);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            if(Subscribers.subscriberTV != null)
-                Subscribers.subscriberTV.setText(memberCount + " subscribers");
+        int memberCount = 0;
+        Queries memberQuery = new Queries();
+        try {
+            memberCount = memberQuery.getMemberCount(groupCode);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
 
-        onPostExecuteCore();
+        if(Subscribers.subscriberTV != null)
+            Subscribers.subscriberTV.setText(memberCount + " subscribers");
 
         super.onPostExecute(strings);
     }
 }
+
+
+
