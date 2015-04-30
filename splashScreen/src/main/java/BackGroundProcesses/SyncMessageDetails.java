@@ -57,12 +57,16 @@ public class SyncMessageDetails {
 
             ArrayList<String> msgIds = new ArrayList<>();
             HashMap<String, ArrayList<Integer>> stateChangeMap = new HashMap<>();
+            HashMap<String, ArrayList<Integer>> currentStateMap = new HashMap<>();
+
             for(int i=0; i<messages.size(); i++){
                 ParseObject msg = messages.get(i);
                 int like = msg.getBoolean(Constants.LIKE) ? 1 : 0;
                 int confusing = msg.getBoolean(Constants.CONFUSING) ? 1 : 0;
                 int synced_like = msg.getBoolean(Constants.SYNCED_LIKE) ? 1 : 0;
                 int synced_confusing = msg.getBoolean(Constants.SYNCED_CONFUSING) ? 1 : 0;
+
+
 
                 ArrayList<Integer> changes = new ArrayList<Integer>();
                 int likeChange = like - synced_like;
@@ -79,6 +83,12 @@ public class SyncMessageDetails {
                 changes.add(likeChange);
                 changes.add(confusingChange);
                 stateChangeMap.put(msg.getObjectId(), changes);
+
+                //store current state change so that we know what was the synced state(if L/C status changes while sync is on)
+                ArrayList<Integer> current = new ArrayList<Integer>();
+                current.add(like);
+                current.add(confusing);
+                currentStateMap.put(msg.getObjectId(), current);
 
                 Log.d("DEBUG_SYNC_STATE", "new L/C = " + like + "/" + confusing +
                         "|| synced L/C = " + synced_like + "/" + synced_confusing +
@@ -102,9 +112,18 @@ public class SyncMessageDetails {
                 if(result){
                     for(int i=0; i<messages.size(); i++) {
                         ParseObject msg = messages.get(i);
-                        msg.put(Constants.DIRTY_BIT, false);
-                        msg.put(Constants.SYNCED_LIKE, msg.getBoolean(Constants.LIKE));
-                        msg.put(Constants.SYNCED_CONFUSING, msg.getBoolean(Constants.CONFUSING));
+
+                        if(msg.getBoolean(Constants.SYNCED_CONFUSING) == msg.getBoolean(Constants.CONFUSING) &&
+                                msg.getBoolean(Constants.SYNCED_LIKE) == msg.getBoolean(Constants.LIKE)) {
+                            msg.put(Constants.DIRTY_BIT, false);
+                        }
+                        if(stateChangeMap.containsKey(msg.getObjectId())) {
+                            ArrayList<Integer> current = currentStateMap.get(msg.getObjectId());
+                            if(current.size() == 2) {
+                                msg.put(Constants.SYNCED_LIKE, current.get(0) == 1);
+                                msg.put(Constants.SYNCED_CONFUSING, current.get(1) == 1);
+                            }
+                        }
                     }
                     ParseObject.pinAll(messages);
                     Log.d("DEBUG_SYNC_STATE", "pinned all messages");
@@ -159,22 +178,30 @@ public class SyncMessageDetails {
         parameters.put("array", msgIds);
 
         try{
-            HashMap<String, List<String>> updateCountMap = ParseCloud.callFunction("updateCount2", parameters);
+            HashMap<String, List<Integer>> updateCountMap = ParseCloud.callFunction("updateCount2", parameters);
             if(updateCountMap != null){
                 Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : sent : " + msgs.size() + "requests ; received " + updateCountMap.size() + " updates");
 
                 for(int i=0; i<msgs.size(); i++){
                     ParseObject msg = msgs.get(i);
-                    List<String> counts = updateCountMap.get(msg.getObjectId()); //[seen, like, confused]
+                    List<Integer> counts = updateCountMap.get(msg.getObjectId()); //[seen, like, confused]
                     if(counts != null) {
-                        msg.put(Constants.LIKE_COUNT, counts.get(1));
-                        msg.put(Constants.CONFUSED_COUNT, counts.get(2));
+                        //formula for correct display of count(like/confused) : received count - synced status + current status
+                        //seen count correct as is
+                        int like = msg.getBoolean(Constants.LIKE) ? 1 : 0;
+                        int confusing = msg.getBoolean(Constants.CONFUSING) ? 1 : 0;
+                        int synced_like = msg.getBoolean(Constants.SYNCED_LIKE) ? 1 : 0;
+                        int synced_confusing = msg.getBoolean(Constants.SYNCED_CONFUSING) ? 1 : 0;
+
                         msg.put(Constants.SEEN_COUNT, counts.get(0));
-                        //Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
+                        msg.put(Constants.LIKE_COUNT, counts.get(1) - synced_like + like);
+                        msg.put(Constants.CONFUSED_COUNT, counts.get(2) - synced_confusing + confusing);
+                        Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }
 
                 ParseObject.pinAll(msgs);
+                Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : pinning over");
             }
         }
         catch (ParseException e){
@@ -245,13 +272,13 @@ public class SyncMessageDetails {
         parameters.put("array", msgIds);
 
         try{
-            HashMap<String, List<String>> updateCountMap = ParseCloud.callFunction("updateCount2", parameters);
+            HashMap<String, List<Integer>> updateCountMap = ParseCloud.callFunction("updateCount2", parameters);
             if(updateCountMap != null){
                 Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : sent : " + recentSentMessages.size() + "requests ; received " + updateCountMap.size() + " updates");
 
                 for(int i=0; i<recentSentMessages.size(); i++){
                     ParseObject msg = recentSentMessages.get(i);
-                    List<String> counts = updateCountMap.get(msg.getString("objectId")); //[seen, like, confused]
+                    List<Integer> counts = updateCountMap.get(msg.getString("objectId")); //[seen, like, confused]
                     if(counts != null) {
                         msg.put(Constants.LIKE_COUNT, counts.get(1));
                         msg.put(Constants.CONFUSED_COUNT, counts.get(2));

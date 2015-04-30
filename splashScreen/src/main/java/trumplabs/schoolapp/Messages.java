@@ -540,7 +540,7 @@ public class Messages extends Fragment {
 
                 int likeCount = msgObject.getInt(Constants.LIKE_COUNT);
                 int diff = newState.likeStatus - currentState.likeStatus;
-                Log.d("DEBUG_MESSAGES", "newLS" + newState.likeStatus + " curLS" + currentState.likeStatus + " likeCount"  + likeCount + " diff" + diff);
+                //Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newLS" + newState.likeStatus + " curLS" + currentState.likeStatus + " likeCount"  + likeCount + " diff" + diff);
                 int newLikeCount = likeCount + diff;
                 if(newLikeCount < 0 ) newLikeCount = 0;
 
@@ -561,7 +561,7 @@ public class Messages extends Fragment {
 
                 int confusedCount = msgObject.getInt(Constants.CONFUSED_COUNT);
                 int diff = newState.confusedStatus - currentState.confusedStatus;
-                Log.d("DEBUG_MESSAGES", "newLS" + newState.confusedStatus + " curLS" + currentState.confusedStatus + " conCount"  + confusedCount + " diff" + diff);
+                //Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newCS" + newState.confusedStatus + " curCS" + currentState.confusedStatus + " conCount"  + confusedCount + " diff" + diff);
 
                 int newConfusedCount = confusedCount + diff;
                 if(newConfusedCount < 0 ) newConfusedCount = 0;
@@ -570,6 +570,11 @@ public class Messages extends Fragment {
 
                 msgObject.put(Constants.CONFUSED_COUNT, newConfusedCount);
             }
+
+            Log.d("DEBUG_MESSAGES", "new status L/C = " + newState.likeStatus + "/" + newState.confusedStatus +
+                    "|| old status L/C = " + currentState.likeStatus + "/" + currentState.confusedStatus +
+                    "|| new count L/C = " + msgObject.getInt(Constants.CONFUSED_COUNT) + "/" + msgObject.getInt(Constants.CONFUSED_COUNT) +
+                    "|| synced status L/C = " + msgObject.getBoolean(Constants.SYNCED_LIKE) + "/" + msgObject.getBoolean(Constants.SYNCED_CONFUSING));
 
             msgObject.put(Constants.DIRTY_BIT, true);
             //updating msgObject locally
