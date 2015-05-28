@@ -32,6 +32,8 @@ import com.parse.ParseUser;
 import BackGroundProcesses.FetchSuggestionsOnJoin;
 import BackGroundProcesses.UpdateSuggestions;
 import java.util.ArrayList;
+import java.util.List;
+
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
@@ -40,6 +42,7 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
+import utility.Config;
 import utility.Popup;
 import utility.Queries;
 import utility.SessionManager;
@@ -178,6 +181,23 @@ public class JoinClassDialog extends DialogFragment {
                     //to hide keyboard when showing dialog fragment
                     getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
 
+
+                    //Check CAN_JOIN_OWN_CLASS flag. If set nothing to check.
+                    //Otherwise if attempt to join a created class, then deny.
+                    if(!Config.CAN_JOIN_OWN_CLASS && role.equals(Constants.TEACHER)){
+                        ParseUser user = ParseUser.getCurrentUser();
+                        if(user != null) {
+                            List<ArrayList<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+                            if (createdGroups != null && !createdGroups.isEmpty()) {
+                                for (int i = 0; i < createdGroups.size(); i++) {
+                                    if (createdGroups.get(i).get(0).equalsIgnoreCase(code)) {
+                                        Utility.toast("You can't join your own class");
+                                        return;
+                                    }
+                                }
+                            }
+                        }
+                    }
 
                     //checking for internet connection
                     if(Utility.isInternetExist(getActivity())) {
