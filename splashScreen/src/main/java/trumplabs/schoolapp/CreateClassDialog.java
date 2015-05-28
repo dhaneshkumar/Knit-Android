@@ -4,13 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.PopupMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -26,14 +23,12 @@ import com.parse.ParseUser;
 import java.util.HashMap;
 
 import additionals.InviteParents;
-import joinclasses.School;
 import library.UtilString;
 import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import utility.Queries;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 
@@ -43,13 +38,7 @@ import utility.Utility;
 
 public class CreateClassDialog extends DialogFragment{
     private Dialog dialog;
-    private TextView schoolButton;
-    private TextView standardButton;
-    private TextView divisonButton;
     private TextView createclassbtn;
-    private String selectedSchool;
-    private String selectedStandard;
-    private String selectedDivison;
     private Queries query;
     private String className;
     private EditText classView;
@@ -75,9 +64,6 @@ public class CreateClassDialog extends DialogFragment{
 
         //Initializing gui elements
         query = new Queries();
-        schoolButton = (TextView) view.findViewById(R.id.school);
-        standardButton = (TextView) view.findViewById(R.id.standard);
-        divisonButton = (TextView) view.findViewById(R.id.division);
         createclassbtn = (TextView) view.findViewById(R.id.create_button);
         classView = (EditText) view.findViewById(R.id.classnameid);
         progressLayout = (LinearLayout) view.findViewById(R.id.progresslayout);
@@ -89,18 +75,6 @@ public class CreateClassDialog extends DialogFragment{
 
 
         user = ParseUser.getCurrentUser();
-
-
-        //Code to ask school details, which is not getting used now.
-        // School school = new School();
-       /* selectedSchool = school.getSchoolName(user.getString("school"));
-        if (selectedSchool != null)
-            schoolButton.setText(selectedSchool);
-        else
-            selectedSchool ="Other";
-
-        selectedDivison = "NA";
-        selectedStandard = "NA";*/
 
         //flag to tell whether user has signup or not
         if(getArguments() != null) {
@@ -121,13 +95,6 @@ public class CreateClassDialog extends DialogFragment{
                 className = classView.getText().toString().trim();
 
                 String updatedName = className;
-
-            /*    if(!UtilString.isBlank(selectedStandard) && !selectedStandard.equals("NA"))
-                    updatedName += " "+selectedStandard;
-
-                if(!UtilString.isBlank(selectedDivison) && !selectedDivison.equals("NA"))
-                    updatedName += selectedDivison;
-*/
 
                 //Checking newly created class already exist or not
                 if (!UtilString.isBlank(className)) {
@@ -169,107 +136,6 @@ public class CreateClassDialog extends DialogFragment{
 
         });
 
-
-         /*
-     * school select options
-     */
-        schoolButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                School school1 = new School();
-                String school = school1.getSchoolName(user.getString("school"));
-
-        /*
-         * Creating pop-menu for selecting schools
-         */
-                PopupMenu menu = new PopupMenu(getActivity(), v);
-
-                if (!UtilString.isBlank(school))
-                    menu.getMenu().add(school);
-
-                menu.getMenu().add("Other");
-                menu.show();
-
-                // setting menu click functionality
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-
-                        selectedSchool = item.getTitle().toString();
-                        schoolButton.setText(selectedSchool);
-                        return false;
-                    }
-                });
-            }
-        });
-
-
-        /*
-     * school select options
-     */
-        standardButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-        /*
-         * Creating popmenu for selecting schools
-         */
-                PopupMenu menu = new PopupMenu(getActivity(), v);
-                menu.getMenuInflater().inflate(R.menu.standard, menu.getMenu());
-                menu.show();
-
-
-                /** Defining menu item click listener for the popup menu */
-
-                // setting menu click functionality
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-
-
-                        selectedStandard = item.getTitle().toString();
-                        standardButton.setText(selectedStandard);
-                        standardButton.setTextColor(Color.parseColor("#000000"));
-                        return false;
-                    }
-                });
-            }
-        });
-
-        divisonButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-        /*
-         * Creating popmenu for selecting schools
-         */
-                PopupMenu menu = new PopupMenu(getActivity(), v);
-                menu.getMenuInflater().inflate(R.menu.division, menu.getMenu());
-                menu.show();
-
-
-                /** Defining menu item click listener for the popup menu */
-
-                // setting menu click functionality
-                menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-
-                    @Override
-                    public boolean onMenuItemClick(MenuItem item) {
-
-                        selectedDivison = item.getTitle().toString();
-                        divisonButton.setText(selectedDivison);
-                        divisonButton.setTextColor(Color.parseColor("#000000"));
-                        return false;
-                    }
-                });
-            }
-        });
-
-
         //on click code, copy code to clipboard
         codeTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -296,11 +162,7 @@ public class CreateClassDialog extends DialogFragment{
         });
 
         return dialog;
-
     }
-
-
-
 
     private class createGroup extends AsyncTask<Void, Void, Boolean> {
 
@@ -310,17 +172,7 @@ public class CreateClassDialog extends DialogFragment{
 
             //setting parameters
             HashMap<String, Object> params = new HashMap<String, Object>();
-
-            //setting schoolId, classname, standard and division
-           /* String schoolId = user.getString("school");
-            if (!selectedSchool.trim().equals("Other"))
-                params.put("school", schoolId);*/
-
-      //      params.put("division", selectedDivison);
-      //      params.put("standard", selectedStandard);
             params.put("classname", className);
-
-
 
             ParseObject codeGroupObject = null;
 
@@ -367,10 +219,7 @@ public class CreateClassDialog extends DialogFragment{
 
         @Override
         protected void onPostExecute(Boolean result) {
-
-
             if (result) {
-
 //                Utility.toast("Group Creation successful");
 
                 if(getActivity() != null) {
@@ -398,29 +247,13 @@ public class CreateClassDialog extends DialogFragment{
                 progressLayout.setVisibility(View.GONE);
 
                // dialog.dismiss();
-
-            } /*else if (classNameCheckFlag) {
-        createclasslayout.setVisibility(View.VISIBLE);
-        progressLayout.setVisibility(View.GONE);
-        Utility.toast("Sorry. Can't create classes with same name");
-        classNameCheckFlag = false;
-      }*/
+            }
             else
             {
                 contentLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
                 Utility.toast("Oops! Something went wrong. Can't create your class");
             }
-
-
-      /*
-       * else if (internetFlag){ createclasslayout.setVisibility(View.VISIBLE);
-       * progressLayout.setVisibility(View.GONE); Utility.toast("Check your Internet Connection.");
-       * internetFlag = false;
-       *
-       * }
-       */
-
             super.onPostExecute(result);
         }
     }

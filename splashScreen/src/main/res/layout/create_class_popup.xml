@@ -67,22 +67,6 @@
                     android:textColor="@color/black"
                     android:text="Create a classroom"/>
 
-
-                <TextView
-                    android:id="@+id/school"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="14sp"
-                    android:background="@drawable/apptheme_spinner_default_holo_light"
-                    android:layout_marginTop="16dp"
-                    android:paddingLeft="16dp"
-                    android:paddingRight="16dp"
-                    android:singleLine="true"
-                    android:visibility="gone"
-                    android:textColor="@color/black"
-                    android:text="School"/>
-
-
                 <EditText
                     android:id="@+id/classnameid"
                     android:layout_width="match_parent"
@@ -107,50 +91,6 @@
                     android:paddingRight="1dp"
                     android:textColor="#8A8A8A"
                     android:text="eg. MATH 2C"/>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:visibility="gone"
-                    android:layout_marginTop="16dp"
-                    >
-
-
-                    <TextView
-                        android:id="@+id/standard"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:layout_weight="2"
-                        android:background="@drawable/apptheme_spinner_default_holo_light"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="1dp"
-                        android:textColor="@color/black"
-                        android:text="Standard"/>
-
-
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:layout_weight="1"
-                        android:text=""/>
-
-
-                    <TextView
-                        android:id="@+id/division"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:textSize="14sp"
-                        android:layout_weight="2"
-                        android:background="@drawable/apptheme_spinner_default_holo_light"
-                        android:paddingLeft="16dp"
-                        android:paddingRight="1dp"
-                        android:textColor="@color/black"
-                        android:text="Division"/>
-                    </LinearLayout>
 
             </LinearLayout>
 
