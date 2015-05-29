@@ -42,7 +42,7 @@ import utility.Utility;
  */
 public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
-    Spinner titleSpinner;
+//    Spinner titleSpinner;
     EditText displayNameET;
     EditText phoneNumberET;
 
@@ -53,8 +53,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     static String role = "";
     static String displayName = "";
     static String phoneNumber = "";
-    static int titleSpinnerPosition = 0;
-    static String title = "";
+//    static int titleSpinnerPosition = 0;
+//    static String title = "";
     static ProgressDialog pdialog;
 
     //first class details
@@ -70,7 +70,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         setContentView(R.layout.signup_name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        titleSpinner = (Spinner) findViewById(R.id.mr_spinner);
+//        titleSpinner = (Spinner) findViewById(R.id.mr_spinner);
         displayNameET = (EditText) findViewById(R.id.displaynameid);
         phoneNumberET = (EditText) findViewById(R.id.phoneid);
 
@@ -89,21 +89,21 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         else{//on press back from next activity. Use previous values to show
             displayNameET.setText(displayName);
             phoneNumberET.setText(phoneNumber);
-            titleSpinner.setSelection(titleSpinnerPosition);
+//            titleSpinner.setSelection(titleSpinnerPosition);
         }
 
-        if(role.equals("teacher")){
+        /*if(role.equals("teacher")){
             classDetailsLayout.setVisibility(View.GONE);
         }
         else{
             classDetailsLayout.setVisibility(View.VISIBLE);
             classNameTV.setText(className);
             teacherNameTV.setText(teacherName);
-        }
+        }*/
 
 
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.title, R.layout.spinner_item);
-        titleSpinner.setAdapter(adapter);
+//        titleSpinner.setAdapter(adapter);
 
         buildGoogleApiClient();
     }
@@ -111,8 +111,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     void resetFields(){
         displayName = "";
         phoneNumber = "";
-        title = "";
-        titleSpinnerPosition = 0;
+//        title = "";
+//        titleSpinnerPosition = 0;
     }
 
     /*public void onBackPressed() {
@@ -148,24 +148,17 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     void next(){
         displayName = displayNameET.getText().toString();
         phoneNumber = phoneNumberET.getText().toString();
-        titleSpinnerPosition = titleSpinner.getSelectedItemPosition();
-        title = titleSpinner.getSelectedItem().toString();
+//        titleSpinnerPosition = titleSpinner.getSelectedItemPosition();
+//        title = titleSpinner.getSelectedItem().toString();
         if (UtilString.isBlank(displayName))
             Utility.toast("Incorrect Display Name");
-        else if (titleSpinnerPosition == 0)
-            Utility.toast("Choose a title!");
+//        else if (titleSpinnerPosition == 0)
+//            Utility.toast("Choose a title!");
         else if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
             Utility.toast("Incorrect Mobile Number");
         else if(Utility.isInternetExist(this)) {
-            //Removed school input page. So directly go to verification page
-            /*pdialog = new ProgressDialog(this);
-            pdialog.setCancelable(false);
-            pdialog.setMessage("Please Wait...");
-            pdialog.show();*/
-
             //Changing first letter to caps
             displayName = UtilString.changeFirstToCaps(displayName);
-
 
             String  msg = "Please confirm your number \n" + "+91"+phoneNumber;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -194,8 +187,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     generateVerificationCode.execute();
                 }
             });
-
-
 
             edit.setOnClickListener(new View.OnClickListener() {
                 @Override

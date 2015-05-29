@@ -166,77 +166,13 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 });
             } else {
         /*
-         * Setting profile pic according to their sex
+         * Setting profile pic (don't consider sex, just the role)
          */
 
                 if (role.equals("parent")) {
-
-                    if (user.getString("sex") != null && (!UtilString.isBlank(user.getString("sex")))) {
-                        String sex = user.getString("sex");
-                        if (sex.equals("M"))
-                            profileimgview.setImageResource(R.drawable.maleparentdp);
-                        else if (sex.equals("F"))
-                            profileimgview.setImageResource(R.drawable.femaleparentdp);
-                    } else {
-                        // if sex is not stored
-                        String username = user.getString("name");
-                        if (!UtilString.isBlank(username)) {
-                            String[] names = username.split("\\s");
-
-                            if (names != null && names.length > 1) {
-                                String title = names[0].trim();
-
-                                if (title.equals("Mr") || title.equals("Mr.")) {
-                                    profileimgview.setImageResource(R.drawable.maleparentdp);
-                                    user.put("sex", "M");
-                                    user.saveEventually();
-                                } else if (title.equals("Mrs")|| title.equals("Mrs.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleparentdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                } else if (title.equals("Ms")  || title.equals("Ms.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleparentdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                }
-                            }
-                        }
-                    }
-
+                        profileimgview.setImageResource(R.drawable.maleparentdp);
                 } else {
-
-                    // in case of teacher role
-                    if (user.getString("sex") != null && (!UtilString.isBlank(user.getString("sex")))) {
-                        String sex = user.getString("sex");
-                        if (sex.equals("M"))
-                            profileimgview.setImageResource(R.drawable.maleteacherdp);
-                        else if (sex.equals("F"))
-                            profileimgview.setImageResource(R.drawable.femaleteacherdp);
-                    } else {
-                        // if sex is not stored
-                        String username = user.getString("name");
-                        if (!UtilString.isBlank(username)) {
-                            String[] names = username.split("\\s");
-
-                            if (names != null && names.length > 1) {
-                                String title = names[0].trim();
-
-                                if (title.equals("Mr")|| title.equals("Mr.")) {
-                                    profileimgview.setImageResource(R.drawable.maleteacherdp);
-                                    user.put("sex", "M");
-                                    user.saveEventually();
-                                } else if (title.equals("Mrs") ||  title.equals("Mrs.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleteacherdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                } else if (title.equals("Ms") || title.equals("Ms.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleteacherdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                }
-                            }
-                        }
-                    }
+                    profileimgview.setImageResource(R.drawable.maleteacherdp);
                 }
             }
         } catch (Exception e) {

@@ -1,12 +1,10 @@
 package trumplabs.schoolapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,21 +15,17 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.ListPopupWindow;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -53,7 +47,6 @@ import java.util.List;
 import BackGroundProcesses.Inbox;
 import BackGroundProcesses.Refresher;
 import joinclasses.JoinClassDialog;
-import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Queries;
@@ -576,7 +569,18 @@ public class Messages extends Fragment {
                     "|| new count L/C = " + msgObject.getInt(Constants.CONFUSED_COUNT) + "/" + msgObject.getInt(Constants.CONFUSED_COUNT) +
                     "|| synced status L/C = " + msgObject.getBoolean(Constants.SYNCED_LIKE) + "/" + msgObject.getBoolean(Constants.SYNCED_CONFUSING));
 
-            msgObject.put(Constants.DIRTY_BIT, true);
+            //Set the dirty bit in message according to current and synced states
+            boolean like = msgObject.getBoolean(Constants.LIKE);
+            boolean confusing = msgObject.getBoolean(Constants.CONFUSING);
+            boolean synced_like = msgObject.getBoolean(Constants.SYNCED_LIKE);
+            boolean synced_confusing = msgObject.getBoolean(Constants.SYNCED_CONFUSING);
+
+            if(like == synced_like && confusing == synced_confusing){ //no changes at all.
+                msgObject.put(Constants.DIRTY_BIT, false);
+            }
+            else {
+                msgObject.put(Constants.DIRTY_BIT, true);
+            }
             //updating msgObject locally
             msgObject.pinInBackground();
         }
@@ -608,13 +612,9 @@ public class Messages extends Fragment {
             else
                 unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
 
-
-//            Boolean x = true;
-//            if(x) return;
       /*
        * Setting likes and confused button functionality
        */
-
 
             holder.likeButton.setOnClickListener(new OnClickListener() {
 
@@ -708,62 +708,12 @@ public class Messages extends Fragment {
             if (senderThumbnailFile.exists())
 
             {
-
                 // image file present locally
                 Bitmap mySenderBitmap = BitmapFactory.decodeFile(senderThumbnailFile.getAbsolutePath());
                 holder.senderImg.setImageBitmap(mySenderBitmap);
             } else
-
             {
-
-                ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>("Codegroup");
-                delquery1.fromLocalDatastore();
-
-                String code = msgObject.getString("code");
-                if (code != null) {
-                    delquery1.whereEqualTo("code", code.trim());
-                    try {
-                        ParseObject obj = delquery1.getFirst();
-
-                        String sex = obj.getString("sex");
-
-                        if (!UtilString.isBlank(sex)) {
-
-                            if (sex.equals("M"))
-                                holder.senderImg.setImageResource(R.drawable.maleteacherdp);
-                            else if (sex.equals("F"))
-                                holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
-                        } else {
-
-                            // if sex is not stored
-                            if (!UtilString.isBlank(Str)) {
-                                String[] names = Str.split("\\s");
-
-                                if (names != null && names.length > 1) {
-                                    String title = names[0].trim();
-
-                                    if (title.equals("Mr") || title.equals("Mr.")) {
-                                        holder.senderImg.setImageResource(R.drawable.maleteacherdp);
-                                        obj.put("sex", "M");
-                                        obj.pin();
-                                    } else if (title.equals("Mrs") || title.equals("Mrs.")) {
-                                        holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
-                                        obj.put("sex", "F");
-                                        obj.pin();
-                                    } else if (title.equals("Ms") || title.equals("Ms.")) {
-                                        holder.senderImg.setImageResource(R.drawable.femaleteacherdp);
-                                        obj.put("sex", "F");
-                                        obj.pin();
-                                    } else
-                                        holder.senderImg.setImageResource(R.drawable.logo);
-                                } else
-                                    holder.senderImg.setImageResource(R.drawable.logo);
-                            } else
-                                holder.senderImg.setImageResource(R.drawable.logo);
-                        }
-                    } catch (ParseException e) {
-                    }
-                }
+                holder.senderImg.setImageResource(R.drawable.maleteacherdp);
             }
 
             try
@@ -797,8 +747,8 @@ public class Messages extends Fragment {
                     @Override
                     public void onClick(View v) {
                         /*
-         * Creating popmenu for copying text
-         */
+                         * Creating popmenu for copying text
+                         */
                         //Defualt copy text menu
                         PopupMenu menu = new PopupMenu(getActivity(), v);
 
@@ -852,11 +802,6 @@ public class Messages extends Fragment {
 
                         popupWindow.showAsDropDown(holder.copyLayout);*/
 
-
-
-
-
-
                     }
                 });
             }
@@ -893,7 +838,6 @@ public class Messages extends Fragment {
                     holder.imgframelayout.setTag(imgFile.getAbsolutePath());
 
                     loadBitmap(thumbnailFile.getAbsolutePath(), holder.imgmsgview);
-
 
                 } else {
                     if(Utility.isInternetExist(getActivity())) {
@@ -960,40 +904,6 @@ public class Messages extends Fragment {
 
         }
     }
-
-
-
-  /*  @Override
-    public void onRefreshStarted(View view) {
-
-        if (MainActivity.mHeaderProgressBar != null)
-            MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
-
-        // mHeaderProgressBar.setVisibility(View.GONE);
-        checkInternet = Utility.isInternetOn(getActivity());
-        if (Utility.isInternetOn(getActivity())) {
-            Inbox newInboxMsg = new Inbox(msgs);
-            newInboxMsg.execute();
-        } else {
-            // Utility.toast("Check your Internet connection");
-            mPullToRefreshLayout.setRefreshComplete();
-        }
-
-    *//*
-     * stop refreshing bar after some certain interval
-     *//*
-        final Handler h = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-
-                if (mPullToRefreshLayout != null)
-                    mPullToRefreshLayout.setRefreshComplete();
-            }
-        };
-        h.sendMessageDelayed(new Message(), 10000);
-
-    }*/
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -1142,14 +1052,10 @@ public class Messages extends Fragment {
         {Utility.logout(); return;}
     }
 
-
-
     class GetLocalInboxMsgInBackground extends AsyncTask<Void, Void, Void>
     {
         @Override
         protected Void doInBackground(Void... params) {
-
-
             try {
                 msgs = query.getLocalInboxMsgs();
                 updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
@@ -1186,10 +1092,7 @@ public class Messages extends Fragment {
                 newInboxMsg.execute();
             }
 
-
             super.onPostExecute(aVoid);
         }
     }
-
-
 }

@@ -66,13 +66,12 @@ public class SyncMessageDetails {
                 int synced_like = msg.getBoolean(Constants.SYNCED_LIKE) ? 1 : 0;
                 int synced_confusing = msg.getBoolean(Constants.SYNCED_CONFUSING) ? 1 : 0;
 
-
-
                 ArrayList<Integer> changes = new ArrayList<Integer>();
                 int likeChange = like - synced_like;
                 int confusingChange = confusing - synced_confusing;
 
-                if(likeChange == 0 && confusingChange == 0){ //no changes at all. Just move to next message
+                if(likeChange == 0 && confusingChange == 0){ //This should not happen as msg was marked dirty.
+                                                            // No changes at all. Just move to next message
                     Log.d("DEBUG_SYNC_STATE", "false DIRTY " + msg.getObjectId());
                     msg.put(Constants.DIRTY_BIT, false);
                     continue;
@@ -84,7 +83,7 @@ public class SyncMessageDetails {
                 changes.add(confusingChange);
                 stateChangeMap.put(msg.getObjectId(), changes);
 
-                //store current state change so that we know what was the synced state(if L/C status changes while sync is on)
+                //store current state so that we know what was the synced state(if L/C status changes while sync is on)
                 ArrayList<Integer> current = new ArrayList<Integer>();
                 current.add(like);
                 current.add(confusing);
@@ -106,22 +105,26 @@ public class SyncMessageDetails {
 
             try{
                 boolean result = ParseCloud.callFunction("updateLikeAndConfusionCount", parameters);
-                // if success,
-                // then put current like and confusing status into SYNCED like and confusing status
-                // change dirty bit false
+                // if success, then for the those messages which we synced,
+                // put current (saved) like and confusing status into SYNCED like and confusing status
+                // Now if synced and actual state(this may change while we we syncing) are same,
+                // then change change dirty bit false
                 if(result){
                     for(int i=0; i<messages.size(); i++) {
                         ParseObject msg = messages.get(i);
 
-                        if(msg.getBoolean(Constants.SYNCED_CONFUSING) == msg.getBoolean(Constants.CONFUSING) &&
-                                msg.getBoolean(Constants.SYNCED_LIKE) == msg.getBoolean(Constants.LIKE)) {
-                            msg.put(Constants.DIRTY_BIT, false);
-                        }
-                        if(stateChangeMap.containsKey(msg.getObjectId())) {
+                        //do this on if it was the message being synced
+                        if(stateChangeMap.containsKey(msg.getObjectId())){
                             ArrayList<Integer> current = currentStateMap.get(msg.getObjectId());
                             if(current.size() == 2) {
                                 msg.put(Constants.SYNCED_LIKE, current.get(0) == 1);
                                 msg.put(Constants.SYNCED_CONFUSING, current.get(1) == 1);
+                            }
+
+                            //check if not dirty
+                            if(msg.getBoolean(Constants.SYNCED_CONFUSING) == msg.getBoolean(Constants.CONFUSING) &&
+                                    msg.getBoolean(Constants.SYNCED_LIKE) == msg.getBoolean(Constants.LIKE)) {
+                                msg.put(Constants.DIRTY_BIT, false);
                             }
                         }
                     }

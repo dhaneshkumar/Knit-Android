@@ -252,16 +252,16 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 param.put("model", model);
                 param.put("os", "ANDROID");
 
-                param.put("name", PhoneSignUpName.title + " " + PhoneSignUpName.displayName);
+                param.put("name", /*PhoneSignUpName.title + " " + */ PhoneSignUpName.displayName);
 
                 param.put("role", PhoneSignUpName.role);
 
-                String title = PhoneSignUpName.title;
+                /*String title = PhoneSignUpName.title;
                 if (title != null && title.equals("Mr.")) {
                     param.put("sex", "M");
                 } else {
                     param.put("sex", "F");
-                }
+                }*/
 
                 if(PhoneSignUpName.mLastLocation != null){
                     param.put("lat", PhoneSignUpName.mLastLocation.getLatitude());
@@ -389,12 +389,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         protected Void doInBackground(Void... params) {
             Utility.updateCurrentTime(user);
-            /* no need to refresh channels
-            Queries query = new Queries();
-            try {
-                query.refreshChannels();
-            } catch (ParseException e1) {
-            }*/
 
             Utility.setNewIdFlagInstallation();
             boolean installationStatus = Utility.checkParseInstallation();
@@ -431,16 +425,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             currentUser = ParseUser.getCurrentUser(); //won't be null
 
             if(currentUser == null) return null;
-            /*//storing school on database server
-            try {
-                if (role.equals(Constants.TEACHER)) {
-                    String schoolId = School.getSchoolObjectId(school);
-                    if (schoolId != null)
-                        user.put("school", schoolId);
-                }
-            } catch (ParseException e2) {
-            }*/
-
 
             Utility.updateCurrentTime(currentUser);
 
@@ -453,27 +437,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             else{
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save FAILED");
             }
-            /*//storing username in parseInstallation table
-            ParseInstallation installation = ParseInstallation.getCurrentInstallation();
-            installation.put("username", currentUser.getUsername());
-            List<String> channelList = new ArrayList<String>();
-            installation.put("channels", channelList);
-            try {
-                if(currentUser.getUsername() != null)
-                    Log.d("Install", currentUser.getUsername());
-                else
-                    Log.d("Install", "username null");
-
-
-                installation.save();
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "installation save success");
-            } catch (ParseException e1) {
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "installation save FAILED");
-                System.out.println("Install failed not saved");
-                e1.getCode();
-                e1.getMessage();
-                e1.printStackTrace();
-            }*/
 
               /*
                 * Joining default groups

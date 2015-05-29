@@ -39,7 +39,6 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
-import trumplabs.schoolapp.Subscribers;
 import utility.Config;
 import utility.Utility;
 
@@ -115,7 +114,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         classQuery.fromLocalDatastore();
         classQuery.whereEqualTo("code", classCode);
         String teacherSenderId = null;
-        String teacherSex = "";
+//        String teacherSex = "";
 
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
         profile.setTypeface(typeFace);
@@ -126,7 +125,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             ParseObject codegroup = classQuery.getFirst();
             teacherName = codegroup.getString("Creator");
             teacherSenderId = codegroup.getString("senderId");
-            teacherSex = codegroup.getString("sex");
+//            teacherSex = codegroup.getString("sex");
         }
         catch (ParseException e){
           //  Log.d("DEBUG_JOINED_CLASS_INFO", "local query into Codegroup failed");
@@ -138,7 +137,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
             teacherSenderId = teacherSenderId.replaceAll("@", "");
             String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + teacherSenderId + "_PC.jpg";
 
-            //Log.d("DEBUG_MESSAGES_DISPLAYING", "profile pic " + filePath);
             File teacherThumbnailFile = new File(filePath);
 
             if(teacherThumbnailFile.exists()){
@@ -147,37 +145,14 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 profileImageView.setImageBitmap(mySenderBitmap);
             }
             else{
-                if (!UtilString.isBlank(teacherSex)) {
-                    if (teacherSex.equals("M"))
-                        profileImageView.setImageResource(R.drawable.maleteacherdp);
-                    else if (teacherSex.equals("F"))
-                        profileImageView.setImageResource(R.drawable.femaleteacherdp);
-                } else {
-                    // if sex is not stored. Determine using title(first word) in name
-                    if (!UtilString.isBlank(teacherName)) {
-                        String[] names = teacherName.split("\\s");
-
-                        if (names != null && names.length > 1) {
-                            String title = names[0].trim();
-
-                            if (title.equals("Mr") || title.equals("Mr.")) {
-                                profileImageView.setImageResource(R.drawable.maleteacherdp);
-                            } else if (title.equals("Mrs") || title.equals("Mrs.")) {
-                                profileImageView.setImageResource(R.drawable.femaleteacherdp);
-                            } else if (title.equals("Ms") || title.equals("Ms.")) {
-                                profileImageView.setImageResource(R.drawable.femaleteacherdp);
-                            }
-                        }
-                    }
-                }
+                //use a default image for profile pic(same for both M/F)
+                profileImageView.setImageResource(R.drawable.maleteacherdp);
             }
         }
 
         //set ui elements
 
         setTitle(UtilString.appendDots(className,20));
-
-
 
         classNameTV.setText(className);
 
