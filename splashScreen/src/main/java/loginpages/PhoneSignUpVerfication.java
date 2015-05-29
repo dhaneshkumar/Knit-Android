@@ -16,7 +16,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.LogInCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -96,11 +95,11 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 resendActionTV.setVisibility(View.GONE);
 
                 if(isLogin){
-                    PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, PhoneLoginPage.phoneNumber);
+                    PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(2, PhoneLoginPage.phoneNumber);
                     generateVerificationCode.execute();
                 }
                 else{
-                    PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, PhoneSignUpName.phoneNumber);
+                    PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(2, PhoneSignUpName.phoneNumber);
                     generateVerificationCode.execute();
                 }
             }
@@ -194,7 +193,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
     public void onBackPressed() {
         countDownTimer.cancel(); //to prevent multiple instances to simultaneously changing the time text
-        SmsListener.unRegister(); //important so that it doesnot trigger when out of context
+        SmsListener.unRegister(); //important so that it does not trigger when out of context
         super.onBackPressed();
     }
 
@@ -256,13 +255,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
                 param.put("role", PhoneSignUpName.role);
 
-                /*String title = PhoneSignUpName.title;
-                if (title != null && title.equals("Mr.")) {
-                    param.put("sex", "M");
-                } else {
-                    param.put("sex", "F");
-                }*/
-
                 if(PhoneSignUpName.mLastLocation != null){
                     param.put("lat", PhoneSignUpName.mLastLocation.getLatitude());
                     param.put("long", PhoneSignUpName.mLastLocation.getLongitude());
@@ -290,8 +282,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                                 session.setSignUpAccount();
 
                                 // The current user is now set to user. Do registration in default class
-                                Log.d("DEBUG_SIGNUP_VERIFICATION", "calling storeSchoolInBackground");
-                                PostSignUpTask postSignUpTask = new PostSignUpTask();
+                                PostSignUpTask postSignUpTask = new PostSignUpTask(user);
                                 postSignUpTask.execute();
                             }
                         } else {
@@ -419,15 +410,12 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static class PostSignUpTask extends AsyncTask<Void, Void, Void>
     {
         ParseUser currentUser;
+        public PostSignUpTask(ParseUser u) {
+            currentUser = u;
+        }
         @Override
         protected Void doInBackground(Void... params) {
-
-            currentUser = ParseUser.getCurrentUser(); //won't be null
-
-            if(currentUser == null) return null;
-
             Utility.updateCurrentTime(currentUser);
-
 
             Utility.setNewIdFlagInstallation();
             boolean installationStatus = Utility.checkParseInstallation();
@@ -438,16 +426,12 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save FAILED");
             }
 
-              /*
-                * Joining default groups
-                */
+            /*
+            * Joining default groups
+            */
             JoinDefaultGroup joinGroup = new JoinDefaultGroup();
             joinGroup.execute();
 
-            if(currentUser.getString("role").equalsIgnoreCase("parent") || currentUser.getString("role").equalsIgnoreCase("student")){
-                JoinFirstClass joinFirstClass = new JoinFirstClass(); //code and child name from PhoneSignUpClassDetails
-                joinFirstClass.execute();
-            }
             return null;
         }
 
@@ -508,31 +492,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                     Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinDefaultGroup : result = " + result);
                     session.setDefaultClassJoinStatus();
                 }
-            }
-        }
-    }
-
-    public static class JoinFirstClass extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            doInBackgroudCore();
-            return null;
-        }
-
-        public void doInBackgroudCore(){
-            ParseUser user = ParseUser.getCurrentUser();
-            if (user != null) {
-
-                String role = user.getString("role");
-
-                String childName = PhoneSignUpClassDetails.childName; //get child name
-                if(role.equalsIgnoreCase("student")) {
-                    childName = user.getString("name"); //user itself is the student
-                }
-                String code = PhoneSignUpName.classCode; //for both parent/student
-
-                int result = JoinedHelper.joinClass(code, childName, false);
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinFirstClass : " + code + " " + childName + " result=" + result);
             }
         }
     }

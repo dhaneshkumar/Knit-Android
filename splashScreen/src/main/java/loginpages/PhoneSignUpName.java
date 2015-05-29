@@ -3,23 +3,17 @@ package loginpages;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -29,12 +23,11 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 
 import java.util.HashMap;
-import java.util.List;
 
+import additionals.SmsListener;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
 import utility.Utility;
 
 /**
@@ -42,25 +35,13 @@ import utility.Utility;
  */
 public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener{
-//    Spinner titleSpinner;
     EditText displayNameET;
     EditText phoneNumberET;
-
-    TextView classNameTV;
-    TextView teacherNameTV;
-    LinearLayout classDetailsLayout;
 
     static String role = "";
     static String displayName = "";
     static String phoneNumber = "";
-//    static int titleSpinnerPosition = 0;
-//    static String title = "";
     static ProgressDialog pdialog;
-
-    //first class details
-    static String classCode = "";
-    static String className = "";
-    static String teacherName = "";
 
     static GoogleApiClient mGoogleApiClient = null;
     static Location mLastLocation = null;
@@ -70,40 +51,19 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         setContentView(R.layout.signup_name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-//        titleSpinner = (Spinner) findViewById(R.id.mr_spinner);
         displayNameET = (EditText) findViewById(R.id.displaynameid);
         phoneNumberET = (EditText) findViewById(R.id.phoneid);
-
-        classNameTV = (TextView) findViewById(R.id.className);
-        teacherNameTV = (TextView) findViewById(R.id.teacherName);
-        classDetailsLayout = (LinearLayout) findViewById(R.id.classDetails);
-
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             resetFields();
             role = getIntent().getExtras().getString("role");
-            className = getIntent().getExtras().getString("className");
-            teacherName = getIntent().getExtras().getString("teacherName");
-            classCode = getIntent().getExtras().getString("classCode");
         }
         else{//on press back from next activity. Use previous values to show
             displayNameET.setText(displayName);
             phoneNumberET.setText(phoneNumber);
-//            titleSpinner.setSelection(titleSpinnerPosition);
         }
-
-        /*if(role.equals("teacher")){
-            classDetailsLayout.setVisibility(View.GONE);
-        }
-        else{
-            classDetailsLayout.setVisibility(View.VISIBLE);
-            classNameTV.setText(className);
-            teacherNameTV.setText(teacherName);
-        }*/
-
 
         ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.title, R.layout.spinner_item);
-//        titleSpinner.setAdapter(adapter);
 
         buildGoogleApiClient();
     }
@@ -111,8 +71,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     void resetFields(){
         displayName = "";
         phoneNumber = "";
-//        title = "";
-//        titleSpinnerPosition = 0;
     }
 
     /*public void onBackPressed() {
@@ -148,19 +106,15 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     void next(){
         displayName = displayNameET.getText().toString();
         phoneNumber = phoneNumberET.getText().toString();
-//        titleSpinnerPosition = titleSpinner.getSelectedItemPosition();
-//        title = titleSpinner.getSelectedItem().toString();
         if (UtilString.isBlank(displayName))
             Utility.toast("Incorrect Display Name");
-//        else if (titleSpinnerPosition == 0)
-//            Utility.toast("Choose a title!");
         else if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
             Utility.toast("Incorrect Mobile Number");
         else if(Utility.isInternetExist(this)) {
             //Changing first letter to caps
             displayName = UtilString.changeFirstToCaps(displayName);
 
-            String  msg = "Please confirm your number \n" + "+91"+phoneNumber;
+            String msg = "Please confirm your number \n" + "+91"+phoneNumber;
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             View view =
                     getLayoutInflater().inflate(R.layout.signup_phone_dialog, null);
@@ -181,7 +135,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     nextIntent.putExtra("login", false);
 
-                    PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(1, phoneNumber);
+                    GenerateVerificationCode generateVerificationCode = new GenerateVerificationCode(1, phoneNumber);
                     startActivity(nextIntent);
 
                     generateVerificationCode.execute();
@@ -195,12 +149,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 }
             });
 
-
         }
         else{
             Utility.toast("Check your Internet connection");
         }
     }
+
+    /*********** Location Detection methods ****************/
 
     protected synchronized void buildGoogleApiClient() {
         Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
@@ -235,5 +190,63 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         // At least one of the API client connect attempts failed
         // No client is connected
         Log.d("DEBUG_LOCATION", "onConnectionSuspended()");
+    }
+
+    /****************** class GenerateVerificationCode **********************/
+
+    public static class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
+        Boolean success = false;
+        Boolean networkError = false;
+
+        int callerId;
+        String number;
+        public GenerateVerificationCode(int id, String num){ //id identifies the caller, num the phone number
+            callerId = id;
+            number = num;
+            SmsListener.register();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            //setting parameters
+            HashMap<String, Object> param = new HashMap<String, Object>();
+
+            param.put("number", number);
+
+            Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode() with " + number);
+            try {
+                success = ParseCloud.callFunction("genCode", param);
+            } catch (ParseException e) {
+                Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());
+                if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    networkError = true;
+                }
+                e.printStackTrace();
+                return null;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+
+            if(success) {
+                //do nothing
+            }
+            else{
+                SmsListener.unRegister();
+                String toastMsg = "Oops ! some error occured";
+                String errorMsg = "Some unexpected error occured. Please try again";
+                if(networkError){
+                    toastMsg = "Connection failure";
+                    errorMsg = "Unable to establish connection. Please try again";
+                }
+
+                Utility.toastLong(toastMsg);
+                //show error and hide timer as sms was not sent successfully
+                PhoneSignUpVerfication.showError(errorMsg, true);
+                PhoneSignUpVerfication.showResendAction();
+            }
+        }
     }
 }

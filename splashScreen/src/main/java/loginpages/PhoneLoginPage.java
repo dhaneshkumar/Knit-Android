@@ -107,7 +107,7 @@ public class PhoneLoginPage extends MyActionBarActivity {
             //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             nextIntent.putExtra("login", true);
 
-            PhoneSignUpSchool.GenerateVerificationCode generateVerificationCode = new PhoneSignUpSchool.GenerateVerificationCode(2, phoneNumber);
+            PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(2, phoneNumber);
             startActivity(nextIntent);
 
             generateVerificationCode.execute();
