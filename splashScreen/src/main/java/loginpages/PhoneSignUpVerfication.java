@@ -390,7 +390,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "PostLoginTask : installation save FAILED");
             }
 
-            LoginPage.setDefaultGroupCheck(user);
             return null;
         }
 
@@ -426,12 +425,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save FAILED");
             }
 
-            /*
-            * Joining default groups
-            */
-            JoinDefaultGroup joinGroup = new JoinDefaultGroup();
-            joinGroup.execute();
-
             return null;
         }
 
@@ -447,52 +440,21 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             //here create welcome notification and message
             if(currentUser.getString("role").equals("teacher")){
                 NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, currentUser);
+                //EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, currentUser);
             }
             else if(currentUser.getString("role").equals("parent")){
                 NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, currentUser);
+                //EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, currentUser);
             }
             else{
                 NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, currentUser);
+                //EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, currentUser);
             }
 
-            //Switching to MainActivity
-            Intent intent = new Intent(activityContext, LoginPanda.class);
+            //Switching to MainActivity(no LoginPanda screen since removing Kio Class)
+            Intent intent = new Intent(activityContext, MainActivity.class);
+            intent.putExtra("flag", "SIGNUP");
             activityContext.startActivity(intent);
-        }
-    }
-
-    public static class JoinDefaultGroup extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            doInBackgroudCore();
-            return null;
-        }
-
-        public void doInBackgroudCore(){
-            ParseUser user = ParseUser.getCurrentUser();
-            if (user != null) {
-
-                String childName = user.getString("name");
-                String role = user.getString("role");
-                String code = null;
-                if (role.equals("teacher")) {
-                    code = Config.defaultTeacherGroupCode;
-                } else {
-                    code = Config.defaultParentGroupCode;
-                }
-                childName = UtilString.parseString(childName);
-
-                int result = JoinedHelper.joinClass(code, childName, true);
-                if(result > 0){//1 or 2, set default class join flag
-                    SessionManager session = new SessionManager(Application.getAppContext());
-
-                    Log.d("DEBUG_SIGNUP_VERIFICATION", "JoinDefaultGroup : result = " + result);
-                    session.setDefaultClassJoinStatus();
-                }
-            }
         }
     }
 }

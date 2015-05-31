@@ -112,11 +112,6 @@ public class Refresher {
                 Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
             }
 
-            if(!sm.getDefaultClassJoinStatus()){//if false
-                Log.d("DEBUG_REFRESHER", "default class not joined. Doing so");
-                PhoneSignUpVerfication.JoinDefaultGroup joinDefaultGroup= new PhoneSignUpVerfication.JoinDefaultGroup();
-                joinDefaultGroup.doInBackgroudCore(); //flag set inside this method here on success
-            }
         } else {
             Log.d("DEBUG_REFRESHER", "User NULL");
             SessionManager session = new SessionManager(Application.getAppContext());

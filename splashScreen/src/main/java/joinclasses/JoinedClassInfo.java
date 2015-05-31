@@ -101,10 +101,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
         whatsAppSection = (LinearLayout) findViewById(R.id.whatsAppSection);
 
-        if(isDefaultGroup(classCode)){
-            whatsAppSection.setVisibility(View.GONE);
-        }
-
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
         TextView share = (TextView) findViewById(R.id.share);
@@ -155,15 +151,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
         setTitle(UtilString.appendDots(className,20));
 
         classNameTV.setText(className);
-
-        if(classCode.equals(Config.defaultParentGroupCode) || classCode.equals(Config.defaultTeacherGroupCode))
-        {
-            classCodeTV.setVisibility(View.GONE);
-            subCodeTV.setVisibility(View.GONE);
-            demoLayout.setVisibility(View.VISIBLE);
-            assignedNameContainer.setVisibility(View.GONE);
-            seperator.setVisibility(View.GONE);
-        }
 
         classCodeTV.setText(classCode);
         assignedNameTV.setText(assignedName);
@@ -266,23 +253,10 @@ public class JoinedClassInfo extends MyActionBarActivity {
         });
     }
 
-
-    Boolean isDefaultGroup(String code){
-        if(code == null) return false;
-        if(code.equals(Config.defaultParentGroupCode) || code.equals(Config.defaultTeacherGroupCode)){
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
         if(classCode != null) {
-
-            if(isDefaultGroup(classCode)){
-                return true;
-            }
 
             //inflate menu containing unsubscribe option only if class is not the default group
             MenuInflater inflater = getMenuInflater();
@@ -326,7 +300,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
     }
 
     public class UnSubscribeTask extends AsyncTask<Void, Void, Void>{
-        List<List<String>> joinedGroups; //this will contain updated joined_groups
         Boolean success = false;
         public UnSubscribeTask(){
         }
@@ -355,11 +328,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             classInfoLayout.setVisibility(View.VISIBLE);
             if(success) {
                 //notify Classrooms joined groups adapter
-                joinedGroups = ParseUser.getCurrentUser().getList("joined_groups");
-                if (joinedGroups == null) {
-                    joinedGroups = new ArrayList<List<String>>();
-                }
-                Classrooms.joinedGroups = joinedGroups;
+                Classrooms.joinedGroups = Classrooms.getJoinedGroups(ParseUser.getCurrentUser());
                 if(Classrooms.joinedClassAdapter != null) {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
@@ -375,7 +344,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
     public class UpdateAssignedName extends AsyncTask<Void, Void, Void>{
         String newAssignedName;
-        List<List<String>> joinedGroups; //this will contain updated joined_groups
         Boolean success = false;
         public UpdateAssignedName(String newName){
             newAssignedName = newName;
@@ -411,11 +379,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 assignedNameTV.setText(assignedName); //assignedName reflects correct name(new when success, old when fail)
 
                 //notify Classrooms joined groups adapter
-                joinedGroups = ParseUser.getCurrentUser().getList("joined_groups");
-                if (joinedGroups == null) {
-                    joinedGroups = new ArrayList<List<String>>();
-                }
-                Classrooms.joinedGroups = joinedGroups;
+                Classrooms.joinedGroups = Classrooms.getJoinedGroups(ParseUser.getCurrentUser());
                 if(Classrooms.joinedClassAdapter != null) {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }

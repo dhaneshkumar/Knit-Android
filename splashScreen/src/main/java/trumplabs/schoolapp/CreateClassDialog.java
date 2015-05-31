@@ -226,7 +226,7 @@ public class CreateClassDialog extends DialogFragment{
                     //create class creation messages and notification
                     SessionManager session = new SessionManager(getActivity().getApplicationContext());
                     NotificationGenerator.generateNotification(getActivity().getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                    EventCheckerAlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
+                    //EventCheckerAlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
                 }
 
                 codeTV.setText(classCode);

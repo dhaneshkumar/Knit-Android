@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.List;
 
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import utility.Config;
 import utility.Queries;
@@ -135,7 +136,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         if(interval > tip1Interval){
             NotificationGenerator.generateNotification(alarmContext, parentTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
 
-            generateLocalMessage(parentTip1Content, Config.defaultParentGroupCode);
+            //generateLocalMessage(parentTip1Content, Config.defaultParentGroupCode);
 
             Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
@@ -150,10 +151,9 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         }
 
         //check if parent has joined any groups
-        List<String> joinedGroups = user.getList("joined_groups");
+        List<List<String>> joinedGroups = Classrooms.getJoinedGroups(user); //won't be null
 
-        if(joinedGroups != null && joinedGroups.size() > 1) {
-            //> 1 since we have default 1 class joined
+        if(joinedGroups.size() > 0) {//we don't have default Kio class now
             Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() already has joined extra class");
             session.setAlarmEventState(eventid, true);
             return;
@@ -174,7 +174,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         if(interval > parentNoActivityInterval){
             NotificationGenerator.generateNotification(alarmContext, parentNoActivityContent , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
 
-            generateLocalMessage(parentNoActivityContent, Constants.DEFAULT_NAME);
+            //generateLocalMessage(parentNoActivityContent, Constants.DEFAULT_NAME);
 
             Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
@@ -214,7 +214,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > teacherNoActivityInterval){
             NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
-            generateLocalMessage(teacherNoActivityContent, Constants.DEFAULT_NAME);
+            //generateLocalMessage(teacherNoActivityContent, Constants.DEFAULT_NAME);
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
@@ -240,7 +240,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         if(interval > tip1Interval){
             NotificationGenerator.generateNotification(alarmContext, teacherTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
 
-            generateLocalMessage(teacherTip1Content, Constants.DEFAULT_NAME);
+            //generateLocalMessage(teacherTip1Content, Constants.DEFAULT_NAME);
 
             Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
@@ -330,7 +330,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
 
                 String text = "Your classroom " + className + teacherNoSubContent;
                 NotificationGenerator.generateNotification(alarmContext, text, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
-                generateLocalMessage(text, Constants.DEFAULT_NAME);
+                //generateLocalMessage(text, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
             }
@@ -409,7 +409,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 }
 
                 NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
-                generateLocalMessage(teacherNoMsgContent + className, Constants.DEFAULT_NAME);
+                //generateLocalMessage(teacherNoMsgContent + className, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
             }
@@ -460,7 +460,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                     String notificationMessage = confusedCount + teacherConfusingMsgContent + msg.getString("name");
 
                     NotificationGenerator.generateNotification(alarmContext, notificationMessage, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
-                    generateLocalMessage(notificationMessage, Constants.DEFAULT_NAME);
+                    //generateLocalMessage(notificationMessage, Constants.DEFAULT_NAME);
                     Log.d("DEBUG_ALARM_RECEIVER", "teacherConfusingMessage() " + eventid + " state changed to true");
                     session.setAlarmEventState(eventid, true);
                 }
@@ -510,27 +510,12 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
             if(interval > teacherSendingDailyTipInterval){
                 NotificationGenerator.generateNotification(alarmContext, teacherSendingDailyTipContent, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                generateLocalMessage(teacherSendingDailyTipContent, Constants.DEFAULT_NAME);
+                //generateLocalMessage(teacherSendingDailyTipContent, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
                 return; //if we find even 1 class which is 3 days old or more, we're done
             }
         }
-    }
-
-    private void generateLocalMessage(String content, String code) {
-        generateLocalMessage(content, code, user);
-    }
-
-    public static void generateLocalMessage(String content, String code, ParseUser user) {
-        String senderId = null;
-        if(user.getString("role").equals("teacher")){
-            senderId = Constants.DEFAULT_SENDER_ID_TEACHER;
-        }
-        else{ //students/parents
-            senderId = Constants.DEFAULT_SENDER_ID_PARENT;
-        }
-        generateLocalMessage(content, code, Constants.DEFAULT_CREATOR, senderId, Constants.DEFAULT_NAME, user);
     }
 
     public static void generateLocalMessage(String content, String code, String creator, String senderId, String grpName, ParseUser user){

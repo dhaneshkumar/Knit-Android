@@ -182,13 +182,9 @@ public class PushOpen extends ActionBarActivity {
             //update joined classes adapter.
             ParseUser user = ParseUser.getCurrentUser();
             if(user != null){
-                List<List<String>> joinedGroups = user.getList("joined_groups");
-                if(joinedGroups != null){
-                    //notify adapter
-                    Classrooms.joinedGroups = joinedGroups;
-                    if(Classrooms.joinedClassAdapter != null){
-                        Classrooms.joinedClassAdapter.notifyDataSetChanged();
-                    }
+                Classrooms.joinedGroups = Classrooms.getJoinedGroups(user);
+                if(Classrooms.joinedClassAdapter != null){
+                    Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
             }
         }
