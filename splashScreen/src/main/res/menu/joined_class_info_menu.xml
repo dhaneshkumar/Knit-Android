@@ -3,7 +3,7 @@
      >
     <item
         android:id="@+id/unsubscribe"
-        android:title="Unsubscribe"
+        android:title="Leave class"
         app:showAsAction="never"/>
 
 </menu>

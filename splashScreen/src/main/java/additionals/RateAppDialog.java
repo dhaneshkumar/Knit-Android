@@ -1,5 +1,6 @@
 package additionals;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -9,9 +10,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 
 import trumplab.textslate.R;
+import trumplabs.schoolapp.FeedBackClass;
+import trumplabs.schoolapp.MainActivity;
 import utility.Utility;
 
 /**
@@ -43,9 +48,12 @@ public class RateAppDialog extends DialogFragment {
                         } catch (ActivityNotFoundException e) {
                         }
                     }});
-        builder.setNegativeButton("No, Thanks", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton("Feedback", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dialog.dismiss();
+               /* FeedBackClass feedBack = new FeedBackClass();
+                FragmentManager fmr = ((FragmentActivity) MainActivity).getSupportFragmentManager();
+                feedBack.show(fmr, "FeedBackClass");*/
             }
         });
 

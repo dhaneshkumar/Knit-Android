@@ -193,6 +193,7 @@ public class Utility extends MyActionBarActivity {
             session.reSetChildList();
             session.reSetDefaultClassJoinStatus();
             session.reSetActionBarHeight();
+            session.reSetUserRegistrationStatus();
 
             ParseInstallation pi = ParseInstallation.getCurrentInstallation();
 

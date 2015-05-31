@@ -233,7 +233,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             public void onClick(View v){
                 AlertDialog.Builder alert = new AlertDialog.Builder(activityContext);
 
-                alert.setTitle("Update your child name");
+                alert.setTitle("Update student name");
 
                 LinearLayout layout = new LinearLayout(activityContext);
                 layout.setOrientation(LinearLayout.VERTICAL);
@@ -359,7 +359,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
     void unSubscribeAction(){
         AlertDialog.Builder builder = new AlertDialog.Builder(activityContext);
-        builder.setMessage("Unsubscribe from this class ?")
+        builder.setMessage("Are you sure want to leave this class ?")
                 .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         progressBarLayout.setVisibility(View.VISIBLE);
@@ -414,11 +414,11 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
 
-                Utility.toast("You are successfully unsubscribed");
+                Utility.toast("You are successfully left this class");
                 finish(); //close the activity
             }
             else{
-                Utility.toast("Oops ! Failed to unsubscribe");
+                Utility.toast("Oops ! Failed to leave this class. Try again");
             }
         }
     }
@@ -470,10 +470,10 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
 
-                Utility.toastDone("Successfully updated Associated name.");
+                Utility.toastDone("Successfully updated student name.");
             }
             else{
-                Utility.toast("Oops ! Failed to update Associated name.");
+                Utility.toast("Oops ! Failed to update student name.");
             }
         }
     }

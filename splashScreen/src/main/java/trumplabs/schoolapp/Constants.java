@@ -6,7 +6,7 @@ import java.util.Map;
 public class Constants {
   public static String TEACHER = "teacher";
   public static String PARENT = "parent";
-    public static String STUDENT = "student";
+  public static String STUDENT = "student";
 
   public static Map<String, String> groupSenderMap;
   public static Date currentTimeStamp;
@@ -35,8 +35,7 @@ public class Constants {
   public static final String CONFUSING = "confusing"; //local
   public static final String SYNCED_LIKE = "synced_like"; //local like status last synced
   public static final String SYNCED_CONFUSING = "synced_confusing"; //local
-
-    public static final String GROUP_DETAILS = "GroupDetails";
+  public static final String GROUP_DETAILS = "GroupDetails";
   public static final String DIRTY_BIT = "dirty_bit"; //local
   public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
   public static final String USER_ID = "userId"; //local  user id
@@ -115,11 +114,9 @@ public class Constants {
     public static final String spreadWordContent = "Hey, I recently started using Knit Messaging. It's a great app for teachers to communicate with either students or their parents. You must try this out. http://tinyurl.com/knit-messaging";
 
 
-
-
-
-
     public static boolean signup_classrooms =false;
     public static boolean signup_inbox = false;
     public static boolean signup_outbox = false;
+    public static boolean IS_SIGNUP = false;
+
 }

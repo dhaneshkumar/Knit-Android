@@ -25,11 +25,13 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
+import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -192,6 +194,11 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     startActivity(nextIntent);
 
                     generateVerificationCode.execute();
+
+                    //Analytics to measure requested signup count
+                    Map<String, String> dimensions = new HashMap<String, String>();
+                    dimensions.put("Signup", "Requested Signup");
+                    ParseAnalytics.trackEvent("Signup", dimensions);
                 }
             });
 

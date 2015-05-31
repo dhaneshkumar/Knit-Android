@@ -26,9 +26,12 @@ import android.widget.Toast;
 import com.facebook.FacebookSdk;
 
 import com.facebook.appevents.AppEventsLogger;
+import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
 
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 
 import BackGroundProcesses.Refresher;
 import additionals.RateAppDialog;
@@ -87,6 +90,17 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         editLayout = (LinearLayout) findViewById(R.id.editLayout);
         mHeaderProgressBar = (SmoothProgressBar) findViewById(R.id.ptr_progress);
 
+
+
+        Map<String, String> dimensions = new HashMap<String, String>();
+// Define ranges to bucket data points into meaningful segments
+        dimensions.put("priceRange", "1000-1500");
+// Did the user filter the query?
+        dimensions.put("source", "craigslist");
+// Do searches happen more often on weekdays or weekends?
+        dimensions.put("dayType", "weekday");
+// Send the dimensions to Parse along with the 'search' event
+        ParseAnalytics.trackEvent("search", dimensions);
 
         /*
         Check for app reinstallation. In case of reinstallation or delete data appOpeningCount set to zero.

@@ -11,7 +11,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -111,6 +115,12 @@ public class PhoneLoginPage extends MyActionBarActivity {
             startActivity(nextIntent);
 
             generateVerificationCode.execute();
+
+            //Analytics to measure requested login count
+            Map<String, String> dimensions = new HashMap<String, String>();
+            dimensions.put("Login", "Requested Login");
+            ParseAnalytics.trackEvent("Login", dimensions);
+
         }
         else {
             Utility.toast("Check your Internet connection");

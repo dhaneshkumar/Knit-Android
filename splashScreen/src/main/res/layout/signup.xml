@@ -5,10 +5,10 @@
     android:layout_width="match_parent">
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:background="@color/lightbackgroundcolor"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/progresslayout"
@@ -17,7 +17,7 @@
             android:gravity="center"
             android:visibility="gone"
             android:orientation="vertical"
-            >
+            android:layout_weight="1">
 
             <ProgressBar
                 android:id="@+id/progressBar1"
@@ -38,7 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/logoimgview"
