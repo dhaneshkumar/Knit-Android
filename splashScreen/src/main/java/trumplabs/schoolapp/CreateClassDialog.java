@@ -15,12 +15,14 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import additionals.InviteParents;
 import library.UtilString;
@@ -75,6 +77,7 @@ public class CreateClassDialog extends DialogFragment{
 
 
         user = ParseUser.getCurrentUser();
+
 
         //flag to tell whether user has signup or not
         if(getArguments() != null) {
@@ -135,6 +138,8 @@ public class CreateClassDialog extends DialogFragment{
             }
 
         });
+
+
 
         //on click code, copy code to clipboard
         codeTV.setOnClickListener(new View.OnClickListener() {
@@ -220,6 +225,11 @@ public class CreateClassDialog extends DialogFragment{
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
+
+
+
+
+
 //                Utility.toast("Group Creation successful");
 
                 if(getActivity() != null) {
@@ -245,6 +255,25 @@ public class CreateClassDialog extends DialogFragment{
                 // Setting layouts visibility
                 codeViewLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
+
+
+                if(Classrooms.createdGroups != null && Classrooms.createdGroups.size() ==1)
+                {
+                    if(Constants.IS_SIGNUP) {
+
+                        //Analytics to measure created classrooms on first time use
+                        Map<String, String> dimensions = new HashMap<String, String>();
+                        dimensions.put("First created class", "First created class on FTU");
+                        ParseAnalytics.trackEvent("Signup", dimensions);
+                    }
+
+                    //Analytics to measure created classrooms on first time use
+                    Map<String, String> dimensions = new HashMap<String, String>();
+                    dimensions.put("First created class", "First created class");
+                    ParseAnalytics.trackEvent("Signup", dimensions);
+
+                }
+
 
                // dialog.dismiss();
             }

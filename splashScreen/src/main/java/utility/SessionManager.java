@@ -43,6 +43,7 @@ public class SessionManager {
   public static final String DEFAULT_CLASS_EXIST = "defaultClasExist";
   public static final String TIME_DELTA = "time_delta";
   public static final String ACTIONBAR_HEIGHT = "actionBarHeight";
+    public static final String USER_REGISTRATION_STATUS = "userRegistrationStatus";
 
   public SessionManager() {}
 
@@ -298,5 +299,31 @@ public class SessionManager {
     public int getActionBarHeight() {
         int version = pref.getInt(ACTIONBAR_HEIGHT, 0);
         return version;
+    }
+
+    /******************************************************************************************
+
+     /*
+        Storing user registration : USER_REGISTRATION_STATUS
+        SIGNUP - 1
+        LOGIN - 2
+        Nothing- 0
+     */
+
+    public void setUserRegistrationStatus(int reg)
+    {
+        editor.putInt(USER_REGISTRATION_STATUS, reg);
+        editor.commit();
+    }
+
+    public void reSetUserRegistrationStatus()
+    {
+        editor.putInt(USER_REGISTRATION_STATUS, 0);
+        editor.commit();
+    }
+
+    public int getUserRegistrationStatus()
+    {
+       return pref.getInt(USER_REGISTRATION_STATUS, 0);
     }
 }

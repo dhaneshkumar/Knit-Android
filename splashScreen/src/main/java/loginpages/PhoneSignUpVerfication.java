@@ -16,11 +16,14 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.parse.LogInCallback;
+import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import additionals.SmsListener;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -400,9 +403,20 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 pdialog.dismiss();
             }
 
+            //Storing user registration status<looin == 2> in local storage
+            SessionManager session = new SessionManager(Application.getAppContext());
+            session.setUserRegistrationStatus(2);
+
+
             //Switching to MainActivity
             Intent intent = new Intent(activityContext, MainActivity.class);
             activityContext.startActivity(intent);
+
+            //Analytics to measure total successful logins
+            Map<String, String> dimensions = new HashMap<String, String>();
+            dimensions.put("Login", "Total Login");
+            ParseAnalytics.trackEvent("Login", dimensions);
+
         }
     }
 
@@ -455,6 +469,12 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             Intent intent = new Intent(activityContext, MainActivity.class);
             intent.putExtra("flag", "SIGNUP");
             activityContext.startActivity(intent);
+
+
+            //Analytics to measure total successful signups
+            Map<String, String> dimensions = new HashMap<String, String>();
+            dimensions.put("Signup", "Total Signup");
+            ParseAnalytics.trackEvent("Signup", dimensions);
         }
     }
 }

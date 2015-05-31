@@ -67,6 +67,22 @@
                     android:textColor="@color/black"
                     android:text="Create a classroom"/>
 
+
+                <TextView
+                    android:id="@+id/school"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:background="@drawable/apptheme_spinner_default_holo_light"
+                    android:layout_marginTop="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="16dp"
+                    android:singleLine="true"
+                    android:visibility="gone"
+                    android:textColor="@color/black"
+                    android:text="School"/>
+
+
                 <EditText
                     android:id="@+id/classnameid"
                     android:layout_width="match_parent"
@@ -91,6 +107,8 @@
                     android:paddingRight="1dp"
                     android:textColor="#8A8A8A"
                     android:text="eg. MATH 2C"/>
+
+
 
             </LinearLayout>
 
