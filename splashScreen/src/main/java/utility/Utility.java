@@ -174,6 +174,7 @@ public class Utility extends MyActionBarActivity {
             }
         }
 
+
         @Override
         protected Void doInBackground(Void... params) {
             Context _context = Application.getAppContext();
