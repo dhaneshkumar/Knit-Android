@@ -39,7 +39,6 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
-import trumplabs.schoolapp.Subscribers;
 import utility.Config;
 import utility.Utility;
 
@@ -54,7 +53,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
     TextView teacherNameTV;
     TextView classCodeTV;
     ImageView whatsAppImageView;
-    //static TextView schoolNameTV;
     TextView assignedNameTV;
     TextView subCodeTV;
     LinearLayout assignedNameContainer;
@@ -66,12 +64,9 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
     String className;
     String classCode;
-    //static String schoolName;
     String assignedName;
     String teacherName;
     TextView seperator;
-
-    static String defaultSchoolName = "";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,7 +90,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
         teacherNameTV = (TextView) findViewById(R.id.teacherName);
         classCodeTV = (TextView) findViewById(R.id.classCode);
         whatsAppImageView = (ImageView) findViewById(R.id.whatsAppIcon);
-       // schoolNameTV = (TextView) findViewById(R.id.schoolName);
         assignedNameTV = (TextView) findViewById(R.id.assignedName);
         assignedNameContainer = (LinearLayout) findViewById(R.id.assignedNameContainer);
         whatsappLayout = (RelativeLayout) findViewById(R.id.whatsappLayout);
@@ -115,12 +109,12 @@ public class JoinedClassInfo extends MyActionBarActivity {
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
         TextView share = (TextView) findViewById(R.id.share);
 
-        //get details(schoolName, profile pic, assigned name) from Codegroup and User table
+        //get details(profile pic, assigned name) from Codegroup and User table
         ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
         classQuery.fromLocalDatastore();
         classQuery.whereEqualTo("code", classCode);
         String teacherSenderId = null;
-        String teacherSex = "";
+//        String teacherSex = "";
 
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
         profile.setTypeface(typeFace);
@@ -131,24 +125,11 @@ public class JoinedClassInfo extends MyActionBarActivity {
             ParseObject codegroup = classQuery.getFirst();
             teacherName = codegroup.getString("Creator");
             teacherSenderId = codegroup.getString("senderId");
-            teacherSex = codegroup.getString("sex");
-           /* schoolName = codegroup.getString("schoolName"); //this is a new field. If not present, fetch and store locally
-            if(schoolName == null){
-                //fetch school name from id using asynctask
-                Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName not in codegroup. Fetching...");
-                GetSchoolName getSchoolNameTask = new GetSchoolName(codegroup, 0);
-                getSchoolNameTask.execute();
-            }
-            else{
-                Log.d("DEBUG_JOINED_CLASS_INFO", "schoolName already there " + schoolName);
-                schoolNameTV.setText(schoolName);
-            }*/
+//            teacherSex = codegroup.getString("sex");
         }
         catch (ParseException e){
           //  Log.d("DEBUG_JOINED_CLASS_INFO", "local query into Codegroup failed");
             teacherName = "";
-           /* schoolName = defaultSchoolName;
-            schoolNameTV.setText(schoolName);*/
             e.printStackTrace();
         }
 
@@ -156,7 +137,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
             teacherSenderId = teacherSenderId.replaceAll("@", "");
             String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + teacherSenderId + "_PC.jpg";
 
-            //Log.d("DEBUG_MESSAGES_DISPLAYING", "profile pic " + filePath);
             File teacherThumbnailFile = new File(filePath);
 
             if(teacherThumbnailFile.exists()){
@@ -165,37 +145,14 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 profileImageView.setImageBitmap(mySenderBitmap);
             }
             else{
-                if (!UtilString.isBlank(teacherSex)) {
-                    if (teacherSex.equals("M"))
-                        profileImageView.setImageResource(R.drawable.maleteacherdp);
-                    else if (teacherSex.equals("F"))
-                        profileImageView.setImageResource(R.drawable.femaleteacherdp);
-                } else {
-                    // if sex is not stored. Determine using title(first word) in name
-                    if (!UtilString.isBlank(teacherName)) {
-                        String[] names = teacherName.split("\\s");
-
-                        if (names != null && names.length > 1) {
-                            String title = names[0].trim();
-
-                            if (title.equals("Mr") || title.equals("Mr.")) {
-                                profileImageView.setImageResource(R.drawable.maleteacherdp);
-                            } else if (title.equals("Mrs") || title.equals("Mrs.")) {
-                                profileImageView.setImageResource(R.drawable.femaleteacherdp);
-                            } else if (title.equals("Ms") || title.equals("Ms.")) {
-                                profileImageView.setImageResource(R.drawable.femaleteacherdp);
-                            }
-                        }
-                    }
-                }
+                //use a default image for profile pic(same for both M/F)
+                profileImageView.setImageResource(R.drawable.maleteacherdp);
             }
         }
 
         //set ui elements
 
         setTitle(UtilString.appendDots(className,20));
-
-
 
         classNameTV.setText(className);
 
@@ -292,13 +249,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Intent sendIntent = new Intent(Intent.ACTION_SEND);
                     sendIntent.setPackage("com.whatsapp");
                     sendIntent.setType("text/plain");
-
-                  /*  String trimSchoolName = schoolName;
-                    if(trimSchoolName.length() > 50 ){
-                        trimSchoolName = schoolName.substring(0, 50);
-                    }*/
-
-                   // trimSchoolName = trimSchoolName + "...";
 
                     String parentInviteParentContent = "I have just joined " + className +" classroom of "+ teacherName+" on Knit Messaging. You can also join this class using the class-code "+ classCode +
                             ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
@@ -475,68 +425,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
             else{
                 Utility.toast("Oops ! Failed to update student name.");
             }
-        }
-    }
-
-    public static class GetSchoolName extends AsyncTask<Void, Void, Void>{
-        ParseObject codegroup;
-        private String school;
-        int caller;  //  caller class  -- 0: joinedClassInfo & 1: JoinSuggestedClass
-        public GetSchoolName(ParseObject inputCodegroup, int caller){
-            this.codegroup = inputCodegroup;
-            this.caller = caller;
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            String schoolId = codegroup.getString("school");
-
-            school = "";
-            if(schoolId == null) {
-
-                //store default school name and pin
-                codegroup.put("schoolName", school);
-                codegroup.pinInBackground();
-                return null;
-            }
-
-            if(schoolId.equalsIgnoreCase("Others") || schoolId.equalsIgnoreCase("Other")){//school-id is Other. No need to fetch anything. Just put "Other" in schoolName
-                Log.d("DEBUG_JOINED_CLASS_INFO", "schoolId Others");
-
-                codegroup.put("schoolName", school);
-                codegroup.pinInBackground();
-                return null;
-            }
-
-            HashMap<String, Object> parameters = new HashMap<String, Object>();
-
-            parameters.put("schoolId", schoolId);
-            try{
-                String name = ParseCloud.callFunction("getSchoolName", parameters);
-                if(name != null){ //store and pin
-                    Log.d("DEBUG_JOINED_CLASS_INFO", "getSchoolName() success with name "+ name);
-                    school = name;
-                    codegroup.put("schoolName", school);
-                    codegroup.pinInBackground();
-                }
-            }
-            catch (ParseException e){
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result){//schoolName has been set to a non-null value
-
-         /*   if(caller ==0) {
-                JoinedClassInfo.schoolNameTV.setText(school);
-                JoinedClassInfo.schoolName = school; //used for whats app messages. So need to update
-            }
-            else if(caller == 1)
-                JoinSuggestedClass.schoolNameTV.setText(school);
-            else if(caller == 2)
-                Subscribers.schoolNameTV.setText(school);*/
         }
     }
 }

@@ -109,7 +109,6 @@
         <activity android:name="loginpages.Signup"></activity>
 
         <activity android:name="loginpages.PhoneSignUpName"></activity>
-        <activity android:name="loginpages.PhoneSignUpSchool"></activity>
         <activity android:name="loginpages.PhoneSignUpVerfication"></activity>
         <activity android:name="loginpages.PhoneLoginPage"></activity>
         <activity android:name="loginpages.PhoneSignUpFindClass"></activity>
@@ -138,7 +137,6 @@
         <activity android:name="utility.PushOpen"></activity>
         <activity android:name="additionals.InviteParents"></activity>
         <activity android:name="trumplabs.schoolapp.InviteTeacher"></activity>
-        <activity android:name="joinclasses.JoinSuggestedClass"></activity>
         <activity android:name="joinclasses.JoinedClassInfo"></activity>
         <activity android:name="trumplabs.schoolapp.Subscribers"></activity>
         <activity android:name="trumplabs.schoolapp.SendMessage"></activity>

@@ -55,7 +55,7 @@ public class Signup extends MyActionBarActivity {
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Signup.this, PhoneSignUpFindClass.class);
+                Intent intent = new Intent(Signup.this, PhoneSignUpName.class);
                 intent.putExtra("role", Constants.PARENT);
                 startActivity(intent);
             }
@@ -64,7 +64,7 @@ public class Signup extends MyActionBarActivity {
         student.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Signup.this, PhoneSignUpFindClass.class);
+                Intent intent = new Intent(Signup.this, PhoneSignUpName.class);
                 intent.putExtra("role", Constants.STUDENT);
                 startActivity(intent);
             }

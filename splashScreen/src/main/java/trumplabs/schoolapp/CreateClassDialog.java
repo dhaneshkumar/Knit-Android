@@ -4,13 +4,10 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.PopupMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -28,14 +25,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import additionals.InviteParents;
-import joinclasses.School;
 import library.UtilString;
 import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import utility.Queries;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 
@@ -172,11 +167,7 @@ public class CreateClassDialog extends DialogFragment{
         });
 
         return dialog;
-
     }
-
-
-
 
     private class createGroup extends AsyncTask<Void, Void, Boolean> {
 
@@ -187,8 +178,6 @@ public class CreateClassDialog extends DialogFragment{
             //setting parameters
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("classname", className);
-
-
 
             ParseObject codeGroupObject = null;
 
@@ -235,8 +224,6 @@ public class CreateClassDialog extends DialogFragment{
 
         @Override
         protected void onPostExecute(Boolean result) {
-
-
             if (result) {
 
 
@@ -289,29 +276,13 @@ public class CreateClassDialog extends DialogFragment{
 
 
                // dialog.dismiss();
-
-            } /*else if (classNameCheckFlag) {
-        createclasslayout.setVisibility(View.VISIBLE);
-        progressLayout.setVisibility(View.GONE);
-        Utility.toast("Sorry. Can't create classes with same name");
-        classNameCheckFlag = false;
-      }*/
+            }
             else
             {
                 contentLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
                 Utility.toast("Oops! Something went wrong. Can't create your class");
             }
-
-
-      /*
-       * else if (internetFlag){ createclasslayout.setVisibility(View.VISIBLE);
-       * progressLayout.setVisibility(View.GONE); Utility.toast("Check your Internet Connection.");
-       * internetFlag = false;
-       *
-       * }
-       */
-
             super.onPostExecute(result);
         }
     }

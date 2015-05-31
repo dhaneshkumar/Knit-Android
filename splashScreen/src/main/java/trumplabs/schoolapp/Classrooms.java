@@ -32,12 +32,9 @@ import java.util.List;
 
 import BackGroundProcesses.CreatedClassRooms;
 import BackGroundProcesses.JoinedClassRooms;
-import BackGroundProcesses.UpdateSuggestions;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
-import joinclasses.JoinSuggestedClass;
 import joinclasses.JoinedClassInfo;
-import joinclasses.JoinedHelper;
 import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;

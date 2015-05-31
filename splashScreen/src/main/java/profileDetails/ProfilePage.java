@@ -10,10 +10,8 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -21,16 +19,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.AutoCompleteTextView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -48,16 +40,11 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.ArrayList;
 import java.util.List;
 
-import additionals.SchoolAutoComplete;
 import baseclasses.MyActionBarActivity;
-import joinclasses.School;
-import library.DelayAutoCompleteTextView;
 import library.UtilString;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.ChooserDialog;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
@@ -67,28 +54,22 @@ import utility.Utility;
 public class ProfilePage extends MyActionBarActivity implements OnClickListener {
     private ImageView profileimgview;
     private TextView name_textView;
-    public static TextView school_textView;
     private TextView phone_textView;
     private String userId;
     private String picName;
     private String filePath;
     private String name;
     private String phone;
-    public static String school;
     public static LinearLayout progressBarLayout;
     public static LinearLayout profileLayout;
-    private ArrayAdapter schoolsAdapter;
-    private Context actcontext;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
-        actcontext = this;
 
         name_textView = (TextView) findViewById(R.id.name);
         phone_textView = (TextView) findViewById(R.id.phone);
-        school_textView = (TextView) findViewById(R.id.school);
         profileimgview = (ImageView) findViewById(R.id.profileimg);
 
         TextView profile = (TextView) findViewById(R.id.profile);
@@ -96,8 +77,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         TextView about = (TextView) findViewById(R.id.about);
         LinearLayout editName = (LinearLayout) findViewById(R.id.editName);
         LinearLayout editPhone = (LinearLayout) findViewById(R.id.editPhone);
-        LinearLayout editSchool = (LinearLayout) findViewById(R.id.editSchool);
-      //  TextView changePassword = (TextView) findViewById(R.id.changePassword);
         TextView rateOurApp = (TextView) findViewById(R.id.rateOurApp);
         TextView faq = (TextView) findViewById(R.id.faq);
         TextView feedback = (TextView) findViewById(R.id.feedback);
@@ -112,10 +91,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         account.setTypeface(typeFace);
         about.setTypeface(typeFace);
 
-
-
-
-
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null) {
@@ -125,10 +100,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         userId = user.getUsername();
         String role = user.getString(Constants.ROLE);
-
-        //  if ( !role.equals(Constants.TEACHER))
-        editSchool.setVisibility(View.GONE);
-
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
@@ -143,19 +114,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             name_textView.setText(name);
 
         phone_textView.setText(userId);
-
-
-        /*school1 = new School();
-
-        if (!UtilString.isBlank(school)) {
-
-            String schoolName = school1.getSchoolName(school);
-            if (schoolName != null) {
-                school_textView.setText(schoolName);
-            } else
-                school_textView.setText("");
-        } else
-            school_textView.setText("");*/
 
     /*
      * set Profile Pic.
@@ -208,77 +166,13 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 });
             } else {
         /*
-         * Setting profile pic according to their sex
+         * Setting profile pic (don't consider sex, just the role)
          */
 
                 if (role.equals("parent")) {
-
-                    if (user.getString("sex") != null && (!UtilString.isBlank(user.getString("sex")))) {
-                        String sex = user.getString("sex");
-                        if (sex.equals("M"))
-                            profileimgview.setImageResource(R.drawable.maleparentdp);
-                        else if (sex.equals("F"))
-                            profileimgview.setImageResource(R.drawable.femaleparentdp);
-                    } else {
-                        // if sex is not stored
-                        String username = user.getString("name");
-                        if (!UtilString.isBlank(username)) {
-                            String[] names = username.split("\\s");
-
-                            if (names != null && names.length > 1) {
-                                String title = names[0].trim();
-
-                                if (title.equals("Mr") || title.equals("Mr.")) {
-                                    profileimgview.setImageResource(R.drawable.maleparentdp);
-                                    user.put("sex", "M");
-                                    user.saveEventually();
-                                } else if (title.equals("Mrs")|| title.equals("Mrs.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleparentdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                } else if (title.equals("Ms")  || title.equals("Ms.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleparentdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                }
-                            }
-                        }
-                    }
-
+                        profileimgview.setImageResource(R.drawable.maleparentdp);
                 } else {
-
-                    // in case of teacher role
-                    if (user.getString("sex") != null && (!UtilString.isBlank(user.getString("sex")))) {
-                        String sex = user.getString("sex");
-                        if (sex.equals("M"))
-                            profileimgview.setImageResource(R.drawable.maleteacherdp);
-                        else if (sex.equals("F"))
-                            profileimgview.setImageResource(R.drawable.femaleteacherdp);
-                    } else {
-                        // if sex is not stored
-                        String username = user.getString("name");
-                        if (!UtilString.isBlank(username)) {
-                            String[] names = username.split("\\s");
-
-                            if (names != null && names.length > 1) {
-                                String title = names[0].trim();
-
-                                if (title.equals("Mr")|| title.equals("Mr.")) {
-                                    profileimgview.setImageResource(R.drawable.maleteacherdp);
-                                    user.put("sex", "M");
-                                    user.saveEventually();
-                                } else if (title.equals("Mrs") ||  title.equals("Mrs.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleteacherdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                } else if (title.equals("Ms") || title.equals("Ms.")) {
-                                    profileimgview.setImageResource(R.drawable.femaleteacherdp);
-                                    user.put("sex", "F");
-                                    user.saveEventually();
-                                }
-                            }
-                        }
-                    }
+                    profileimgview.setImageResource(R.drawable.maleteacherdp);
                 }
             }
         } catch (Exception e) {
@@ -290,8 +184,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         profileimgview.setOnClickListener(this);
         editName.setOnClickListener(this);
         //editPhone.setOnClickListener(this);
-        editSchool.setOnClickListener(this);
-        //changePassword.setOnClickListener(this);
         rateOurApp.setOnClickListener(this);
         faq.setOnClickListener(this);
         feedback.setOnClickListener(this);
@@ -490,7 +382,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                 break;
 
-            case R.id.editPhone:
+            case R.id.editPhone: //Not used right now
         /*
          * Updating Phone Details ----------------------------------
          */
@@ -539,152 +431,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 });
 
                 alert.show();
-
-                break;
-            case R.id.editSchool:
-        /*
-         * Updating School Details ----------------------------------
-         */
-                AlertDialog.Builder schoolDialog = new AlertDialog.Builder(this);
-
-                schoolDialog.setTitle("Update School Name");
-
-                LinearLayout schoolLayout = new LinearLayout(this);
-                schoolLayout.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout.LayoutParams schoolParmas =
-                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT);
-                schoolParmas.setMargins(30, 30, 30, 30);
-
-          /*
-          Setting Autocomplete textview in popup and its adapter to it
-           */
-                //location input
-                final DelayAutoCompleteTextView locationInput = new DelayAutoCompleteTextView(this, null);
-
-                locationInput.setThreshold(1);
-                locationInput.setHint("Your Location");
-                locationInput.setAdapter(new SchoolAutoComplete.PlacesAutoCompleteAdapter(this, R.layout.school_autocomplete_list_item, R.id.school_location));
-
-                /*String schoolName = school1.getSchoolName(school);
-                if (schoolName != null) {
-                    locationInput.setText(schoolName);
-                } else
-                    school_textView.setText("");*/
-
-
-                //progress bar. Hidden by default
-                final ProgressBar progressBar = new ProgressBar(this);
-                progressBar.setVisibility(View.GONE);
-
-
-                //school input. Hidden by default
-                final AutoCompleteTextView schoolInput = new AutoCompleteTextView(this);
-                schoolInput.setVisibility(View.GONE);
-                schoolInput.setThreshold(1); //show suggestions on typing atleast one letter
-
-
-                    /*ReadSchoolFile readSchoolFile = new ReadSchoolFile();
-                    try {
-                        schoolsAdapter =
-                                new ArrayAdapter(this, android.R.layout.simple_list_item_1, readSchoolFile.getSchoolsList().toArray());
-                                schoolInput.setAdapter(schoolsAdapter);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }*/
-
-
-                locationInput.setSelectAllOnFocus(true);
-                locationInput.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    @Override
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        final String value = (String) parent.getItemAtPosition(position);
-                        Log.d("DEBUG_PROFILE_PAGE", "item clicked " + value);
-                        schoolInput.setVisibility(View.GONE);
-                        progressBar.setVisibility(View.VISIBLE); //show progress bar
-
-                        new AsyncTask<Void, Void, Void>() {
-                            ArrayList<String> schools;
-
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                schools = SchoolAutoComplete.schoolsNearby(value);
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void result) {
-                                schoolsAdapter =
-                                        new ArrayAdapter(actcontext, android.R.layout.simple_list_item_1, schools);
-                                schoolInput.setAdapter(schoolsAdapter);
-                                schoolInput.setText("");
-                                progressBar.setVisibility(View.GONE); //hide progress bar
-                                schoolInput.setVisibility(View.VISIBLE); //finally show school list box
-                                return;
-                            }
-                        }.execute();
-
-                    }
-                });
-                schoolInput.setHint("School name");
-//                schoolInput.setDropDownHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-                schoolInput.setDropDownHeight(200);
-
-                schoolLayout.addView(schoolInput, schoolParmas);
-                schoolLayout.addView(progressBar, schoolParmas);
-                schoolLayout.addView(locationInput, schoolParmas);
-                ;
-
-                schoolDialog.setView(schoolLayout);
-
-
-                //button responses
-                schoolDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String value = schoolInput.getText().toString();
-                        if (value.isEmpty()) {
-                            showToast("please fill school name");
-                            return;
-                        }
-                        if (!UtilString.isBlank(value)) {
-                            value = value.trim();
-
-                            if(Utility.isInternetExist(ProfilePage.this)) {
-                                InputMethodManager imm =
-                                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(schoolInput.getWindowToken(), 0);
-
-                                String schoolId = School.schoolIdExist(value);
-                                if (schoolId == null) {
-
-                                    profileLayout.setVisibility(View.GONE);
-                                    progressBarLayout.setVisibility(View.VISIBLE);
-                                    School.UpdateSchoolOnServer updateSchool = new School.UpdateSchoolOnServer(value);
-                                    updateSchool.execute(new String[]{value});
-                                } else {
-                                    school_textView.setText(value);
-                                    ParseUser user = ParseUser.getCurrentUser();
-                                    user.put(Constants.SCHOOL, schoolId);  //updating school field of user
-                                    user.saveEventually();
-                                    school = schoolId;
-                                }
-                            }
-                        }
-
-                        dialog.dismiss();
-                    }
-                });
-
-                schoolDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-
-                AlertDialog dialog = schoolDialog.create();
-                dialog.show();
-                Button okButton = (Button) dialog.getButton(DialogInterface.BUTTON_POSITIVE);
 
                 break;
 
@@ -737,63 +483,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                 break;
 
-      /*
-       * Change Password
-       */
-           /* case R.id.changePassword:
-
-                ParseUser.requestPasswordResetInBackground(userId, new RequestPasswordResetCallback() {
-                    public void done(ParseException e) {
-                        if (e == null) {
-                            Utility
-                                    .toastLong("Password resetting link with reset instructions was sent to your Email id.");
-                            // An email was successfully sent with reset instructions.
-                        } else {
-                            Utility.toast("Check your Internet connection");
-                            // Something went wrong. Look at the ParseException to see what's up.
-                        }
-                    }
-                });
-
-                break;
-*/
             default:
                 break;
-        }
-    }
-
-    // **********************updating profile****************************************
-
-    public void updateProfile(final String parentName, final String userId) {
-        ParseUser user = ParseUser.getCurrentUser();
-
-
-        if (user != null) {
-            user.put("name", parentName);
-            user.saveInBackground(new SaveCallback() {
-
-                @Override
-                public void done(com.parse.ParseException e) {
-                    // TODO Auto-generated method stub
-                    if (e == null) {
-                        Utility.toastDone("Profile Updated");
-
-                        // updating locally
-
-                        ParseQuery<ParseObject> query1 = ParseQuery.getQuery("UserDetails");
-                        query1.fromLocalDatastore();
-                        query1.whereEqualTo("userId", userId);
-                        try {
-                            ParseObject object = query1.getFirst();
-                            object.put("name", parentName);
-                            object.pin();
-                        } catch (ParseException e1) {
-                        }
-                    } else {
-                        Utility.toast("Profile Update Failed");
-                    }
-                }
-            });
         }
     }
 
@@ -890,16 +581,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         }
     }
 
-    public void showToast(String text) {
-        Toast.makeText(this, text, Toast.LENGTH_SHORT).show();
-    }
-
     public void onBackPressed() {
 
         Intent intent = new Intent(ProfilePage.this, MainActivity.class);
         startActivity(intent);
     }
-
-
-
 }
