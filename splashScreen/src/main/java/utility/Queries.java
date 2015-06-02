@@ -18,6 +18,7 @@ import java.util.List;
 
 import library.UtilString;
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MemberDetails;
 
@@ -699,26 +700,6 @@ public class Queries {
     }
 
 
-
-  /*
-   * send msg : add userid field users table : two extra fields profilePic, updatedDate //ParseUser
-   * user = new ParseUser();
-   * 
-   * join group : find userid, : download pic, store locally & display check it in background
-   */
-
-
-  /*
-   * public String getSenderUserId(String groupCode) throws ParseException { ParseQuery<ParseObject>
-   * query1 = ParseQuery.getQuery("GroupDetails"); query1.whereEqualTo("code", groupCode);
-   * 
-   * ParseObject object = query1.getFirst(); String userID = object.getString("userId");
-   * 
-   * return userID;
-   * 
-   * }
-   */
-
   /*
    * Searches for given class in joined classrooms
    */
@@ -728,96 +709,13 @@ public class Queries {
         List<List<String>> joinedGroups;
 
         if (user != null) {
-            joinedGroups = user.getList("joined_groups");
+            joinedGroups = Classrooms.getJoinedGroups(user); //won't be null
 
-            if (joinedGroups != null) {
-                for (int i = 0; i < joinedGroups.size(); i++) {
-
-                    if (classCode.equals(joinedGroups.get(i).get(0)))
-                        return true;
-                }
+            for (List<String> group : joinedGroups) {
+                if (classCode.equals(group.get(0)))
+                    return true;
             }
         }
-
-        return false;
-    }
-
-
-    public static boolean isGroupExist(String groupCode) throws ParseException {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
-        query.whereEqualTo("code", groupCode);
-
-        ParseObject obj = query.getFirst();
-
-        if (obj != null)
-            return true;
-
-        return false;
-    }
-
-
-    /*
-     * Refresh channels for every users
-     */
-    public void refreshChannels() throws ParseException {
-
-        List<String> channelList = new ArrayList<String>();
-
-        ParseUser user = ParseUser.getCurrentUser();
-
-        if (user == null)
-            return;
-
-        List<List<String>> joinedGroups;
-        joinedGroups = user.getList("joined_groups");
-
-        if (joinedGroups != null) {
-            for (int i = 0; i < joinedGroups.size(); i++) {
-                channelList.add(joinedGroups.get(i).get(0));
-
-        /*
-         * Storing each joinedGroup of Groupmember class
-         */
-                ParseQuery<ParseObject> query11 = ParseQuery.getQuery("GroupMembers");
-                query11.whereEqualTo("code", joinedGroups.get(i).get(0));
-                query11.whereEqualTo("emailId", userId);
-                ParseObject obj = query11.getFirst();
-                obj.pin();
-            }
-
-            ParseInstallation pi = ParseInstallation.getCurrentInstallation();
-
-            if (pi != null) {
-                pi.put("channels", channelList);
-                pi.saveEventually();
-            }
-        }
-
-    }
-
-    /*
-     * reset channel list
-     */
-    public void reSetChannels() {
-
-        List<String> channelList = new ArrayList<String>();
-
-        ParseInstallation pi = ParseInstallation.getCurrentInstallation();
-
-        if (pi != null) {
-            pi.put("channels", channelList);
-            pi.saveEventually();
-        }
-    }
-
-
-    public static boolean isEmailExist(String email) throws ParseException {
-        ParseQuery<ParseUser> emailQuery = ParseUser.getQuery();
-        emailQuery.whereEqualTo("username", email);
-        ParseUser user = emailQuery.getFirst();
-
-        if (user != null)
-            return true;
 
         return false;
     }

@@ -112,12 +112,6 @@ public class LoginPage extends MyActionBarActivity {
                       Log.d("DEBUG_LOGIN_OLD", "installation save FAILED");
                   }
 
-                /*
-                 * Checking for existence of default group.
-                 */
-                setDefaultGroupCheck(user);
-
-
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
               } else {
@@ -157,39 +151,5 @@ public class LoginPage extends MyActionBarActivity {
 
     return super.onOptionsItemSelected(item);
   }
-
-
-
-  public static void setDefaultGroupCheck(ParseUser user) {
-    if (user == null)
-      return;
-
-    List<List<String>> joinedGroupList = user.getList("joined_groups");
-    String role = user.getString(Constants.ROLE);
-    String defaultGroupCode = null;
-
-    if (role.equals(Constants.TEACHER)) {
-      defaultGroupCode = "TS49518";
-    } else {
-      defaultGroupCode = "TS29734";
-    }
-
-    if (joinedGroupList != null) {
-      for (int i = 0; i < joinedGroupList.size(); i++) {
-        if (joinedGroupList.get(i).get(0) == null)
-          break;
-
-        if (defaultGroupCode.equals(joinedGroupList.get(i).get(0))) {
-          SessionManager session = new SessionManager(Application.getAppContext());
-          session.setDefaultClassJoinStatus();
-
-          break;
-        }
-      }
-    }
-  }
-
-
-
 
 }

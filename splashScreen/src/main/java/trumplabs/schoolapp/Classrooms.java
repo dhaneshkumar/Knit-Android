@@ -52,15 +52,11 @@ public class Classrooms extends Fragment {
     private Activity getactivity;
     private library.ExpandableListView createdClassListView;
     private library.ExpandableListView joinedClassListView;
-    //private library.ExpandableListView suggestedClassListView;
-    // private LinearLayout emptylayout;
     public static List<List<String>> createdGroups;
     public static List<List<String>> joinedGroups;
-    //public static List<ParseObject> suggestedGroups;
     protected LayoutInflater layoutinflater;
     public static BaseAdapter createdClassAdapter;
     public static BaseAdapter joinedClassAdapter;
-    //public static BaseAdapter suggestedClassAdapter;
     public static int members;
     private Queries query;
     Typeface lightTypeFace;
@@ -73,7 +69,6 @@ public class Classrooms extends Fragment {
     private LinearLayout classroom_instruction;
     private TextView classroom_ok;
     private TextView cardContent;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -168,16 +163,11 @@ public class Classrooms extends Fragment {
       /*
        Initializing joined class list and it's Adapter
        */
-        joinedGroups = parseObject.getList("joined_groups");
-
-        if (joinedGroups == null)
-            joinedGroups = new ArrayList<List<String>>();
+        joinedGroups = getJoinedGroups(parseObject);
 
         joinedClassAdapter = new JoinedClassAdapter();
         joinedClassListView.setAdapter(joinedClassAdapter);
         joinedClassListView.setExpanded(true);
-
-
 
         /*
         On click create button , open up dialog box to crate class
@@ -266,12 +256,28 @@ public class Classrooms extends Fragment {
             }
         });
 
-
         super.onActivityCreated(savedInstanceState);
-
-
     }
 
+    /*
+        returns non-null list containing joined groups(removing Kio class as a quick hack)
+     */
+    public static List<List<String>> getJoinedGroups(ParseUser user){
+        if(user == null) return new ArrayList<>();
+
+        List<List<String>> groups = user.getList("joined_groups");
+        if(groups == null) return new ArrayList<>();
+
+        for(List<String> group : groups){
+            String code = group.get(0);
+            if(code != null && (code.equals(Config.defaultParentGroupCode) || code.equals(Config.defaultTeacherGroupCode))){
+                groups.remove(group);
+                Log.d("DEBUG_CLASSROOMS", "removing default group " + code + " from joined groups(Quick Hack)");
+                break;
+            }
+        }
+        return groups;
+    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -279,7 +285,6 @@ public class Classrooms extends Fragment {
             case R.id.refresh:
 
                 if(Utility.isInternetExist(getActivity())) {
-
                     //showing refreshing bar
                     if (MainActivity.mHeaderProgressBar != null) {
                         Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
@@ -480,6 +485,7 @@ public class Classrooms extends Fragment {
             if (row == null) {
                 row = layoutinflater.inflate(R.layout.classrom_joined_item, parent, false);
             }
+
             TextView classcreator = (TextView) row.findViewById(R.id.classcreator);
             TextView child_textView = (TextView) row.findViewById(R.id.childName);
           //  final ImageView option_imageView = (ImageView) row.findViewById(R.id.joinOpt);
@@ -522,26 +528,11 @@ public class Classrooms extends Fragment {
                 child_textView.setVisibility(View.GONE);
             }
 
-
           /*
-           * special check for default group
+           * NO special check for default group
            */
-            if (grooupCode.equals(Config.defaultParentGroupCode)
-                    || grooupCode.equals(Config.defaultTeacherGroupCode)) {
-               // option_imageView.setVisibility(View.GONE);
-                classcode.setVisibility(View.GONE);
-                classcreator.setVisibility(View.GONE);
-
-                child_textView.setText("Assigned to : " + ParseUser.getCurrentUser().getString("name"));
-
-
-                Log.d("classrooms", "Default class code : " + grooupCode);
-            }
-            else
-            {
-                classcode.setVisibility(View.VISIBLE);
-                classcreator.setVisibility(View.VISIBLE);
-            }
+            classcode.setVisibility(View.VISIBLE);
+            classcreator.setVisibility(View.VISIBLE);
 
           /*
            * Setting creator name

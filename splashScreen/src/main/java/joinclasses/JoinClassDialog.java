@@ -6,22 +6,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Point;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.util.Log;
-import android.view.Display;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -29,8 +21,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import BackGroundProcesses.FetchSuggestionsOnJoin;
-import BackGroundProcesses.UpdateSuggestions;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +33,6 @@ import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
 import utility.Config;
-import utility.Popup;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -316,13 +305,9 @@ public class JoinClassDialog extends DialogFragment {
                 session.addChildName(childName);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null) {
-                    int result = JoinedHelper.joinClass(code, childName, false);
-
+                    int result = JoinedHelper.joinClass(code, childName);
 
                     if (result == 1) {
-                        //fetch class suggestions in background for this class explicitly
-                       /* FetchSuggestionsOnJoin fetchSuggestionsOnJoin = new FetchSuggestionsOnJoin(code);
-                        fetchSuggestionsOnJoin.execute();*/
                         return true;      //successfully joined class
                     }
                     else if (result == 2) {

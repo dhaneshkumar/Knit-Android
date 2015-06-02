@@ -460,28 +460,19 @@ public class Utility extends MyActionBarActivity {
         return "just now";
     }
 
-    public static String getCurrentTimeStamp() {
-        Date dNow = new Date();
-        SimpleDateFormat ft = new SimpleDateFormat("yyyyMMddHHmmss");
-        String timeStamp = (ft.format(dNow).toString());
-        return timeStamp;
-    }
-
     public static final boolean isInternetOn(Activity activity) {
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
-        // ARE WE CONNECTED TO THE NET
+        // are we connected to the net
         if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
                 || connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) {
-            // MESSAGE TO SCREEN FOR TESTING (IF REQ)
-            // Toast.makeText(this, connectionType + " connected", Toast.LENGTH_SHORT).show();
+            // message to screen for testing (if req)
             final TextView internetbar = (TextView) activity.findViewById(R.id.internetbar);
             internetbar.setVisibility(View.GONE);
             return true;
         } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
                 || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
-            final TextView internetbar = (TextView) activity.findViewById(R.id.internetbar);
             activity.findViewById(R.id.internetbar).setVisibility(View.VISIBLE);
             return false;
         }
@@ -510,16 +501,6 @@ public class Utility extends MyActionBarActivity {
         return false;
     }
 
-    public static String generateCode() {
-        int max = 99999;
-        int min = 10001;
-        Random rand = new Random();
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return "TS" + randomNum;
-
-    }
-
     public static void savePicInAppFolder(String filepath) {
 
         if (filepath == null) {
@@ -532,22 +513,6 @@ public class Utility extends MyActionBarActivity {
 
         Log.d("DEBUG_UTILITY", "savePicInAppFolder calling for a gallery image");
         ScalingUtilities.scaleAndSave(filepath, targetPath);
-
-        /*Bitmap myBitmap = Utility.decodeFile(new File(filepath));
-        String fname = filepath.substring(filepath.lastIndexOf("/") + 1);
-        String targetPath = Utility.getWorkingAppDir() + "/media/" + fname;
-        File file = new File(targetPath);
-
-        if (file.exists())
-            file.delete();
-        OutputStream out;
-        try {
-            out = new FileOutputStream(targetPath);
-            myBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
-            out.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }*/
     }
 
     // Creating the thumbnail of the image in media folder
@@ -563,9 +528,8 @@ public class Utility extends MyActionBarActivity {
         Bitmap b = null;
 
         try {
-            b =
-                    ThumbnailUtils.extractThumbnail(
-                            BitmapFactory.decodeFile(getWorkingAppDir() + "/media/" + fname),
+            b = ThumbnailUtils.extractThumbnail(
+                    BitmapFactory.decodeFile(getWorkingAppDir() + "/media/" + fname),
                             (int) Math.round(imgframedimen), (int) Math.round(imgframedimen * 0.75));
         } catch (Exception e) {
             e.printStackTrace();
@@ -581,7 +545,6 @@ public class Utility extends MyActionBarActivity {
             outstream.close();
         } catch (Exception e) {
         }
-
     }
 
     // Return the path to App Directory
@@ -612,31 +575,6 @@ public class Utility extends MyActionBarActivity {
         return Environment.getExternalStorageDirectory() + "/" + appName;
     }
 
-    // Return a Bitmap with size around 500KB
-    public static Bitmap decodeFile(File f) {
-        try {
-            // Decode image size
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inJustDecodeBounds = true;
-            BitmapFactory.decodeStream(new FileInputStream(f), null, o);
-
-            // The new size we want to scale to
-            final int REQUIRED_SIZE = 500;
-
-            // Find the correct scale value. It should be the power of 2.
-            int scale = 1;
-            while (o.outWidth / scale / 2 >= REQUIRED_SIZE && o.outHeight / scale / 2 >= REQUIRED_SIZE)
-                scale *= 2;
-
-            // Decode with inSampleSize
-            BitmapFactory.Options o2 = new BitmapFactory.Options();
-            o2.inSampleSize = scale;
-            return BitmapFactory.decodeStream(new FileInputStream(f), null, o2);
-        } catch (FileNotFoundException e) {
-        }
-        return null;
-    }
-
     public static String classColourCode(String className) {
         String[] colours =
                 {"#E6CA5A", "#E4944D", "#E5766A", "#60D1D9", "#BD81D5", "#6AAEDB", "#67D595"};
@@ -656,27 +594,6 @@ public class Utility extends MyActionBarActivity {
         return str;
     }
 
-
-    public static List<List<String>> removeItemFromJoinedGroups(ParseUser user, List<String> item) {
-        if (user != null) {
-            List<List<String>> joinedGroups = user.getList(trumplabs.schoolapp.Constants.JOINED_GROUPS);
-
-            if (joinedGroups != null && item != null) {
-                for (int i = 0; i < joinedGroups.size(); i++) {
-                    if (joinedGroups.get(i).get(0).trim().equals(item.get(0).trim())) {
-                        joinedGroups.remove(i);
-                        return joinedGroups;
-                    } else
-                        return joinedGroups;
-                }
-            } else
-                return joinedGroups;
-        }
-
-
-        return null;
-
-    }
 
     public static int nonNegative(int x){
         if(x < 0) return 0;
@@ -724,19 +641,6 @@ public class Utility extends MyActionBarActivity {
             }
         });
     }
-
-    /*
-        Returns a date 1/1/11 which is way before Knit app came into being
-     */
-    public static Date getOriginDate(){
-        Calendar origin = Calendar.getInstance();
-        origin.set(2011, 0, 1, 0, 0);//2011(year), 0(January month), 1(Day), 0(hour), 0(minute)
-        return origin.getTime();
-    }
-
-
-
-
 
     // The method that displays the popup.
     public static void showPopup(Activity context) {
@@ -830,6 +734,9 @@ public class Utility extends MyActionBarActivity {
         }, 3000);
     }
 
+    /*
+        Used get contents of parseobject in json form for debugging(print)
+     */
     public static JSONObject parseObjectToJson(ParseObject parseObject){
         JSONObject jsonObject = new JSONObject();
         Set<String> keys = parseObject.keySet();

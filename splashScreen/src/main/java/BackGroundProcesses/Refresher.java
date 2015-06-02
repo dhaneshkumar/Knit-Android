@@ -21,13 +21,6 @@ public class Refresher {
 
     public Refresher(int appOpeningCount) {
         Log.d("DEBUG_REFRESHER", "Entering Refresher Thread");
-        /* just trying to see if sleeping blocks ui
-        try{
-            Thread.sleep(1*Constants.MINUTE_MILLISEC);
-        }
-        catch (InterruptedException e){
-            e.printStackTrace();
-        }*/
 
         freshUser = ParseUser.getCurrentUser();
 
@@ -112,11 +105,6 @@ public class Refresher {
                 Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
             }
 
-            if(!sm.getDefaultClassJoinStatus()){//if false
-                Log.d("DEBUG_REFRESHER", "default class not joined. Doing so");
-                PhoneSignUpVerfication.JoinDefaultGroup joinDefaultGroup= new PhoneSignUpVerfication.JoinDefaultGroup();
-                joinDefaultGroup.doInBackgroudCore(); //flag set inside this method here on success
-            }
         } else {
             Log.d("DEBUG_REFRESHER", "User NULL");
             SessionManager session = new SessionManager(Application.getAppContext());

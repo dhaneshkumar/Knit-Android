@@ -36,10 +36,10 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   }
 
   public void doInBackgroundCore(){
-      //set lastTimeInboxSync
-      Application.lastTimeJoinedSync = Calendar.getInstance().getTime();
+    //set lastTimeInboxSync
+    Application.lastTimeJoinedSync = Calendar.getInstance().getTime();
 
-      Log.d("DEBUG_JOINED", "fetching name/pic updates and setting lastTimeJoinedSync");
+    Log.d("DEBUG_JOINED", "fetching name/pic updates and setting lastTimeJoinedSync");
 
     //validating current user
     ParseUser user = ParseUser.getCurrentUser();
@@ -48,7 +48,7 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
 
     userId = user.getUsername();
 
-      //just update all the Users info as we need to update name and profile pic only
+    //just update all the Users info as we need to update name and profile pic only
     ClassRoomsUpdate.fetchUpdates();
     ClassRoomsUpdate.fetchProfilePics(userId);
   }
@@ -75,8 +75,6 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
   @Override
   protected void onPostExecute(String[] result) {
     onPostExecuteCore();
-
-
     super.onPostExecute(result);
   }
 }

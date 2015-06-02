@@ -21,6 +21,7 @@ import java.util.Map;
 
 import library.UtilString;
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Classrooms;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -42,8 +43,8 @@ public class ClassRoomsUpdate {
                 return;
             }
 
-            List<List<String>> joinedClasses = user.getList("joined_groups");
-            if(joinedClasses == null || joinedClasses.size() == 0){
+            List<List<String>> joinedClasses = Classrooms.getJoinedGroups(user); //won't be null
+            if(joinedClasses.size() == 0){
                 Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is 0");
                 return; //We're done. No joined groups
             }
@@ -226,8 +227,7 @@ public class ClassRoomsUpdate {
                         try {
 
                             String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + senderIdTrimmed + "_PC.jpg";
-                            fos =
-                                    new FileOutputStream(filePath);
+                            fos = new FileOutputStream(filePath);
                             try {
                                 fos.write(data);
 
