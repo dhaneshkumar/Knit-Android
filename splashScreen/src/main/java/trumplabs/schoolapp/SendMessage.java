@@ -453,11 +453,11 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 //previous version support < in the version from now onwards storing class name also>
                 String groupCode = groupdetails1.getString("code");
 
-
                 //Retrieving from shared preferences to access fast
                 className =session.getClassName(groupCode);
                 classNameTV.setText(className);
             }
+
 
             //setting background color of circular image
             GradientDrawable gradientdrawable = (GradientDrawable) classimage.getBackground();

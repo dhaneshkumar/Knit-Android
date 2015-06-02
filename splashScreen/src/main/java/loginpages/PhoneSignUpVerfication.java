@@ -404,10 +404,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                 pdialog.dismiss();
             }
 
-            //Storing user registration status<looin == 2> in local storage
-            SessionManager session = new SessionManager(Application.getAppContext());
-            session.setUserRegistrationStatus(2);
-
 
             //Switching to MainActivity
             Intent intent = new Intent(activityContext, MainActivity.class);
