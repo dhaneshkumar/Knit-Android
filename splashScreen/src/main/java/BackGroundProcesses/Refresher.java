@@ -21,13 +21,6 @@ public class Refresher {
 
     public Refresher(int appOpeningCount) {
         Log.d("DEBUG_REFRESHER", "Entering Refresher Thread");
-        /* just trying to see if sleeping blocks ui
-        try{
-            Thread.sleep(1*Constants.MINUTE_MILLISEC);
-        }
-        catch (InterruptedException e){
-            e.printStackTrace();
-        }*/
 
         freshUser = ParseUser.getCurrentUser();
 

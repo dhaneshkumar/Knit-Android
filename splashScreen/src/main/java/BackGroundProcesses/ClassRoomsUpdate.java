@@ -227,8 +227,7 @@ public class ClassRoomsUpdate {
                         try {
 
                             String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + senderIdTrimmed + "_PC.jpg";
-                            fos =
-                                    new FileOutputStream(filePath);
+                            fos = new FileOutputStream(filePath);
                             try {
                                 fos.write(data);
 

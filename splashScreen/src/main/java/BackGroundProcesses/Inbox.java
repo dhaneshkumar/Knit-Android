@@ -88,7 +88,6 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
   public void onPostExecuteCore(){
       Constants.updatedTimestamp = false;
 
-      //
       if(MainActivity.mHeaderProgressBar != null)
           MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
       if (MainActivity.progressBarLayout != null)
@@ -103,7 +102,6 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
       if(newDataStatus)
       {
-          //Utility.toast("No new messages to show");
           newDataStatus = false;
       }
   }
@@ -142,7 +140,6 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
             });
         }
     }
-
 
   @Override
   protected void onPostExecute(String[] result) {
