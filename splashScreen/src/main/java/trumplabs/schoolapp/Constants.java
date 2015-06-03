@@ -55,6 +55,15 @@ public class Constants {
    public static final String CONFUSED_STATUS = "confused_status";
 
 
+  /*
+   * Invitation table
+   */
+  public static final String INVITATION = "Invitation";
+  public static final String RECEIVER = "receiver"; //<email> or <phone number>
+  public static final String TYPE = "type"; // {p2p, t2p, t2t, p2t}
+  public static final String PENDING = "pending"; // {true, false}
+  public static final String RECEIVER_CLASS = "receiver_class"; //{phone, email}
+  public static final String CLASS_CODE = "class_code"; //nullable
 
     /*
    * Database table names

@@ -58,6 +58,7 @@ public class InviteParents extends MyActionBarActivity{
           public void onClick(View v) {
 
               Intent intent = new Intent(InviteParents.this, InviteParentViaPhonebook.class);
+              intent.putExtra("classCode", classCode);
               startActivity(intent);
               }
       });
