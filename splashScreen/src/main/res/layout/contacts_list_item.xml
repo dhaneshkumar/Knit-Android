@@ -42,7 +42,37 @@
         android:paddingBottom="4dp"
         android:paddingRight="12dp"
         android:textSize="13sp"
+        android:visibility="visible"
         android:textColor="@color/white"
         />
+
+    <LinearLayout
+        android:id="@+id/resend"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingBottom="4dp"
+        android:visibility="gone"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Invitation Sent"
+            android:textSize="14sp"
+            android:textColor="@color/buttoncolor"
+            />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Resend"
+            android:textSize="13sp"
+            android:layout_marginTop="-2dp"
+            android:layout_gravity="center"
+            android:textColor="#2916B6"
+            />
+    </LinearLayout>
 
 </RelativeLayout>
