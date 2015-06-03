@@ -2,33 +2,21 @@ package additionals;
 
 import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
-import android.support.v7.app.ActionBarActivity;
 import android.provider.ContactsContract;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.parse.ParseException;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,7 +25,6 @@ import java.util.List;
 
 import library.UtilString;
 import trumplab.textslate.R;
-import utility.Utility;
 
 /**
  * Created by dhanesh on 1/6/15.
@@ -64,7 +51,13 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
+    @Override
+    public void onPause(){
+        super.onPause();
 
+        //TaskInviteParentViaPhonebook taskInviteParentViaPhonebook = new TaskInviteParentViaPhonebook();
+        //taskInviteParentViaPhonebook.execute();
+    }
 
     private void fetchPhoneList()
     {
@@ -234,9 +227,9 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
             View row = inflater.inflate(R.layout.contacts_list_item, parent, false);
 
 
-            TextView name = (TextView) row.findViewById(R.id.person_name);
-            TextView phone = (TextView) row.findViewById(R.id.person_number);
-            TextView invite = (TextView) row.findViewById(R.id.invite);
+            final TextView name = (TextView) row.findViewById(R.id.person_name);
+            final TextView phone = (TextView) row.findViewById(R.id.person_number);
+            final TextView invite = (TextView) row.findViewById(R.id.invite);
 
             List<String> contact = contactList.get(position);
             if(contact != null && contact.size()==2)
@@ -246,8 +239,17 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
                 phone.setText(contact.get(1));
             }
 
+            invite.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View view) {
+                    invite.setText("invited");
+                    String contactName = name.getText().toString();
+                    String contactPhone = phone.getText().toString();
+                }
+            });
+
             return row;
         }
     }
-
 }

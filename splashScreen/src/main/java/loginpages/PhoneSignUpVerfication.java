@@ -464,10 +464,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             //variable storing that its first time app <signup>user
             Constants.IS_SIGNUP = true;
 
-            //Storing user registration status<Signup == 1> in local storage
-            SessionManager session = new SessionManager(Application.getAppContext());
-            session.setUserRegistrationStatus(1);
-
             //Switching to MainActivity(no LoginPanda screen since removing Kio Class)
             Intent intent = new Intent(activityContext, MainActivity.class);
             intent.putExtra("flag", "SIGNUP");

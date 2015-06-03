@@ -1,16 +1,12 @@
 package additionals;
 
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.telephony.SmsMessage;
 import android.util.Log;
-
-import java.util.List;
 
 import loginpages.PhoneSignUpVerfication;
 import trumplabs.schoolapp.Application;
@@ -24,7 +20,6 @@ public class SmsListener extends BroadcastReceiver {
     static boolean isListeningOn = false;
 
     static SmsListener listener = new SmsListener();
-    private SharedPreferences preferences;
 
     String startMsgContent = "Your requested verification code is";
     String senderCore1 = "TXTSLT";
