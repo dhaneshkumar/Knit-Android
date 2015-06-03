@@ -184,7 +184,10 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
         if(UtilString.isBlank(query))
         {
             contactList = initialContactList;
-
+            //reset the displayName field
+            for(Contact contact : contactList){
+                contact.displayName = contact.name;
+            }
         }
         else {
             contactList = new ArrayList<>();
@@ -197,14 +200,14 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
                 {
                     Contact contact = initialContactList.get(i);
 
-                    String oldName = contact.name;
-                    oldName = oldName.substring(0, index) +
-                    "<font color='#29B6F6'>" + oldName.substring(index, index + query.length())  + "</font>"
-                            + oldName.substring(index + query.length()) ;
+                    String displayName = contact.name;
+                    displayName = displayName.substring(0, index) +
+                    "<font color='#29B6F6'>" + displayName.substring(index, index + query.length())  + "</font>"
+                            + displayName.substring(index + query.length()) ;
 
-                    Contact contactCopy = new Contact(oldName, contact.phoneNumber, contact.invitation);
+                    contact.displayName = displayName;
 
-                    contactList.add(contactCopy);
+                    contactList.add(contact);
                 }
             }
         }
@@ -362,10 +365,12 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
 
     class Contact{
         String name;
+        String displayName; //how the name is displayed, for e.g when text search hightlight
         String phoneNumber;
         ParseObject invitation;
         Contact(String n, String num, ParseObject inv){
             name = n;
+            displayName = name;
             phoneNumber = num;
             invitation = inv;
         }
