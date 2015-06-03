@@ -13,7 +13,7 @@
     <string name="outbox_instrunctions">Keep track of all your sent messages here at one place.</string>
     <string name="demo_class_content">We have added you to the demo class of Mr. Kio who is your panda friend and it will help you to use Knit by sending you ideas, updates and other information.</string>
 
-    
+
     <string-array name="optionschoice">
 		<item>Copy</item>
 		<item>Share</item>
