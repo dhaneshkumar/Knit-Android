@@ -1,6 +1,7 @@
 package additionals;
 
 import android.app.SearchManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -122,7 +123,6 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
 
             if(name == null || phoneNumber == null) continue;
             //Toast.makeText(getApplicationContext(),name, Toast.LENGTH_LONG).show();
-
             //changing first letter to caps
             name = UtilString.changeFirstToCaps(name);
 
