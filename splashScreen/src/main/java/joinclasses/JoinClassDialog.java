@@ -24,6 +24,7 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import additionals.InviteParents;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
@@ -217,7 +218,9 @@ public class JoinClassDialog extends DialogFragment {
         inviteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), InviteTeacher.class);
+                //Go to the common invite screen
+                Intent intent = new Intent(getActivity(), InviteParents.class);
+                intent.putExtra("inviteType", Constants.INVITATION_P2T);
                 startActivity(intent);
 
                 dialog.dismiss();

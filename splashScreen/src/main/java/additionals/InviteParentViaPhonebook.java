@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -27,8 +28,11 @@ import com.parse.ParseQuery;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import BackGroundProcesses.InviteTasks;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
@@ -38,9 +42,9 @@ import utility.Utility;
  * Created by dhanesh on 1/6/15.
  */
 public class InviteParentViaPhonebook extends ActionBarActivity{
-    static String LOGTAG = "INVITE_PARENT_PHONE";
-    static String invitationType = "t2p";
+    static String LOGTAG = "DEBUG_INVITE_PHONE";
 
+    private int inviteType = -1;
     private String classCode = "";
 
     private List<Contact> contactList;
@@ -57,8 +61,13 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
 
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
-            if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
-                classCode = getIntent().getExtras().getString("classCode");
+            Bundle bundle = getIntent().getExtras();
+            if(bundle.getInt("inviteType", -1000) != -1000){
+                inviteType = bundle.getInt("inviteType");
+            }
+
+            if(!UtilString.isBlank(bundle.getString("classCode"))) {
+                classCode = bundle.getString("classCode");
             }
         }
 
@@ -67,14 +76,37 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
         contactAdapter = new ContactAdapter();
         contactListview.setAdapter(contactAdapter);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(inviteType > 0) {
+            //track this event
+            Map<String, String> dimensions = new HashMap<String, String>();
+            dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
+            dimensions.put("Invite Mode", Constants.MODE_PHONE);
+            ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
+            Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_PHONE);
+        }
     }
 
     @Override
     public void onPause(){
         super.onPause();
 
-        //TaskInviteParentViaPhonebook taskInviteParentViaPhonebook = new TaskInviteParentViaPhonebook();
-        //taskInviteParentViaPhonebook.execute();
+        //create a thread to send the invitations of this type
+        Runnable r = new Runnable() {
+            @Override
+            public void run(){
+                if(inviteType == Constants.INVITATION_T2P){
+                    InviteTasks.sendInvitePhonebook(inviteType, classCode);
+                }
+                else {
+                    InviteTasks.sendInvitePhonebook(inviteType, "");
+                }
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.start();
     }
 
     private void fetchPhoneList()
@@ -99,37 +131,6 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
         }
         phones.close();
 
-        List<ParseObject> invitationList = null;
-        ParseQuery<ParseObject> invitationQuery = ParseQuery.getQuery(Constants.INVITATION);
-        invitationQuery.fromLocalDatastore();
-        invitationQuery.whereEqualTo(Constants.TYPE, invitationType);
-        invitationQuery.whereEqualTo(Constants.CLASS_CODE, classCode);
-        invitationQuery.whereEqualTo(Constants.RECEIVER_CLASS, "phone");
-        invitationQuery.addAscendingOrder(Constants.RECEIVER);
-
-        try{
-            invitationList = invitationQuery.find();
-            Log.d(LOGTAG, "invitation list of size " + invitationList.size());
-        }
-        catch (ParseException e){
-            e.printStackTrace();
-        }
-
-        //Now merge the two lists : initialContactList and invitationList. Set invitation field of Contact objects
-        //For this sort initialContactList on basis of phoneNumber
-        Collections.sort(initialContactList, new Comparator() {
-            @Override
-            public int compare(Object o1, Object o2) {
-                Contact c1 = (Contact) o1;
-                Contact c2 = (Contact) o2;
-                String s1 = (String) c1.phoneNumber; //won't be null
-                String s2 = (String) c2.phoneNumber;
-                return s1.compareTo(s2);
-            }
-        });
-
-        merge(initialContactList, invitationList);
-
         //Now sorting contacts in alphabetical order
         Collections.sort(initialContactList, new Comparator() {
             @Override
@@ -141,6 +142,33 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
                 return s1.compareTo(s2);
             }
         });
+
+        //get the Invitation list from database
+        List<ParseObject> invitationList = null;
+        ParseQuery<ParseObject> invitationQuery = ParseQuery.getQuery(Constants.INVITATION);
+        invitationQuery.fromLocalDatastore();
+        invitationQuery.whereEqualTo(Constants.TYPE, inviteType);
+        invitationQuery.whereEqualTo(Constants.MODE, Constants.MODE_PHONE);
+
+        if(inviteType == Constants.INVITATION_T2P){
+            invitationQuery.whereEqualTo(Constants.CLASS_CODE, classCode);
+        }
+
+        invitationQuery.addAscendingOrder(Constants.NAME); //order by name
+
+        try{
+            invitationList = invitationQuery.find();
+            Log.d(LOGTAG, "invitation list of size " + invitationList.size());
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
+
+        //Now merge the two lists : initialContactList and invitationList. Set invitation field of Contact objects
+        //both are sorted by the name fields
+
+        merge(initialContactList, invitationList);
+
         contactList = initialContactList;
     }
 
@@ -155,8 +183,8 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
 
         int i = 0, j = 0;
         while(i < M && j < N){
-            String n1 = contactList.get(i).phoneNumber; //non-null
-            String n2 = invitationList.get(j).getString(Constants.RECEIVER);
+            String n1 = contactList.get(i).name; //non-null
+            String n2 = invitationList.get(j).getString(Constants.NAME);
             if(n2 == null) {
                 j++;
                 continue;
@@ -303,9 +331,9 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
             final LinearLayout resend = (LinearLayout) row.findViewById(R.id.resend);
 
             final Contact contact = contactList.get(position);
-            if(contact != null && contact.name != null && contact.phoneNumber != null)
+            if(contact != null && contact.displayName != null && contact.phoneNumber != null)
             {
-                name.setText(Html.fromHtml(contact.name), TextView.BufferType.SPANNABLE);
+                name.setText(Html.fromHtml(contact.displayName), TextView.BufferType.SPANNABLE);
                 phone.setText(contact.phoneNumber);
                 if(contact.invitation == null){
                     invite.setVisibility(View.VISIBLE);
@@ -326,14 +354,26 @@ public class InviteParentViaPhonebook extends ActionBarActivity{
                     if(contact.invitation == null){
                         ParseObject invitation = new ParseObject(Constants.INVITATION);
                         invitation.put(Constants.RECEIVER, contact.phoneNumber);
-                        invitation.put(Constants.TYPE, invitationType);
+                        invitation.put(Constants.RECEIVER_NAME, contact.name);
+                        invitation.put(Constants.TYPE, inviteType);
                         invitation.put(Constants.PENDING, true);
-                        invitation.put(Constants.RECEIVER_CLASS, "phone");
-                        invitation.put(Constants.CLASS_CODE, classCode);
+                        invitation.put(Constants.MODE, Constants.MODE_PHONE);
+                        if(inviteType == Constants.INVITATION_T2P) {
+                            invitation.put(Constants.CLASS_CODE, classCode);
+                        }
                         contact.invitation = invitation;
                         try{
                             invitation.pin();
                             Log.d(LOGTAG, "new invitation created");
+
+                            if(inviteType > 0) {
+                                //track event
+                                Map<String, String> dimensions = new HashMap<String, String>();
+                                dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
+                                dimensions.put("Invite Mode", Constants.MODE_PHONE);
+                                ParseAnalytics.trackEventInBackground("invitedUsersCount", dimensions);
+                                Log.d(LOGTAG, "tracking invitedUsersCount type=" + inviteType + ", mode=" + Constants.MODE_PHONE);
+                            }
                         }
                         catch (ParseException e){
                             e.printStackTrace();

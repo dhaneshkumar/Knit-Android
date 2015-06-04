@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import BackGroundProcesses.Refresher;
+import additionals.InviteParents;
 import additionals.RateAppDialog;
 import additionals.SpreadWordDialog;
 import baseclasses.MyActionBarActivity;
@@ -42,6 +43,7 @@ import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import notifications.AlarmTrigger;
+import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.Config;
@@ -356,7 +358,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         }
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        /*if(showNot){
+            NotificationGenerator.generateNotification(this, "invite teacher" , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
+            showNot = false;
+        }*/
     }
+
+    //static boolean showNot = true; //temporary hack to show notification once on app start
 
     @Override
     protected void onResume() {
@@ -409,12 +418,16 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 this.startActivity(new Intent(this, ProfilePage.class));
                 break;
             case R.id.spread:
+                //show the common InviteParents screen
+                Intent intent = new Intent(getBaseContext(), InviteParents.class);
+                intent.putExtra("inviteType", Constants.INVITATION_SPREAD);
+                startActivity(intent);
 
-                Intent i=new Intent(android.content.Intent.ACTION_SEND);
+                /*Intent i=new Intent(android.content.Intent.ACTION_SEND);
                 i.setType("text/plain");
                 i.putExtra(android.content.Intent.EXTRA_SUBJECT,"Knit");
                 i.putExtra(android.content.Intent.EXTRA_TEXT, Constants.spreadWordContent);
-                startActivity(Intent.createChooser(i,"Share via"));
+                startActivity(Intent.createChooser(i,"Share via"));*/
 
                 break;
 

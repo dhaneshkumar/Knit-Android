@@ -202,6 +202,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 Intent intent = new Intent(SendMessage.this, InviteParents.class);
                 intent.putExtra("classCode", groupCode);
                 intent.putExtra("className", grpName);
+                intent.putExtra("inviteType", Constants.INVITATION_T2P);
                 startActivity(intent);
             }
         });

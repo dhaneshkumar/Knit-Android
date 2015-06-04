@@ -1,29 +1,18 @@
 package loginpages;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import java.util.List;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.InviteTeacher;
 import utility.Utility;
 
 /**

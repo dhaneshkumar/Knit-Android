@@ -47,7 +47,10 @@ public class PushOpen extends ActionBarActivity {
 
         if (type.equals(Constants.TRANSITION_NOTIFICATION)) {
             if(action.equals(Constants.INVITE_TEACHER_ACTION)){
-                i = new Intent(this, InviteTeacher.class);
+                //open the common invite screen
+                i = new Intent(this, InviteParents.class);
+                i.putExtra("inviteType", Constants.INVITATION_P2T);
+                i.putExtra("source", Constants.SOURCE_NOTIFICATION);
             }
             else if(action.equals(Constants.INVITE_PARENT_ACTION)){
                 i = new Intent(this, InviteParents.class);
@@ -60,6 +63,8 @@ public class PushOpen extends ActionBarActivity {
                     Log.d("DEBUG_PUSH_OPEN", "invite parent action " + classCode + " " + className);
                     i.putExtra("classCode", classCode);
                     i.putExtra("className", className);
+                    i.putExtra("source", Constants.SOURCE_NOTIFICATION);
+                    i.putExtra("inviteType", Constants.INVITATION_T2P);
                 }
                 else
                     i = new Intent(this, MainActivity.class); //go to main activity

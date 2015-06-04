@@ -159,6 +159,7 @@ public class CreateClassDialog extends DialogFragment{
 
                     intent.putExtra("classCode", classCode);
                     intent.putExtra("className", className);
+                    intent.putExtra("inviteType", Constants.INVITATION_T2P);
                     startActivity(intent);
 
                     dialog.dismiss();

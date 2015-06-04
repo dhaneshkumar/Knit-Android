@@ -137,14 +137,12 @@ public class Subscribers extends MyActionBarActivity {
                 Intent intent = new Intent(getBaseContext(), InviteParents.class);
                 intent.putExtra("classCode", classCode);
                 intent.putExtra("className", className);
+                intent.putExtra("inviteType", Constants.INVITATION_T2P);
                 startActivity(intent);
             }
         });
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-
-        //Log.d("DEBUG_SUBSCRIBERS", "calling refresh in onCreate()");
-        //refresh(); //called every time activity is created. Can do better
     }
 
 

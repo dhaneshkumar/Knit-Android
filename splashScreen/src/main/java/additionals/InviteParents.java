@@ -2,30 +2,40 @@
 package additionals;
 
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.graphics.Typeface;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
-import android.text.Html;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.parse.ParseAnalytics;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
-import utility.Utility;
+import trumplabs.schoolapp.Constants;
 
+/*
+    common class to invite users
+    Intent must contain : inviteType, -> see Constants.java
+           optional :   source  -> landed here from either in-app click or notification,
+                        classCode,
+                        className
+
+    Mode(email/phone/etc) will be decided here on this screen on click
+ */
 public class InviteParents extends MyActionBarActivity{
-    private String classCode;
-    private String className;
+    public static final String LOGTAG = "DEBUG_INVITE";
+    private String classCode = "";
+    private String className = "";
+    private String source = Constants.SOURCE_APP;
 
+    private int inviteType = -1; //1, 2, 3, 4 (see Constants.java)
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -39,30 +49,55 @@ public class InviteParents extends MyActionBarActivity{
       RelativeLayout phonebook = (RelativeLayout) findViewById(R.id.phonebook);
 
 
-      if(getIntent()!= null && getIntent().getExtras() != null)
+      if(getIntent()!= null &&  getIntent().getExtras() != null)
       {
-          if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
-              classCode = getIntent().getExtras().getString("classCode");
-              className = getIntent().getExtras().getString("className");
+          Bundle bundle = getIntent().getExtras();
+
+          if(bundle.getInt("inviteType", -1000) != -1000){
+              inviteType = bundle.getInt("inviteType");
+          }
+
+          if(!UtilString.isBlank(bundle.getString("classCode"))) {
+              classCode = bundle.getString("classCode");
+              className = bundle.getString("className");
+          }
+
+          //override source if in intent extras
+          if(!UtilString.isBlank(bundle.getString("source"))){
+              source = bundle.getString("source");
           }
       }
 
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+      //TODO set title & invite heading according to inviteType and hide/show extra details
       getSupportActionBar().setTitle("Invite Parents & Students");
 
-
+      switch (inviteType){
+          case Constants.INVITATION_T2P:
+              inviteHeading.setText("Invite Parents using -");
+              break;
+          case Constants.INVITATION_P2T:
+              inviteHeading.setText("Invite Teachers using -");
+              break;
+          case Constants.INVITATION_P2P:
+              inviteHeading.setText("Invite fellow parents using - ");
+              break;
+          case Constants.INVITATION_SPREAD:
+              inviteHeading.setText("Tell others about Knit using - ");
+              break;
+      }
 
       //click on phonebook icon
       phonebook.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
-
               Intent intent = new Intent(InviteParents.this, InviteParentViaPhonebook.class);
               intent.putExtra("classCode", classCode);
+              intent.putExtra("inviteType", inviteType);
               startActivity(intent);
-              }
+          }
       });
-
 
     /*  recommendedTv.setOnClickListener(new OnClickListener() {
           @Override
@@ -78,8 +113,15 @@ public class InviteParents extends MyActionBarActivity{
           }
       });*/
 
+      //track this event
+      if(inviteType > 0) {
+          Map<String, String> dimensions = new HashMap<String, String>();
+          dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
+          dimensions.put("Source", source);
+          ParseAnalytics.trackEventInBackground("invitePageOpenings", dimensions);
+          Log.d(LOGTAG, "tracking invitePageOpenings type=" + inviteType + ",source=" + source);
+      }
   }
-
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -90,6 +132,8 @@ public class InviteParents extends MyActionBarActivity{
 
         savedInstanceState.putString("classCode", classCode);
         savedInstanceState.putString("className", className);
+        savedInstanceState.putString("source", source);
+        savedInstanceState.putInt("inviteType", inviteType);
     }
 
     @Override
@@ -100,9 +144,12 @@ public class InviteParents extends MyActionBarActivity{
 
         if(UtilString.isBlank(classCode))
             classCode = savedInstanceState.getString("classCode");
-
         if(UtilString.isBlank(className))
             className = savedInstanceState.getString("className");
+        if(UtilString.isBlank(source))
+            source = savedInstanceState.getString("source");
+        if(inviteType == -1)
+            inviteType = savedInstanceState.getInt("inviteType");
     }
   
   @Override

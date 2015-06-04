@@ -60,12 +60,28 @@ public class Constants {
    */
   public static final String INVITATION = "Invitation";
   public static final String RECEIVER = "receiver"; //<email> or <phone number>
-  public static final String TYPE = "type"; // {p2p, t2p, t2t, p2t}
+  public static final String RECEIVER_NAME = "name"; //name of the receiver
+  public static final String TYPE = "type"; //see below 1, 2, 3, 4
   public static final String PENDING = "pending"; // {true, false}
-  public static final String RECEIVER_CLASS = "receiver_class"; //{phone, email}
+  public static final String MODE = "mode"; //{phone, email}
   public static final String CLASS_CODE = "class_code"; //nullable
 
-    /*
+
+  public static final int INVITATION_P2T = 1;
+  public static final int INVITATION_T2P = 2;
+  public static final int INVITATION_P2P = 3;
+  public static final int INVITATION_SPREAD = 4;
+
+  public static final String SOURCE_APP = "app";
+  public static final String SOURCE_NOTIFICATION = "notification";
+
+  public static final String MODE_PHONE = "phone";
+  public static final String MODE_EMAIL = "email";
+  public static final String MODE_WHATSAPP = "whatsapp";
+  public static final String MODE_RECEIVE_INSTRUCTIONS = "receiveInstructions";
+
+
+  /*
    * Database table names
    */
   public static final String MESSAGE_NEEDERS= "Messageneeders";
