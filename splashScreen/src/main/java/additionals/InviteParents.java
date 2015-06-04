@@ -33,7 +33,9 @@ public class InviteParents extends MyActionBarActivity{
     setContentView(R.layout.invite_parent);
 
       final TextView inviteHeading = (TextView) findViewById(R.id.invite_heading);
-      final TextView howToJoin = (TextView) findViewById(R.id.howToJoin);
+      final TextView sms = (TextView) findViewById(R.id.sms);
+      final TextView app = (TextView) findViewById(R.id.app);
+      final TextView instructions = (TextView) findViewById(R.id.instructions);
       RelativeLayout whatsapp = (RelativeLayout) findViewById(R.id.whatsapp);
       RelativeLayout email = (RelativeLayout) findViewById(R.id.email);
       RelativeLayout phonebook = (RelativeLayout) findViewById(R.id.phonebook);
@@ -50,6 +52,9 @@ public class InviteParents extends MyActionBarActivity{
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
       getSupportActionBar().setTitle("Invite Parents & Students");
 
+      final String teacherInvitesparentContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
+              ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
+              "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
 
 
       //click on phonebook icon
@@ -59,11 +64,45 @@ public class InviteParents extends MyActionBarActivity{
 
               Intent intent = new Intent(InviteParents.this, InviteParentViaPhonebook.class);
               startActivity(intent);
-              }
+          }
       });
 
 
-    /*  recommendedTv.setOnClickListener(new OnClickListener() {
+      //click on phonebook icon
+      email.setOnClickListener(new OnClickListener() {
+          @Override
+          public void onClick(View v) {
+
+              Intent intent = new Intent(InviteParents.this, InviteParentViaEmail.class);
+              startActivity(intent);
+          }
+      });
+
+
+      //share via whatsapp
+      whatsapp.setOnClickListener(new OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              PackageManager pm = getPackageManager();
+              try {
+                  pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+                  Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                  sendIntent.setPackage("com.whatsapp");
+                  sendIntent.setType("text/plain");
+
+
+                  sendIntent.putExtra(Intent.EXTRA_TEXT, teacherInvitesparentContent);
+                  startActivity(sendIntent);
+
+              } catch (PackageManager.NameNotFoundException e) {
+                  e.printStackTrace();
+                  Utility.toast("WhatsApp not installed !");
+              }
+          }
+      });
+
+
+      instructions.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
               FragmentManager fm = getSupportFragmentManager();
@@ -75,7 +114,7 @@ public class InviteParents extends MyActionBarActivity{
               recommendationDialog.setArguments(args);
               recommendationDialog.show(fm, "Join Class");
           }
-      });*/
+      });
 
   }
 
