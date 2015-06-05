@@ -18,16 +18,12 @@ import trumplabs.schoolapp.Constants;
  */
 public class InviteTasks {
     static final String LOGTAG = "DEBUG_INVITE_TASKS";
-    static boolean t2p_phone_running = false;
-    public static void sendInvitePhonebook(int inviteType, String classCode){
-        String mode = Constants.MODE_PHONE;
-        if(t2p_phone_running) return;
-
+    public static void sendInvitePhonebook(int inviteType, String inviteMode, String classCode){
         ParseQuery query = ParseQuery.getQuery(Constants.INVITATION);
         query.fromLocalDatastore();
         query.whereEqualTo(Constants.PENDING, true);
         query.whereEqualTo(Constants.TYPE, inviteType);
-        query.whereEqualTo(Constants.MODE, mode);
+        query.whereEqualTo(Constants.MODE, inviteMode);
         if(inviteType == Constants.INVITATION_T2P) {
             query.whereEqualTo(Constants.CLASS_CODE, classCode);
         }
@@ -41,21 +37,23 @@ public class InviteTasks {
         }
 
         if(pendingInvitations == null || pendingInvitations.isEmpty()){
-            t2p_phone_running = false; //release lock
             return;
         }
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("classCode", classCode);
         parameters.put("type", inviteType);
-        parameters.put("mode", mode);
+        parameters.put("mode", inviteMode);
 
         List<HashMap<String, String>> data = new ArrayList<>();
         for(ParseObject invitation : pendingInvitations){
             HashMap<String, String> userData = new HashMap<>();
             if(invitation.getString(Constants.RECEIVER_NAME) != null && invitation.getString(Constants.RECEIVER) != null) {
                 userData.put("name", invitation.getString(Constants.RECEIVER_NAME));
-                userData.put("phone", invitation.getString(Constants.RECEIVER));
+                if(inviteMode.equals(Constants.MODE_PHONE))
+                    userData.put("phone", invitation.getString(Constants.RECEIVER));
+                else
+                    userData.put("email", invitation.getString(Constants.RECEIVER));
                 data.add(userData);
             }
         }
@@ -70,7 +68,7 @@ public class InviteTasks {
             e.printStackTrace();
         }
 
-        Log.d(LOGTAG, "type=" + inviteType + ", mode=" + mode +
+        Log.d(LOGTAG, "type=" + inviteType + ", mode=" + inviteMode +
                 ", count=" + data.size() + "/" + pendingInvitations.size() + ", RESULT=" + result);
 
         if(result) {
@@ -85,8 +83,5 @@ public class InviteTasks {
                 e.printStackTrace();
             }
         }
-
-        //before returning release the "lock"
-        t2p_phone_running = false;
     }
 }

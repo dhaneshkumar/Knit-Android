@@ -118,17 +118,19 @@ public class InviteParents extends MyActionBarActivity{
               Intent intent = new Intent(InviteParents.this, InviteParentViaPhonebook.class);
               intent.putExtra("classCode", classCode);
               intent.putExtra("inviteType", inviteType);
+              intent.putExtra("inviteMode", Constants.MODE_PHONE);
               startActivity(intent);
           }
       });
 
-      //click on phonebook icon
+      //click on email icon
       email.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
-              Intent intent = new Intent(InviteParents.this, InviteParentViaEmail.class);
+              Intent intent = new Intent(InviteParents.this, InviteParentViaPhonebook.class);
               intent.putExtra("classCode", classCode);
               intent.putExtra("inviteType", inviteType);
+              intent.putExtra("inviteMode", Constants.MODE_EMAIL);
               startActivity(intent);
           }
       });
