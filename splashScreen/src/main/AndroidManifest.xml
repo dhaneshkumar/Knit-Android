@@ -137,7 +137,7 @@
         <activity android:name="joinclasses.JoinClassesContainer"></activity>
         <activity android:name="utility.Utility"></activity>
         <activity android:name="utility.PushOpen"></activity>
-        <activity android:name="additionals.InviteParents"></activity>
+        <activity android:name="additionals.Invite"></activity>
         <activity android:name="trumplabs.schoolapp.InviteTeacher"></activity>
         <activity android:name="joinclasses.JoinedClassInfo"></activity>
         <activity android:name="trumplabs.schoolapp.Subscribers"></activity>
@@ -146,19 +146,7 @@
         <activity android:name="tutorial.ParentTutorial"></activity>
         <activity android:name="tutorial.TeacherTutorial"></activity>
         <activity android:name="additionals.OpenURL"></activity>
-        <activity android:name="additionals.InviteParentViaPhonebook"
-            android:launchMode="singleTop"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data android:name="android.app.searchable"
-                android:resource="@layout/searchable"/>
-
-        </activity>
-
-        <activity android:name="additionals.InviteParentViaEmail"
+        <activity android:name="additionals.InviteVia"
             android:launchMode="singleTop"
             >
             <intent-filter>

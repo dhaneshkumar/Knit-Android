@@ -24,9 +24,8 @@ import com.parse.ParseUser;
 import java.util.HashMap;
 import java.util.Map;
 
-import additionals.InviteParents;
+import additionals.Invite;
 import library.UtilString;
-import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import utility.Queries;
@@ -155,7 +154,7 @@ public class CreateClassDialog extends DialogFragment{
         seeHowTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                   Intent intent = new Intent(getActivity(), InviteParents.class);
+                   Intent intent = new Intent(getActivity(), Invite.class);
 
                     intent.putExtra("classCode", classCode);
                     intent.putExtra("className", className);

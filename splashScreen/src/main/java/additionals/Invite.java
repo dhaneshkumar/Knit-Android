@@ -33,7 +33,7 @@ import utility.Utility;
 
     Mode(email/phone/etc) will be decided here on this screen on click
  */
-public class InviteParents extends MyActionBarActivity{
+public class Invite extends MyActionBarActivity{
     public static final String LOGTAG = "DEBUG_INVITE";
     private String classCode = "";
     private String className = "";
@@ -115,7 +115,7 @@ public class InviteParents extends MyActionBarActivity{
       phonebook.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
-              Intent intent = new Intent(InviteParents.this, InviteParentViaPhonebook.class);
+              Intent intent = new Intent(Invite.this, InviteVia.class);
               intent.putExtra("classCode", classCode);
               intent.putExtra("inviteType", inviteType);
               intent.putExtra("inviteMode", Constants.MODE_PHONE);
@@ -127,7 +127,7 @@ public class InviteParents extends MyActionBarActivity{
       email.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
-              Intent intent = new Intent(InviteParents.this, InviteParentViaPhonebook.class);
+              Intent intent = new Intent(Invite.this, InviteVia.class);
               intent.putExtra("classCode", classCode);
               intent.putExtra("inviteType", inviteType);
               intent.putExtra("inviteMode", Constants.MODE_EMAIL);

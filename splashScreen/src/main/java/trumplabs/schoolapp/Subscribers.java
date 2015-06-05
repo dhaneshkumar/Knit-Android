@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import BackGroundProcesses.MemberList;
-import additionals.InviteParents;
+import additionals.Invite;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.ExpandableListView;
@@ -134,7 +134,7 @@ public class Subscribers extends MyActionBarActivity {
 
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), InviteParents.class);
+                Intent intent = new Intent(getBaseContext(), Invite.class);
                 intent.putExtra("classCode", classCode);
                 intent.putExtra("className", className);
                 intent.putExtra("inviteType", Constants.INVITATION_T2P);

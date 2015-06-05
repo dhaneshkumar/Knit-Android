@@ -44,7 +44,7 @@ import utility.Utility;
 /**
  * Created by dhanesh on 1/6/15.
  */
-public class InviteParentViaPhonebook extends ActionBarActivity{
+public class InviteVia extends ActionBarActivity{
     static String LOGTAG = "DEBUG_INVITE_PHONE";
 
     private int inviteType = -1;

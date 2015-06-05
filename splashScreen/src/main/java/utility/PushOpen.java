@@ -13,10 +13,7 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import additionals.InviteParents;
+import additionals.Invite;
 import additionals.OpenURL;
 import library.UtilString;
 import notifications.EventCheckerAlarmReceiver;
@@ -24,7 +21,6 @@ import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.InviteTeacher;
 import trumplabs.schoolapp.MainActivity;
 
 public class PushOpen extends ActionBarActivity {
@@ -48,12 +44,12 @@ public class PushOpen extends ActionBarActivity {
         if (type.equals(Constants.TRANSITION_NOTIFICATION)) {
             if(action.equals(Constants.INVITE_TEACHER_ACTION)){
                 //open the common invite screen
-                i = new Intent(this, InviteParents.class);
+                i = new Intent(this, Invite.class);
                 i.putExtra("inviteType", Constants.INVITATION_P2T);
                 i.putExtra("source", Constants.SOURCE_NOTIFICATION);
             }
             else if(action.equals(Constants.INVITE_PARENT_ACTION)){
-                i = new Intent(this, InviteParents.class);
+                i = new Intent(this, Invite.class);
 
                 String classCode = getIntent().getExtras().getString("classCode");
                 String className = getIntent().getExtras().getString("className");

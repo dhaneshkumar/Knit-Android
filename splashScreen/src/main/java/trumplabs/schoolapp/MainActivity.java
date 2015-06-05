@@ -34,16 +34,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import BackGroundProcesses.Refresher;
-import additionals.InviteParents;
+import additionals.Invite;
 import additionals.RateAppDialog;
-import additionals.SpreadWordDialog;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import notifications.AlarmTrigger;
-import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.Config;
@@ -418,8 +416,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 this.startActivity(new Intent(this, ProfilePage.class));
                 break;
             case R.id.spread:
-                //show the common InviteParents screen
-                Intent intent = new Intent(getBaseContext(), InviteParents.class);
+                //show the common Invite screen
+                Intent intent = new Intent(getBaseContext(), Invite.class);
                 intent.putExtra("inviteType", Constants.INVITATION_SPREAD);
                 startActivity(intent);
 

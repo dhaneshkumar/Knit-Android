@@ -13,10 +13,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -62,7 +60,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import BackGroundProcesses.MemberList;
-import additionals.InviteParents;
+import additionals.Invite;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -199,7 +197,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
                 //hide keyword before transition
                 Tools.hideKeyboard(SendMessage.this);
-                Intent intent = new Intent(SendMessage.this, InviteParents.class);
+                Intent intent = new Intent(SendMessage.this, Invite.class);
                 intent.putExtra("classCode", groupCode);
                 intent.putExtra("className", grpName);
                 intent.putExtra("inviteType", Constants.INVITATION_T2P);
