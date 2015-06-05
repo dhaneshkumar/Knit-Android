@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -53,6 +54,7 @@ public class InviteParents extends MyActionBarActivity{
       RelativeLayout email = (RelativeLayout) findViewById(R.id.email);
       RelativeLayout phonebook = (RelativeLayout) findViewById(R.id.phonebook);
 
+      final LinearLayout seeHow = (LinearLayout) findViewById(R.id.seeHow);
 
       if(getIntent()!= null &&  getIntent().getExtras() != null)
       {
@@ -76,23 +78,36 @@ public class InviteParents extends MyActionBarActivity{
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
       //TODO set title & invite heading according to inviteType and hide/show extra details
-      getSupportActionBar().setTitle("Invite Parents & Students");
       final String teacherInvitesparentContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
               ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
               "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
 
+      if(inviteType == Constants.INVITATION_T2P){
+          //show the extra fields
+          instructions.setVisibility(View.VISIBLE);
+          seeHow.setVisibility(View.VISIBLE);
+      }
+      else{
+          instructions.setVisibility(View.GONE);
+          seeHow.setVisibility(View.GONE);
+      }
+
       switch (inviteType){
           case Constants.INVITATION_T2P:
               inviteHeading.setText("Invite Parents using -");
+              getSupportActionBar().setTitle("Invite Parents & Students");
               break;
           case Constants.INVITATION_P2T:
               inviteHeading.setText("Invite Teachers using -");
+              getSupportActionBar().setTitle("Invite Teachers");
               break;
           case Constants.INVITATION_P2P:
-              inviteHeading.setText("Invite fellow parents using - ");
+              inviteHeading.setText("Invite other parents using - ");
+              getSupportActionBar().setTitle("Invite other parents");
               break;
           case Constants.INVITATION_SPREAD:
               inviteHeading.setText("Tell others about Knit using - ");
+              getSupportActionBar().setTitle("Spread the word");
               break;
       }
 
@@ -111,8 +126,9 @@ public class InviteParents extends MyActionBarActivity{
       email.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
-
               Intent intent = new Intent(InviteParents.this, InviteParentViaEmail.class);
+              intent.putExtra("classCode", classCode);
+              intent.putExtra("inviteType", inviteType);
               startActivity(intent);
           }
       });
@@ -124,10 +140,17 @@ public class InviteParents extends MyActionBarActivity{
               PackageManager pm = getPackageManager();
               try {
                   pm.getPackageInfo("com.whatsapp", PackageManager.GET_ACTIVITIES);
+
+                  //track this event
+                  Map<String, String> dimensions = new HashMap<String, String>();
+                  dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
+                  dimensions.put("Invite Mode", Constants.MODE_WHATSAPP);
+                  ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
+                  Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_WHATSAPP);
+
                   Intent sendIntent = new Intent(Intent.ACTION_SEND);
                   sendIntent.setPackage("com.whatsapp");
                   sendIntent.setType("text/plain");
-
 
                   sendIntent.putExtra(Intent.EXTRA_TEXT, teacherInvitesparentContent);
                   startActivity(sendIntent);
@@ -142,6 +165,13 @@ public class InviteParents extends MyActionBarActivity{
       instructions.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
+              //track this event
+              Map<String, String> dimensions = new HashMap<String, String>();
+              dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
+              dimensions.put("Invite Mode", Constants.MODE_RECEIVE_INSTRUCTIONS);
+              ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
+              Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_RECEIVE_INSTRUCTIONS);
+
               FragmentManager fm = getSupportFragmentManager();
               RecommendationDialog recommendationDialog = new RecommendationDialog();
               Bundle args = new Bundle();

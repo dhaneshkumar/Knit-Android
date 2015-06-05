@@ -3,17 +3,9 @@ package additionals;
 import android.app.SearchManager;
 import android.content.ContentResolver;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.Loader;
-import android.support.v4.widget.SimpleCursorAdapter;
 import android.support.v7.app.ActionBarActivity;
 import android.provider.ContactsContract;
 import android.support.v7.widget.SearchView;
@@ -25,32 +17,35 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.parse.ParseException;
+import com.parse.ParseAnalytics;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import library.UtilString;
 import trumplab.textslate.R;
-import utility.Utility;
+import trumplabs.schoolapp.Constants;
 
 /**
  * Created by dhanesh on 1/6/15.
  */
 public class InviteParentViaEmail extends ActionBarActivity{
+    static String LOGTAG = "DEBUG_INVITE_EMAIL";
+
+    private int inviteType = -1;
+    private String classCode = "";
+
     private List<List<String>> contactList;
     private ListView contactListview;
     private BaseAdapter contactAdapter;
@@ -68,14 +63,79 @@ public class InviteParentViaEmail extends ActionBarActivity{
 
         progressBar.setVisibility(View.VISIBLE);
 
-        LoadEmails();
+        if(getIntent()!= null && getIntent().getExtras() != null)
+        {
+            Bundle bundle = getIntent().getExtras();
+            if(bundle.getInt("inviteType", -1000) != -1000){
+                inviteType = bundle.getInt("inviteType");
+            }
 
+            if(!UtilString.isBlank(bundle.getString("classCode"))) {
+                classCode = bundle.getString("classCode");
+            }
+        }
+
+        loadEmails();
 
         contactAdapter = new ContactAdapter();
         contactListview.setAdapter(contactAdapter);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        if(inviteType > 0) {
+            //track this event
+            Map<String, String> dimensions = new HashMap<>();
+            dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
+            dimensions.put("Invite Mode", Constants.MODE_EMAIL);
+            ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
+            Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_EMAIL);
+        }
     }
 
+    private void fetch(){
+        if(initialContactList == null)
+            initialContactList = new ArrayList<>();
+        ContentResolver cr = getContentResolver();
+        String[] PROJECTION = new String[] { ContactsContract.RawContacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.CommonDataKinds.Email.DATA,
+                };
+
+        String filter = ContactsContract.CommonDataKinds.Email.DATA + " NOT LIKE ''"; //email data not empty
+        Cursor cursor = cr.query(ContactsContract.CommonDataKinds.Email.CONTENT_URI, PROJECTION, filter, null, null);
+
+        while (cursor.moveToNext()) {
+            //to get the contact names
+            String name=cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME));
+            String email = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Email.DATA));
+            Log.d(LOGTAG, name +   "--"+email);
+
+            //check name is not an email address
+            Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
+            Matcher m = p.matcher(name);
+            boolean matchFound = m.matches();
+            if (!matchFound) {
+                List<String> phoneList = new ArrayList<>();
+                phoneList.add(name);
+                phoneList.add(email);
+                initialContactList.add(phoneList);
+            }
+        }
+        cursor.close();
+
+        //Sorting contacts in alphabetical order
+        Collections.sort(initialContactList, new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                List<String> list1 = (ArrayList<String>) o1;
+                List<String> list2 = (ArrayList<String>) o2;
+                String s1 = (String) list1.get(0);
+                String s2 = (String) list2.get(0);
+                return s1.compareTo(s2);
+            }
+        });
+
+        contactList = initialContactList;
+    }
 
     private void fetchEmailList()
     {
@@ -142,7 +202,7 @@ public class InviteParentViaEmail extends ActionBarActivity{
         {
             progressBar.setVisibility(View.VISIBLE);
 
-            LoadEmails();
+            loadEmails();
         }
 
         if(UtilString.isBlank(query))
@@ -283,15 +343,13 @@ public class InviteParentViaEmail extends ActionBarActivity{
         }
     }
 
-    private void LoadEmails()
+    private void loadEmails()
     {
         final Handler mHandler = new Handler();
         new Thread(new Runnable(){
             @Override
             public void run () {
-
-
-                fetchEmailList();
+                fetch();
                 mHandler.post(new Runnable() {
                     @Override
                     public void run () {
@@ -301,6 +359,4 @@ public class InviteParentViaEmail extends ActionBarActivity{
             }
         }).start();
     }
-
-
 }

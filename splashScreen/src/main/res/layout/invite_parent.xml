@@ -158,6 +158,7 @@
 
 
     <LinearLayout
+        android:id="@+id/seeHow"
         android:layout_width="match_parent"
         android:background="@color/white"
         android:padding="16dp"

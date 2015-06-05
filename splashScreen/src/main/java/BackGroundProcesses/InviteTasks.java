@@ -62,7 +62,7 @@ public class InviteTasks {
         parameters.put("data", data);
 
         //call cloud function inviteUsers
-        String result = "false";
+        boolean result = false;
         try{
             result = ParseCloud.callFunction("inviteUsers", parameters);
         }
@@ -73,7 +73,7 @@ public class InviteTasks {
         Log.d(LOGTAG, "type=" + inviteType + ", mode=" + mode +
                 ", count=" + data.size() + "/" + pendingInvitations.size() + ", RESULT=" + result);
 
-        if(result.equals("true")) {
+        if(result) {
             //if success change pending flag of each of the invitations and pin them all
             for (ParseObject invitation : pendingInvitations) {
                 invitation.put(Constants.PENDING, false);
