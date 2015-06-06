@@ -51,7 +51,7 @@ public class ForgotPassword extends DialogFragment {
   }
 
 
-  private class UserForgotPasswordCallback extends RequestPasswordResetCallback {
+  private class UserForgotPasswordCallback implements RequestPasswordResetCallback {
     public UserForgotPasswordCallback() {
       super();
     }
