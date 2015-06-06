@@ -9,14 +9,9 @@ import android.text.Html;
 import android.view.View;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.ParseUser;
-
 import trumplab.textslate.R;
-import utility.Queries;
 
 public class HowToJoinDialog extends DialogFragment {
     private Dialog dialog;
@@ -32,6 +27,9 @@ public class HowToJoinDialog extends DialogFragment {
         builder.setView(view);
         dialog = builder.create();
         dialog.show();
+
+
+
 
         TextView wayToJoin = (TextView) view.findViewById(R.id.wayToJoin);
         TextView content = (TextView) view.findViewById(R.id.content);

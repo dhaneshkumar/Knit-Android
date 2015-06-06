@@ -3,6 +3,7 @@ package additionals;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -76,6 +77,9 @@ public class Invite extends MyActionBarActivity{
       }
 
       getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+      Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
+      inviteHeading.setTypeface(typeFace);
 
       //TODO set title & invite heading according to inviteType and hide/show extra details
       final String teacherInvitesparentContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
