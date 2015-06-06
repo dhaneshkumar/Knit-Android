@@ -46,15 +46,12 @@ public class InviteTasks {
         parameters.put("type", inviteType);
         parameters.put("mode", inviteMode);
 
-        List<HashMap<String, String>> data = new ArrayList<>();
+        List<ArrayList<String>> data = new ArrayList<>();
         for(ParseObject invitation : pendingInvitations){
-            HashMap<String, String> userData = new HashMap<>();
+            ArrayList<String> userData = new ArrayList<>();
             if(invitation.getString(Constants.RECEIVER_NAME) != null && invitation.getString(Constants.RECEIVER) != null) {
-                userData.put("name", invitation.getString(Constants.RECEIVER_NAME));
-                if(inviteMode.equals(Constants.MODE_PHONE))
-                    userData.put("phone", invitation.getString(Constants.RECEIVER));
-                else
-                    userData.put("email", invitation.getString(Constants.RECEIVER));
+                userData.add(invitation.getString(Constants.RECEIVER_NAME));
+                userData.add(invitation.getString(Constants.RECEIVER));
                 data.add(userData);
             }
         }
@@ -63,7 +60,8 @@ public class InviteTasks {
         //call cloud function inviteUsers
         boolean result = false;
         try{
-            result = ParseCloud.callFunction("inviteUsers", parameters);
+            ParseCloud.callFunction("inviteUsers", parameters);
+            result = true; //No exception means all went well(wrong number won't receive, and correct number optimistic assumption)
         }
         catch (ParseException e){
             e.printStackTrace();
