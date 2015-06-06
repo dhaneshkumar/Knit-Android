@@ -8,7 +8,6 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
         android:orientation="vertical" >
 
 
@@ -47,9 +46,8 @@
         <LinearLayout
             android:id="@+id/classInfoLayout"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="10dp"
-            android:background="@color/white"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
             android:orientation="vertical" >
 
 
@@ -59,6 +57,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:padding="16dp"
+                android:background="@color/white"
                 android:paddingLeft="@dimen/profile_left_margin"
                 android:paddingRight="@dimen/profile_right_margin" >
 
@@ -114,17 +114,6 @@
                             android:textColor="@color/profile_heading"
                             android:textSize="16sp" />
 
-                        <!--<TextView
-                            android:id="@+id/schoolName"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="14dp"
-                            android:ems="17"
-
-                            android:text="Knit"
-                            android:singleLine="true"
-                            android:textColor="@color/profile_edit"
-                            android:textSize="11sp" />-->
                     </LinearLayout>
                 </LinearLayout>
 
@@ -244,93 +233,46 @@
                 </LinearLayout>
 
 
+            </LinearLayout>
 
-                <LinearLayout
-                android:id="@+id/whatsAppSection"
+            <RelativeLayout
+                android:id="@+id/sharingSection"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="12dp"
-                android:paddingBottom="12dp"
+                android:padding="16dp"
+                android:layout_marginTop="16dp"
+                android:background="@color/white"
                 android:orientation="vertical">
-                    <TextView
-                        android:id="@+id/share"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginBottom="3dp"
-                        android:layout_marginTop="8dp"
-                        android:layout_marginLeft="@dimen/text_left_margin"
-                        android:text="SHARE CLASS CODE"
-                        android:textColor="@color/profile_title"
-                        android:textSize="@dimen/profil_bar_font_size" />
-
-                    <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="2dp"
-                    android:background="@color/profile_head_bar"
-                    android:text="" />
+                <TextView
+                    android:id="@+id/share"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="SHARE CLASS CODE"
+                    android:textColor="@color/black"
+                    android:textSize="16sp" />
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Share this class code with other parents of same class on WhatsApp."
-                    android:textSize="10sp"
+                    android:layout_below="@+id/share"
+                    android:layout_toLeftOf="@+id/next"
+                    android:paddingRight="16dp"
+                    android:text="Share this class code with other parents of the same class"
+                    android:textSize="12sp"
                     />
 
-                <RelativeLayout
-                    android:id="@+id/whatsappLayout"
-                    android:layout_width="match_parent"
+                <ImageView
+                    android:id="@+id/next"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingBottom="2dp"
-                    android:paddingTop="4dp"
-                    android:orientation="horizontal" >
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/ic_action_next_item"
+                    android:layout_centerVertical="true"
+                    />
 
-                    <ImageView
-                        android:id="@+id/whatsAppIcon"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/whatsapp"
-                        android:padding="10dp" />
+            </RelativeLayout>
 
-                    <TextView
-                        android:id="@+id/app"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="via WhatsApp"
-                        android:textSize="14sp"
-                        android:layout_marginLeft="8dp"
-                        android:layout_centerVertical="true"
-                        android:textColor="@color/profile_heading"
-                        android:layout_toRightOf="@+id/whatsAppIcon"
-                        android:layout_toEndOf="@+id/whatsAppIcon" />
-                </RelativeLayout>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/demo_layout"
-                    android:orientation="vertical"
-                    android:visibility="gone"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/profile_tail_bar"
-                    android:text="" />
-
-                    <TextView
-                        android:layout_marginTop="12dp"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/demo_class_content"
-                        android:textColor="@color/black"
-                        android:textSize="15sp"
-                        />
-                    </LinearLayout>
-
-
-            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

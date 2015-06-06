@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import additionals.Invite;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -52,15 +53,12 @@ public class JoinedClassInfo extends MyActionBarActivity {
     TextView classNameTV;
     TextView teacherNameTV;
     TextView classCodeTV;
-    ImageView whatsAppImageView;
     TextView assignedNameTV;
     TextView subCodeTV;
     LinearLayout assignedNameContainer;
-    RelativeLayout whatsappLayout;
-    LinearLayout whatsAppSection;
+    RelativeLayout sharingSection;
     LinearLayout classInfoLayout;
     LinearLayout progressBarLayout;
-    LinearLayout demoLayout;
 
     String className;
     String classCode;
@@ -89,21 +87,17 @@ public class JoinedClassInfo extends MyActionBarActivity {
         classNameTV = (TextView) findViewById(R.id.className);
         teacherNameTV = (TextView) findViewById(R.id.teacherName);
         classCodeTV = (TextView) findViewById(R.id.classCode);
-        whatsAppImageView = (ImageView) findViewById(R.id.whatsAppIcon);
         assignedNameTV = (TextView) findViewById(R.id.assignedName);
         assignedNameContainer = (LinearLayout) findViewById(R.id.assignedNameContainer);
-        whatsappLayout = (RelativeLayout) findViewById(R.id.whatsappLayout);
+        sharingSection = (RelativeLayout) findViewById(R.id.sharingSection);
         subCodeTV = (TextView) findViewById(R.id.subCode);
         classInfoLayout = (LinearLayout) findViewById(R.id.classInfoLayout);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
-        demoLayout = (LinearLayout) findViewById(R.id.demo_layout);
         seperator = (TextView) findViewById(R.id.seperator);
 
-        whatsAppSection = (LinearLayout) findViewById(R.id.whatsAppSection);
 
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
-        TextView share = (TextView) findViewById(R.id.share);
 
         //get details(profile pic, assigned name) from Codegroup and User table
         ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
@@ -115,7 +109,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
         profile.setTypeface(typeFace);
         classDetails.setTypeface(typeFace);
-        share.setTypeface(typeFace);
 
         try{
             ParseObject codegroup = classQuery.getFirst();
@@ -227,7 +220,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             }
         });
 
-        whatsappLayout.setOnClickListener(new View.OnClickListener() {
+       /* whatsappLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 PackageManager pm = getPackageManager();
@@ -249,6 +242,14 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     e.printStackTrace();
                     Utility.toast("Sorry! WhatsApp not installed on this phone");
                 }
+            }
+        });*/
+
+        sharingSection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(JoinedClassInfo.this, Invite.class);
+                startActivity(intent);
             }
         });
     }

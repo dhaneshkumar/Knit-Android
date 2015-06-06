@@ -185,6 +185,43 @@ public class Invite extends MyActionBarActivity{
           }
       });
 
+
+
+      sms.setOnClickListener(new OnClickListener() {
+          @Override
+          public void onClick(View view) {
+
+              FragmentManager fm = getSupportFragmentManager();
+              HowToJoinDialog howToJoinDialog= new HowToJoinDialog();
+
+              // Supply num input as an argument.
+              Bundle args = new Bundle();
+              args.putString("flag", "SMS");
+              args.putString("classCode", classCode);
+              howToJoinDialog.setArguments(args);
+
+              howToJoinDialog.show(fm, "how to join");
+          }
+      });
+
+      app.setOnClickListener(new OnClickListener() {
+          @Override
+          public void onClick(View view) {
+
+              FragmentManager fm = getSupportFragmentManager();
+              HowToJoinDialog howToJoinDialog= new HowToJoinDialog();
+
+              // Supply num input as an argument.
+              Bundle args = new Bundle();
+              args.putString("flag", "APP");
+              args.putString("classCode", classCode);
+              howToJoinDialog.setArguments(args);
+
+              howToJoinDialog.show(fm, "how to join");
+          }
+      });
+
+
       //track this event
       if(inviteType > 0) {
           Map<String, String> dimensions = new HashMap<String, String>();

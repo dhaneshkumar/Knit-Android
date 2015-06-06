@@ -88,7 +88,7 @@
                     android:id="@+id/ttext"
                     android:textColor="@color/white"
                     android:paddingLeft="32dp"
-                    android:paddingRight="32dp" />
+                    />
 
             </LinearLayout>
 
@@ -114,7 +114,7 @@
                     android:id="@+id/ptext"
                     android:textColor="@color/white"
                     android:paddingLeft="32dp"
-                    android:paddingRight="32dp" />
+                    />
 
             </LinearLayout>
 
@@ -140,7 +140,7 @@
                     android:id="@+id/stext"
                     android:textColor="@color/white"
                     android:paddingLeft="32dp"
-                    android:paddingRight="32dp" />
+                    />
 
             </LinearLayout>
 
