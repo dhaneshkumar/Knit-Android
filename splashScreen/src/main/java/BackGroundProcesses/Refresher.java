@@ -105,7 +105,10 @@ public class Refresher {
                 Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
             }
 
-        } else {
+            //Send all pending invites
+            InviteTasks.sendAllPendingInvites();
+        }
+        else {
             Log.d("DEBUG_REFRESHER", "User NULL");
             SessionManager session = new SessionManager(Application.getAppContext());
             session.reSetAppOpeningCount();

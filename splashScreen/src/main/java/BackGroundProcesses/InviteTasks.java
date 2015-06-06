@@ -6,6 +6,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -81,6 +82,43 @@ public class InviteTasks {
                 ParseObject.pinAll(pendingInvitations);
             } catch (ParseException e) {
                 e.printStackTrace();
+            }
+        }
+    }
+
+    /* Take each combination of type, mode (and class in case of T2P type) and
+        send the invites using above method
+     */
+    static void sendAllPendingInvites(){
+        int[] inviteTypes = {Constants.INVITATION_P2P, Constants.INVITATION_P2T, Constants.INVITATION_T2P, Constants.INVITATION_SPREAD};
+        String[] inviteModes = {Constants.MODE_PHONE, Constants.MODE_EMAIL};
+
+        ArrayList<String> classCodes = new ArrayList<>();
+
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user != null){
+            List<List<String>> groups = user.getList("joined_groups");
+            if(groups != null) {
+                for (List<String> group : groups) {
+                    String code = group.get(0);
+                    if(code != null){
+                        classCodes.add(code);
+                    }
+                }
+            }
+        }
+
+        //Now we have all the 3 variables that can vary
+        for(int inviteType : inviteTypes){
+            for(String inviteMode : inviteModes){
+                if(inviteType == Constants.INVITATION_T2P){
+                    for(String classCode : classCodes){
+                        sendInvitePhonebook(inviteType, inviteMode, classCode);
+                    }
+                }
+                else {
+                    sendInvitePhonebook(inviteType, inviteMode, "");
+                }
             }
         }
     }
