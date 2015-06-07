@@ -40,6 +40,7 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.Constants;
 import utility.Config;
 import utility.Utility;
 
@@ -249,6 +250,10 @@ public class JoinedClassInfo extends MyActionBarActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(JoinedClassInfo.this, Invite.class);
+                intent.putExtra("classCode", classCode);
+                intent.putExtra("className", className);
+                intent.putExtra("inviteType", Constants.INVITATION_P2P);
+                intent.putExtra("teacherName", teacherName);
                 startActivity(intent);
             }
         });

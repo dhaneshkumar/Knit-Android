@@ -430,7 +430,7 @@ public class InviteVia extends ActionBarActivity{
                         try{
                             contact.invitation.pin();
                             Log.d(LOGTAG, "resent invitation updated");
-                            Utility.toast("duplicate invitation");
+                            Utility.toast("invitation sent !");
                         }
                         catch (ParseException e){
                             e.printStackTrace();

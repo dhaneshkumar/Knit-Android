@@ -8,6 +8,7 @@ import com.facebook.FacebookSdk;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseInstallation;
+import com.parse.ParseUser;
 import com.parse.PushService;
 
 import java.util.Calendar;
@@ -54,6 +55,9 @@ public class Application extends android.app.Application {
 	// Initialize the Parse SDK.
    
 	Parse.initialize(this, Config.APP_ID, Config.CLIENT_KEY);
+
+      //Enable revocable sessions
+      ParseUser.enableRevocableSessionInBackground();
 
 	Application.context = getApplicationContext();
 
