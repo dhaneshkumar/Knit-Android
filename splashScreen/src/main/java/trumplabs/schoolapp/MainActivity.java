@@ -36,6 +36,7 @@ import java.util.Map;
 import BackGroundProcesses.Refresher;
 import additionals.Invite;
 import additionals.RateAppDialog;
+import additionals.SpreadWordDialog;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
@@ -295,16 +296,18 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             thread.start();
         }
 
-      /*  //show recommend app dialog
-        if(appOpeningCount == 5 || appOpeningCount == 20) {
+        //show recommend app dialog
+        if(appOpeningCount == 6 || appOpeningCount == 20) {
 
                 FragmentManager fm = getSupportFragmentManager();
                 SpreadWordDialog spreadWordDialog = new SpreadWordDialog();
                 spreadWordDialog.show(fm, "recommend app");
-        }*/
+
+                session.setAppOpeningCount();
+        }
 
         //show rate app dialog after using 10 times app
-        if(appOpeningCount == 10) {
+        if(appOpeningCount == 11) {
 
             ParseUser user = ParseUser.getCurrentUser() ;
             if( user!= null && !user.getBoolean("APP_RATED")) { //checking whether already app rated or not
