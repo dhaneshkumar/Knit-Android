@@ -51,9 +51,10 @@ public class RateAppDialog extends DialogFragment {
         builder.setNegativeButton("Feedback", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
                 dialog.dismiss();
-               /* FeedBackClass feedBack = new FeedBackClass();
-                FragmentManager fmr = ((FragmentActivity) MainActivity).getSupportFragmentManager();
-                feedBack.show(fmr, "FeedBackClass");*/
+
+                FeedBackClass feedBack = new FeedBackClass();
+                FragmentManager fmr = getActivity().getSupportFragmentManager();
+                feedBack.show(fmr, "FeedBackClass");
             }
         });
 
