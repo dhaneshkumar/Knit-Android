@@ -39,6 +39,7 @@ public class Invite extends MyActionBarActivity{
     private String classCode = "";
     private String className = "";
     private String source = Constants.SOURCE_APP;
+    private String teacherName = "";
 
     private int inviteType = -1; //1, 2, 3, 4 (see Constants.java)
 
@@ -70,6 +71,9 @@ public class Invite extends MyActionBarActivity{
               className = bundle.getString("className");
           }
 
+          if(!UtilString.isBlank(bundle.getString("teacherName"))){
+              teacherName = bundle.getString("teacherName");
+          }
           //override source if in intent extras
           if(!UtilString.isBlank(bundle.getString("source"))){
               source = bundle.getString("source");
@@ -82,9 +86,7 @@ public class Invite extends MyActionBarActivity{
       inviteHeading.setTypeface(typeFace);
 
       //TODO set title & invite heading according to inviteType and hide/show extra details
-      final String teacherInvitesparentContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
-              ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
-              "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
+      String whatsAppContent = Constants.spreadWordContent;
 
       if(inviteType == Constants.INVITATION_T2P){
           //show the extra fields
@@ -100,20 +102,30 @@ public class Invite extends MyActionBarActivity{
           case Constants.INVITATION_T2P:
               inviteHeading.setText("Invite Parents using -");
               getSupportActionBar().setTitle("Invite Parents & Students");
+              whatsAppContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
+                      ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
+                      "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
               break;
           case Constants.INVITATION_P2T:
               inviteHeading.setText("Invite Teachers using -");
               getSupportActionBar().setTitle("Invite Teachers");
+              whatsAppContent = Constants.spreadWordContent;
               break;
           case Constants.INVITATION_P2P:
               inviteHeading.setText("Invite other parents using - ");
               getSupportActionBar().setTitle("Invite other parents");
+              whatsAppContent = "I have just joined " + className +" classroom of "+ teacherName+" on Knit Messaging. You can also join this class using the class-code "+ classCode +
+                  ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
+                  "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
               break;
           case Constants.INVITATION_SPREAD:
               inviteHeading.setText("Tell others about Knit using - ");
               getSupportActionBar().setTitle("Spread the word");
+              whatsAppContent = Constants.spreadWordContent;
               break;
       }
+
+      final String whatsAppContentFinal = whatsAppContent;
 
       //click on phonebook icon
       phonebook.setOnClickListener(new OnClickListener() {
@@ -158,7 +170,7 @@ public class Invite extends MyActionBarActivity{
                   sendIntent.setPackage("com.whatsapp");
                   sendIntent.setType("text/plain");
 
-                  sendIntent.putExtra(Intent.EXTRA_TEXT, teacherInvitesparentContent);
+                  sendIntent.putExtra(Intent.EXTRA_TEXT, whatsAppContentFinal);
                   startActivity(sendIntent);
 
               } catch (PackageManager.NameNotFoundException e) {
