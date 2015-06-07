@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
+import utility.Utility;
 
 /**
  * Created by ashish on 4/6/15.
@@ -40,6 +41,8 @@ public class InviteTasks {
         if(pendingInvitations == null || pendingInvitations.isEmpty()){
             return;
         }
+
+        //Log.d(LOGTAG, "pending for " + inviteType + " " + inviteMode + " " + classCode);
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("classCode", classCode);
@@ -88,6 +91,7 @@ public class InviteTasks {
         send the invites using above method
      */
     static void sendAllPendingInvites(){
+        Log.d(LOGTAG, "sendAllPendingInvites() entered");
         int[] inviteTypes = {Constants.INVITATION_P2P, Constants.INVITATION_P2T, Constants.INVITATION_T2P, Constants.INVITATION_SPREAD};
         String[] inviteModes = {Constants.MODE_PHONE, Constants.MODE_EMAIL};
 
@@ -95,7 +99,7 @@ public class InviteTasks {
 
         ParseUser user = ParseUser.getCurrentUser();
         if(user != null){
-            List<List<String>> groups = user.getList("joined_groups");
+            List<List<String>> groups = user.getList(Constants.CREATED_GROUPS);
             if(groups != null) {
                 for (List<String> group : groups) {
                     String code = group.get(0);

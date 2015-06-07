@@ -341,6 +341,9 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                                     return;
                                 }
 
+                                //hide keyword before transition
+                                Tools.hideKeyboard(SendMessage.this);
+
                                 //showing progress bar
                                 contentLayout.setVisibility(View.GONE);
                                 progressLayout.setVisibility(View.VISIBLE);
