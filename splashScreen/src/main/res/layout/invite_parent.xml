@@ -17,7 +17,7 @@
         android:id="@+id/invite_heading"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Invite Parents from -"
+        android:text="Invite Parents via -"
         android:textColor="@color/profile_title"
         android:textSize="16sp"
         />
@@ -41,15 +41,26 @@
             />
 
         <TextView
+            android:id="@+id/contacts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Phone Book"
             android:textColor="@color/black"
             android:layout_marginLeft="16dp"
             android:textSize="18sp"
-            android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/imageView2"
             android:layout_toEndOf="@+id/imageView2" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="*Invite via free SMS"
+            android:textColor="@color/grey"
+            android:textSize="14sp"
+            android:layout_marginTop="2dp"
+            android:layout_below="@+id/contacts"
+            android:layout_alignLeft="@+id/contacts"
+            android:layout_alignStart="@+id/contacts" />
 
         <ImageView
             android:layout_width="wrap_content"
