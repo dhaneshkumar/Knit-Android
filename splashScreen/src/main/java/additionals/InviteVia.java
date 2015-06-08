@@ -207,7 +207,7 @@ public class InviteVia extends ActionBarActivity{
             if(name == null || email == null) continue;
 
             name = UtilString.changeFirstToCaps(name);
-            Log.d(LOGTAG, name + "--" + email);
+            //Log.d(LOGTAG, name + "--" + email);
 
             //check name is not an email address
             Pattern p = Pattern.compile(".+@.+\\.[a-z]+");
@@ -401,6 +401,7 @@ public class InviteVia extends ActionBarActivity{
                         if(inviteType == Constants.INVITATION_T2P) {
                             invitation.put(Constants.CLASS_CODE, classCode);
                         }
+                        //Log.d(LOGTAG, Utility.parseObjectToJson(invitation).toString());
                         contact.invitation = invitation;
                         try{
                             invitation.pin();
