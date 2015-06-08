@@ -103,7 +103,7 @@ public class InviteVia extends ActionBarActivity{
         Runnable r = new Runnable() {
             @Override
             public void run(){
-                if(inviteType == Constants.INVITATION_T2P){
+                if(inviteType == Constants.INVITATION_T2P || inviteType == Constants.INVITATION_P2P){
                     InviteTasks.sendInvitePhonebook(inviteType, inviteMode, classCode);
                 }
                 else {

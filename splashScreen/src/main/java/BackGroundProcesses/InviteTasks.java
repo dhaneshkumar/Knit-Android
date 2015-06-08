@@ -21,6 +21,7 @@ import utility.Utility;
 public class InviteTasks {
     static final String LOGTAG = "DEBUG_INVITE_TASKS";
     public static void sendInvitePhonebook(int inviteType, String inviteMode, String classCode){
+        //Log.d(LOGTAG, inviteType + " " + inviteMode + " " + classCode);
         ParseQuery query = ParseQuery.getQuery(Constants.INVITATION);
         query.fromLocalDatastore();
         query.whereEqualTo(Constants.PENDING, true);
@@ -42,12 +43,30 @@ public class InviteTasks {
             return;
         }
 
+
+
         //Log.d(LOGTAG, "pending for " + inviteType + " " + inviteMode + " " + classCode);
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("classCode", classCode);
         parameters.put("type", inviteType);
         parameters.put("mode", inviteMode);
+
+        String teacherName = "";
+        if(inviteType == Constants.INVITATION_P2P){
+            ParseQuery<ParseObject> classQuery = new ParseQuery<>("Codegroup");
+            classQuery.fromLocalDatastore();
+            classQuery.whereEqualTo("code", classCode);
+
+            try{
+                ParseObject codegroup = classQuery.getFirst();
+                teacherName = codegroup.getString("Creator");
+                parameters.put("teacherName", teacherName);
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+            }
+        }
 
         List<ArrayList<String>> data = new ArrayList<>();
         for(ParseObject invitation : pendingInvitations){
@@ -95,16 +114,27 @@ public class InviteTasks {
         int[] inviteTypes = {Constants.INVITATION_P2P, Constants.INVITATION_P2T, Constants.INVITATION_T2P, Constants.INVITATION_SPREAD};
         String[] inviteModes = {Constants.MODE_PHONE, Constants.MODE_EMAIL};
 
-        ArrayList<String> classCodes = new ArrayList<>();
+        ArrayList<String> createdClassCodes = new ArrayList<>();
+        ArrayList<String> joinedClassCodes = new ArrayList<>();
 
         ParseUser user = ParseUser.getCurrentUser();
         if(user != null){
-            List<List<String>> groups = user.getList(Constants.CREATED_GROUPS);
-            if(groups != null) {
-                for (List<String> group : groups) {
+            List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+            if(createdGroups != null) {
+                for (List<String> group : createdGroups) {
                     String code = group.get(0);
                     if(code != null){
-                        classCodes.add(code);
+                        createdClassCodes.add(code);
+                    }
+                }
+            }
+
+            List<List<String>> joinedGroups = user.getList(Constants.JOINED_GROUPS);
+            if(joinedGroups != null) {
+                for (List<String> group : joinedGroups) {
+                    String code = group.get(0);
+                    if(code != null){
+                        joinedClassCodes.add(code);
                     }
                 }
             }
@@ -114,7 +144,12 @@ public class InviteTasks {
         for(int inviteType : inviteTypes){
             for(String inviteMode : inviteModes){
                 if(inviteType == Constants.INVITATION_T2P){
-                    for(String classCode : classCodes){
+                    for(String classCode : createdClassCodes){
+                        sendInvitePhonebook(inviteType, inviteMode, classCode);
+                    }
+                }
+                else if(inviteType == Constants.INVITATION_P2P){
+                    for(String classCode : joinedClassCodes){
                         sendInvitePhonebook(inviteType, inviteMode, classCode);
                     }
                 }
