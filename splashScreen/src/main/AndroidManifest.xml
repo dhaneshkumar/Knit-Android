@@ -113,11 +113,8 @@
         <activity android:name="loginpages.PhoneSignUpName"></activity>
         <activity android:name="loginpages.PhoneSignUpVerfication"></activity>
         <activity android:name="loginpages.PhoneLoginPage"></activity>
-        <activity android:name="loginpages.PhoneSignUpFindClass"></activity>
         <activity android:name="loginpages.PhoneSignUpClassDetails"></activity>
 
-
-        <activity android:name="loginpages.LoginPanda"></activity>
 
         <activity android:name="profileDetails.ProfilePage">
             <intent-filter
@@ -138,7 +135,6 @@
         <activity android:name="utility.Utility"></activity>
         <activity android:name="utility.PushOpen"></activity>
         <activity android:name="additionals.Invite"></activity>
-        <activity android:name="trumplabs.schoolapp.InviteTeacher"></activity>
         <activity android:name="joinclasses.JoinedClassInfo"></activity>
         <activity android:name="trumplabs.schoolapp.Subscribers"></activity>
         <activity android:name="trumplabs.schoolapp.SendMessage"></activity>
