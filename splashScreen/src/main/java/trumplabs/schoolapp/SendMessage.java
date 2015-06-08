@@ -757,11 +757,12 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         nameParams.setMargins(30, 30, 30, 30);
 
                         final TextView nameInput = new TextView(SendMessage.this);
-                        nameInput.setTextSize(18);
+                        nameInput.setTextSize(16);
                         nameInput.setText(Config.messageTimeWarning);
                         nameInput.setGravity(Gravity.CENTER_HORIZONTAL);
                         warningView.addView(nameInput, nameParams);
                         builder.setView(warningView);
+
 
                         builder.setPositiveButton("Send", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
@@ -771,6 +772,14 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         builder.setNegativeButton("Cancel", null);
                         AlertDialog dialog = builder.create();
                         dialog.show();
+
+
+                        Button nbutton = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                        nbutton.setBackgroundColor(getResources().getColor(R.color.buttoncolor));
+                        nbutton.setTextColor(getResources().getColor(R.color.white));
+                        Button pbutton = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                        pbutton.setBackgroundColor(getResources().getColor(R.color.buttoncolor));
+                        pbutton.setTextColor(getResources().getColor(R.color.white));
                     }
                     else{
                         sendFunction();

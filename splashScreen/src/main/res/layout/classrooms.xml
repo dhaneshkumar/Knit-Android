@@ -16,117 +16,146 @@
         >
 
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="16dp"
-        android:paddingRight="16dp"
-        android:orientation="vertical">
-
-        <ImageView
-            android:id="@+id/classroom_uphead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/white"
-            android:visibility="gone"
-            android:layout_marginLeft="32dp"
-            />
-
-        <LinearLayout
-            android:id="@+id/classroom_instruction"
-            android:orientation="vertical"
-            android:layout_marginBottom="8dp"
-            android:background="#E5E5E5"
-            android:paddingBottom="1dp"
-            android:visibility="gone"
-            android:paddingLeft="1dp"
-            android:layout_marginTop="-4dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:paddingTop="16dp"
             android:paddingLeft="16dp"
-            android:paddingRight="8dp"
-            android:paddingBottom="8dp"
-            android:layout_marginTop="-1dp"
-            android:orientation="vertical"
-            >
+            android:paddingRight="16dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:id="@+id/classroom_uphead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/white"
+                android:visibility="gone"
+                android:layout_marginLeft="32dp"
+                />
+
+            <LinearLayout
+                android:id="@+id/classroom_instruction"
+                android:orientation="vertical"
+                android:layout_marginBottom="8dp"
+                android:background="#E5E5E5"
+                android:paddingBottom="1dp"
+                android:visibility="gone"
+                android:paddingLeft="1dp"
+                android:layout_marginTop="-4dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/white"
+                    android:paddingTop="16dp"
+                    android:paddingLeft="16dp"
+                    android:paddingRight="8dp"
+                    android:paddingBottom="8dp"
+                    android:layout_marginTop="-1dp"
+                    android:orientation="vertical"
+                    >
+                    <TextView
+                        android:id="@+id/card_content"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/classroom_instrunctions"
+                        android:textColor="@color/black"
+                        android:layout_marginBottom="8dp"
+                        android:textSize="16sp"
+                        />
+
+                    <TextView
+                        android:id="@+id/classroom_ok"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Okay, got it."
+                        android:layout_gravity="right"
+                        android:paddingTop="6dp"
+                        android:paddingBottom="6dp"
+                        android:textSize="14sp"
+                        android:paddingLeft="12dp"
+                        android:paddingRight="12dp"
+                        android:textColor="@color/white"
+                        android:background="@color/buttoncolor"
+                        />
+
+                </LinearLayout>
+            </LinearLayout>
+
             <TextView
-                android:id="@+id/card_content"
+                android:layout_width="match_parent"
+                android:layout_height="8dp" />
+
+            <TextView
+                android:id="@+id/createdClassTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/classroom_instrunctions"
-                android:textColor="@color/black"
-                android:layout_marginBottom="8dp"
+                android:text="Created Classes"
+                android:textColor="@color/profile_title"
                 android:textSize="16sp"
                 />
 
-            <TextView
-                android:id="@+id/classroom_ok"
-                android:layout_width="wrap_content"
+            <library.ExpandableListView
+                android:id="@+id/createdclasseslistview"
+                android:layout_width="match_parent"
+                android:layout_marginTop="2dp"
                 android:layout_height="wrap_content"
-                android:text="Okay, got it."
-                android:layout_gravity="right"
-                android:paddingTop="6dp"
-                android:paddingBottom="6dp"
-                android:textSize="14sp"
-                android:paddingLeft="12dp"
-                android:paddingRight="12dp"
-                android:textColor="@color/white"
-                android:background="@color/buttoncolor"
+                android:divider="@color/lightbackgroundcolor"
+                android:dividerHeight="1dp"
                 />
 
-            </LinearLayout>
-            </LinearLayout>
+            <TextView
+                android:id="@+id/joinedClassTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Joined Classes"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/profile_title"
+                android:textSize="16sp"
+                />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="8dp" />
-
-        <TextView
-            android:id="@+id/createdClassTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Created Classes"
-            android:textColor="@color/profile_title"
-            android:textSize="16sp"
-            />
-
-        <library.ExpandableListView
-            android:id="@+id/createdclasseslistview"
-            android:layout_width="match_parent"
-            android:layout_marginTop="2dp"
-            android:layout_height="wrap_content"
-            android:divider="@color/lightbackgroundcolor"
-            android:dividerHeight="1dp"
-            />
-
-        <TextView
-            android:id="@+id/joinedClassTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Joined Classes"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/profile_title"
-            android:textSize="16sp"
-            />
-
-        <library.ExpandableListView
-            android:id="@+id/joinedclasseslistview"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:divider="@color/lightbackgroundcolor"
-            android:dividerHeight="1dp"
-            />
+            <library.ExpandableListView
+                android:id="@+id/joinedclasseslistview"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:divider="@color/lightbackgroundcolor"
+                android:dividerHeight="1dp"
+                />
 
 
-    </LinearLayout>
+        </LinearLayout>
     </ScrollView>
 
+
+    <LinearLayout
+        android:id="@+id/classroom_blank"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="32dp"
+        android:layout_centerVertical="true"
+        android:orientation="vertical"
+        android:visibility="visible" >
+
+        <TextView
+            android:id="@+id/classroom_detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="You don't have any classrooms."
+            android:textColor="@color/darkergrey"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/createClassLink"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create your first class"
+            android:textColor="@color/buttoncolor"
+            android:textSize="18sp"
+            android:textStyle="italic|bold" />
+    </LinearLayout>
 
 
     <LinearLayout
@@ -141,44 +170,44 @@
             android:layout_height="1dp"
             android:background="#CBCBCB"/>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:background="@color/white"
-        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:background="@color/white"
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/createClassTV"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:text="Create Class"
-            android:gravity="center"
-            android:paddingTop="10dp"
-            android:textColor="@color/buttoncolor"
-            android:paddingBottom="10dp"
-            android:textSize="16sp"
-            android:layout_height="wrap_content" />
-        <TextView
-            android:layout_width="1dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:layout_height="wrap_content"
-            android:background="#CBCBCB"
+            <TextView
+                android:id="@+id/createClassTV"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="Create Class"
+                android:gravity="center"
+                android:paddingTop="10dp"
+                android:textColor="@color/buttoncolor"
+                android:paddingBottom="10dp"
+                android:textSize="16sp"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_width="1dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_height="wrap_content"
+                android:background="#CBCBCB"
 
-            />
+                />
 
-        <TextView
-            android:id="@+id/joinClassTV"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:text="Join Class"
-            android:paddingTop="10dp"
-            android:textColor="@color/buttoncolor"
-            android:paddingBottom="10dp"
-            android:gravity="center"
-            android:textSize="16sp"
-            android:layout_height="wrap_content" />
+            <TextView
+                android:id="@+id/joinClassTV"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:text="Join Class"
+                android:paddingTop="10dp"
+                android:textColor="@color/buttoncolor"
+                android:paddingBottom="10dp"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:layout_height="wrap_content" />
 
-    </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
 
 
