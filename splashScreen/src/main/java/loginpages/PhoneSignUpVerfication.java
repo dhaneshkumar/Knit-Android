@@ -16,10 +16,11 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.LogInCallback;
+import com.parse.GetCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseSession;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
@@ -27,15 +28,12 @@ import java.util.Map;
 
 import additionals.SmsListener;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
-import joinclasses.JoinedHelper;
 import library.UtilString;
-import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
-import utility.Config;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -248,27 +246,15 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
             if(!isLogin) {
                 param.put("number", PhoneSignUpName.phoneNumber);
-                String model = "NA";
-                if (android.os.Build.MODEL != null)
-                    model = android.os.Build.MODEL;
-                param.put("model", model);
-                param.put("os", "ANDROID");
-
                 param.put("name", /*PhoneSignUpName.title + " " + */ PhoneSignUpName.displayName);
-
                 param.put("role", PhoneSignUpName.role);
-
-                if(PhoneSignUpName.mLastLocation != null){
-                    param.put("lat", PhoneSignUpName.mLastLocation.getLatitude());
-                    param.put("long", PhoneSignUpName.mLastLocation.getLongitude());
-                }
             }
             else{
                 param.put("number", PhoneLoginPage.phoneNumber);
             }
 
             try {
-                HashMap<String, Object> result = ParseCloud.callFunction("verifyCode", param);
+                HashMap<String, Object> result = ParseCloud.callFunction("verifyCod", param);
                 Boolean success = (Boolean) result.get("flag");
                 String sessionToken = (String) result.get("sessionToken");
                 if(success != null && success && sessionToken != null){
@@ -382,6 +368,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
 
         protected Void doInBackground(Void... params) {
+            fillDetailsInSessionInBackground(true);
             Utility.updateCurrentTime(user);
 
             Utility.setNewIdFlagInstallation();
@@ -424,6 +411,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
         @Override
         protected Void doInBackground(Void... params) {
+
+            fillDetailsInSessionInBackground(false);
+            
             Utility.updateCurrentTime(currentUser);
 
             Utility.setNewIdFlagInstallation();
@@ -475,5 +465,40 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             dimensions.put("Signup", "Total Signup");
             ParseAnalytics.trackEvent("Signup", dimensions);
         }
+    }
+
+    static void fillDetailsInSessionInBackground(final boolean login){
+        ParseSession.getCurrentSessionInBackground(new GetCallback<ParseSession>() {
+            @Override
+            public void done(ParseSession parseSession, ParseException e) {
+                if(e == null){
+                    String model = "NA";
+                    if (android.os.Build.MODEL != null)
+                        model = android.os.Build.MODEL;
+                    parseSession.put("model", model);
+                    parseSession.put("os", "ANDROID");
+
+                    if(login){
+                        if (PhoneLoginPage.mLastLocation != null) {
+//                            Log.d("DEBUG_SIGNUP_VERIFICATION", "login putting location in session");
+                            parseSession.put("lat", PhoneLoginPage.mLastLocation.getLatitude());
+                            parseSession.put("long", PhoneLoginPage.mLastLocation.getLongitude());
+                        }
+                    }
+                    else {
+                        if (PhoneSignUpName.mLastLocation != null) {
+//                            Log.d("DEBUG_SIGNUP_VERIFICATION", "signup putting location in session");
+                            parseSession.put("lat", PhoneSignUpName.mLastLocation.getLatitude());
+                            parseSession.put("long", PhoneSignUpName.mLastLocation.getLongitude());
+                        }
+                    }
+
+                    parseSession.saveEventually();
+                }
+                else{
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

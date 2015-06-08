@@ -3,6 +3,8 @@ package loginpages;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.location.Location;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
@@ -11,6 +13,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
 
@@ -23,7 +28,8 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.MainActivity;
 import utility.Utility;
 
-public class PhoneLoginPage extends MyActionBarActivity {
+public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener{
   EditText phoneNumberET;
   TextView oldLoginTV;
   static ProgressDialog pdialog;
@@ -31,6 +37,9 @@ public class PhoneLoginPage extends MyActionBarActivity {
   Activity activity;
 
   static String phoneNumber = "";
+
+    static GoogleApiClient mGoogleApiClient = null;
+    static Location mLastLocation = null;
 
   protected void onCreate(android.os.Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -65,7 +74,45 @@ public class PhoneLoginPage extends MyActionBarActivity {
               startActivity(oldLoginIntent);
           }
       });
-  };
+
+      buildGoogleApiClient();
+  }
+
+    /*********** Location Detection methods ****************/
+
+    protected synchronized void buildGoogleApiClient() {
+        Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() entered");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        mGoogleApiClient.connect();
+    }
+
+    @Override
+    public void onConnected(Bundle connectionHint) {
+        Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered");
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if (mLastLocation != null) {
+            Log.d("DEBUG_LOCATION_LOGIN", "onConnected() : location : " + String.valueOf(mLastLocation.getLatitude())
+                    + ", " + String.valueOf(mLastLocation.getLongitude()));
+        }
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // At least one of the API client connect attempts failed
+        // No client is connected
+        Log.d("DEBUG_LOCATION_LOGIN", "onConnectionFailed()");
+    }
+
+    @Override
+    public void onConnectionSuspended(int result) {
+        // At least one of the API client connect attempts failed
+        // No client is connected
+        Log.d("DEBUG_LOCATION_LOGIN", "onConnectionSuspended()");
+    }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
