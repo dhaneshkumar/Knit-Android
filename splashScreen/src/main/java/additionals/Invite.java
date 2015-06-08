@@ -100,26 +100,26 @@ public class Invite extends MyActionBarActivity{
 
       switch (inviteType){
           case Constants.INVITATION_T2P:
-              inviteHeading.setText("Invite Parents using -");
+              inviteHeading.setText("Invite Parents via -");
               getSupportActionBar().setTitle("Invite Parents & Students");
               whatsAppContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
                       ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
                       "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
               break;
           case Constants.INVITATION_P2T:
-              inviteHeading.setText("Invite Teachers using -");
+              inviteHeading.setText("Invite Teachers via -");
               getSupportActionBar().setTitle("Invite Teachers");
               whatsAppContent = Constants.spreadWordContent;
               break;
           case Constants.INVITATION_P2P:
-              inviteHeading.setText("Invite other parents using - ");
+              inviteHeading.setText("Invite other parents via - ");
               getSupportActionBar().setTitle("Invite other parents");
               whatsAppContent = "I have just joined " + className +" classroom of "+ teacherName+" on Knit Messaging. You can also join this class using the class-code "+ classCode +
                   ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
                   "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
               break;
           case Constants.INVITATION_SPREAD:
-              inviteHeading.setText("Tell others about Knit using - ");
+              inviteHeading.setText("Tell your friends about Knit via - ");
               getSupportActionBar().setTitle("Spread the word");
               whatsAppContent = Constants.spreadWordContent;
               break;

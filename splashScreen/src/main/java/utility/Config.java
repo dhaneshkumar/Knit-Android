@@ -51,7 +51,7 @@ public class Config {
 
     public static int messageNormalStartTime = 7; //7 AM (7 hours)
     public static int messageNormalEndTime = 22;  //10 PM(22 hours)
-    public static String messageTimeWarning = "This might not be the right time to send a message.\nSend anyway?";
+    public static String messageTimeWarning = "This might not be the right time to send a message. Send anyway?";
 
     public static long inboxOutboxUpdateGap = 15 * Constants.MINUTE_MILLISEC; //time gap between two updates of inbox/outbox to be called in when app is foreground
     public static long joinedClassUpdateGap = 60 *12 * Constants.MINUTE_MILLISEC; //time gap between two updates of joined class details i.e name, profile pic. can be called in background refresher thread

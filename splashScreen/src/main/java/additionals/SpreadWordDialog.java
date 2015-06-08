@@ -33,11 +33,17 @@ public class SpreadWordDialog extends DialogFragment {
 
                 dialog.dismiss();
 
-                Intent i = new Intent(android.content.Intent.ACTION_SEND);
+               /* Intent i = new Intent(android.content.Intent.ACTION_SEND);
                 i.setType("text/plain");
                 i.putExtra(android.content.Intent.EXTRA_SUBJECT, "Knit");
                 i.putExtra(android.content.Intent.EXTRA_TEXT, Constants.spreadWordContent);
-                startActivity(Intent.createChooser(i, "Share via"));
+                startActivity(Intent.createChooser(i, "Share via"));*/
+
+                //show the common Invite screen
+                Intent intent = new Intent(getActivity().getBaseContext(), Invite.class);
+                intent.putExtra("inviteType", Constants.INVITATION_SPREAD);
+                startActivity(intent);
+
             }
         });
         builder.setNegativeButton("No, Thanks", new DialogInterface.OnClickListener() {

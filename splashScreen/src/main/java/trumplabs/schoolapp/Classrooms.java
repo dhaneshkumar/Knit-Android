@@ -69,6 +69,7 @@ public class Classrooms extends Fragment {
     private LinearLayout classroom_instruction;
     private TextView classroom_ok;
     private TextView cardContent;
+    private LinearLayout blank_classroom;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -95,6 +96,10 @@ public class Classrooms extends Fragment {
         classroom_instruction = (LinearLayout) getActivity().findViewById(R.id.classroom_instruction);
         classroom_ok = (TextView) getActivity().findViewById(R.id.classroom_ok);
         cardContent = (TextView) getActivity().findViewById(R.id.card_content);
+        blank_classroom = (LinearLayout) getActivity().findViewById(R.id.classroom_blank);
+        TextView createClassLink = (TextView) getActivity().findViewById(R.id.createClassLink);
+        TextView classRoomtitle = (TextView) getActivity().findViewById(R.id.classroom_detail);
+
 
         //Setting condensed font
         Typeface typeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/roboto-condensed.bold.ttf");
@@ -145,6 +150,54 @@ public class Classrooms extends Fragment {
         if(!ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)) {
             createClassTV.setVisibility(View.GONE);
             createdClassListView.setVisibility(View.GONE);
+
+            classRoomtitle.setText("You have not Joined any class.");
+            createClassLink.setText("Join first class");
+
+
+            blank_classroom.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    //showing dialog to join class
+
+                    //setting action bar height locally
+                    final SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                    int actionBarHeight = sessionManager.getActionBarHeight();
+
+                    if(actionBarHeight == 0) {
+                        //setting action bar height for first time
+                        sessionManager.setActionBarHeight(((JoinClassesContainer) getActivity()).getSupportActionBar().getHeight());
+                    }
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm, "Join Class");
+                }
+            });
+
+        }
+        else {
+            classRoomtitle.setText("You have not created any class.");
+            createClassLink.setText("Create first class");
+
+            blank_classroom.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    //showing dialog to create class
+
+                    //setting action bar height locally
+                    final SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                    int actionBarHeight = sessionManager.getActionBarHeight();
+
+                    if(actionBarHeight == 0)
+                        sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
+
+                    FragmentManager fm = getActivity().getSupportFragmentManager();
+                    CreateClassDialog createClassDialog = new CreateClassDialog();
+                    createClassDialog.show(fm, "create Class");
+                }
+            });
         }
 
 
@@ -321,10 +374,20 @@ public class Classrooms extends Fragment {
             if (createdGroups == null)
                 createdGroups = new ArrayList<List<String>>();
 
-            if (createdGroups.size() == 0)
+            if(joinedGroups == null)
+                joinedGroups = new ArrayList<>();
+
+            if (createdGroups.size() == 0) {
                 createdClassTV.setVisibility(View.GONE);
-            else
+                if(joinedGroups.size() ==0)
+                   blank_classroom.setVisibility(View.VISIBLE);
+                else
+                    blank_classroom.setVisibility(View.GONE);
+            }
+            else {
                 createClassTV.setVisibility(View.VISIBLE);
+                blank_classroom.setVisibility(View.GONE);
+            }
 
             return createdGroups.size();
         }
@@ -459,11 +522,23 @@ public class Classrooms extends Fragment {
             if (joinedGroups == null)
                 joinedGroups = new ArrayList<List<String>>();
 
+            if(createdGroups == null)
+                createdGroups = new ArrayList<>();
 
-            if (joinedGroups.size() == 0)
+            if (joinedGroups.size() == 0) {
                 joinedClassTV.setVisibility(View.GONE);
-            else
+
+                if(createdGroups.size() ==0)
+                    blank_classroom.setVisibility(View.VISIBLE);
+                else
+                    blank_classroom.setVisibility(View.GONE);
+            }
+            else {
                 joinedClassTV.setVisibility(View.VISIBLE);
+
+                blank_classroom.setVisibility(View.GONE);
+            }
+
 
             return joinedGroups.size();
         }
