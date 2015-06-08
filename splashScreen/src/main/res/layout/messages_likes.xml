@@ -30,7 +30,7 @@
                 android:layout_height="36dp"
                 android:layout_gravity="top|left"
                 android:layout_marginRight="16dp"
-                android:background="@drawable/maleteacher"
+                android:background="@drawable/dp_common_thumbnail"
                 android:scaleType="fitCenter" />
 
             <TextView

@@ -136,7 +136,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
             }
             else{
                 //use a default image for profile pic(same for both M/F)
-                profileImageView.setImageResource(R.drawable.maleteacherdp);
+                profileImageView.setImageResource(R.drawable.dp_common_thumbnail);
             }
         }
 

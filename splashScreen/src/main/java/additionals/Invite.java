@@ -102,26 +102,22 @@ public class Invite extends MyActionBarActivity{
           case Constants.INVITATION_T2P:
               inviteHeading.setText("Invite Parents via -");
               getSupportActionBar().setTitle("Invite Parents & Students");
-              whatsAppContent = "Hello! I have recently started using a great communication tool, Knit Messaging, and I will be using it to send out reminders and announcements. To join my classroom you can use my classcode " + classCode+
-                      ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
-                      "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
+              whatsAppContent = "Namaste! I have recently started using 'Knit Messaging' app to send updates for my "+ className +" class. Download the app from "+ "goo.gl/cormDk" +" and use code "+classCode+" to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_P2T:
               inviteHeading.setText("Invite Teachers via -");
               getSupportActionBar().setTitle("Invite Teachers");
-              whatsAppContent = Constants.spreadWordContent;
+              whatsAppContent = "Dear teacher, I found an awesome app, 'Knit Messaging', for teachers to communicate with parents and students. You can download the app from " + "goo.gl/FmydzU ";
               break;
           case Constants.INVITATION_P2P:
               inviteHeading.setText("Invite other parents via - ");
               getSupportActionBar().setTitle("Invite other parents");
-              whatsAppContent = "I have just joined " + className +" classroom of "+ teacherName+" on Knit Messaging. You can also join this class using the class-code "+ classCode +
-                  ".\n\nDownload android app at: http://tinyurl.com/knit-messaging \n" +
-                  "Or you can visit following link: http://www.knitapp.co.in/user.html?/"+classCode;
+              whatsAppContent = "Hi! I just joined " + className + " class of " + teacherName + " on 'Knit Messaging' app.  Download the app from " + "goo.gl/Q2yeE3" +  " and use code " + classCode + " to join this class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_SPREAD:
               inviteHeading.setText("Tell your friends about Knit via - ");
               getSupportActionBar().setTitle("Spread the word");
-              whatsAppContent = Constants.spreadWordContent;
+              whatsAppContent = "Yo! I just started using 'Knit Messaging' app. It's an awesome app for teachers, parents and students to connect with each other. Download the app from " + "goo.gl/GLkQ57 ";
               break;
       }
 

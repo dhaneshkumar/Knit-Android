@@ -225,17 +225,10 @@ public class CreateClassDialog extends DialogFragment{
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-
-
-
-
-
-//                Utility.toast("Group Creation successful");
-
                 if(getActivity() != null) {
                     //create class creation messages and notification
-                    SessionManager session = new SessionManager(getActivity().getApplicationContext());
-                    NotificationGenerator.generateNotification(getActivity().getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+                    //SessionManager session = new SessionManager(getActivity().getApplicationContext());
+                    //NotificationGenerator.generateNotification(getActivity().getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
                     //EventCheckerAlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
                 }
 

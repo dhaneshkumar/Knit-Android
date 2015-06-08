@@ -713,7 +713,7 @@ public class Messages extends Fragment {
                 holder.senderImg.setImageBitmap(mySenderBitmap);
             } else
             {
-                holder.senderImg.setImageResource(R.drawable.maleteacherdp);
+                holder.senderImg.setImageResource(R.drawable.dp_common_thumbnail);
             }
 
             try

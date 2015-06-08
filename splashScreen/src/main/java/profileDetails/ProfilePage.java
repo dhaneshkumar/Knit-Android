@@ -168,12 +168,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         /*
          * Setting profile pic (don't consider sex, just the role)
          */
-
-                if (role.equals("parent")) {
-                        profileimgview.setImageResource(R.drawable.maleparentdp);
-                } else {
-                    profileimgview.setImageResource(R.drawable.maleteacherdp);
-                }
+                profileimgview.setImageResource(R.drawable.dp_common);
             }
         } catch (Exception e) {
         }
