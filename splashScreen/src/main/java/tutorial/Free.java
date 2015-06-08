@@ -18,13 +18,12 @@ import com.parse.ParseQuery;
 
 import java.util.List;
 
-import loginpages.PhoneSignUpFindClass;
 import loginpages.PhoneSignUpName;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 
 /**
- * Fragment showing Secure icons
+ * Fragment showing free icons
  *
  * Created by Dhanesh on 1/17/2015.
  */
@@ -102,12 +101,7 @@ public class Free extends Fragment {
                     GetSchools getSchools = new GetSchools();
                     getSchools.execute();*/
                 }
-                else
-                {
-                    Intent intent = new Intent(getActivity(), PhoneSignUpFindClass.class);
-                    intent.putExtra("role", role);
-                    startActivity(intent);
-                }
+
             }
         });
 
