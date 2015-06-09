@@ -19,27 +19,18 @@ import java.util.List;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import utility.PushOpen;
+import utility.SessionManager;
 
 /**
  * Created by ashish on 19/1/15.
  */
 public class NotificationGenerator {
-    public static String[] events = new String[10];
-    public static String[] groupNames = new String[10];
+    private static final String LOGTAG = "DEBUG_NOTIFICATION_GEN";
+    public static List<NotificationEntity> normalNotificationList = new ArrayList<>();
 
-    public static List<NotificationEntity> normalNotificationList = new ArrayList<NotificationEntity>();
-    public static NotificationEntity transitionNotification = null;
-    public static NotificationEntity updateNotifcation = null;
-    public static NotificationEntity linkNotification = null;
-
-    private static int NOTIFICATION_ID = 0; //
-
-    //ids for the 4 notification types
+    //ids for the notification types
     private static int NORMAL_NOTIFICATION_ID = 0;
-    private static int TRANSITION_NOTIFICATION_ID = 1;
-    private static int UPDATE_NOTIFICATION_ID = 2;
-    private static int LINK_NOTIFICATION_ID = 3;
-    private static int USER_REMOVED_NOTIFICATION_ID = 4;
+    //For others, unique notification id generated at runtime using SessionManager.getNextNotificationId()
 
     public static int count = 0;
     private NotificationManager notificationManager;
@@ -54,7 +45,7 @@ public class NotificationGenerator {
     public static void generateNotification(Context context, String contentText,String groupName,
                                             String type, String action, Bundle extras) {
 
-        NotificationEntity notEntity = new NotificationEntity(contentText, groupName, type, action);
+        NotificationEntity notEntity = new NotificationEntity(context, contentText, groupName, type, action);
 
         NotificationManager notificationManager =
                 (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -83,8 +74,8 @@ public class NotificationGenerator {
         clickIntent.putExtra("action", notEntity.action);
         clickIntent.putExtra("notificationId", notEntity.notificationId);
 
-        Log.d("DEBUG_NOTIFICATION_GENERATOR", "type " + notEntity.type + " " + notEntity.action);
-        PendingIntent clickPendingIntent = PendingIntent.getActivity( context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        Log.d(LOGTAG, "type=" + notEntity.type + ", action=" + notEntity.action + ", id=" + notEntity.notificationId);
+        PendingIntent clickPendingIntent = PendingIntent.getActivity( context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Note the use of PendingIntent.FLAG_CANCEL_CURRENT. This is important so to overwrite the extras in intent.
         // Otherwise it reuses the old intent because requestCode is same = 0
@@ -95,14 +86,13 @@ public class NotificationGenerator {
         Intent deleteIntent = new Intent(NOTIFICATION_DELETED_ACTION);
         deleteIntent.putExtra("type", notEntity.type);
         deleteIntent.putExtra("notificationId", notEntity.notificationId);
-        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context, 0, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context, notEntity.notificationId, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         mBuilder.setDeleteIntent(deletePendingIntent);
 
         mBuilder.setContentTitle(notEntity.groupName);
         mBuilder.setContentText(notEntity.contentText);
 
         if(notEntity.type.equals(Constants.NORMAL_NOTIFICATION)){
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "normal notification");
             normalNotificationList.add(notEntity);
 
             if(normalNotificationList.size() == 1){
@@ -130,8 +120,6 @@ public class NotificationGenerator {
             notificationManager.notify(NORMAL_NOTIFICATION_ID, mBuilder.build());
         }
         else if(notEntity.type.equals(Constants.TRANSITION_NOTIFICATION)){
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "trans notification");
-            transitionNotification = notEntity;
 
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -149,27 +137,35 @@ public class NotificationGenerator {
                 mBuilder.addAction(R.drawable.fwd, "OPEN", clickPendingIntent);
             }
             else if(notEntity.action.equals(Constants.OUTBOX_ACTION)){
-                mBuilder.addAction(R.drawable.fwd, "OPEN", clickPendingIntent);
+                mBuilder.addAction(R.drawable.fwd, "OUTBOX", clickPendingIntent);
             }
             else if(notEntity.action.equals(Constants.INVITE_PARENT_ACTION)){
-                Log.d("DEBUG_NOTIFICATION_GEN", "invite parent action");
+                Log.d(LOGTAG, "special invite parent action");
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("grpCode"));
                     clickIntent.putExtra("className", extras.getString("grpName"));
-                    PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, 0, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
                     mBuilder.setContentIntent(overrideClickPendingIntent);
                     mBuilder.addAction(R.drawable.fwd, "INVITE", overrideClickPendingIntent);
                 }
             }
+            else if(notEntity.action.equals(Constants.SEND_MESSAGE_ACTION)){
+                Log.d(LOGTAG, "special send message action");
+                if(extras != null){
+                    clickIntent.putExtra("classCode", extras.getString("grpCode"));
+                    clickIntent.putExtra("className", extras.getString("grpName"));
+                    PendingIntent overrideClickPendingIntent = PendingIntent.getActivity( context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    mBuilder.setContentIntent(overrideClickPendingIntent);
+                    mBuilder.addAction(R.drawable.fwd, "SEND", overrideClickPendingIntent);
+                }
+            }
             else if(notEntity.action.equals(Constants.CREATE_CLASS_ACTION)){
-                mBuilder.addAction(R.drawable.fwd, "CREATE NEW", clickPendingIntent);
+                mBuilder.addAction(R.drawable.fwd, "CREATE", clickPendingIntent);
             }
 
-            notificationManager.notify(TRANSITION_NOTIFICATION_ID, mBuilder.build());
+            notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
         else if(notEntity.type.equals(Constants.UPDATE_NOTIFICATION)){
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "update notification");
-            updateNotifcation = notEntity;
 
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -182,11 +178,9 @@ public class NotificationGenerator {
             mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
             mBuilder.addAction(R.drawable.update, "UPDATE NOW", clickPendingIntent);
 
-            notificationManager.notify(UPDATE_NOTIFICATION_ID, mBuilder.build());
+            notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
         else if(notEntity.type.equals(Constants.LINK_NOTIFICATION)){
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "link notification");
-            transitionNotification = notEntity;
 
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -199,11 +193,9 @@ public class NotificationGenerator {
             mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
             mBuilder.addAction(R.drawable.update, "VISIT", clickPendingIntent);
 
-            notificationManager.notify(LINK_NOTIFICATION_ID, mBuilder.build());
+            notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
         else if(notEntity.type.equals(Constants.USER_REMOVED_NOTIFICATION)){
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "user removed notification");
-            transitionNotification = notEntity;
 
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -223,7 +215,7 @@ public class NotificationGenerator {
                 userRemovedTask.execute();
             }
 
-            notificationManager.notify(USER_REMOVED_NOTIFICATION_ID, mBuilder.build());
+            notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
     }
 
@@ -235,22 +227,19 @@ public class NotificationGenerator {
 
             NotificationManager notificationManager =
                     (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-            int notificationId = intent.getIntExtra("notificationId", 100);
-            if(notificationId == 100)
+            int notificationId = intent.getIntExtra("notificationId", -1);
+            if(notificationId == -1)
                 notificationManager.cancelAll();
             else
                 notificationManager.cancel(notificationId);
 
             String type = intent.getStringExtra("type");
-            Log.d("DEBUG_NOTIFICATION_GENERATOR", "got " + NOTIFICATION_DELETED_ACTION + " for type " + type + "notid " + notificationId);
+            Log.d(LOGTAG, "got " + NOTIFICATION_DELETED_ACTION + " for type " + type + "notid " + notificationId);
 
             if(type.equals(Constants.NORMAL_NOTIFICATION)){
-                Log.d("DEBUG_NOTIFICATION_GENERATOR", "clearing normal notification list");
+                Log.d(LOGTAG, "clearing normal notification list");
                 normalNotificationList.clear();
             }
-            //only clearing normalNotificationList is important
-            //rest types need not be handled since they are singular entities and will be overwritten
-            //when new notification of that type arrives
         }
     };
 
@@ -262,35 +251,16 @@ public class NotificationGenerator {
         String action;
         int notificationId;
 
-        NotificationEntity(String tempContentText, String tempGroupName, String tempType, String tempAction){
+        NotificationEntity(Context context, String tempContentText, String tempGroupName, String tempType, String tempAction){
+
+            SessionManager sessionManager = new SessionManager(context);
+            notificationId = sessionManager.getNextNotificationId();
             contentText = tempContentText;
             groupName = tempGroupName;
             action = tempAction;
             type = tempType;
 
-
-            if(type == null || action == null ){
-                type = Constants.NORMAL_NOTIFICATION;
-                action = Constants.INBOX_ACTION;
-                notificationId = NORMAL_NOTIFICATION_ID;
-            }
-            else if(type.equals(Constants.TRANSITION_NOTIFICATION)){
-                notificationId = TRANSITION_NOTIFICATION_ID;
-                //do nothing
-            }
-            else if(type.equals(Constants.UPDATE_NOTIFICATION)){
-                notificationId = UPDATE_NOTIFICATION_ID;
-                //do nothing
-            }
-            else if(type.equals(Constants.LINK_NOTIFICATION)){
-                notificationId = LINK_NOTIFICATION_ID;
-                //do nothing
-            }
-            else if(type.equals(Constants.USER_REMOVED_NOTIFICATION)){
-                notificationId = UPDATE_NOTIFICATION_ID;
-                //do nothing
-            }
-            else{
+            if(type == null || action == null || type.equals(Constants.NORMAL_NOTIFICATION)){
                 type = Constants.NORMAL_NOTIFICATION;
                 action = Constants.INBOX_ACTION;
                 notificationId = NORMAL_NOTIFICATION_ID;

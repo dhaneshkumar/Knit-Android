@@ -80,26 +80,4 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
             e.printStackTrace();
         }
     }
-
-    @Override
-    protected void onPushOpen(Context context, Intent intent)
-    {
-        //on push open, clear all previous notifications
-        NotificationGenerator.count=0;
-        for(int i=0;i<10;i++)
-        {
-            NotificationGenerator.events[i]="";
-        }
-    }
-
-    @Override
-    protected void onPushDismiss(Context context,Intent intent)
-    {
-        //on push dismiss, clear all previous notifications
-        NotificationGenerator.count=0;
-        for(int i=0;i<10;i++)
-        {
-            NotificationGenerator.events[i]="";
-        }
-    }
 }

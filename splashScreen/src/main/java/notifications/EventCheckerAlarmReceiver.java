@@ -44,16 +44,18 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
     static String teacherSendingDailyTip = "teacher_sending_daily_tip";
 
     //messages for different events
-    static String parentNoActivityContent = "I was born just a few months ago and a lot of teachers and parents are using Knit since then and trust me they love it. I noticed that you haven’t joined any classroom yet, why? Invite teacher. ";
-    static String parentTip1Content = "Did you notice that you can respond to messages only via 2 buttons? I know some parents won't like it but to save you and your teacher from a lot of chaos it is very critical. Push \"thumbs-up\" to like the message and \"question-mark\" to let teacher know that you are little confused about this message.";
+    public static String parentNoActivityContent = "You haven't joined any classroom yet. Don't have any class-code? Invite teacher."; //go to invite page
+    public static String parentTip1Content = "You can respond to messages via 2 buttons - push \"thumbs-up\" to like and \"question-mark\" to show that you are confused."; //go to inbox
 
-    static String teacherNoActivityContent = "Hey! I noticed you haven't created any classroom yet. Let's kick-start using Knit but first create a classroom. ";
-    static String teacherTip1Content = "Did you notice that parents can respond to your messages only via 2 buttons? I know some parents won't like it but to save you and all parents from a lot of chaos it is very critical. They push \"thumbs-up\" to like the message and \"question-mark\" to let you know that they are little confused about this message.";
-    static String teacherNoSubContent = /*Your classroom <classname> + */ " doesn't have any subscribers yet. If you haven't received any instruction e-mail to invite parents then you can always reach me at knit@trumplab.com or once again you can see in the app how to invite parents.";
-    static String teacherNoMsgContent = "You haven't sent any messages yet to class ";
-    static String teacherConfusingMsgContent = /* <confused_count> + */ " parents seem to be confused regarding your recent post in class "; // [class name]
+    public static String teacherNoActivityContent = "You haven't created any classroom yet. Create you first classroom."; //go to create class dialog
+    public static String teacherTip1Content = "Parents can respond to your messages only via 2 buttons? They push \"thumbs-up\" to like and \"question-mark\" to show they're confused."; //go to outbox
+    public static String teacherNoSubContent = /*Your classroom <classname> + */ " doesn't have any subscribers yet. Invite parents and students now !"; //go to invite page
+    public static String teacherNoMsgContent = "You haven't sent any messages yet to class "; //+ "Send Now" //go inside class
+    public static String teacherConfusingMsgContent = /* <confused_count> + */ " parents/students seem to be confused regarding your recent post in class "; // [class name] go to outbox
 
-    static String teacherSendingDailyTipContent = "How’s going so far? Have you tried sending daily tips to parents ? Many of our teachers do that already and parents love it. Give it a try I would say.";
+
+    //Not used
+    static String teacherSendingDailyTipContent = "How's going so far? Have you tried sending daily tips to parents ? Many of our teachers do that already and parents love it. Give it a try I would say.";
 
 
     //time interval before event is supposed to occur
@@ -109,7 +111,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             teacherNoSub();
             teacherNoMsg();
             teacherConfusingMessage();
-            teacherSendingDailyTip();
+            //teacherSendingDailyTip();
             teacherTip1();
         }
     }
@@ -135,9 +137,6 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > tip1Interval){
             NotificationGenerator.generateNotification(alarmContext, parentTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-
-            //generateLocalMessage(parentTip1Content, Config.defaultParentGroupCode);
-
             Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
@@ -173,9 +172,6 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > parentNoActivityInterval){
             NotificationGenerator.generateNotification(alarmContext, parentNoActivityContent , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
-
-            //generateLocalMessage(parentNoActivityContent, Constants.DEFAULT_NAME);
-
             Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
@@ -238,10 +234,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > tip1Interval){
-            NotificationGenerator.generateNotification(alarmContext, teacherTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-
-            //generateLocalMessage(teacherTip1Content, Constants.DEFAULT_NAME);
-
+            NotificationGenerator.generateNotification(alarmContext, teacherTip1Content , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
             Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
@@ -408,7 +401,12 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                     className = groupCode;
                 }
 
-                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
+                Bundle extras = new Bundle();
+                Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() : creating notification and local message for " + groupCode + " " + className);
+                extras.putString("grpCode", groupCode);
+                extras.putString("grpName", className);
+
+                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.SEND_MESSAGE_ACTION);
                 //generateLocalMessage(teacherNoMsgContent + className, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
@@ -464,56 +462,6 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                     Log.d("DEBUG_ALARM_RECEIVER", "teacherConfusingMessage() " + eventid + " state changed to true");
                     session.setAlarmEventState(eventid, true);
                 }
-            }
-        }
-    }
-
-    //After 3 days of first classroom creation. Send the message telling sending daily tips to parents
-    public void teacherSendingDailyTip(){
-        String eventid = user.getUsername() + "-" + teacherSendingDailyTip;
-        if(session.getAlarmEventState(eventid)) {
-            Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " already happened");
-            return; //we're done
-        }
-
-        List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
-        if(createdGroups == null || createdGroups.size() == 0) return;
-
-        for(int i=0; i<createdGroups.size(); i++){
-            List<String> group = createdGroups.get(i);
-            String groupCode = group.get(0); //0 is code
-
-            ParseObject classroom = null;
-            try{
-                classroom = queryInstance.getClassObject(groupCode);
-            }
-            catch (ParseException e){
-                e.printStackTrace();
-                continue; //can't proceed
-            }
-            if(classroom == null) continue;
-
-            Date classCreationTime = classroom.getCreatedAt();
-            if(classCreationTime == null) continue;
-
-            Date now = null;
-            try{
-                now = session.getCurrentTime();
-            }
-            catch (java.text.ParseException e){
-                e.printStackTrace();
-                continue; //can't proceed further
-            }
-            if(now == null) continue;
-
-            Long interval = now.getTime() - classCreationTime.getTime();
-            Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
-            if(interval > teacherSendingDailyTipInterval){
-                NotificationGenerator.generateNotification(alarmContext, teacherSendingDailyTipContent, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                //generateLocalMessage(teacherSendingDailyTipContent, Constants.DEFAULT_NAME);
-                Log.d("DEBUG_ALARM_RECEIVER", "teacherSendingDailyTip() " + eventid + " state changed to true");
-                session.setAlarmEventState(eventid, true);
-                return; //if we find even 1 class which is 3 days old or more, we're done
             }
         }
     }

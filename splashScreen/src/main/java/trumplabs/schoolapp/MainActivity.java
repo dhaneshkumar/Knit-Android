@@ -43,6 +43,7 @@ import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import notifications.AlarmTrigger;
+import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
@@ -361,23 +362,24 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        //testing notification actions :
-        //development_knit - User : 0000001017
+//        testing notification actions :
+//        development_knit - User : 0000001017
 //        if(showNot){
 //
-//            NotificationGenerator.generateNotification(this, "parent tip 1" , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-//            NotificationGenerator.generateNotification(this, "parent no activity", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
-//            NotificationGenerator.generateNotification(this, "teacher no activity", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
-//            NotificationGenerator.generateNotification(this, "teacher tip 1", Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.parentTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.parentNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
+//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
+//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherTip1Content, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
 //
 //            Bundle extras = new Bundle();
-//            extras.putString("grpCode", "ASH8636");
-//            extras.putString("grpName", "CUP");
-//            NotificationGenerator.generateNotification(this, "teacher no sub", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
+//            String className = "CUP";
+//            String classCode = "ASH8636";
+//            extras.putString("grpCode", classCode);
+//            extras.putString("grpName", className);
+//            NotificationGenerator.generateNotification(this, "Your classroom " + className + EventCheckerAlarmReceiver.teacherNoSubContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
 //
-//            NotificationGenerator.generateNotification(this, "teacher no msg", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
-//            NotificationGenerator.generateNotification(this, "teacher confused parents", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
-//            NotificationGenerator.generateNotification(this, "teacher sending daily tip", Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.SEND_MESSAGE_ACTION, extras);
+//            NotificationGenerator.generateNotification(this, "10" + EventCheckerAlarmReceiver.teacherConfusingMsgContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
 //            showNot = false;
 //        }
     }

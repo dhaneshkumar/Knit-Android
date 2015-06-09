@@ -101,16 +101,7 @@ public class Constants {
     public static int HOUR_MILLISEC = 60 * 60 * 1000;
     public static int DAY_MILLISEC = 24 * 60 * 60 * 1000;
 
-    //Default messages details
-    public static String DEFAULT_CREATOR = "Mr. Kio";
-    public static String DEFAULT_SENDER_ID_TEACHER = "ttextslate@trumplab.com";
-    public static String DEFAULT_SENDER_ID_PARENT = "ptextslate@trumplab.com";
-
-    public static String DEFAULT_NAME = "Mr. Kio";
-
-    public static String WELCOME_MESSAGE_TEACHER = "Hey there! Welcome to my classroom.You can also create your own classroom and start broadcasting messages to all the parents. Don’t forget to share code of your classroom with parents. Without code how will they subscribe to your classroom?";
-    public static String WELCOME_MESSAGE_PARENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your child’s teacher but you will need a class-code. If your child’s teacher haven’t yet started using Knit then invite them";
-    public static String CLASS_CREATION_MESSAGE_TEACHER = "Ola! Your classroom has been created successfully. Do you know that parents who don’t use android phone can also subscribe to your updates? They just have to send <classroom-code> SPACE <NAME> to our number 9243000080.";
+    public static String DEFAULT_NAME = "Knit";
 
     //Notification types
     public static String NORMAL_NOTIFICATION = "NORMAL";
@@ -127,21 +118,17 @@ public class Constants {
     public static String OUTBOX_ACTION = "OUTBOX"; //e.g for transition notification
     public static String INVITE_PARENT_ACTION = "INVITE_PARENT"; //e.g for transition notification
     public static String CREATE_CLASS_ACTION = "CREATE_CLASS"; //e.g for transition notification
+    public static String SEND_MESSAGE_ACTION="SEND_MESSAGE"; //e.g for transistion notification - go to created class to send a message
 
 
     public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
     //Note : action corresponding to LINK type will be a url
 
-    public static String WELCOME_MESSAGE_STUDENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your teacher but you will need a class-code. If your teacher haven’t yet started using Knit then invite them";
-
     public static int actionBarHeight = 0;
     public static final String SENT_MESSAGE_TABLE = "SentMessages";
-    public static final String spreadWordContent = "Hey, I recently started using Knit Messaging. It's a great app for teachers to communicate with either students or their parents. You must try this out. http://tinyurl.com/knit-messaging";
-
 
     public static boolean signup_classrooms =false;
     public static boolean signup_inbox = false;
     public static boolean signup_outbox = false;
     public static boolean IS_SIGNUP = false;
-
 }

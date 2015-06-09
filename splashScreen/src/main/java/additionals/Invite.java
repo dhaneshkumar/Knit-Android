@@ -85,8 +85,7 @@ public class Invite extends MyActionBarActivity{
       Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
       inviteHeading.setTypeface(typeFace);
 
-      //TODO set title & invite heading according to inviteType and hide/show extra details
-      String whatsAppContent = Constants.spreadWordContent;
+      String whatsAppContent = "";
 
       if(inviteType == Constants.INVITATION_T2P){
           //show the extra fields

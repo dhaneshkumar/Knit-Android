@@ -437,20 +437,6 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
             }
             if(currentUser == null) return; //won't happen as called after successful login
 
-            //here create welcome notification and message
-            if(currentUser.getString("role").equals("teacher")){
-                NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                //EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_TEACHER, Constants.DEFAULT_NAME, currentUser);
-            }
-            else if(currentUser.getString("role").equals("parent")){
-                NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                //EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_PARENT, Constants.DEFAULT_NAME, currentUser);
-            }
-            else{
-                NotificationGenerator.generateNotification(activityContext, Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
-                //EventCheckerAlarmReceiver.generateLocalMessage(Constants.WELCOME_MESSAGE_STUDENT, Constants.DEFAULT_NAME, currentUser);
-            }
-
             //variable storing that its first time app <signup>user
             Constants.IS_SIGNUP = true;
 

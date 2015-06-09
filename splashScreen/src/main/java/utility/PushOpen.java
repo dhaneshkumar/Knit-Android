@@ -22,6 +22,7 @@ import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
+import trumplabs.schoolapp.SendMessage;
 
 public class PushOpen extends ActionBarActivity {
     String type;
@@ -54,13 +55,26 @@ public class PushOpen extends ActionBarActivity {
                 String classCode = getIntent().getExtras().getString("classCode");
                 String className = getIntent().getExtras().getString("className");
 
-
                 if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
                     Log.d("DEBUG_PUSH_OPEN", "invite parent action " + classCode + " " + className);
                     i.putExtra("classCode", classCode);
                     i.putExtra("className", className);
                     i.putExtra("source", Constants.SOURCE_NOTIFICATION);
                     i.putExtra("inviteType", Constants.INVITATION_T2P);
+                }
+                else
+                    i = new Intent(this, MainActivity.class); //go to main activity
+            }
+            else if(action.equals(Constants.SEND_MESSAGE_ACTION)){
+                i = new Intent(this, SendMessage.class);
+
+                String classCode = getIntent().getExtras().getString("classCode");
+                String className = getIntent().getExtras().getString("className");
+
+                if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
+                    Log.d("DEBUG_PUSH_OPEN", "send message action " + classCode + " " + className);
+                    i.putExtra("classCode", classCode);
+                    i.putExtra("className", className);
                 }
                 else
                     i = new Intent(this, MainActivity.class); //go to main activity
@@ -98,7 +112,6 @@ public class PushOpen extends ActionBarActivity {
             i.putExtra("action", action);
         }
         else { //normal notification
-
             i = new Intent(this, MainActivity.class);
             ParseUser user = ParseUser.getCurrentUser();
             if (user != null && user.getString("role").equals(Constants.TEACHER))
@@ -113,22 +126,17 @@ public class PushOpen extends ActionBarActivity {
         finish(); //this is required so that this pushOpen activity no longer remains in the activity stack
     }
 
-
     @Override
     public void onNewIntent(Intent intent) {
         setIntent(intent);
         type = intent.getExtras().getString("type");
         action = intent.getExtras().getString("action");
 
-
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        notificationManager.cancelAll();
-        int notificationId = intent.getIntExtra("notificationId", 100);
+        int notificationId = intent.getIntExtra("notificationId", -1);
         Log.d("DEBUG_PUSH_OPEN", type +  " " + action + " notid " + notificationId);
-        if(notificationId == 100)
-            notificationManager.cancelAll();
-        else
+        if(notificationId != -1)
             notificationManager.cancel(notificationId);
     }
 

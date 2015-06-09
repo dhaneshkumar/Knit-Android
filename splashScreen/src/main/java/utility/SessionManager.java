@@ -53,6 +53,17 @@ public class SessionManager {
     editor = pref.edit();
   }
 
+
+    //range 1-1000 (0 for normal notification)
+    public int getNextNotificationId(){
+        int id = pref.getInt("notification_id", -1);
+        if(id < 0 || id > 1000){
+            id = 1;
+        }
+        editor.putInt("notification_id", id+1);
+        editor.commit();
+        return id;
+    }
   
   /*
    * maintaining child list
