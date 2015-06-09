@@ -100,22 +100,22 @@ public class Invite extends MyActionBarActivity{
 
       switch (inviteType){
           case Constants.INVITATION_T2P:
-              inviteHeading.setText("Invite Parents via -");
+              inviteHeading.setText("Invite Parents");
               getSupportActionBar().setTitle("Invite Parents & Students");
               whatsAppContent = "Hi! I have recently started using 'Knit Messaging' app to send updates for my '"+ className +"' class. Download the app from "+ "goo.gl/cormDk" +" and use code '"+classCode+"' to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_P2T:
-              inviteHeading.setText("Invite Teachers via -");
+              inviteHeading.setText("Invite Teachers");
               getSupportActionBar().setTitle("Invite Teachers");
               whatsAppContent = "Dear teacher, I found an awesome app, 'Knit Messaging', for teachers to communicate with parents and students. You can download the app from " + "goo.gl/FmydzU ";
               break;
           case Constants.INVITATION_P2P:
-              inviteHeading.setText("Invite other parents via - ");
+              inviteHeading.setText("Invite other parents");
               getSupportActionBar().setTitle("Invite other parents");
               whatsAppContent = "Hi! I just joined '" + className + "' class of " + teacherName + " on 'Knit Messaging' app.  Download the app from " + "goo.gl/Q2yeE3" +  " and use code '" + classCode + "' to join this class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_SPREAD:
-              inviteHeading.setText("Tell your friends about Knit via - ");
+              inviteHeading.setText("Tell your friends about Knit");
               getSupportActionBar().setTitle("Spread the word");
               whatsAppContent = "Yo! I just started using 'Knit Messaging' app. It's an awesome app for teachers, parents and students to connect with each other. Download the app from " + "goo.gl/GLkQ57 ";
               break;
