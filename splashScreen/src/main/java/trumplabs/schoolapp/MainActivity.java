@@ -43,6 +43,7 @@ import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import notifications.AlarmTrigger;
+import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.Config;
@@ -360,13 +361,28 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        /*if(showNot){
-            NotificationGenerator.generateNotification(this, "invite teacher" , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
-            showNot = false;
-        }*/
+        //testing notification actions :
+        //development_knit - User : 0000001017
+//        if(showNot){
+//
+//            NotificationGenerator.generateNotification(this, "parent tip 1" , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//            NotificationGenerator.generateNotification(this, "parent no activity", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
+//            NotificationGenerator.generateNotification(this, "teacher no activity", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
+//            NotificationGenerator.generateNotification(this, "teacher tip 1", Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//
+//            Bundle extras = new Bundle();
+//            extras.putString("grpCode", "ASH8636");
+//            extras.putString("grpName", "CUP");
+//            NotificationGenerator.generateNotification(this, "teacher no sub", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
+//
+//            NotificationGenerator.generateNotification(this, "teacher no msg", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CLASSROOMS_ACTION);
+//            NotificationGenerator.generateNotification(this, "teacher confused parents", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
+//            NotificationGenerator.generateNotification(this, "teacher sending daily tip", Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//            showNot = false;
+//        }
     }
 
-    //static boolean showNot = true; //temporary hack to show notification once on app start
+//    static boolean showNot = true; //temporary hack to show notification once on app start
 
     @Override
     protected void onResume() {
