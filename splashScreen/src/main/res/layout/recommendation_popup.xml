@@ -57,8 +57,9 @@
             android:textSize="14sp"
             android:paddingLeft="16dp"
             android:paddingRight="16dp"
+            android:gravity="center"
             android:textColor="@color/black"
-            android:text="We will send you an email with instructions on how to invite parents to your class."/>
+            android:text="We will send you a pdf containing instructions on 'How to Join a class'. Take its printouts and distribute among parents and students."/>
 
 
             <EditText

@@ -110,7 +110,7 @@ public class Constants {
 
     public static String WELCOME_MESSAGE_TEACHER = "Hey there! Welcome to my classroom.You can also create your own classroom and start broadcasting messages to all the parents. Don’t forget to share code of your classroom with parents. Without code how will they subscribe to your classroom?";
     public static String WELCOME_MESSAGE_PARENT = " Hey there! Welcome to my classroom. You can also join any classroom created by your child’s teacher but you will need a class-code. If your child’s teacher haven’t yet started using Knit then invite them";
-    public static String CLASS_CREATION_MESSAGE_TEACHER = "Ola! Your classroom has been created successfully. Do you know that parents who don’t use android phone can also subscribe to your updates? They just have to send <classroom-code> SPACE <NAME> to our number 9243000080.";
+    public static String CLASS_CREATION_MESSAGE_TEACHER = "Ola! Your classroom has been created successfully. Do you know that parents who don’t use android phone can also subscribe to your updates? They just have to send <classroom-code> SPACE <STUDENT-NAME> to our number 9243000080.";
 
     //Notification types
     public static String NORMAL_NOTIFICATION = "NORMAL";
