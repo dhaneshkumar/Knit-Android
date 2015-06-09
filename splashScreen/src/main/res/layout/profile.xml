@@ -91,7 +91,7 @@
                         android:layout_height="100dp"
                         android:layout_marginBottom="20dp"
                         android:layout_marginLeft="@dimen/text_left_margin"
-                        android:background="@drawable/propic" />
+                        android:background="@drawable/dp_common" />
 
                     <LinearLayout
                         android:id="@+id/editName"
