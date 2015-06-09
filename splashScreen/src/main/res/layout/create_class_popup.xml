@@ -191,7 +191,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textSize="13sp"
-            android:text="This is a unique code generated for every class and is to be used by parents to subscribe to your classroom."
+            android:text="This is a unique code generated for every class and is to be used by parents and students to subscribe to your classroom.\nLet them know about your class."
             />
 
         <TextView

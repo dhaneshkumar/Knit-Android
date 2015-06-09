@@ -247,7 +247,7 @@
                     android:id="@+id/share"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="SHARE CLASS CODE"
+                    android:text="Invite Others"
                     android:textColor="@color/black"
                     android:textSize="16sp" />
 
@@ -258,7 +258,7 @@
                     android:layout_below="@+id/share"
                     android:layout_toLeftOf="@+id/next"
                     android:paddingRight="16dp"
-                    android:text="Share this class code with other parents of the same class"
+                    android:text="Help other parents and students to join the same class "
                     android:textSize="12sp"
                     />
 
