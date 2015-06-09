@@ -102,7 +102,7 @@ public class Invite extends MyActionBarActivity{
           case Constants.INVITATION_T2P:
               inviteHeading.setText("Invite Parents via -");
               getSupportActionBar().setTitle("Invite Parents & Students");
-              whatsAppContent = "Namaste! I have recently started using 'Knit Messaging' app to send updates for my "+ className +" class. Download the app from "+ "goo.gl/cormDk" +" and use code "+classCode+" to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
+              whatsAppContent = "Hi! I have recently started using 'Knit Messaging' app to send updates for my "+ className +" class. Download the app from "+ "goo.gl/cormDk" +" and use code "+classCode+" to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_P2T:
               inviteHeading.setText("Invite Teachers via -");
