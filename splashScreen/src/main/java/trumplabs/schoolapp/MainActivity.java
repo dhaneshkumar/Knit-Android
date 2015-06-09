@@ -364,10 +364,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
 //        testing notification actions :
 //        development_knit - User : 0000001017
+
 //        if(showNot){
 //
 //            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.parentTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
 //            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.parentNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
+//
 //            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
 //            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherTip1Content, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
 //
@@ -377,9 +379,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 //            extras.putString("grpCode", classCode);
 //            extras.putString("grpName", className);
 //            NotificationGenerator.generateNotification(this, "Your classroom " + className + EventCheckerAlarmReceiver.teacherNoSubContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
-//
 //            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.SEND_MESSAGE_ACTION, extras);
 //            NotificationGenerator.generateNotification(this, "10" + EventCheckerAlarmReceiver.teacherConfusingMsgContent + className, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
+//
+//            /*test merging in case of normal notification*/
+//            NotificationGenerator.generateNotification(this, "Message 1 = " + EventCheckerAlarmReceiver.parentTip1Content , "Mr XYZ", Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//            NotificationGenerator.generateNotification(this, "Message 2 = " +  EventCheckerAlarmReceiver.teacherTip1Content, "Miss PQR", Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+//
 //            showNot = false;
 //        }
     }

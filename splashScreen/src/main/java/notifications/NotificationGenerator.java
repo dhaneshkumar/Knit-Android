@@ -89,6 +89,7 @@ public class NotificationGenerator {
         PendingIntent deletePendingIntent = PendingIntent.getBroadcast(context, notEntity.notificationId, deleteIntent, PendingIntent.FLAG_CANCEL_CURRENT);
         mBuilder.setDeleteIntent(deletePendingIntent);
 
+        //set title and content in unexpanded form
         mBuilder.setContentTitle(notEntity.groupName);
         mBuilder.setContentText(notEntity.contentText);
 
@@ -110,10 +111,17 @@ public class NotificationGenerator {
             else{
                 NotificationCompat.InboxStyle inboxStyle = new NotificationCompat.InboxStyle();
                 inboxStyle.setBigContentTitle("Knit");
+                String text = "";
                 for(int i=0; i<normalNotificationList.size(); i++){
                     NotificationEntity entity = normalNotificationList.get(i);
                     inboxStyle.addLine(entity.groupName + " : " + entity.contentText);
+                    text += entity.groupName + " : " + entity.contentText + "\n";
                 }
+
+                //override title and content in unexpanded form
+                mBuilder.setContentTitle("Knit");
+                mBuilder.setContentText(text);
+
                 mBuilder.setStyle(inboxStyle);
             }
 
