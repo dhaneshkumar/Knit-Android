@@ -51,6 +51,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static String verificationCode;
     static Context activityContext;
     static Boolean isLogin;
+    static Menu menu;
 
     private static CountDownTimer countDownTimer = null;
     static TextView timerTV;
@@ -122,6 +123,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.phone_verification, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -185,6 +187,13 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
         else{
             Log.d("DEBUG_SIGNUP_VER", "Can't show error as error textview NULL");
+        }
+    }
+
+    public static void hideVerifyOption(){
+        MenuItem verify = menu.findItem(R.id.verify);
+        if(verify != null){
+            verify.setVisible(false);
         }
     }
 
