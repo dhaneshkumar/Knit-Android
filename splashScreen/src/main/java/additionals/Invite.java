@@ -4,6 +4,7 @@ package additionals;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 
 import com.parse.ParseAnalytics;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -101,22 +103,22 @@ public class Invite extends MyActionBarActivity{
           case Constants.INVITATION_T2P:
               inviteHeading.setText("Invite Parents");
               getSupportActionBar().setTitle("Invite Parents & Students");
-              whatsAppContent = "Hi! I have recently started using 'Knit Messaging' app to send updates for my '"+ className +"' class. Download the app from "+ "goo.gl/cormDk" +" and use code '"+classCode+"' to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
+              whatsAppContent = "Hi! I have recently started using 'Knit Messaging' app to send updates for my '"+ className +"' class. Download the app from "+ "http://goo.gl/cormDk" +" and use code '"+classCode+"' to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_P2T:
               inviteHeading.setText("Invite Teachers");
               getSupportActionBar().setTitle("Invite Teachers");
-              whatsAppContent = "Dear teacher, I found an awesome app, 'Knit Messaging', for teachers to communicate with parents and students. You can download the app from " + "goo.gl/FmydzU ";
+              whatsAppContent = "Dear teacher, I found an awesome app, 'Knit Messaging', for teachers to communicate with parents and students. You can download the app from " + "http://goo.gl/FmydzU ";
               break;
           case Constants.INVITATION_P2P:
               inviteHeading.setText("Invite other parents");
               getSupportActionBar().setTitle("Invite other parents");
-              whatsAppContent = "Hi! I just joined '" + className + "' class of " + teacherName + " on 'Knit Messaging' app.  Download the app from " + "goo.gl/Q2yeE3" +  " and use code '" + classCode + "' to join this class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
+              whatsAppContent = "Hi! I just joined '" + className + "' class of " + teacherName + " on 'Knit Messaging' app.  Download the app from " + "http://goo.gl/Q2yeE3" +  " and use code '" + classCode + "' to join this class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_SPREAD:
               inviteHeading.setText("Tell your friends about Knit");
               getSupportActionBar().setTitle("Spread the word");
-              whatsAppContent = "Yo! I just started using 'Knit Messaging' app. It's an awesome app for teachers, parents and students to connect with each other. Download the app from " + "goo.gl/GLkQ57 ";
+              whatsAppContent = "Yo! I just started using 'Knit Messaging' app. It's an awesome app for teachers, parents and students to connect with each other. Download the app from " + "http://goo.gl/GLkQ57 ";
               break;
       }
 
@@ -163,9 +165,19 @@ public class Invite extends MyActionBarActivity{
 
                   Intent sendIntent = new Intent(Intent.ACTION_SEND);
                   sendIntent.setPackage("com.whatsapp");
-                  sendIntent.setType("text/plain");
 
                   sendIntent.putExtra(Intent.EXTRA_TEXT, whatsAppContentFinal);
+
+                  if(inviteType == Constants.INVITATION_P2T || inviteType == Constants.INVITATION_SPREAD)
+                  {
+                      Uri uri = Uri.parse("android.resource://" + getPackageName() + "/drawable/whatsapp_promotion1");
+                      sendIntent.putExtra(Intent.EXTRA_STREAM, uri);
+                      sendIntent.setType("image/*");
+                  }
+                  else {
+                      sendIntent.setType("text/plain");
+
+                  }
                   startActivity(sendIntent);
 
               } catch (PackageManager.NameNotFoundException e) {

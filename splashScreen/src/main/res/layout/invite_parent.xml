@@ -161,13 +161,17 @@
         android:layout_below="@+id/email"
         android:text="Receive Instructions via Email"
         android:layout_marginTop="32dp"
-        android:paddingLeft="16dp"
-        android:paddingTop="16dp"
+        android:padding="16dp"
         android:textSize="16sp"
         android:textStyle="bold"
         android:textColor="@color/buttoncolor"
         />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/instructions"
+        >
 
     <LinearLayout
         android:id="@+id/seeHow"
@@ -223,6 +227,7 @@
         </LinearLayout>
 
     </LinearLayout>
+        </RelativeLayout>
 
 </RelativeLayout>
 
