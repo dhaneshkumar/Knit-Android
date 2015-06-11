@@ -589,7 +589,7 @@ stop swipe refreshlayout
         if (user == null)
             {Utility.logout(); return;}
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         query.fromLocalDatastore();
         query.whereEqualTo("userId", user.getUsername());
         try{

@@ -101,7 +101,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
 
         //get details(profile pic, assigned name) from Codegroup and User table
-        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
+        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
         classQuery.fromLocalDatastore();
         classQuery.whereEqualTo("code", classCode);
         String teacherSenderId = null;

@@ -33,7 +33,7 @@ public class Queries2 {
      * @return
      */
     public boolean isCodegroupExist(String code, String userId) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
         query.fromLocalDatastore();
         query.whereEqualTo("code", code);
         query.whereEqualTo("userId", userId);
@@ -66,7 +66,7 @@ public class Queries2 {
     /*
      * fetching updated codegroup entry from server
      */
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
         query.fromLocalDatastore();
         query.whereEqualTo("code", code);
         query.whereEqualTo("userId", userId);

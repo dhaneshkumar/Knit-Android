@@ -44,7 +44,7 @@ public class Queries {
 
     public List<ParseObject> getLocalInboxMsgs() throws ParseException {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
         query.fromLocalDatastore();
         query.orderByDescending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", userId);
@@ -306,7 +306,7 @@ public class Queries {
 
         }
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
         query.fromLocalDatastore();
         query.orderByDescending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", userId);
@@ -339,7 +339,7 @@ public class Queries {
         } else
             groupDetails = new ArrayList<ParseObject>();
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         query.fromLocalDatastore();
         query.orderByDescending("creationTime");
         query.whereEqualTo("userId", userId);
@@ -396,7 +396,7 @@ public class Queries {
                     oldTime = (Date) groupDetails.get(0).get("creationTime");
             }
 
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
             query.orderByDescending(Constants.TIMESTAMP);
             query.whereEqualTo("code", groupCode);
             query.setLimit(3 * createMsgCount);
@@ -435,7 +435,7 @@ public class Queries {
 
                             ParseObject messages = newmsgs.get(k);
 
-                            ParseObject sentMsg = new ParseObject("SentMessages");
+                            ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
                             sentMsg.put("objectId", messages.getObjectId());
                             sentMsg.put("Creator", messages.getString("Creator"));
                             sentMsg.put("code", messages.getString("code"));
@@ -480,7 +480,7 @@ public class Queries {
 
         if (user != null) {
             List<List<String>> createdGroups = new ArrayList<List<String>>();
-            createdGroups = user.getList("Created_groups");
+            createdGroups = user.getList(Constants.CREATED_GROUPS);
             if (createdGroups != null)
                 for (int i = 0; i < createdGroups.size(); i++) {
                     if (className.equals(createdGroups.get(i).get(1).toString())) {
@@ -500,11 +500,12 @@ public class Queries {
         List<MemberDetails> memberList = new ArrayList<MemberDetails>();
 
         // Retrieving local messages from group members locally
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupMembers");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
         query.fromLocalDatastore();
         query.whereEqualTo("userId", userId);
         query.whereEqualTo("code", groupCode);
         query.whereEqualTo("status", null);
+        query.setLimit(1000); //set upper limit
 
 
         try {
@@ -557,6 +558,7 @@ public class Queries {
         smsQuery.whereEqualTo("userId", userId);
         smsQuery.whereEqualTo("cod", groupCode); // "cod" - as written in table
         smsQuery.whereEqualTo("status", null);
+        smsQuery.setLimit(1000);
 
         List<ParseObject> smsUsersList = null;
         try {
@@ -648,7 +650,7 @@ public class Queries {
      */
     public int getMemberCount(String groupCode) throws ParseException {
         int appCount = 0, smsCount = 0;
-        ParseQuery<ParseObject> query1 = ParseQuery.getQuery("GroupMembers");
+        ParseQuery<ParseObject> query1 = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
         query1.fromLocalDatastore();
         query1.whereEqualTo("code", groupCode);
         query1.whereEqualTo("userId", userId);
@@ -667,7 +669,7 @@ public class Queries {
     }
 
     public ParseObject getClassObject(String groupCode) throws ParseException{
-        ParseQuery query = ParseQuery.getQuery("Codegroup");
+        ParseQuery query = ParseQuery.getQuery(Constants.CODE_GROUP);
         query.fromLocalDatastore();
         //query.whereEqualTo("userId", userId); // Not needed as it doesn't matter. All will have same Timestamp
         query.whereEqualTo("code", groupCode);
@@ -681,7 +683,7 @@ public class Queries {
         Log.d("DEBUG_QUERIES_GET_CLASS_OBJECT", "[ ^" + groupCode + "^ ] Not found locally. Fetching from Server");
 
         //not found locally
-        ParseQuery serverQuery = ParseQuery.getQuery("Codegroup");
+        ParseQuery serverQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
         serverQuery.whereEqualTo("code", groupCode);
         serverQuery.setLimit(1);
 
@@ -748,7 +750,7 @@ public class Queries {
 
     public List<ParseObject> getLocalOutbox() {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         query.fromLocalDatastore();
         query.orderByDescending("creationTime");
         query.whereEqualTo("userId", userId);
@@ -774,7 +776,7 @@ public class Queries {
             lastTimeStamp = msgs.get(msgs.size() - 1).getDate("creationTime");
         }
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         query.fromLocalDatastore();
         query.orderByDescending("creationTime");
         query.whereEqualTo("userId", userId);

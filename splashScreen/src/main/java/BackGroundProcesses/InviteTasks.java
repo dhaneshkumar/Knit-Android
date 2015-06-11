@@ -54,7 +54,7 @@ public class InviteTasks {
 
         String teacherName = "";
         if(inviteType == Constants.INVITATION_P2P){
-            ParseQuery<ParseObject> classQuery = new ParseQuery<>("Codegroup");
+            ParseQuery<ParseObject> classQuery = new ParseQuery<>(Constants.CODE_GROUP);
             classQuery.fromLocalDatastore();
             classQuery.whereEqualTo("code", classCode);
 

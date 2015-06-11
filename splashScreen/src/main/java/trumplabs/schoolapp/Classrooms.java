@@ -318,7 +318,7 @@ public class Classrooms extends Fragment {
     public static List<List<String>> getJoinedGroups(ParseUser user){
         if(user == null) return new ArrayList<>();
 
-        List<List<String>> groups = user.getList("joined_groups");
+        List<List<String>> groups = user.getList(Constants.JOINED_GROUPS);
         if(groups == null) return new ArrayList<>();
 
         for(List<String> group : groups){
@@ -612,7 +612,7 @@ public class Classrooms extends Fragment {
           /*
            * Setting creator name
            */
-            ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>("Codegroup");
+            ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
             delquery1.fromLocalDatastore();
             delquery1.whereEqualTo("code", joinedGroups.get(position).get(0));
 

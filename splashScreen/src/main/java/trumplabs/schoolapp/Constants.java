@@ -8,8 +8,6 @@ public class Constants {
   public static String PARENT = "parent";
   public static String STUDENT = "student";
 
-  public static Map<String, String> groupSenderMap;
-  public static Date currentTimeStamp;
   public static boolean updatedTimestamp = false;
   public static String TIMESTAMP = "createdAt";
   public static final String ROLE = "role";
@@ -20,14 +18,11 @@ public class Constants {
   public static final String JOINED_GROUPS = "joined_groups";
   public static final String NAME = "name";
   public static final String PHONE = "phone";
-  public static final String PID = "pid";
-  public static final String SCHOOL = "school";
-  public static final String GROUP_TYPE = "group_type";
-  public static final String REMOVED_GROUPS = "removed_groups";
-  
+
   /*
    * groupDetails table variables
    */
+  public static final String GROUP_DETAILS = "GroupDetails";
   public static final String LIKE_COUNT = "like_count";
   public static final String CONFUSED_COUNT = "confused_count";
   public static final String SEEN_COUNT = "seen_count";
@@ -35,24 +30,15 @@ public class Constants {
   public static final String CONFUSING = "confusing"; //local
   public static final String SYNCED_LIKE = "synced_like"; //local like status last synced
   public static final String SYNCED_CONFUSING = "synced_confusing"; //local
-  public static final String GROUP_DETAILS = "GroupDetails";
   public static final String DIRTY_BIT = "dirty_bit"; //local
   public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
   public static final String USER_ID = "userId"; //local  user id
-
+  public static final String LIKE_STATUS = "like_status";
+  public static final String CONFUSED_STATUS = "confused_status";
 
   
 
-  /*
-   * MessageState table variables [only on cloud]
-   * MessageState is written as (LIKE_STATUS, CONSFUSED_STATUS)
-   * 3 states possible 00, 10(liked), 01(confused)
-   */
-   public static final String MESSAGE_STATE = "MessageState";
-   public static final String USERNAME = "username";
-   public static final String MESSAGE_ID = "message_id";
-   public static final String LIKE_STATUS = "like_status";
-   public static final String CONFUSED_STATUS = "confused_status";
+
 
 
   /*
@@ -125,7 +111,7 @@ public class Constants {
     //Note : action corresponding to LINK type will be a url
 
     public static int actionBarHeight = 0;
-    public static final String SENT_MESSAGE_TABLE = "SentMessages";
+    public static final String SENT_MESSAGES_TABLE = "SentMessages";
 
     public static boolean signup_classrooms =false;
     public static boolean signup_inbox = false;

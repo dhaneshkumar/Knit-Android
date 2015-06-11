@@ -35,7 +35,7 @@ public class SyncMessageDetails {
 
         String username = user.getUsername();
 
-        ParseQuery query = new ParseQuery("GroupDetails");
+        ParseQuery query = new ParseQuery(Constants.GROUP_DETAILS);
         query.fromLocalDatastore();
         query.whereMatches("userId", username);
         query.orderByDescending(Constants.TIMESTAMP); //since limited, consider only latest ones
@@ -150,7 +150,7 @@ public class SyncMessageDetails {
         if(user == null) return;
 
         //fetch received messages from local GroupDetails table only(not locally generated msgs)
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
         query.fromLocalDatastore();
         query.orderByDescending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", user.getUsername());
@@ -239,7 +239,7 @@ public class SyncMessageDetails {
             List<String> group = createdGroups.get(i);
             createdClassCodes.add(group.get(0));
         }
-        ParseQuery outboxQuery = ParseQuery.getQuery("SentMessages");
+        ParseQuery outboxQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         outboxQuery.fromLocalDatastore();
         outboxQuery.orderByDescending("creationTime");
         outboxQuery.whereEqualTo("userId", userId);

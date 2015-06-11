@@ -851,7 +851,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
 
         //adding item to the listview
-        final ParseObject groupDetails1 = new ParseObject("GroupDetails");
+        final ParseObject groupDetails1 = new ParseObject(Constants.GROUP_DETAILS);
         groupDetails1.put("code", groupCode);
         groupDetails1.put("title", typedtxt);
         groupDetails1.put("Creator", sender);
@@ -883,7 +883,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
                         updProgressBar.setVisibility(View.GONE);
 
-                        ParseObject sentMsg = new ParseObject("SentMessages");
+                        ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
                         sentMsg.put("objectId", objectId);
                         sentMsg.put("Creator", groupDetails1.getString("Creator"));
                         sentMsg.put("code", groupDetails1.getString("code"));
@@ -902,7 +902,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         //update outbox message count
                         Outbox.updateOutboxTotalMessages();
 
-                        ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
                         query.fromLocalDatastore();
                         query.orderByDescending("creationTime");
                         query.whereEqualTo("userId", userId);
@@ -984,7 +984,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         final ParseFile file = new ParseFile(fileName, data);
 
         // /saving the sent image message details on App//////////////////////
-        final ParseObject groupDetails1 = new ParseObject("GroupDetails");
+        final ParseObject groupDetails1 = new ParseObject(Constants.GROUP_DETAILS);
 
         //Adding this object to list view
         groupDetails1.put("code", groupCode);
@@ -1034,7 +1034,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
                                     updProgressBar.setVisibility(View.GONE);
 
-                                    ParseObject sentMsg = new ParseObject("SentMessages");
+                                    ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
                                     sentMsg.put("objectId", objectId);
                                     sentMsg.put("Creator", groupDetails1.getString("Creator"));
                                     sentMsg.put("code", groupDetails1.getString("code"));
@@ -1061,7 +1061,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                                     //update outbox message count
                                     Outbox.updateOutboxTotalMessages();
 
-                                    ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+                                    ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
                                     query.fromLocalDatastore();
                                     query.orderByDescending("creationTime");
                                     query.whereEqualTo("userId", userId);
@@ -1124,9 +1124,5 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             }
         });
     }
-
-
-
-
 
 }

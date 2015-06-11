@@ -527,7 +527,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
              * Saving image details in code group
              */
 
-                        ParseQuery<ParseObject> codeQuery = ParseQuery.getQuery("Codegroup");
+                        ParseQuery<ParseObject> codeQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
                         codeQuery.whereEqualTo("senderId", userId);
 
                         codeQuery.findInBackground(new FindCallback<ParseObject>() {

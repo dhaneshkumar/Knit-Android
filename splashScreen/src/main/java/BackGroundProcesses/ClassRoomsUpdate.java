@@ -56,7 +56,7 @@ public class ClassRoomsUpdate {
                 joinedClassCodes.add(joinedClasses.get(i).get(0));
             }
 
-            ParseQuery joinedQuery = new ParseQuery("Codegroup");
+            ParseQuery joinedQuery = new ParseQuery(Constants.CODE_GROUP);
             joinedQuery.fromLocalDatastore();
             joinedQuery.whereEqualTo("userId", user.getUsername());
             joinedQuery.whereContainedIn("code", joinedClassCodes);
@@ -167,7 +167,7 @@ public class ClassRoomsUpdate {
 
             if(nameChanged) {//query Codegroup and change "Creator" in Codegroup table(where senderId = username)
                 Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : updating Codegroup table for senderId = " + username);
-                ParseQuery classQuery = new ParseQuery("Codegroup");
+                ParseQuery classQuery = new ParseQuery(Constants.CODE_GROUP);
                 classQuery.fromLocalDatastore();
                 classQuery.whereEqualTo("senderId", username);
                 classQuery.whereEqualTo("userId", currentUserName);
