@@ -32,7 +32,6 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.ScalingUtilities;
 import utility.Utility;

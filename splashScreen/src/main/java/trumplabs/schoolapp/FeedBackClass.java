@@ -13,12 +13,8 @@ import android.widget.TextView;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.util.HashMap;
-import java.util.List;
 
 import trumplab.textslate.R;
 import utility.Utility;

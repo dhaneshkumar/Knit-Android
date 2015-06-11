@@ -3,7 +3,6 @@ package BackGroundProcesses;
 import android.util.Log;
 
 import com.parse.GetDataCallback;
-import com.parse.Parse;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;

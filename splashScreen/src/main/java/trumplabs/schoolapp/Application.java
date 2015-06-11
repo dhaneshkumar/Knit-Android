@@ -4,14 +4,11 @@ package trumplabs.schoolapp;
 import android.app.Activity;
 import android.content.Context;
 
-import com.facebook.FacebookSdk;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
-import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 import com.parse.PushService;
 
-import java.util.Calendar;
 import java.util.Date;
 
 import utility.Config;

@@ -21,7 +21,6 @@ import java.util.List;
 import BackGroundProcesses.CreatedClassRooms;
 import library.UtilString;
 import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 
 public class Queries2 {

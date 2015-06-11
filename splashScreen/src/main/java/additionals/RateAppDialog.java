@@ -1,6 +1,5 @@
 package additionals;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.ActivityNotFoundException;
@@ -10,14 +9,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.view.View;
 
-import trumplab.textslate.R;
 import trumplabs.schoolapp.FeedBackClass;
-import trumplabs.schoolapp.MainActivity;
-import utility.Utility;
 
 /**
  * Created by dhanesh on 12/3/15.

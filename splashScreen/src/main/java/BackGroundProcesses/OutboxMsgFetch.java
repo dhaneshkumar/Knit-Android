@@ -1,7 +1,6 @@
 package BackGroundProcesses;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;

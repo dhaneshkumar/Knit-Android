@@ -1,6 +1,5 @@
 package trumplabs.schoolapp;
 
-import java.util.Date;
 import java.util.Map;
 
 public class Constants {

@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -16,12 +15,10 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import utility.PushOpen;
 import utility.SessionManager;
-import utility.Utility;
 
 /**
  * Created by ashish on 19/1/15.

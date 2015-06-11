@@ -29,7 +29,6 @@ import java.util.Map;
 import additionals.SmsListener;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.UtilString;
-import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;

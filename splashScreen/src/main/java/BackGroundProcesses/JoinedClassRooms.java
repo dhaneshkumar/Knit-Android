@@ -4,20 +4,14 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
-import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
-import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
-import utility.Config;
-import utility.Queries2;
-import utility.SessionManager;
 import utility.Utility;
 
 /**

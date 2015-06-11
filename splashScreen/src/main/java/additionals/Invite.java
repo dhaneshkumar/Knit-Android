@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.parse.ParseAnalytics;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 

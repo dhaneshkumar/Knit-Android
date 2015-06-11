@@ -15,7 +15,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import BackGroundProcesses.UpdateAllClassSubscribers;
@@ -27,7 +26,6 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FontsOverride;
 import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 /**

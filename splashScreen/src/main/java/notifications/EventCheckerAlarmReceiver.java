@@ -17,7 +17,6 @@ import java.util.List;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
-import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;

@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import trumplab.textslate.R;
-import trumplabs.schoolapp.MainActivity;
 
 /**
  * Created by Dhanesh on 1/17/2015.
