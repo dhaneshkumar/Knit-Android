@@ -36,7 +36,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
             if(jsonData != null) {
                 JSONObject json = new JSONObject(jsonData);
 
-                //Notification message
+                //Notification message - keys "msg" or "alert"
                 contentText = json.getString("msg");
                 if(UtilString.isBlank(contentText)) {
                     if(json.has("alert")) {
@@ -45,9 +45,8 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
                     }
                 }
 
-                //notification title
+                //notification title - keys "groupName" or "title"
                 groupName = json.getString("groupName");
-
                 if(UtilString.isBlank(groupName))
                 {
                     if(json.has("title")) {
