@@ -577,8 +577,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     }
 
     public void onBackPressed() {
-
         Intent intent = new Intent(ProfilePage.this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 }

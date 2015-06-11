@@ -78,6 +78,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("DEBUG_TEMPORARY", "onCreate Called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
         signInFlag = false;

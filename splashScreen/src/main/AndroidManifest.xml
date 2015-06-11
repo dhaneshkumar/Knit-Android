@@ -92,7 +92,8 @@
         <activity
                   android:name="loginpages.LoginPage"></activity>
 
-        <activity android:name="trumplabs.schoolapp.MainActivity">
+        <activity android:name="trumplabs.schoolapp.MainActivity"
+            android:launchMode="singleTop">
 
             <intent-filter
                 >
