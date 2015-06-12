@@ -102,6 +102,18 @@ public class PushOpen extends ActionBarActivity {
                 i.putExtra("flag", "CREATE_CLASS");
                 i.putExtra("pushOpen", true);
             }
+            else if(action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION)){//go to outbox and scroll to that message
+                i = new Intent(this, MainActivity.class);
+                String id = getIntent().getExtras().getString("id");
+
+                ParseUser user = ParseUser.getCurrentUser();
+                if (user != null && user.getString("role").equals(Constants.TEACHER))
+                    i.putExtra("VIEWPAGERINDEX", 1);
+
+                i.putExtra("action", action);
+                i.putExtra("id", id);
+                i.putExtra("pushOpen", true);
+            }
         }
         else if (type.equals(Constants.Notifications.LINK_NOTIFICATION)) {
             i = new Intent(this, OpenURL.class);

@@ -56,7 +56,7 @@ import utility.Utility;
 public class Outbox extends Fragment {
     protected LayoutInflater layoutinflater;
     public static RecycleAdapter myadapter;
-    private RecyclerView outboxListv;
+    private static RecyclerView outboxListv;
     Queries query;
     public static List<ParseObject> groupDetails; // List of group messages
     Activity myActivity;
@@ -69,6 +69,9 @@ public class Outbox extends Fragment {
     private LinearLayout outbox_instructions;
     private TextView outbox_ok;
 
+    //handle notification
+    private static String action; //LIKE/CONFUSE
+    private static String id; //msg object id
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -92,6 +95,15 @@ public class Outbox extends Fragment {
         outbox_instructions = (LinearLayout) getActivity().findViewById(R.id.outbox_instruction);
         outbox_ok = (TextView) getActivity().findViewById(R.id.outbox_ok);
 
+        //handle receive notification action - LIKE/CONFUSE
+        if(getActivity().getIntent() != null){
+            Bundle bundle = getActivity().getIntent().getExtras();
+            if(bundle != null){
+                action = bundle.getString("action");
+                id = bundle.getString("id");
+                getActivity().getIntent().removeExtra("action"); //we must handle it one time only
+            }
+        }
 
         //fetching locally stored outbox messages
         GetLocalOutboxMsgInBackground getLocalOutboxMsg = new GetLocalOutboxMsgInBackground();
@@ -102,6 +114,7 @@ public class Outbox extends Fragment {
         outboxListv.setLayoutManager(mLayoutManager);
         myadapter = new RecycleAdapter();
         outboxListv.setAdapter(myadapter);
+
 
         super.onActivityCreated(savedInstanceState);
 
@@ -163,7 +176,7 @@ public class Outbox extends Fragment {
 
                 // mHeaderProgressBar.setVisibility(View.GONE);
 
-                if(Utility.isInternetExist(getActivity())) {
+                if (Utility.isInternetExist(getActivity())) {
 
                     //code to refresh outbox
                     refreshCountInBackground();
@@ -211,20 +224,17 @@ public class Outbox extends Fragment {
         outbox_ok.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Constants.signup_inbox)
-                {
-                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                if (Constants.signup_inbox) {
+                    if (ParseUser.getCurrentUser().getString("role").equals("teacher")) {
 
-                        if(Constants.signup_inbox)
-                        {
-                                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                                MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                                MainActivity.viewpager.setCurrentItem(2);
-                        }
-                        else if(Constants.signup_classrooms) {
-                                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                                MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                                MainActivity.viewpager.setCurrentItem(0);
+                        if (Constants.signup_inbox) {
+                            FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                            MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                            MainActivity.viewpager.setCurrentItem(2);
+                        } else if (Constants.signup_classrooms) {
+                            FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+                            MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                            MainActivity.viewpager.setCurrentItem(0);
                         }
                     }
                 }
@@ -620,6 +630,7 @@ stop swipe refreshlayout
         protected void onPostExecute(Void aVoid) {
             Outbox.myadapter.notifyDataSetChanged();
 
+
             if (groupDetails == null){
                 groupDetails = new ArrayList<ParseObject>();
             }
@@ -629,8 +640,44 @@ stop swipe refreshlayout
             else
                 outboxLayout.setVisibility(View.GONE);
             super.onPostExecute(aVoid);
+
+            if(action != null && id != null) {
+                //handle the notification in asynctask
+                NotificationHandler notificationHandler = new NotificationHandler();
+                notificationHandler.execute();
+            }
         }
     }
 
+    class NotificationHandler extends AsyncTask<Void, Void, Void>{
+        int msgIndex = -1;
 
+        @Override
+        protected Void doInBackground(Void... params) {
+            if(groupDetails == null) return null;
+
+            if(action != null && id != null &&
+                    (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))){
+                for(int i=0; i<groupDetails.size(); i++){
+                    ParseObject msg = groupDetails.get(i);
+                    if(msg.getString("objectId") != null && msg.getString("objectId").equals(id)){
+                        msgIndex = i;
+                        break;
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if(Outbox.outboxListv.getAdapter() == null) return;
+            if(msgIndex >=0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
+                Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
+                Outbox.outboxListv.smoothScrollToPosition(msgIndex);
+                action = null;
+                id = null; //do not repeat
+            }
+        }
+    }
 }
