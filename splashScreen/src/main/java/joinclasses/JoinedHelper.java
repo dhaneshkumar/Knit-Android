@@ -138,8 +138,6 @@ public class JoinedHelper {
                 }
             }
 
-
-
             //locally generating joining notification and inbox msg
             Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
             NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);

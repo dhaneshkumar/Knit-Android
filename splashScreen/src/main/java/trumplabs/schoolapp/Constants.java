@@ -3,17 +3,16 @@ package trumplabs.schoolapp;
 import java.util.Map;
 
 public class Constants {
-  public static String TEACHER = "teacher";
-  public static String PARENT = "parent";
-  public static String STUDENT = "student";
+  public static final String TEACHER = "teacher";
+  public static final String PARENT = "parent";
+  public static final String STUDENT = "student";
 
   public static boolean updatedTimestamp = false;
-  public static String TIMESTAMP = "createdAt";
+  public static final String TIMESTAMP = "createdAt";
   public static final String ROLE = "role";
   public static Map<String, Integer> serverMsgCounter;
 
   public static final String CREATED_GROUPS = "Created_groups";
-  private final String EMAIL = "email";
   public static final String JOINED_GROUPS = "joined_groups";
   public static final String NAME = "name";
   public static final String PHONE = "phone";
@@ -34,11 +33,6 @@ public class Constants {
   public static final String USER_ID = "userId"; //local  user id
   public static final String LIKE_STATUS = "like_status";
   public static final String CONFUSED_STATUS = "confused_status";
-
-  
-
-
-
 
   /*
    * Invitation table
@@ -82,31 +76,36 @@ public class Constants {
     public static final String GROUP_MEMBERS = "GroupMembers";
 
     //time milliseconds
-    public static int MINUTE_MILLISEC = 60 * 1000;
-    public static int HOUR_MILLISEC = 60 * 60 * 1000;
-    public static int DAY_MILLISEC = 24 * 60 * 60 * 1000;
+    public static final int MINUTE_MILLISEC = 60 * 1000;
+    public static final int HOUR_MILLISEC = 60 * 60 * 1000;
+    public static final int DAY_MILLISEC = 24 * 60 * 60 * 1000;
 
-    public static String DEFAULT_NAME = "Knit";
+    public static final String DEFAULT_NAME = "Knit";
 
     //Notification types
-    public static String NORMAL_NOTIFICATION = "NORMAL";
-    public static String TRANSITION_NOTIFICATION = "TRANSITION";
-    public static String UPDATE_NOTIFICATION = "UPDATE";
-    public static String LINK_NOTIFICATION = "LINK";
-    public static String USER_REMOVED_NOTIFICATION = "REMOVE";
+    public static final String NORMAL_NOTIFICATION = "NORMAL";
+    public static final String TRANSITION_NOTIFICATION = "TRANSITION";
+    public static final String UPDATE_NOTIFICATION = "UPDATE";
+    public static final String LINK_NOTIFICATION = "LINK";
+    public static final String USER_REMOVED_NOTIFICATION = "REMOVE";
 
     //Notification actions
-    public static String INBOX_ACTION = "INBOX"; //for normal notification
+    public static final String INBOX_ACTION = "INBOX"; //for normal notification
 
-    public static String INVITE_TEACHER_ACTION = "INVITE_TEACHER"; //e.g for transition notification
-    public static String CLASSROOMS_ACTION = "CLASSROOMS"; //e.g for transition notification
-    public static String OUTBOX_ACTION = "OUTBOX"; //e.g for transition notification
-    public static String INVITE_PARENT_ACTION = "INVITE_PARENT"; //e.g for transition notification
-    public static String CREATE_CLASS_ACTION = "CREATE_CLASS"; //e.g for transition notification
-    public static String SEND_MESSAGE_ACTION="SEND_MESSAGE"; //e.g for transistion notification - go to created class to send a message
+    public static final String INVITE_TEACHER_ACTION = "INVITE_TEACHER";
+    public static final String CLASSROOMS_ACTION = "CLASSROOMS";
+    public static final String OUTBOX_ACTION = "OUTBOX";
+    public static final String INVITE_PARENT_ACTION = "INVITE_PARENT"; //open invite parent activity for that class
+    public static final String CREATE_CLASS_ACTION = "CREATE_CLASS"; //open create class dialog
+    public static final String SEND_MESSAGE_ACTION = "SEND_MESSAGE"; //go to specified created class to send a message
+
+      //new actiosn
+    public static final String LIKE_ACTION = "LIKE"; //when likes on a recent post (go to outbox, scroll to that message and highlight it somehow)
+    public static final String CONFUSE_ACTION = "CONFUSE"; //when significant confused parents(go to outbox, scroll to that message and highlight the edit option)
+    public static final String CLASS_PAGE_ACTION = "CLASS_PAGE"; //go to specified created class page(where option to view subscribers and invite)
 
 
-    public static String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
+    public static final String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
     //Note : action corresponding to LINK type will be a url
 
     public static int actionBarHeight = 0;

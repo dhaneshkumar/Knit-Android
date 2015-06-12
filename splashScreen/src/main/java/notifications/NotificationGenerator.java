@@ -225,11 +225,12 @@ public class NotificationGenerator {
             if(extras != null){
                 //run PushOpen.UserRemovedTask to generate local msg in background
                 String classCode = extras.getString("classCode");
-                PushOpen.UserRemovedTask userRemovedTask = new PushOpen.UserRemovedTask(groupName, classCode);
-                userRemovedTask.execute();
+                if(classCode != null) {
+                    notificationManager.notify(notEntity.notificationId, mBuilder.build());
+                    PushOpen.UserRemovedTask userRemovedTask = new PushOpen.UserRemovedTask(groupName, classCode);
+                    userRemovedTask.execute();
+                }
             }
-
-            notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
         else{
             //just ignore it ! - as unknown type
