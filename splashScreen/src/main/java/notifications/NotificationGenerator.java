@@ -92,7 +92,7 @@ public class NotificationGenerator {
         mBuilder.setContentTitle(notEntity.groupName);
         mBuilder.setContentText(notEntity.contentText);
 
-        if(notEntity.type.equals(Constants.NORMAL_NOTIFICATION)){
+        if(notEntity.type.equals(Constants.Notifications.NORMAL_NOTIFICATION)){
             normalNotificationList.add(notEntity);
 
             if(normalNotificationList.size() == 1){
@@ -126,7 +126,7 @@ public class NotificationGenerator {
 
             notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
-        else if(notEntity.type.equals(Constants.TRANSITION_NOTIFICATION)){
+        else if(notEntity.type.equals(Constants.Notifications.TRANSITION_NOTIFICATION)){
 
             boolean show = true; //if notification action is one of the known types - only then show
             //set title, content
@@ -138,16 +138,16 @@ public class NotificationGenerator {
 
             //add actions
             mBuilder.addAction(R.drawable.seen, "DISMISS", deletePendingIntent);
-            if(notEntity.action.equals(Constants.INVITE_TEACHER_ACTION)){
+            if(notEntity.action.equals(Constants.Actions.INVITE_TEACHER_ACTION)){
                 mBuilder.addAction(R.drawable.fwd, "INVITE", clickPendingIntent);
             }
-            else if(notEntity.action.equals(Constants.CLASSROOMS_ACTION)){
+            else if(notEntity.action.equals(Constants.Actions.CLASSROOMS_ACTION)){
                 mBuilder.addAction(R.drawable.fwd, "OPEN", clickPendingIntent);
             }
-            else if(notEntity.action.equals(Constants.OUTBOX_ACTION)){
+            else if(notEntity.action.equals(Constants.Actions.OUTBOX_ACTION)){
                 mBuilder.addAction(R.drawable.fwd, "OUTBOX", clickPendingIntent);
             }
-            else if(notEntity.action.equals(Constants.INVITE_PARENT_ACTION)){
+            else if(notEntity.action.equals(Constants.Actions.INVITE_PARENT_ACTION)){
                 Log.d(LOGTAG, "special invite parent action(locally gen)");
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("grpCode"));
@@ -157,7 +157,7 @@ public class NotificationGenerator {
                     mBuilder.addAction(R.drawable.fwd, "INVITE", overrideClickPendingIntent);
                 }
             }
-            else if(notEntity.action.equals(Constants.SEND_MESSAGE_ACTION)){
+            else if(notEntity.action.equals(Constants.Actions.SEND_MESSAGE_ACTION)){
                 Log.d(LOGTAG, "special send message action(locally gen)");
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("grpCode"));
@@ -167,7 +167,7 @@ public class NotificationGenerator {
                     mBuilder.addAction(R.drawable.fwd, "SEND", overrideClickPendingIntent);
                 }
             }
-            else if(notEntity.action.equals(Constants.CREATE_CLASS_ACTION)){
+            else if(notEntity.action.equals(Constants.Actions.CREATE_CLASS_ACTION)){
                 mBuilder.addAction(R.drawable.fwd, "CREATE", clickPendingIntent);
             }
             else{
@@ -179,7 +179,7 @@ public class NotificationGenerator {
                 notificationManager.notify(notEntity.notificationId, mBuilder.build());
             }
         }
-        else if(notEntity.type.equals(Constants.UPDATE_NOTIFICATION)){
+        else if(notEntity.type.equals(Constants.Notifications.UPDATE_NOTIFICATION)){
 
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -194,7 +194,7 @@ public class NotificationGenerator {
 
             notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
-        else if(notEntity.type.equals(Constants.LINK_NOTIFICATION)){
+        else if(notEntity.type.equals(Constants.Notifications.LINK_NOTIFICATION)){
 
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -209,7 +209,7 @@ public class NotificationGenerator {
 
             notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
-        else if(notEntity.type.equals(Constants.USER_REMOVED_NOTIFICATION)){
+        else if(notEntity.type.equals(Constants.Notifications.USER_REMOVED_NOTIFICATION)){
 
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
@@ -255,7 +255,7 @@ public class NotificationGenerator {
             String type = intent.getStringExtra("type");
             Log.d(LOGTAG, "got " + NOTIFICATION_DELETED_ACTION + " for type " + type + "notid " + notificationId);
 
-            if(type.equals(Constants.NORMAL_NOTIFICATION)){
+            if(type.equals(Constants.Notifications.NORMAL_NOTIFICATION)){
                 Log.d(LOGTAG, "clearing normal notification list");
                 normalNotificationList.clear();
             }
@@ -272,7 +272,7 @@ public class NotificationGenerator {
 
         NotificationEntity(Context context, String tempContentText, String tempGroupName, String tempType, String tempAction){
             SessionManager sessionManager = new SessionManager(context);
-            if(tempType != null && tempType.equals(Constants.NORMAL_NOTIFICATION)){
+            if(tempType != null && tempType.equals(Constants.Notifications.NORMAL_NOTIFICATION)){
                 notificationId = NORMAL_NOTIFICATION_ID; //club them all up
             }
             else {

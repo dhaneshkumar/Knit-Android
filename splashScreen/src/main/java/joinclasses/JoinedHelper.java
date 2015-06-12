@@ -140,7 +140,7 @@ public class JoinedHelper {
 
             //locally generating joining notification and inbox msg
             Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
-            NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+            NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
             EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
 
             if(oldMessages != null)

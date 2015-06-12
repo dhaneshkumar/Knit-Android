@@ -83,27 +83,30 @@ public class Constants {
     public static final String DEFAULT_NAME = "Knit";
 
     //Notification types
-    public static final String NORMAL_NOTIFICATION = "NORMAL";
-    public static final String TRANSITION_NOTIFICATION = "TRANSITION";
-    public static final String UPDATE_NOTIFICATION = "UPDATE";
-    public static final String LINK_NOTIFICATION = "LINK";
-    public static final String USER_REMOVED_NOTIFICATION = "REMOVE";
+    public static class Notifications{
+      public static final String NORMAL_NOTIFICATION = "NORMAL";
+      public static final String TRANSITION_NOTIFICATION = "TRANSITION";
+      public static final String UPDATE_NOTIFICATION = "UPDATE";
+      public static final String LINK_NOTIFICATION = "LINK";
+      public static final String USER_REMOVED_NOTIFICATION = "REMOVE";
+    }
 
     //Notification actions
-    public static final String INBOX_ACTION = "INBOX"; //for normal notification
+    public static class Actions{
+      public static final String INBOX_ACTION = "INBOX"; //for normal notification
 
-    public static final String INVITE_TEACHER_ACTION = "INVITE_TEACHER";
-    public static final String CLASSROOMS_ACTION = "CLASSROOMS";
-    public static final String OUTBOX_ACTION = "OUTBOX";
-    public static final String INVITE_PARENT_ACTION = "INVITE_PARENT"; //open invite parent activity for that class
-    public static final String CREATE_CLASS_ACTION = "CREATE_CLASS"; //open create class dialog
-    public static final String SEND_MESSAGE_ACTION = "SEND_MESSAGE"; //go to specified created class to send a message
+      public static final String INVITE_TEACHER_ACTION = "INVITE_TEACHER";
+      public static final String CLASSROOMS_ACTION = "CLASSROOMS";
+      public static final String OUTBOX_ACTION = "OUTBOX";
+      public static final String INVITE_PARENT_ACTION = "INVITE_PARENT"; //open invite parent activity for that class
+      public static final String CREATE_CLASS_ACTION = "CREATE_CLASS"; //open create class dialog
+      public static final String SEND_MESSAGE_ACTION = "SEND_MESSAGE"; //go to specified created class to send a message
 
-      //new actiosn
-    public static final String LIKE_ACTION = "LIKE"; //when likes on a recent post (go to outbox, scroll to that message and highlight it somehow)
-    public static final String CONFUSE_ACTION = "CONFUSE"; //when significant confused parents(go to outbox, scroll to that message and highlight the edit option)
-    public static final String CLASS_PAGE_ACTION = "CLASS_PAGE"; //go to specified created class page(where option to view subscribers and invite)
-
+      //new actions
+      public static final String LIKE_ACTION = "LIKE";
+      public static final String CONFUSE_ACTION = "CONFUSE"; //when significant confused parents(go to outbox, scroll to that message and highlight the edit option)
+      public static final String CLASS_PAGE_ACTION = "CLASS_PAGE"; //go to specified created class page(where option to view subscribers and invite)
+    }
 
     public static final String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type
     //Note : action corresponding to LINK type will be a url
