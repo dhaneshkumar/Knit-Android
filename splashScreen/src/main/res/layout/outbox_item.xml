@@ -1,181 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:background="@color/white"
-    android:layout_marginTop="4dp"
-    android:layout_marginBottom="4dp"
+    android:background="@drawable/messages_item_background"
+    android:layout_margin="8dp"
+    android:elevation="2dp"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:padding="16dp"
-        >
-        <TextView
-            android:visibility="visible"
-            android:id="@+id/classimage1"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_centerVertical="true"
-            android:layout_gravity="top|left"
-            android:background="@drawable/circle"
-            android:text="X"
-            android:layout_marginRight="16dp"
-            android:textSize="20sp"
-            android:gravity="center"
-            android:textColor="@color/white"/>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/classimage1"
-            android:layout_toEndOf="@+id/classimage1"
-            android:background="@color/white"
-            android:id="@+id/relativeLayout">
-
-            <TextView
-                android:id="@+id/classname1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="English"
-                android:gravity="center"
-                android:textStyle="bold"
-                android:textColor="#363636"
-                android:textSize="16sp"
-                android:ellipsize="end"
-                android:maxEms="10"
-                android:singleLine="true"
-
-                />
-
-            <TextView
-                android:id="@+id/cctimestamp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="just now"
-                android:textColor="@color/grey_light"
-                android:textSize="12sp"
-                android:layout_marginTop="2dp"
-                android:layout_below="@+id/classname1"
-                android:layout_alignLeft="@+id/classname1"
-                android:layout_alignStart="@+id/classname1" />
-        </RelativeLayout>
-
-
-
-    </RelativeLayout>
 
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="16dp"
-        android:background="@color/white"
-        android:gravity="center_horizontal"
         android:orientation="vertical"
+        android:background="@drawable/greyoutline"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         >
 
-        <TextView
-            android:id="@+id/ccmsgtext"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:visibility="gone"
-            android:layout_marginBottom="8dp"
-            android:text="Make sure that your child starts reading poems everyday."
-            android:textColor="#444444"
-            android:textSize="15sp" />
-
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" >
-
-            <ImageView
-                android:id="@+id/ccimgmsg"
-                android:visibility="gone"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <ProgressBar
-                android:id="@+id/msgprogressbar"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_gravity="center"
-                android:visibility="gone" />
-        </FrameLayout>
-
-
-
         <RelativeLayout
-            android:id="@+id/likeButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:layout_marginTop="8dp">
-
+            android:background="@color/white"
+            android:paddingLeft="@dimen/msg_margin"
+            android:layout_marginBottom="@dimen/msg_margin"
+            android:paddingRight="@dimen/msg_margin"
+            >
             <TextView
-                android:id="@+id/like"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="13"
-                android:textStyle="bold"
-                android:layout_gravity="center_vertical"
-                android:textColor="@color/grey_light"
-                android:textSize="14sp"
+                android:visibility="visible"
+                android:id="@+id/classimage1"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true" />
+                android:layout_gravity="top|left"
+                android:background="@drawable/circle"
+                android:text="X"
+                android:layout_marginRight="16dp"
+                android:textSize="20sp"
+                android:gravity="center"
+                android:textColor="@color/white"/>
 
-            <ImageView
-                android:id="@+id/likeIcon"
-                android:layout_toRightOf="@+id/like"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginLeft="0dp"
-                android:src="@drawable/like_light_grey"/>
-
-            <TextView
-                android:id="@+id/confusion"
-                android:layout_toRightOf="@+id/likeIcon"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="24"
-                android:layout_marginLeft="16dp"
-                android:textStyle="bold"
-                android:textColor="@color/grey_light"
                 android:layout_centerVertical="true"
-                android:textSize="14sp"
-                />
+                android:layout_toRightOf="@+id/classimage1"
+                android:layout_toEndOf="@+id/classimage1"
+                android:background="@color/white"
+                android:id="@+id/relativeLayout">
 
-            <ImageView
-                android:id="@+id/confusionIcon"
-                android:layout_width="24dp"
-                android:layout_toRightOf="@+id/confusion"
-                android:layout_height="24dp"
-                android:layout_marginLeft="-4dp"
-                android:layout_gravity="center"
-                android:src="@drawable/confuse_light_grey"/>
+                <TextView
+                    android:id="@+id/classname1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="English"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="#363636"
+                    android:textSize="16sp"
+                    android:ellipsize="end"
+                    android:maxEms="10"
+                    android:singleLine="true"
 
-            <TextView
-                android:id="@+id/seen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="seen by 29"
-                android:textColor="@color/grey_light"
-                android:textSize="12sp"
-                android:gravity="right"
-                android:layout_alignBottom="@+id/confusion"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true" />
+                    />
+
+                <TextView
+                    android:id="@+id/cctimestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="just now"
+                    android:textColor="@color/grey_light"
+                    android:textSize="12sp"
+                    android:layout_marginTop="2dp"
+                    android:layout_below="@+id/classname1"
+                    android:layout_alignLeft="@+id/classname1"
+                    android:layout_alignStart="@+id/classname1" />
+            </RelativeLayout>
+
 
 
         </RelativeLayout>
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/ccmsgtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/msg_margin"
+                android:paddingRight="@dimen/msg_margin"
+                android:layout_marginBottom="6dp"
+                android:text="Make sure that your child starts reading poems everyday."
+                android:textColor="#444444"
+                android:textSize="15sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    >
+                    <ImageView
+                        android:id="@+id/ccimgmsg"
+                        android:visibility="gone"
+                        android:layout_marginBottom="@dimen/msg_margin_bottom"
+                        android:layout_marginTop="@dimen/msg_margin_bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
+                        />
+
+                </LinearLayout>
+                <ProgressBar
+                    android:id="@+id/msgprogressbar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+
+
+            <RelativeLayout
+                android:id="@+id/likeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/msg_margin"
+                android:layout_marginRight="@dimen/msg_margin"
+                android:layout_marginTop="@dimen/msg_margin_bottom">
+
+                <TextView
+                    android:id="@+id/like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="13"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/grey_light"
+                    android:textSize="14sp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <ImageView
+                    android:id="@+id/likeIcon"
+                    android:layout_toRightOf="@+id/like"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="0dp"
+                    android:src="@drawable/like_light_grey"/>
+
+                <TextView
+                    android:id="@+id/confusion"
+                    android:layout_toRightOf="@+id/likeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24"
+                    android:layout_marginLeft="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/grey_light"
+                    android:layout_centerVertical="true"
+                    android:textSize="14sp"
+                    />
+
+                <ImageView
+                    android:id="@+id/confusionIcon"
+                    android:layout_width="24dp"
+                    android:layout_toRightOf="@+id/confusion"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="-4dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/confuse_light_grey"/>
+
+                <TextView
+                    android:id="@+id/seen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="seen by 29"
+                    android:textColor="@color/grey_light"
+                    android:textSize="12sp"
+                    android:gravity="right"
+                    android:layout_alignBottom="@+id/confusion"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+
+            </RelativeLayout>
+
+        </LinearLayout>
     </LinearLayout>
 
 </LinearLayout>

@@ -467,9 +467,20 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             classimage.setText(className.substring(0, 1).toUpperCase());    //setting front end of circular image
 
 
+
             //ImageView tickview = (ImageView) row.findViewById(R.id.tickmark);
             final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
             row.setVisibility(View.VISIBLE);
+
+
+            if(UtilString.isBlank(stringmsg))
+                msgtxtcontent.setVisibility(View.GONE);
+            else {
+                msgtxtcontent.setText(stringmsg);
+                msgtxtcontent.setVisibility(View.VISIBLE);
+            }
+            timestampview.setText(timestampmsg);
+
             uploadprogressbar.setVisibility(View.GONE);
             // /////////////////////////////////////////////
             if (!UtilString.isBlank(imagepath)) {
@@ -486,7 +497,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 if (imgFile.exists()) {
                     // image file present locally then display it
                     Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                    msgtxtcontent.setText(stringmsg);
+
                     imgmsgview.setTag(imgFile.getAbsolutePath());
                     imgmsgview.setImageBitmap(myBitmap);
                     timestampview.setText(timestampmsg);
@@ -531,17 +542,13 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         }
                     });
 
-                    msgtxtcontent.setText(stringmsg);
                     imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
                     imgmsgview.setImageBitmap(null);
                     // imgmsgview.setVisibility(View.GONE);
-                    timestampview.setText(timestampmsg);
 
                 }
             } else {
                 imgmsgview.setVisibility(View.GONE);
-                msgtxtcontent.setText(stringmsg);
-                timestampview.setText(timestampmsg);
             }
 
             row.setBackgroundColor(getResources().getColor(R.color.transparent));

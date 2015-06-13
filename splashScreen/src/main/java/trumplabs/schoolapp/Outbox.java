@@ -331,7 +331,8 @@ public class Outbox extends Fragment {
 
             //setting message in view
             String msg = groupdetails1.getString("title");
-            if(msg == null || msg.trim().equals(""));
+            if(msg == null || msg.trim().equals(""))
+                holder.msgtxtcontent.setVisibility(View.GONE);
             else
                 holder.msgtxtcontent.setVisibility(View.VISIBLE);
             holder.msgtxtcontent.setText(msg);
