@@ -81,6 +81,13 @@ public class InviteVia extends ActionBarActivity{
             }
         }
 
+        if(inviteMode.equals(Constants.MODE_EMAIL)){
+            getSupportActionBar().setTitle("Invite via EMAIL");
+        }
+        else if(inviteMode.equals(Constants.MODE_PHONE)){
+            getSupportActionBar().setTitle("Invite via Free SMS");
+        }
+
         fetchContacts();
 
         contactAdapter = new ContactAdapter();

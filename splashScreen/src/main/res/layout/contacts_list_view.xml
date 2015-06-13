@@ -31,17 +31,6 @@
 
     </LinearLayout>
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Invite via Free SMS "
-        android:gravity="center"
-        android:padding="4dp"
-        android:background="@color/grey"
-        android:textColor="@color/white"
-        android:textSize="15sp"
-        />
-
 
     <ListView
         android:id="@+id/contact_list"
