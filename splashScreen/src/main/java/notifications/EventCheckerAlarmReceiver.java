@@ -135,7 +135,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > tip1Interval){
-            NotificationGenerator.generateNotification(alarmContext, parentTip1Content , Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.INBOX_ACTION);
+            NotificationGenerator.generateNotification(alarmContext, parentTip1Content , Constants.DEFAULT_NAME, Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
             Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
@@ -170,7 +170,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > parentNoActivityInterval){
-            NotificationGenerator.generateNotification(alarmContext, parentNoActivityContent , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_TEACHER_ACTION);
+            NotificationGenerator.generateNotification(alarmContext, parentNoActivityContent , Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_TEACHER_ACTION);
             Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
@@ -208,7 +208,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > teacherNoActivityInterval){
-            NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.CREATE_CLASS_ACTION);
+            NotificationGenerator.generateNotification(alarmContext, teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.CREATE_CLASS_ACTION);
             //generateLocalMessage(teacherNoActivityContent, Constants.DEFAULT_NAME);
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
@@ -233,7 +233,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > tip1Interval){
-            NotificationGenerator.generateNotification(alarmContext, teacherTip1Content , Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
+            NotificationGenerator.generateNotification(alarmContext, teacherTip1Content , Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.OUTBOX_ACTION);
             Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() " + eventid + " state changed to true");
             session.setAlarmEventState(eventid, true);
         }
@@ -321,7 +321,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 extras.putString("grpName", className);
 
                 String text = "Your classroom " + className + teacherNoSubContent;
-                NotificationGenerator.generateNotification(alarmContext, text, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.INVITE_PARENT_ACTION, extras);
+                NotificationGenerator.generateNotification(alarmContext, text, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_PARENT_ACTION, extras);
                 //generateLocalMessage(text, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
@@ -405,7 +405,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 extras.putString("grpCode", groupCode);
                 extras.putString("grpName", className);
 
-                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.SEND_MESSAGE_ACTION);
+                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION);
                 //generateLocalMessage(teacherNoMsgContent + className, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
@@ -456,7 +456,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 if(confusedCount >= teacherConfusingMsgThreshold){
                     String notificationMessage = confusedCount + teacherConfusingMsgContent + msg.getString("name");
 
-                    NotificationGenerator.generateNotification(alarmContext, notificationMessage, Constants.DEFAULT_NAME, Constants.TRANSITION_NOTIFICATION, Constants.OUTBOX_ACTION);
+                    NotificationGenerator.generateNotification(alarmContext, notificationMessage, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.OUTBOX_ACTION);
                     //generateLocalMessage(notificationMessage, Constants.DEFAULT_NAME);
                     Log.d("DEBUG_ALARM_RECEIVER", "teacherConfusingMessage() " + eventid + " state changed to true");
                     session.setAlarmEventState(eventid, true);

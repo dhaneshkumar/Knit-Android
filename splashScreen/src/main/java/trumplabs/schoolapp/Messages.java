@@ -676,6 +676,7 @@ public class Messages extends Fragment {
 
             holder.uploadprogressbar.setVisibility(View.GONE);
 
+
             String senderId = msgObject.getString("senderId");
 
             // senderId = senderId.replaceAll(".", "");
@@ -709,12 +710,12 @@ public class Messages extends Fragment {
 
             {
                 // image file present locally
-                Bitmap mySenderBitmap = BitmapFactory.decodeFile(senderThumbnailFile.getAbsolutePath());
-                holder.senderImg.setImageBitmap(mySenderBitmap);
+                loadBitmap(senderThumbnailFile.getAbsolutePath(), holder.senderImg);
             } else
             {
                 holder.senderImg.setImageResource(R.drawable.dp_common_thumbnail);
             }
+
 
             try
             {

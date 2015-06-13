@@ -1,0 +1,5 @@
+-keepattributes *Annotation*
+-keepattributes Signature
+-dontwarn com.squareup.**
+-dontwarn okio.**
+-keep class com.squareup.** { *; }
