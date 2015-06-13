@@ -1,6 +1,5 @@
 package joinclasses;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.parse.ParseCloud;
@@ -8,11 +7,9 @@ import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -140,8 +137,6 @@ public class JoinedHelper {
                     }
                 }
             }
-
-
 
             //locally generating joining notification and inbox msg
             Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");

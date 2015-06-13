@@ -13,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
-import utility.Utility;
 
 /**
  * Created by ashish on 4/6/15.
@@ -54,7 +53,7 @@ public class InviteTasks {
 
         String teacherName = "";
         if(inviteType == Constants.INVITATION_P2P){
-            ParseQuery<ParseObject> classQuery = new ParseQuery<>("Codegroup");
+            ParseQuery<ParseObject> classQuery = new ParseQuery<>(Constants.CODE_GROUP);
             classQuery.fromLocalDatastore();
             classQuery.whereEqualTo("code", classCode);
 

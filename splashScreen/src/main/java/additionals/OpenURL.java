@@ -1,9 +1,7 @@
 package additionals;
 
 import android.content.Intent;
-import android.mtp.MtpConstants;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.webkit.WebView;
@@ -18,8 +16,6 @@ import trumplabs.schoolapp.MainActivity;
  */
 public class OpenURL extends MyActionBarActivity {
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,22 +23,6 @@ public class OpenURL extends MyActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         WebView webView = (WebView) findViewById(R.id.webView);
-
-        /*Uri uri = Uri.parse("market://details?id=" + getPackageName());
-        Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
-
-        if (Utility.isInternetOn(this)) {
-
-            try {
-                startActivity(myAppLinkToMarket);
-            } catch (ActivityNotFoundException e) {
-            }
-        } else {
-            Utility.toast("Check your Internet Connection.");
-
-            Intent intent = new Intent(this, MainActivity.class);
-            startActivity(intent);
-        }*/
 
         if(getIntent().getExtras() != null) {
             String url = getIntent().getExtras().getString("URL");

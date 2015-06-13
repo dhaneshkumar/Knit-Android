@@ -17,7 +17,6 @@ import java.util.List;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
-import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -348,7 +347,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
 
 
             //get number of sent messages
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
             query.fromLocalDatastore();
             query.orderByDescending("creationTime");
             query.whereEqualTo("userId", user.getUsername());
@@ -423,7 +422,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             List<String> group = createdGroups.get(i);
             String groupCode = group.get(0); //0 is code
 
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("SentMessages");
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
             query.fromLocalDatastore();
             query.orderByDescending("creationTime");
             query.whereEqualTo("userId", user.getUsername());

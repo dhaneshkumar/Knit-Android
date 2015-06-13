@@ -7,7 +7,6 @@ import com.parse.ParseUser;
 import java.util.Calendar;
 import java.util.Date;
 
-import loginpages.PhoneSignUpVerfication;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Outbox;
 import utility.Config;

@@ -23,8 +23,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.facebook.FacebookSdk;
 
+import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
@@ -43,8 +43,6 @@ import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import notifications.AlarmTrigger;
-import notifications.EventCheckerAlarmReceiver;
-import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import utility.Config;
@@ -78,6 +76,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("DEBUG_TEMPORARY", "onCreate Called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
         signInFlag = false;

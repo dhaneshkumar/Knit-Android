@@ -24,13 +24,13 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import additionals.SmsListener;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import utility.Config;
 import utility.Utility;
 
 /**
@@ -134,6 +134,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             nextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    dialog.dismiss();
                     Intent nextIntent = new Intent(PhoneSignUpName.this, PhoneSignUpVerfication.class);
                     //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     nextIntent.putExtra("login", false);
@@ -203,6 +204,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     /****************** class GenerateVerificationCode **********************/
 
     public static class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
+        Boolean isValid = false;
         Boolean success = false;
         Boolean networkError = false;
 
@@ -223,7 +225,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
             Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode() with " + number);
             try {
-                success = ParseCloud.callFunction("genCode", param);
+                isValid = ParseCloud.callFunction("genCode", param);
+                success = true;
             } catch (ParseException e) {
                 Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
@@ -239,7 +242,18 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         protected void onPostExecute(Void result){
 
             if(success) {
-                //do nothing
+                if(!isValid){
+                    SmsListener.unRegister();
+                    String toastMsg = "Invalid Number";
+                    String errorMsg = "Please enter a valid mobile number.";
+                    Utility.toastLong(toastMsg);
+                    //show error and hide timer as sms was not sent successfully
+                    PhoneSignUpVerfication.showError(errorMsg, true);
+
+                    if(Config.DETECT_INVALID_NUMBER) { //if invalid number detection is on
+                        PhoneSignUpVerfication.hideVerifyOption();
+                    }
+                }
             }
             else{
                 SmsListener.unRegister();

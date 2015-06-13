@@ -2,7 +2,6 @@ package loginpages;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -11,7 +10,6 @@ import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import tutorial.ParentTutorial;
 import tutorial.TeacherTutorial;
 import utility.SessionManager;
 

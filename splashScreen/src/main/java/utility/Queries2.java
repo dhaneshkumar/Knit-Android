@@ -21,7 +21,6 @@ import java.util.List;
 import BackGroundProcesses.CreatedClassRooms;
 import library.UtilString;
 import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 
 public class Queries2 {
@@ -33,7 +32,7 @@ public class Queries2 {
      * @return
      */
     public boolean isCodegroupExist(String code, String userId) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
         query.fromLocalDatastore();
         query.whereEqualTo("code", code);
         query.whereEqualTo("userId", userId);
@@ -66,7 +65,7 @@ public class Queries2 {
     /*
      * fetching updated codegroup entry from server
      */
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Codegroup");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
         query.fromLocalDatastore();
         query.whereEqualTo("code", code);
         query.whereEqualTo("userId", userId);

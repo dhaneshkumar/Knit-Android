@@ -1,17 +1,12 @@
 package BackGroundProcesses;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.parse.ParseUser;
 
-import java.util.List;
-
-import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
-import utility.SessionManager;
 
 /**
  * It updates subscribers list of all classes of a user.

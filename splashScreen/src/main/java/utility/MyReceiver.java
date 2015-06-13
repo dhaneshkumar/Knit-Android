@@ -26,7 +26,6 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
         //retrieving json data on push receive
         Bundle extras = intent.getExtras();
         String jsonData = extras.getString("com.parse.Data");
-        PendingIntent deleteIntent;
         String contentText = null;
         String groupName = null;
 
@@ -36,47 +35,32 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
             if(jsonData != null) {
                 JSONObject json = new JSONObject(jsonData);
 
-                //Notification message
-                contentText = json.getString("msg");
+                //content : keys "msg" or "alert"
+                contentText = json.optString("msg", null);
                 if(UtilString.isBlank(contentText)) {
-                    if(json.has("alert")) {
-                        contentText = json.getString("alert");
-
-                    }
+                    contentText = json.optString("alert", null);
                 }
 
-                //notification title
-                groupName = json.getString("groupName");
-
+                //notification heading - keys "groupName" or "title"
+                groupName = json.optString("groupName", null);
                 if(UtilString.isBlank(groupName))
                 {
-                    if(json.has("title")) {
-                        groupName = json.getString("title");
-
-                    }
+                    groupName = json.optString("title", null);
                 }
 
-                String type = null;
-                String action = null;
+                //keys "type" and "action"
+                String type = json.optString("type");
+                String action = json.optString("action");
 
-                if(json.has("type")){
-                    type = json.getString("type");
-                }
-                if(json.has("action")){
-                    action = json.getString("action");
-                }
+                //Now get optional keys and put them in a bundle for use as required in NotificationGenerator
+                Bundle params = new Bundle();
+                params.putString("id", json.optString("id", null));
+                params.putString("classCode", json.optString("groupCode", null));
 
-                if(type != null && type.equalsIgnoreCase(Constants.USER_REMOVED_NOTIFICATION)){
-                    Bundle params = new Bundle();
-                    params.putString("classCode", json.getString("groupCode"));
-                    NotificationGenerator.generateNotification(context, contentText, groupName, type, action, params);
-                }
-                else {
-                    NotificationGenerator.generateNotification(context, contentText, groupName, type, action);
-                }
+                NotificationGenerator.generateNotification(context, contentText, groupName, type, action, params);
             }
-
-        } catch (JSONException e) {
+        }
+        catch (JSONException e) {
             e.printStackTrace();
         }
     }

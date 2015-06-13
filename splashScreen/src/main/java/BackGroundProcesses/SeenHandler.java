@@ -53,7 +53,7 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         String username = user.getUsername();
 
         //Now find all those messages for which status is 0(i.e Seen but not Notified)
-        ParseQuery<ParseObject> seenQuery = ParseQuery.getQuery("GroupDetails");
+        ParseQuery<ParseObject> seenQuery = ParseQuery.getQuery(Constants.GROUP_DETAILS);
         seenQuery.fromLocalDatastore();
         seenQuery.whereEqualTo(Constants.SEEN_STATUS, 0);
         seenQuery.whereMatches(Constants.USER_ID, username);

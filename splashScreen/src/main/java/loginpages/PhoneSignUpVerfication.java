@@ -1,5 +1,6 @@
 package loginpages;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -29,7 +30,6 @@ import java.util.Map;
 import additionals.SmsListener;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.UtilString;
-import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -49,11 +49,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static TextView resendActionTV;
 
     static String verificationCode;
-    static Context activityContext;
     static Boolean isLogin;
+    static Menu menu;
 
     private static CountDownTimer countDownTimer = null;
     static TextView timerTV;
+
+    static Context activityContext;
+    static Activity thisActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         setContentView(R.layout.signup_verification);
 
         activityContext = this;
+        thisActivity = this;
 
         verificationCodeET = (EditText) findViewById(R.id.verificationCode);
         timerTV = (TextView) findViewById(R.id.timerText);
@@ -122,6 +126,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.phone_verification, menu);
+        this.menu = menu;
         return true;
     }
 
@@ -185,6 +190,13 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         }
         else{
             Log.d("DEBUG_SIGNUP_VER", "Can't show error as error textview NULL");
+        }
+    }
+
+    public static void hideVerifyOption(){
+        if(thisActivity != null){
+            thisActivity.finish();
+            thisActivity = null;
         }
     }
 

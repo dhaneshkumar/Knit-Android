@@ -54,11 +54,14 @@ public class SessionManager {
   }
 
 
-    //range 1-1000 (0 for normal notification)
+    //range ID_LOW to ID_HIGH { 0 to (ID_LOW-1) reserved for NORMAL notification or other newer types }
+    //         0         10        0-9
+    public static final int ID_LOW = 10;
+    public static final int ID_HIGH = 1000;
     public int getNextNotificationId(){
         int id = pref.getInt("notification_id", -1);
-        if(id < 0 || id > 1000){
-            id = 1;
+        if(id < ID_LOW || id > ID_HIGH){
+            id = ID_LOW;
         }
         editor.putInt("notification_id", id+1);
         editor.commit();

@@ -1,7 +1,6 @@
 package BackGroundProcesses;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -56,7 +55,7 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
         String userId = parseObject.getUsername();
 
         //Delete local outbox messages for current user. Query "SentMessages"
-        ParseQuery deleteQuery = new ParseQuery("SentMessages");
+        ParseQuery deleteQuery = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
         deleteQuery.fromLocalDatastore();
         deleteQuery.whereMatches("userId", userId);
         try{
@@ -79,7 +78,7 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
             for(int i=0; i<outboxMessages.size(); i++){
                 ParseObject outboxMsg = outboxMessages.get(i);
                 //Now create a SentMessage object and pin it
-                ParseObject sentMsg = new ParseObject("SentMessages");
+                ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
                 sentMsg.put("objectId", outboxMsg.getObjectId());
                 sentMsg.put("Creator", outboxMsg.getString("Creator"));
                 sentMsg.put("code", outboxMsg.getString("code"));

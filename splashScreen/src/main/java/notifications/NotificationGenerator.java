@@ -7,7 +7,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
@@ -29,11 +28,8 @@ public class NotificationGenerator {
     public static List<NotificationEntity> normalNotificationList = new ArrayList<>();
 
     //ids for the notification types
-    private static int NORMAL_NOTIFICATION_ID = 0;
+    private static int NORMAL_NOTIFICATION_ID = 0; //since multiple of these will be merged and shown as one big notification
     //For others, unique notification id generated at runtime using SessionManager.getNextNotificationId()
-
-    public static int count = 0;
-    private NotificationManager notificationManager;
 
     //without extras
     public static void generateNotification(Context context, String contentText,String groupName,
@@ -41,9 +37,14 @@ public class NotificationGenerator {
         generateNotification(context, contentText, groupName, type, action, null);
     }
 
-    //with extra
+    //with extras
     public static void generateNotification(Context context, String contentText,String groupName,
                                             String type, String action, Bundle extras) {
+
+        if(type == null || action==null || groupName==null || contentText==null){
+            Log.d(LOGTAG, "Ignoring Notification : some parameters null");
+            return; //we don't cater to notifications without type or action
+        }
 
         NotificationEntity notEntity = new NotificationEntity(context, contentText, groupName, type, action);
 
@@ -63,8 +64,6 @@ public class NotificationGenerator {
             mBuilder.setColor(context.getResources().getColor(R.color.color_secondary) );
         }
 
-        //in large icon, set icons of sender person
-      //  mBuilder.setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.notification));
         mBuilder.setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_VIBRATE | Notification.DEFAULT_LIGHTS);
 
         //set content intent
@@ -78,7 +77,7 @@ public class NotificationGenerator {
         PendingIntent clickPendingIntent = PendingIntent.getActivity( context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Note the use of PendingIntent.FLAG_CANCEL_CURRENT. This is important so to overwrite the extras in intent.
-        // Otherwise it reuses the old intent because requestCode is same = 0
+        // Otherwise it reuses the old intent because requestCode was same = 0
 
         mBuilder.setContentIntent(clickPendingIntent);
 
@@ -125,10 +124,11 @@ public class NotificationGenerator {
                 mBuilder.setStyle(inboxStyle);
             }
 
-            notificationManager.notify(NORMAL_NOTIFICATION_ID, mBuilder.build());
+            notificationManager.notify(notEntity.notificationId, mBuilder.build());
         }
         else if(notEntity.type.equals(Constants.TRANSITION_NOTIFICATION)){
 
+            boolean show = true; //if notification action is one of the known types - only then show
             //set title, content
             NotificationCompat.BigTextStyle bigTextStyle = new NotificationCompat.BigTextStyle();
             bigTextStyle.setBigContentTitle(notEntity.groupName);
@@ -148,7 +148,7 @@ public class NotificationGenerator {
                 mBuilder.addAction(R.drawable.fwd, "OUTBOX", clickPendingIntent);
             }
             else if(notEntity.action.equals(Constants.INVITE_PARENT_ACTION)){
-                Log.d(LOGTAG, "special invite parent action");
+                Log.d(LOGTAG, "special invite parent action(locally gen)");
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("grpCode"));
                     clickIntent.putExtra("className", extras.getString("grpName"));
@@ -158,7 +158,7 @@ public class NotificationGenerator {
                 }
             }
             else if(notEntity.action.equals(Constants.SEND_MESSAGE_ACTION)){
-                Log.d(LOGTAG, "special send message action");
+                Log.d(LOGTAG, "special send message action(locally gen)");
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("grpCode"));
                     clickIntent.putExtra("className", extras.getString("grpName"));
@@ -170,8 +170,14 @@ public class NotificationGenerator {
             else if(notEntity.action.equals(Constants.CREATE_CLASS_ACTION)){
                 mBuilder.addAction(R.drawable.fwd, "CREATE", clickPendingIntent);
             }
+            else{
+                show = false;//ignore this as this might be a new type of notification - recognized in updated app
+                Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);
+            }
 
-            notificationManager.notify(notEntity.notificationId, mBuilder.build());
+            if(show){
+                notificationManager.notify(notEntity.notificationId, mBuilder.build());
+            }
         }
         else if(notEntity.type.equals(Constants.UPDATE_NOTIFICATION)){
 
@@ -219,11 +225,16 @@ public class NotificationGenerator {
             if(extras != null){
                 //run PushOpen.UserRemovedTask to generate local msg in background
                 String classCode = extras.getString("classCode");
-                PushOpen.UserRemovedTask userRemovedTask = new PushOpen.UserRemovedTask(groupName, classCode);
-                userRemovedTask.execute();
+                if(classCode != null) {
+                    notificationManager.notify(notEntity.notificationId, mBuilder.build());
+                    PushOpen.UserRemovedTask userRemovedTask = new PushOpen.UserRemovedTask(groupName, classCode);
+                    userRemovedTask.execute();
+                }
             }
-
-            notificationManager.notify(notEntity.notificationId, mBuilder.build());
+        }
+        else{
+            //just ignore it ! - as unknown type
+            Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);
         }
     }
 
@@ -260,19 +271,18 @@ public class NotificationGenerator {
         int notificationId;
 
         NotificationEntity(Context context, String tempContentText, String tempGroupName, String tempType, String tempAction){
-
             SessionManager sessionManager = new SessionManager(context);
-            notificationId = sessionManager.getNextNotificationId();
+            if(tempType != null && tempType.equals(Constants.NORMAL_NOTIFICATION)){
+                notificationId = NORMAL_NOTIFICATION_ID; //club them all up
+            }
+            else {
+                notificationId = sessionManager.getNextNotificationId(); //get a new id
+            }
+
             contentText = tempContentText;
             groupName = tempGroupName;
             action = tempAction;
             type = tempType;
-
-            if(type == null || action == null || type.equals(Constants.NORMAL_NOTIFICATION)){
-                type = Constants.NORMAL_NOTIFICATION;
-                action = Constants.INBOX_ACTION;
-                notificationId = NORMAL_NOTIFICATION_ID;
-            }
         }
     }
 }

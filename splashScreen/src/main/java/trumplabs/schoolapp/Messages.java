@@ -1026,7 +1026,7 @@ public class Messages extends Fragment {
 
         if (user != null) {
             int totalMessages = 0;
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("GroupDetails");
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
             query.fromLocalDatastore();
             query.whereEqualTo("userId", user.getUsername());
             try {

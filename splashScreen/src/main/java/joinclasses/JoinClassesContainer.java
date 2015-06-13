@@ -6,15 +6,12 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.MainActivity;
-import utility.Utility;
 
 public class JoinClassesContainer extends MyActionBarActivity  {
   android.support.v7.app.ActionBar actionbar;

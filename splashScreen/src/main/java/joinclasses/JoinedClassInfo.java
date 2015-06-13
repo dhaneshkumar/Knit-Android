@@ -4,7 +4,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -31,9 +30,7 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
@@ -41,7 +38,6 @@ import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
-import utility.Config;
 import utility.Utility;
 
 /**
@@ -101,7 +97,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
 
         //get details(profile pic, assigned name) from Codegroup and User table
-        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>("Codegroup");
+        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
         classQuery.fromLocalDatastore();
         classQuery.whereEqualTo("code", classCode);
         String teacherSenderId = null;

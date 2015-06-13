@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.text.SimpleDateFormat;
@@ -29,9 +28,7 @@ import java.util.List;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
 import utility.Queries;
-import utility.Utility;
 
 public class FAQs extends MyActionBarActivity {
 

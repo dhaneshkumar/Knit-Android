@@ -26,10 +26,8 @@ import java.util.Map;
 
 import additionals.Invite;
 import library.UtilString;
-import notifications.NotificationGenerator;
 import trumplab.textslate.R;
 import utility.Queries;
-import utility.SessionManager;
 import utility.Utility;
 
 

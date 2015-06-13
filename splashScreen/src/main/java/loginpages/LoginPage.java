@@ -17,16 +17,10 @@ import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
-import java.util.List;
-
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
-import utility.Queries;
-import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 
