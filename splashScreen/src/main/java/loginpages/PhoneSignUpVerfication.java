@@ -1,5 +1,6 @@
 package loginpages;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -48,12 +49,14 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     static TextView resendActionTV;
 
     static String verificationCode;
-    static Context activityContext;
     static Boolean isLogin;
     static Menu menu;
 
     private static CountDownTimer countDownTimer = null;
     static TextView timerTV;
+
+    static Context activityContext;
+    static Activity thisActivity;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +64,7 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
         setContentView(R.layout.signup_verification);
 
         activityContext = this;
+        thisActivity = this;
 
         verificationCodeET = (EditText) findViewById(R.id.verificationCode);
         timerTV = (TextView) findViewById(R.id.timerText);
@@ -190,9 +194,9 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
     }
 
     public static void hideVerifyOption(){
-        MenuItem verify = menu.findItem(R.id.verify);
-        if(verify != null){
-            verify.setVisible(false);
+        if(thisActivity != null){
+            thisActivity.finish();
+            thisActivity = null;
         }
     }
 

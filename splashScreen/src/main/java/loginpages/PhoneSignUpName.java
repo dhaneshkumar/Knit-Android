@@ -134,6 +134,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             nextButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+                    dialog.dismiss();
                     Intent nextIntent = new Intent(PhoneSignUpName.this, PhoneSignUpVerfication.class);
                     //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     nextIntent.putExtra("login", false);
