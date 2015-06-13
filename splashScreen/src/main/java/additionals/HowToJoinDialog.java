@@ -37,9 +37,6 @@ public class HowToJoinDialog extends DialogFragment {
         dialog = builder.create();
         dialog.show();
 
-
-
-
         TextView wayToJoin = (TextView) view.findViewById(R.id.wayToJoin);
         TextView content = (TextView) view.findViewById(R.id.content);
         String appHeading = "Join class via APP";
