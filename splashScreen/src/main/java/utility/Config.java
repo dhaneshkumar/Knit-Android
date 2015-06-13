@@ -6,22 +6,44 @@ public class Config {
 
   /*
    * Parse Configurations
+   * 5 Parameters to change before updating app on playstore
    */
 
+    /*
+    1. Select APP ID
+     */
     //public static final String APP_ID="jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
     public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
 
+  /*
+    2. Select CLIENT Key
+     */
    // public static final String CLIENT_KEY= "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // Knit
     public static final String CLIENT_KEY = "4LnlMXS6hFUunIZ6cS3F7IcLrWGuzOIkyLldkxQJ"; // development_knit
 
+  /*
+  3.  Uncomment out "minifyEnabled true" & "shrinkResources true" in build.gradle before updating app on playstore
+  */
+
+  /*
+  4. Set flag to allow to join his own class.  # false : Knit & #true for testing
+   */
   //flag to show teacher can join his own class or not
   public static final boolean CAN_JOIN_OWN_CLASS = true;
+
+  /*
+  5. Set flag to detect invalid number.  #true : knit & #false for testing
+   */
+  public static final boolean DETECT_INVALID_NUMBER = false;
+
+
+
 
   /*************************************************************************************************************/
 
     public static final String FB_APP_ID = "689390944539813";
     public static int SUBSCRIBER_MIN_LIMIT = 1;
-    public static final boolean DETECT_INVALID_NUMBER = true;
+
 
     //Following are used now to NOT SHOW Kio for old users
     public static final String defaultParentGroupCode = "TS29734"; // raven
