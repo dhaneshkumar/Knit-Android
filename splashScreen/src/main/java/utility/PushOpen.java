@@ -36,20 +36,20 @@ public class PushOpen extends ActionBarActivity {
         onNewIntent(getIntent());
 
         //type and action will never be null. Handled in NotificationGenerator
-        if(type.equals(Constants.NORMAL_NOTIFICATION)){
+        if(type.equals(Constants.Notifications.NORMAL_NOTIFICATION)){
             NotificationGenerator.normalNotificationList.clear();
         }
 
         Intent i = null;
 
-        if (type.equals(Constants.TRANSITION_NOTIFICATION)) {
-            if(action.equals(Constants.INVITE_TEACHER_ACTION)){
+        if (type.equals(Constants.Notifications.TRANSITION_NOTIFICATION)) {
+            if(action.equals(Constants.Actions.INVITE_TEACHER_ACTION)){
                 //open the common invite screen
                 i = new Intent(this, Invite.class);
                 i.putExtra("inviteType", Constants.INVITATION_P2T);
                 i.putExtra("source", Constants.SOURCE_NOTIFICATION);
             }
-            else if(action.equals(Constants.INVITE_PARENT_ACTION)){
+            else if(action.equals(Constants.Actions.INVITE_PARENT_ACTION)){
                 i = new Intent(this, Invite.class);
 
                 String classCode = getIntent().getExtras().getString("classCode");
@@ -65,7 +65,7 @@ public class PushOpen extends ActionBarActivity {
                 else
                     i = new Intent(this, MainActivity.class); //go to main activity
             }
-            else if(action.equals(Constants.SEND_MESSAGE_ACTION)){
+            else if(action.equals(Constants.Actions.SEND_MESSAGE_ACTION)){
                 i = new Intent(this, SendMessage.class);
 
                 String classCode = getIntent().getExtras().getString("classCode");
@@ -79,21 +79,21 @@ public class PushOpen extends ActionBarActivity {
                 else
                     i = new Intent(this, MainActivity.class); //go to main activity
             }
-            else if(action.equals(Constants.CLASSROOMS_ACTION)){
+            else if(action.equals(Constants.Actions.CLASSROOMS_ACTION)){
                 i = new Intent(this, MainActivity.class);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
                     i.putExtra("VIEWPAGERINDEX", 0);
                 i.putExtra("pushOpen", true);
             }
-            else if(action.equals(Constants.OUTBOX_ACTION)){
+            else if(action.equals(Constants.Actions.OUTBOX_ACTION)){
                 i = new Intent(this, MainActivity.class);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
                     i.putExtra("VIEWPAGERINDEX", 1);
                 i.putExtra("pushOpen", true);
             }
-            else if(action.equals(Constants.CREATE_CLASS_ACTION)){
+            else if(action.equals(Constants.Actions.CREATE_CLASS_ACTION)){
 
                 i = new Intent(this, MainActivity.class);
                 ParseUser user = ParseUser.getCurrentUser();
@@ -102,12 +102,24 @@ public class PushOpen extends ActionBarActivity {
                 i.putExtra("flag", "CREATE_CLASS");
                 i.putExtra("pushOpen", true);
             }
+            else if(action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION)){//go to outbox and scroll to that message
+                i = new Intent(this, MainActivity.class);
+                String id = getIntent().getExtras().getString("id");
+
+                ParseUser user = ParseUser.getCurrentUser();
+                if (user != null && user.getString("role").equals(Constants.TEACHER))
+                    i.putExtra("VIEWPAGERINDEX", 1);
+
+                i.putExtra("action", action);
+                i.putExtra("id", id);
+                i.putExtra("pushOpen", true);
+            }
         }
-        else if (type.equals(Constants.LINK_NOTIFICATION)) {
+        else if (type.equals(Constants.Notifications.LINK_NOTIFICATION)) {
             i = new Intent(this, OpenURL.class);
             i.putExtra("URL", action);
         }
-        else if(type.equals(Constants.UPDATE_NOTIFICATION)){
+        else if(type.equals(Constants.Notifications.UPDATE_NOTIFICATION)){
             i = new Intent(this, ProfilePage.class);
             i.putExtra("action", action);
         }
