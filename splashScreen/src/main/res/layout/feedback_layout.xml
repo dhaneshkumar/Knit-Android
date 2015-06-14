@@ -13,9 +13,10 @@
         android:paddingLeft="16dp"
         android:paddingRight="1dp"
         android:text="Feedback"
+        android:textStyle="bold"
         android:gravity="center_vertical"
-        android:textSize="22sp"
-        android:textColor="@color/txtgrey"/>
+        android:textSize="20sp"
+        android:textColor="@color/black"/>
     <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -45,14 +46,17 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="16dp"/>
 	<TextView
   	  	    android:id="@+id/sendfeedback"
   	  	    android:layout_width="wrap_content"
   	  	    android:layout_height="wrap_content"
+        android:minWidth="72dp"
+        android:gravity="center"
 			android:textColor="@color/buttoncolor"
-  	  	    android:text="Send"
+  	  	    android:text="SEND"
         android:padding="8dp"
+        android:textStyle="bold"
   	  	    android:layout_marginRight="16dp"
   	  	    android:layout_marginBottom="15dp"
   	  	    android:layout_gravity="right"
