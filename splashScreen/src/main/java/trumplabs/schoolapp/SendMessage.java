@@ -366,6 +366,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 break;
         }
         return super.onOptionsItemSelected(item);
+
     }
 
 
@@ -779,7 +780,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         builder.setNegativeButton("CANCEL", null);
                         AlertDialog dialog = builder.create();
                         dialog.show();
-                        
+
                     }
                     else{
                         sendFunction();
