@@ -4,6 +4,7 @@
     android:background="@drawable/messages_item_background"
     android:layout_margin="8dp"
     android:elevation="2dp"
+    android:id="@+id/rootLayout"
     android:layout_height="wrap_content"
     android:orientation="vertical" >
 
@@ -12,7 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/greyoutline"
+        android:id="@+id/headLayout"
+        android:background="@drawable/outbox_item_shadow"
         android:paddingTop="16dp"
         android:paddingBottom="16dp"
         >

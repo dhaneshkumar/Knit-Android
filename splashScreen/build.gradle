@@ -34,6 +34,7 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:21.0.+'
     compile 'com.facebook.android:facebook-android-sdk:4.0.+'
     compile 'com.google.android.gms:play-services:7.0.+'
+    compile 'com.github.shell-software:fab:1.1.2'
     compile files('libs/common-lang3.jar')
     compile files('libs/json-simple-1.1.1.jar')
     compile files('libs/robotium-solo-5.3.1.jar')

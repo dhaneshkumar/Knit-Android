@@ -4,7 +4,7 @@
 <style name="AppBaseTheme" parent="Theme.AppCompat.Light">
     <item name="colorPrimary">@color/color_primary</item>
     <item name="colorPrimaryDark">@color/color_secondary</item>
-    <item name="android:navigationBarColor">@color/color_secondary</item>
+   <!-- <item name="android:navigationBarColor">@color/color_secondary</item>-->
     <item name="colorControlNormal">@color/white</item>
     <item name="android:textColorPrimary">@color/white</item>
     <item name="android:textColorSecondary">@color/white</item>

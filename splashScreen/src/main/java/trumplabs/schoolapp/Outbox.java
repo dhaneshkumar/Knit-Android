@@ -1,13 +1,16 @@
 package trumplabs.schoolapp;
 
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +27,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.parse.GetDataCallback;
@@ -32,6 +36,7 @@ import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.software.shell.fab.ActionButton;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -68,6 +73,8 @@ public class Outbox extends Fragment {
     private ImageView outbox_headup;
     private LinearLayout outbox_instructions;
     private TextView outbox_ok;
+    private LinearLayout action_menu_list;
+    private RelativeLayout action_menu;
 
     //handle notification
     private static String action; //LIKE/CONFUSE
@@ -94,6 +101,8 @@ public class Outbox extends Fragment {
         outbox_headup = (ImageView) getActivity().findViewById(R.id.outbox_uphead);
         outbox_instructions = (LinearLayout) getActivity().findViewById(R.id.outbox_instruction);
         outbox_ok = (TextView) getActivity().findViewById(R.id.outbox_ok);
+        action_menu = (RelativeLayout) getActivity().findViewById(R.id.action_menu);
+        action_menu_list = (LinearLayout) getActivity().findViewById(R.id.action_menu_list);
 
         //handle receive notification action - LIKE/CONFUSE
         if(getActivity().getIntent() != null){
@@ -266,6 +275,58 @@ public class Outbox extends Fragment {
         else{
             Log.d("DEBUG_MESSAGES", "skipping outbox update : gap " + Refresher.isSufficientGapOutbox());
         }
+
+
+        //Initializing compose button
+        final ActionButton actionButton = (ActionButton) getActivity().findViewById(R.id.action_button);
+
+        // To set button color for normal state:
+        actionButton.setButtonColor(Color.parseColor("#039BE5"));
+
+        //#E53935 -  red(600)
+        // To set button color for pressed state:
+        actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
+
+        //Setting image in floating button
+        actionButton.setImageResource(R.drawable.fab_plus_icon);
+
+        // To enable or disable Ripple Effect:
+        actionButton.setRippleEffectEnabled(true);
+
+        // To set the shadow radius:
+        //actionButton.setShadowRadius(5.0f);
+
+        // To set the shadow Y-axis offset:
+        //actionButton.setShadowYOffset(5.0f);
+
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                action_menu.setVisibility(View.VISIBLE);
+                action_menu_list.setVisibility(View.VISIBLE);
+
+
+            }
+        });
+
+
+        action_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action_menu.setVisibility(View.GONE);
+                action_menu_list.setVisibility(View.GONE);
+            }
+        });
+
+        action_menu_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action_menu.setVisibility(View.VISIBLE);
+                action_menu_list.setVisibility(View.VISIBLE);
+            }
+        });
+
     }
 
 
@@ -291,6 +352,8 @@ public class Outbox extends Fragment {
         TextView likes;
         TextView confused;
         TextView seen;
+        LinearLayout root;
+        LinearLayout head;
 
         //constructor
         public ViewHolder(View row) {
@@ -305,6 +368,8 @@ public class Outbox extends Fragment {
             likes = (TextView) row.findViewById(R.id.like);
             confused = (TextView) row.findViewById(R.id.confusion);
             seen = (TextView) row.findViewById(R.id.seen);
+            root = (LinearLayout) row.findViewById(R.id.rootLayout);
+            head = (LinearLayout) row.findViewById(R.id.headLayout);
         }
     }
 
@@ -388,6 +453,17 @@ public class Outbox extends Fragment {
                 holder.timestampmsg.setText(timestampmsg);
             } catch (java.text.ParseException e) {
             }
+
+            //setting cardview for higher api using elevation
+
+            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP){
+                holder.root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
+                holder.head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
+
+            }
+
+
 
             /*
             Retrieving image attachment if exist

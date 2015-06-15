@@ -7,6 +7,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -461,6 +462,8 @@ public class Messages extends Fragment {
         ImageView confusingIcon;
         ImageView senderImg;
         LinearLayout copyLayout;
+        LinearLayout root;
+        LinearLayout head;
 
         public ViewHolder(View row) {
             super(row);
@@ -481,6 +484,8 @@ public class Messages extends Fragment {
             confusingIcon = (ImageView) row.findViewById(R.id.confusionIcon);
             senderImg = (ImageView) row.findViewById(R.id.image);
             copyLayout = (LinearLayout) row.findViewById(R.id.copyMessage);
+            root = (LinearLayout) row.findViewById(R.id.rootLayout);
+            head = (LinearLayout) row.findViewById(R.id.headLayout);
         }
     }
 
@@ -676,6 +681,14 @@ public class Messages extends Fragment {
 
             holder.uploadprogressbar.setVisibility(View.GONE);
 
+            //setting cardview for higher api using elevation
+
+            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP){
+                holder.root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
+                holder.head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
+
+            }
 
             String senderId = msgObject.getString("senderId");
 

@@ -49,5 +49,6 @@
     <color name="profile_title">#999999</color>
     <color name="grey">#808284</color>
     <color name="grey_light">#999999</color>
+    <color name="translucent_white">#80ffffff</color>
 
 </resources>
