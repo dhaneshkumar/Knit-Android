@@ -20,8 +20,12 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -49,7 +53,7 @@ import utility.Utility;
  * Shows all the created classrooms
  */
 public class Classrooms extends Fragment {
-    private Activity getactivity;
+    private static Activity getactivity;
     private library.ExpandableListView createdClassListView;
     private library.ExpandableListView joinedClassListView;
     public static List<List<String>> createdGroups;
@@ -233,12 +237,12 @@ public class Classrooms extends Fragment {
                 final SessionManager sessionManager = new SessionManager(Application.getAppContext());
                 int actionBarHeight = sessionManager.getActionBarHeight();
 
-                if(actionBarHeight == 0)
+                if (actionBarHeight == 0)
                     sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
 
-                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                    CreateClassDialog createClassDialog = new CreateClassDialog();
-                    createClassDialog.show(fm, "create Class");
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                CreateClassDialog createClassDialog = new CreateClassDialog();
+                createClassDialog.show(fm, "create Class");
             }
         });
 
@@ -262,9 +266,9 @@ public class Classrooms extends Fragment {
                     else
                         sessionManager.setActionBarHeight(((JoinClassesContainer) getActivity()).getSupportActionBar().getHeight());
                 }
-                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                    JoinClassDialog joinClassDialog = new JoinClassDialog();
-                    joinClassDialog.show(fm, "Join Class");
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                JoinClassDialog joinClassDialog = new JoinClassDialog();
+                joinClassDialog.show(fm, "Join Class");
             }
         });
 
@@ -287,16 +291,15 @@ public class Classrooms extends Fragment {
             @Override
             public void onClick(View v) {
 
-                if(Constants.signup_outbox)
-                {
-                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                if(Constants.signup_outbox) {
+                    if (ParseUser.getCurrentUser().getString("role").equals("teacher")) {
                         FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
                         MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
                         MainActivity.viewpager.setCurrentItem(1);
                     }
                 }
-                else if(Constants.signup_inbox) {
-                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                else if (Constants.signup_inbox) {
+                    if (ParseUser.getCurrentUser().getString("role").equals("teacher")) {
                         FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
                         MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
                         MainActivity.viewpager.setCurrentItem(2);
@@ -309,9 +312,70 @@ public class Classrooms extends Fragment {
             }
         });
 
+        /********** showcase ***********/
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+
+        ShowcaseView.Builder builder1 = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.4f)
+                .setFont(showcaseFont)
+
+                .setTarget(new ViewTarget(R.id.joinClassTV, getactivity))
+                .setContentTitle("To join a class, click on the highlighted button")
+                .setButtonText("Next")
+                //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView1.hide();
+                        Classrooms.showSecond();
+                    }
+                });
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder1.setButtonPosition(layoutParams);
+
+        showcaseView1 = builder1.getShowcaseView();
+        builder1.build();
+
         super.onActivityCreated(savedInstanceState);
     }
 
+    static ShowcaseView showcaseView1, showcaseView2;
+
+    public static void showSecond(){
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+        ShowcaseView.Builder builder2 = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.4f)
+                .setFont(showcaseFont)
+
+                .setTarget(new ViewTarget(R.id.createClassTV, getactivity))
+                .setContentTitle("To create a class, click on the circled button")
+                .setButtonText("Next")
+                        //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView2.hide();
+                        Classrooms.showThird();
+                    }
+                });
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder2.setButtonPosition(layoutParams);
+
+        showcaseView2 = builder2.getShowcaseView();
+        builder2.build();
+    }
+
+    public static void showThird(){
+
+    }
     /*
         returns non-null list containing joined groups(removing Kio class as a quick hack)
      */
