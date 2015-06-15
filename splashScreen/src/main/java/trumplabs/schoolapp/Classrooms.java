@@ -312,18 +312,27 @@ public class Classrooms extends Fragment {
             }
         });
 
-        /********** showcase ***********/
+
+        super.onActivityCreated(savedInstanceState);
+    }
+
+    /********** showcase ***********/
+
+    static ShowcaseView showcaseView1, showcaseView2;
+    static boolean showcaseShown = false;
+
+    public static void showFirst(){
         Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
 
         ShowcaseView.Builder builder1 = new ShowcaseView.Builder(getactivity)
                 .setStyle(R.style.ShowcaseView)
-                .setScaleMultipler(0.4f)
+                .setScaleMultipler(0.45f)
                 .setFont(showcaseFont)
 
                 .setTarget(new ViewTarget(R.id.joinClassTV, getactivity))
                 .setContentTitle("To join a class, click on the highlighted button")
                 .setButtonText("Next")
-                //.hideOnTouchOutside()
+                        //.hideOnTouchOutside()
                 .setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -339,17 +348,13 @@ public class Classrooms extends Fragment {
 
         showcaseView1 = builder1.getShowcaseView();
         builder1.build();
-
-        super.onActivityCreated(savedInstanceState);
     }
-
-    static ShowcaseView showcaseView1, showcaseView2;
 
     public static void showSecond(){
         Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
         ShowcaseView.Builder builder2 = new ShowcaseView.Builder(getactivity)
                 .setStyle(R.style.ShowcaseView)
-                .setScaleMultipler(0.4f)
+                .setScaleMultipler(0.55f)
                 .setFont(showcaseFont)
 
                 .setTarget(new ViewTarget(R.id.createClassTV, getactivity))
