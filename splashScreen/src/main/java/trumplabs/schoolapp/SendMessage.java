@@ -55,6 +55,7 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -75,7 +76,7 @@ import utility.Utility;
  */
 public class SendMessage extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
     private ListView listv;                   //listview to show sent messages
-    private myBaseAdapter myadapter;        //Adapter for listview
+    private static myBaseAdapter myadapter;        //Adapter for listview
     private int ACTION_MODE_NO;
     private ArrayList<ParseObject> selectedlistitems; // To delete selected messages
     public static String groupCode;      //class-code
@@ -407,11 +408,17 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             String stringmsg = (String) getItem(position);      //selected messages
 
             //retrieving the message sent time
-            String timestampmsg = null;
+            String timestampmsg = "";
             try {
                 Date cdate = (Date) groupdetails1.get("creationTime");
                 timestampmsg = Utility.convertTimeStamp(cdate);
             } catch (java.text.ParseException e) {
+            }
+
+            boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
+                                                                     //get pending "false" & that's what we want
+            if(pending){
+                timestampmsg = "pending..";
             }
 
             final String imagepath;
@@ -798,11 +805,11 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 scrollMyListViewToBottom();  //show sent messages from bottom on clicking send button
                 typedtxt = typedmsg.getText().toString().trim();  //message to send
 
-                //check internet connection
+                //check internet connection - NOT REQUIRED - as offline messaging support
 
-                if(!Utility.isInternetExist(SendMessage.this)) {
+                /*if(!Utility.isInternetExist(SendMessage.this)) {
                     return;
-                }
+                }*/
                 if (!typedtxt.equals("") && sendimgpreview.getVisibility() == View.GONE) {
                     // when its not an image message******************
                     sendTxtMsgtoSubscribers(typedtxt);
@@ -850,26 +857,49 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
 
-        //adding item to the listview
-        final ParseObject groupDetails1 = new ParseObject(Constants.GROUP_DETAILS);
-        groupDetails1.put("code", groupCode);
-        groupDetails1.put("title", typedtxt);
-        groupDetails1.put("Creator", sender);
-        groupDetails1.put("name", grpName);
-        groupDetails1.put("senderId", userId);
+        ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
+        sentMsg.put("Creator", sender);
+        sentMsg.put("code", groupCode);
+        sentMsg.put("title", typedtxt);
+        sentMsg.put("name", grpName);
 
-        groupDetails.add(groupDetails1);
-        typedmsg.setText("");
+        SessionManager session = new SessionManager(Application.getAppContext());
+        sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+        sentMsg.put("senderId", userId);
+        sentMsg.put("userId", userId);
+        sentMsg.put("pending", true);
+        try {
+            sentMsg.pin();
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+        }
+
+        groupDetails.add(sentMsg);
+        typedmsg.setText(""); //for reuse
+        //Refresh the list
         myadapter.notifyDataSetChanged();
-        updProgressBar.setVisibility(View.VISIBLE);
 
+        //TODO Notify and update "Outbox" page messages and count also
+        Queries outboxQuery = new Queries();
+        List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
+        if (outboxItems != null) {
+            Outbox.groupDetails = outboxItems;
+            Outbox.refreshSelf();
+        }
 
+        Outbox.updateOutboxTotalMessages();
+
+        //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
+        sendTextMessageCloud(sentMsg, true);
+    }
+
+    //call in thread for background sending, call in gui if sending live
+    public static void sendTextMessageCloud(final ParseObject msg, final boolean isLive){//if live, then only show "sent" toast
         //sending message using parse cloud function
         HashMap<String, String> params = new HashMap<String, String>();
-        params.put("classcode", groupCode);
-        params.put("classname", grpName);
-        params.put("message", typedtxt);
-
+        params.put("classcode", msg.getString("code"));
+        params.put("classname", msg.getString("name"));
+        params.put("message", msg.getString("title"));
 
         ParseCloud.callFunctionInBackground("sendTextMessage", params, new FunctionCallback<HashMap>() {
             @Override
@@ -877,49 +907,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
                 if (e == null) {
                     if (obj != null) {
-
                         Date createdAt = (Date) obj.get("createdAt");
                         String objectId = (String) obj.get("messageId");
-
-                        updProgressBar.setVisibility(View.GONE);
-
-                        ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-                        sentMsg.put("objectId", objectId);
-                        sentMsg.put("Creator", groupDetails1.getString("Creator"));
-                        sentMsg.put("code", groupDetails1.getString("code"));
-                        sentMsg.put("title", groupDetails1.getString("title"));
-                        sentMsg.put("name", groupDetails1.getString("name"));
-                        sentMsg.put("creationTime", createdAt);
-                        sentMsg.put("senderId", userId);
-                        sentMsg.put("userId", userId);
-                        try {
-                            sentMsg.pin();
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-
-
-                        //update outbox message count
-                        Outbox.updateOutboxTotalMessages();
-
-                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-                        query.fromLocalDatastore();
-                        query.orderByDescending("creationTime");
-                        query.whereEqualTo("userId", userId);
-                        query.whereEqualTo("code", groupCode);
-
-                        List<ParseObject> msgList1;
-                        try {
-                            msgList1 = query.find();
-
-                            groupDetails.clear();
-                            if (msgList1 != null) {
-                                for (int i = 0; i < msgList1.size(); i++) {
-                                    groupDetails.add(0, msgList1.get(i));
-                                }
-                            }
-                        } catch (ParseException e1) {
-                        }
 
                         //updating local time
                         SessionManager sm = new SessionManager(Application.getAppContext());
@@ -927,32 +916,34 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                             sm.setCurrentTime(createdAt);
                         }
 
-                        //showing popup
-                        Utility.toastDone("Notification Sent");
+                        //update msg and pin
+                        msg.put("objectId", objectId);
+                        msg.put("pending", false);
+                        msg.put("creationTime", createdAt);
 
-                        //updating outbox
-                        Queries outboxQuery = new Queries();
-
-                        List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-                        if (outboxItems != null) {
-                            Outbox.groupDetails = outboxItems;
-
-                            if (Outbox.myadapter != null)
-                                Outbox.myadapter.notifyDataSetChanged();
-
-                            if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
-                                Outbox.outboxLayout.setVisibility(View.GONE);
+                        try{
+                            msg.pin();
+                        }
+                        catch (ParseException err){
+                            err.printStackTrace();
                         }
 
+                        //showing popup if live
+                        if(isLive) {
+                            Utility.toastDone("Notification Sent");
+                        }
+
+                        if(myadapter != null){
+                            myadapter.notifyDataSetChanged();//just notify the pending->sent change
+                        }
+                        //just notify outbox - no new query or updating count (since an old message just got new status)
+                        Outbox.refreshSelf();
                     }
                 } else {
                     // message was not sent
-                    groupDetails.remove(groupDetails1); //removing entry from list view
-                    myadapter.notifyDataSetChanged();
-                    Utility.toast("Oops! Message wasn't sent. Try Again!");
-                    updProgressBar.setVisibility(View.GONE);
-                    e.printStackTrace();
-
+                    if(isLive) {
+                        Utility.toast("Unable to send now! Your message will be auto sent next time you're online");
+                    }
                 }
             }
         });

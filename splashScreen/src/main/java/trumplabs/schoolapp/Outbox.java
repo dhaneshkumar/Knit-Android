@@ -374,7 +374,7 @@ public class Outbox extends Fragment {
             /*
             Retrieving timestamp
              */
-            String timestampmsg = null;
+            String timestampmsg = "";
             try {
                 Date cdate = groupdetails1.getCreatedAt();
 
@@ -383,11 +383,16 @@ public class Outbox extends Fragment {
 
                 //finding difference of current & createdAt timestamp
                 timestampmsg = Utility.convertTimeStamp(cdate);
-
-                //setting timestamp in view
-                holder.timestampmsg.setText(timestampmsg);
             } catch (java.text.ParseException e) {
             }
+
+            boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
+            if(pending){
+                timestampmsg = "pending..";
+            }
+
+            //setting timestamp in view
+            holder.timestampmsg.setText(timestampmsg);
 
             /*
             Retrieving image attachment if exist
@@ -488,7 +493,7 @@ public class Outbox extends Fragment {
         if (groupDetails.size() == 0)
                 outboxLayout.setVisibility(View.VISIBLE);
         else
-                outboxLayout.setVisibility(View.GONE);
+            outboxLayout.setVisibility(View.GONE);
 
             return groupDetails.size();
         }

@@ -124,14 +124,8 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             return; //we're done
         }
         Date signupTime = user.getCreatedAt();
-        Date now = null;
-        try{
-            now = session.getCurrentTime();
-        }
-        catch (java.text.ParseException e){
-            e.printStackTrace();
-            return; //can't proceed further
-        }
+        Date now = session.getCurrentTime();
+
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "parentTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > tip1Interval){
@@ -158,14 +152,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         }
 
         Date signupTime = user.getCreatedAt();
-        Date now = null;
-        try{
-            now = session.getCurrentTime();
-        }
-        catch (java.text.ParseException e){
-            e.printStackTrace();
-            return; //can't proceed further
-        }
+        Date now = session.getCurrentTime();
 
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "parentNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
@@ -195,15 +182,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
 
         Date signupTime = user.getCreatedAt();
 
-        Date now = null;
-        try{
-            now = session.getCurrentTime();
-        }
-        catch (java.text.ParseException e){
-            e.printStackTrace();
-            return; //can't proceed further
-        }
-        if(now == null) return;
+        Date now = session.getCurrentTime();
 
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "teacherNoActivity() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
@@ -222,14 +201,8 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             return; //we're done
         }
         Date signupTime = user.getCreatedAt();
-        Date now = null;
-        try{
-            now = session.getCurrentTime();
-        }
-        catch (java.text.ParseException e){
-            e.printStackTrace();
-            return; //can't proceed further
-        }
+        Date now = session.getCurrentTime();
+
         Long interval = now.getTime() - signupTime.getTime();
         Log.d("DEBUG_ALARM_RECEIVER", "teacherTip1() joining interval" + interval/(Constants.MINUTE_MILLISEC) + "minutes");
         if(interval > tip1Interval){
@@ -294,14 +267,8 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             if(classCreationTime == null) continue;
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"2 already has subscribers");
 
-            Date now = null;
-            try{
-                now = session.getCurrentTime();
-            }
-            catch (java.text.ParseException e){
-                e.printStackTrace();
-                continue; //can't proceed further
-            }
+            Date now = session.getCurrentTime();
+
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"3 already has subscribers");
             if(now == null) continue;
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"4 already has subscribers");
@@ -381,15 +348,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             Date classCreationTime = classroom.getCreatedAt();
             if(classCreationTime == null) continue;
 
-            Date now = null;
-            try{
-                now = session.getCurrentTime();
-            }
-            catch (java.text.ParseException e){
-                e.printStackTrace();
-                continue; //can't proceed further
-            }
-            if(now == null) continue;
+            Date now = session.getCurrentTime();
 
             Long interval = now.getTime() - classCreationTime.getTime();
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
@@ -475,14 +434,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         localMsg.put("title", content);
         localMsg.put("userId", user.getUsername());
         localMsg.put("senderId", senderId);
-
-
-        try{
-            localMsg.put("creationTime", session.getCurrentTime());
-        }
-        catch (java.text.ParseException e) {
-            e.printStackTrace();
-        }
+        localMsg.put("creationTime", session.getCurrentTime());
 
         localMsg.pinInBackground();
     }
