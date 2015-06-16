@@ -14,6 +14,23 @@ import android.widget.TextView;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
+import java.net.URL;
 import java.util.HashMap;
 
 import library.UtilString;
@@ -24,6 +41,7 @@ import utility.Utility;
  * Show dialog to send instructions to user
  */
 public class RecommendationDialog extends DialogFragment {
+    static final String LOGTAG = "DEBUG_RECO_DIALOG";
     private Dialog dialog;
     private LinearLayout progressLayout;
     private LinearLayout contentLayout;
@@ -87,19 +105,37 @@ public class RecommendationDialog extends DialogFragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
+            if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) ) {
+                Log.d(LOGTAG, "starting mailing......classCode=" + classCode + ", className="+className + ", email=" + email);
 
+                try {
+                    String urlString = "http://ec2-52-26-56-243.us-west-2.compute.amazonaws.com/createPdf.php?username=" + email + "&code=" + classCode;
+                    Log.d(LOGTAG, "url is " + urlString);
+                    URL url = new URL(urlString);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    InputStream in = new BufferedInputStream(conn.getInputStream());
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        total.append(line);
+                    }
+                    String response = total.toString();
+                    Log.d(LOGTAG, "response is " + response);
+                    return true;
+                } catch (MalformedURLException e) {
+                    Log.d(LOGTAG, "MalformedURLException");
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.d(LOGTAG, "IOException");
+                    e.printStackTrace();
+                }
 
-            Log.d("recom", "starting mailing......");
-            Log.d("recom", classCode);
-            Log.d("recom", className);
-            Log.d("recom", email);
-
-            if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) )
-            {
-                HashMap<String, String> param = new HashMap<>();
+                /*HashMap<String, String> param = new HashMap<>();
                 param.put("classCode", classCode);
                 param.put("className", className);
                 param.put("emailId", email);
+
 
                 boolean result = false;
                 try {
@@ -113,12 +149,10 @@ public class RecommendationDialog extends DialogFragment {
                     return false;
                 }
                 return false;
+                */
             }
-
-
             return false;
         }
-
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
