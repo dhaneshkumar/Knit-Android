@@ -54,6 +54,7 @@ import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.MainActivity;
 
 public class Utility extends MyActionBarActivity {
 
@@ -141,36 +142,38 @@ public class Utility extends MyActionBarActivity {
         }
     }
 
-    public static void logout() {//default called from everywhere except ProfilePage
-        LogoutTask logoutTask = new LogoutTask(false, Application.getAppContext());
-        logoutTask.execute();
+    //default called from everywhere(when ParseUser null) except ProfilePage
+    public static void logout() {
+        LogoutTask.resetLocalData();
+        if(MainActivity.viewpager != null){
+            MainActivity.viewpager.post(new Runnable() {
+                @Override
+                public void run() {
+                    LogoutTask.startLoginActivity(); //called from UI thread
+                }
+            });
+        }
     }
 
-    public static void logoutProfilePage(Context context){
-        LogoutTask logoutTask = new LogoutTask(true, context);
+    //called from ProfilePage logout option
+    public static void logoutProfilePage(){
+        LogoutTask logoutTask = new LogoutTask();
         logoutTask.execute();
     }
 
     public static class LogoutTask extends AsyncTask<Void, Void, Void> {
-        boolean isForeground; //whether logout explicitly called
         boolean success; //for static classes, explicitly initialize the variables
-        Context _context;
-        LogoutTask(boolean isFore, Context context){
+        LogoutTask(){
             success = false;
-            isForeground = isFore;
-            _context = context;
-
-            if(isForeground){
-                if(ProfilePage.profileLayout!= null){
-                    ProfilePage.profileLayout.setVisibility(View.GONE);
-                    ProfilePage.progressBarLayout.setVisibility(View.VISIBLE);
-                }
+            if(ProfilePage.profileLayout!= null){
+                ProfilePage.profileLayout.setVisibility(View.GONE);
+                ProfilePage.progressBarLayout.setVisibility(View.VISIBLE);
             }
         }
 
-
-        @Override
-        protected Void doInBackground(Void... params) {
+        //called in general (and also when currentUser is null)
+        //can be called in a thread
+        static void resetLocalData(){
             Context _context = Application.getAppContext();
             // After logout redirect user to Loing Activity
 
@@ -182,16 +185,31 @@ public class Utility extends MyActionBarActivity {
             AlarmTrigger.cancelEventCheckerAlarm(_context);
             AlarmTrigger.cancelRefresherAlarm(_context);
 
-            SessionManager session = new SessionManager(Application.getAppContext());
+            SessionManager session = new SessionManager(_context);
             session.reSetAppOpeningCount();
             session.reSetSignUpAccount();
             session.reSetChildList();
             session.reSetDefaultClassJoinStatus();
             session.reSetActionBarHeight();
+        }
+
+        //call from UI thread only
+        static void startLoginActivity(){
+            Intent i = new Intent(Application.getAppContext(), Signup.class);
+            // Closing all the Activities
+            // Add new Flag to start new Activity
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            Application.getAppContext().startActivity(i);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            resetLocalData();
 
             ParseInstallation pi = ParseInstallation.getCurrentInstallation();
 
-            HashMap<String, Object> param = new HashMap<String, Object>();
+            HashMap<String, Object> param = new HashMap<>();
             param.put("installationObjectId", pi.getString("id"));
 
             try{
@@ -209,7 +227,13 @@ public class Utility extends MyActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result){
-            if(isForeground){
+            //UI thread
+            if(success) {
+                Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
+                startLoginActivity();
+            }
+            else{
+                //show profile page again
                 if(ProfilePage.profileLayout!= null){
                     ProfilePage.profileLayout.setVisibility(View.VISIBLE);
                     ProfilePage.progressBarLayout.setVisibility(View.GONE);
@@ -217,15 +241,6 @@ public class Utility extends MyActionBarActivity {
                         Utility.toast("Unable to logout !");
                     }
                 }
-            }
-            if(!isForeground || success) {//either 1) called due to parseuser null or 2) success flag set
-                Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
-                Intent i = new Intent(_context, Signup.class);
-                // Closing all the Activities
-                // Add new Flag to start new Activity
-                i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                _context.startActivity(i);
             }
         }
     }

@@ -456,7 +456,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 if(Utility.isInternetExist(ProfilePage.this)) {
 
                     {
-                        Utility.logoutProfilePage(ProfilePage.this);
+                        Utility.logoutProfilePage();
                         return;
                     }
                 }
