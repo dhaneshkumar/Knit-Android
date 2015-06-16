@@ -404,26 +404,26 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             } else {
             }
 
-            final ParseObject groupdetails1 = groupDetails.get(position);  //selected object
+            final ParseObject msg = groupDetails.get(position);  //selected object
             String stringmsg = (String) getItem(position);      //selected messages
 
             //retrieving the message sent time
             String timestampmsg = "";
             try {
-                Date cdate = (Date) groupdetails1.get("creationTime");
+                Date cdate = (Date) msg.get("creationTime");
                 timestampmsg = Utility.convertTimeStamp(cdate);
             } catch (java.text.ParseException e) {
             }
 
-            boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
+            boolean pending = msg.getBoolean("pending"); //if this key is not available (for older messages)
                                                                      //get pending "false" & that's what we want
             if(pending){
                 timestampmsg = "pending..";
             }
 
             final String imagepath;
-            if (groupdetails1.containsKey("attachment_name"))
-                imagepath = groupdetails1.getString("attachment_name");
+            if (msg.containsKey("attachment_name"))
+                imagepath = msg.getString("attachment_name");
             else
                 imagepath = "";
 
@@ -440,9 +440,9 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             TextView seenCountArea = (TextView) row.findViewById(R.id.seen);
 
 
-            int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
-            int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
-            int seenCount = Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT));
+            int likeCount = Utility.nonNegative(msg.getInt(Constants.LIKE_COUNT));
+            int confusedCount = Utility.nonNegative(msg.getInt(Constants.CONFUSED_COUNT));
+            int seenCount = Utility.nonNegative(msg.getInt(Constants.SEEN_COUNT));
             if(seenCount < likeCount + confusedCount){ //for consistency(SC >= LC + CC) - might not be correct though
                 seenCount = likeCount + confusedCount;
             }
@@ -453,14 +453,14 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
             String className= null;
             //setting class name
-            if(groupdetails1.getString("name") != null) {
-                classNameTV.setText(groupdetails1.getString("name"));
-                className = groupdetails1.getString("name");
+            if(msg.getString("name") != null) {
+                classNameTV.setText(msg.getString("name"));
+                className = msg.getString("name");
             }
             else
             {
                 //previous version support < in the version from now onwards storing class name also>
-                String groupCode = groupdetails1.getString("code");
+                String groupCode = msg.getString("code");
 
                 //Retrieving from shared preferences to access fast
                 className =session.getClassName(groupCode);
@@ -510,7 +510,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     timestampview.setText(timestampmsg);
                 } else {
                     // else download image from server and then display it
-                    ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
+                    ParseFile imagefile = (ParseFile) msg.get("attachment");
                     uploadprogressbar.setVisibility(View.VISIBLE);
                     imagefile.getDataInBackground(new GetDataCallback() {
                         public void done(byte[] data, ParseException e) {
@@ -559,7 +559,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             }
 
             row.setBackgroundColor(getResources().getColor(R.color.transparent));
-            if (ACTION_MODE_NO == 1 && selectedlistitems.contains(groupdetails1)) {
+            if (ACTION_MODE_NO == 1 && selectedlistitems.contains(msg)) {
                 row.setBackgroundColor(getResources().getColor(R.color.highlightcolor));
             }
             return row;
@@ -567,7 +567,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     }
 
     public void initialiseListViewMethods() {
-
 
         /*
         On scrolling list view, load more messages from local storage
@@ -942,7 +941,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 } else {
                     // message was not sent
                     if(isLive) {
-                        Utility.toast("Unable to send now! Your message will be auto sent next time you're online");
+                        Utility.toast("Unable to send now! We'll send it next time you're online");
                     }
                 }
             }
