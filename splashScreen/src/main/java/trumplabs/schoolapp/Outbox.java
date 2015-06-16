@@ -24,6 +24,8 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -293,18 +295,15 @@ public class Outbox extends Fragment {
         // To enable or disable Ripple Effect:
         actionButton.setRippleEffectEnabled(true);
 
-        // To set the shadow radius:
-        //actionButton.setShadowRadius(5.0f);
-
-        // To set the shadow Y-axis offset:
-        //actionButton.setShadowYOffset(5.0f);
-
         actionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
                 action_menu.setVisibility(View.VISIBLE);
                 action_menu_list.setVisibility(View.VISIBLE);
+
+
+                actionButton.setImageResource(R.drawable.ic_edit);
 
 
             }
@@ -316,6 +315,9 @@ public class Outbox extends Fragment {
             public void onClick(View v) {
                 action_menu.setVisibility(View.GONE);
                 action_menu_list.setVisibility(View.GONE);
+
+                actionButton.setImageResource(R.drawable.fab_plus_icon);
+
             }
         });
 
@@ -326,6 +328,9 @@ public class Outbox extends Fragment {
                 action_menu_list.setVisibility(View.VISIBLE);
             }
         });
+
+
+
 
     }
 
