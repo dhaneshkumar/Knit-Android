@@ -120,7 +120,7 @@ public class JoinClassDialog extends DialogFragment {
             //if user is a student and joining class from suggestions, then directly join the class
             if(role.equals(Constants.STUDENT)) {
                 //checking for internet connection
-                if (Utility.isInternetOn(getActivity())) {
+                if (Utility.isInternetOn()) {
 
                     //calling background function to join clas
                     AddChild_Background rcb = new AddChild_Background();
@@ -129,7 +129,6 @@ public class JoinClassDialog extends DialogFragment {
                     //showing progress bar
                     progressLayout.setVisibility(View.VISIBLE);
                     contentLayout.setVisibility(View.GONE);
-
                 }
                 else {
                     Utility.toast("Check your Internet connection");

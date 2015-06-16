@@ -60,7 +60,7 @@ import utility.Utility;
 public class Messages extends Fragment {
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
-    private RecyclerView listv;
+    private static RecyclerView listv;
     private LinearLayoutManager mLayoutManager;
     public static RecyclerView.Adapter myadapter;
     public static SwipeRefreshLayout mPullToRefreshLayout;
@@ -108,7 +108,7 @@ public class Messages extends Fragment {
                     intent.putExtra("pushOpen", false);
                     getActivity().setIntent(intent);
 
-                    if(Utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetOn()) {
                         Log.d("DEBUG_MESSAGES", "calling Inbox async task because of pushOpen flag");
                         refreshServerMessage = true;
                         /*
@@ -127,7 +127,7 @@ public class Messages extends Fragment {
 
 
         if(!refreshServerMessage) {//if pushOpen flag not set in intent
-            if (Refresher.isSufficientGapInbox() && Utility.isInternetExist(getActivity())) {
+            if (Refresher.isSufficientGapInbox() && Utility.isInternetOn()) {
                 Log.d("DEBUG_MESSAGES", "calling Inbox async task since sufficient gap");
                 refreshServerMessage = true; //we are calling inbox if gap is sufficient
             } else {
@@ -236,51 +236,6 @@ public class Messages extends Fragment {
 
         super.onActivityCreated(savedInstanceState);
 
-    /*
-     * setup the action bar with pull to refresh layout
-     */
-       /* mPullToRefreshLayout = (PullToRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
-        ActionBarPullToRefresh.from(getActivity()).allChildrenArePullable().listener(this)
-                .setup(mPullToRefreshLayout);*/
-
-        //
-        // listv.setOnItemLongClickListener(new OnItemLongClickListener() {
-        //
-        // @Override
-        // public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        // final View finalview = view;
-        //
-        // final CharSequence[] items = {"Copy Message", "Copy Class Name", "Copy Sender Name"};
-        //
-        // AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // builder.setTitle("Make your selection");
-        // builder.setItems(items, new DialogInterface.OnClickListener() {
-        // public void onClick(DialogInterface dialog, int item) {
-        // // Do something with the selection
-        // switch (item) {
-        // case 0:
-        // Utility.copyToClipBoard(getActivity(), "ClassMessage",
-        // ((TextView) finalview.findViewById(R.id.msgs)).getText().toString());
-        // break;
-        // case 1:
-        // Utility.copyToClipBoard(getActivity(), "ClassName",
-        // ((TextView) finalview.findViewById(R.id.groupName)).getText().toString());
-        // break;
-        //
-        // case 2:
-        // Utility.copyToClipBoard(getActivity(), "SenderName",
-        // ((TextView) finalview.findViewById(R.id.sender)).getText().toString());
-        // break;
-        // default:
-        // break;
-        // }
-        // }
-        // });
-        // AlertDialog alert = builder.create();
-        // alert.show();
-        // return true;
-        // }
-        // });
 
     /*
      * On scrolling down the list view display extra messages.
@@ -402,6 +357,16 @@ public class Messages extends Fragment {
                 Constants.signup_inbox = false;
             }
         });
+
+        //before showing no internet popup make sure view is created
+        if(listv != null) {
+            listv.post(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.isInternetExist(getActivity());
+                }
+            });
+        }
     }
 
     /*

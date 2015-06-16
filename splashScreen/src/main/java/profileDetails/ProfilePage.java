@@ -191,7 +191,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 Uri uri = Uri.parse("market://details?id=" + getPackageName());
                 Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
 
-                if(Utility.isInternetExist(this)) {
+                if(Utility.isInternetOn()) {
                     try {
                         startActivity(myAppLinkToMarket);
                     } catch (ActivityNotFoundException e) {
@@ -203,6 +203,16 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     startActivity(intent);
                 }
             }
+        }
+
+        //before showing no internet popup make sure view is created
+        if(profileLayout != null) {
+            profileLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.isInternetExist(ProfilePage.this);
+                }
+            });
         }
         FacebookSdk.sdkInitialize(getApplicationContext());
     }

@@ -454,7 +454,7 @@ public class Utility extends MyActionBarActivity {
         return "just now";
     }
 
-    public static final boolean isInternetOn(Activity activity) {
+    public static final boolean isInternetOn() {
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
@@ -462,12 +462,12 @@ public class Utility extends MyActionBarActivity {
         if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
                 || connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) {
             // message to screen for testing (if req)
-            final TextView internetbar = (TextView) activity.findViewById(R.id.internetbar);
-            internetbar.setVisibility(View.GONE);
+            // final TextView internetbar = (TextView) activity.findViewById(R.id.internetbar);
+            // internetbar.setVisibility(View.GONE);
             return true;
         } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
                 || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
-            activity.findViewById(R.id.internetbar).setVisibility(View.VISIBLE);
+            // activity.findViewById(R.id.internetbar).setVisibility(View.VISIBLE);
             return false;
         }
 
@@ -638,6 +638,10 @@ public class Utility extends MyActionBarActivity {
 
     // The method that displays the popup.
     public static void showPopup(Activity context) {
+        if(context != null && context.isFinishing()){
+            Log.d("DEBUG_FIX", "showPopup : activity is finishing");
+            return;
+        }
 
         LayoutInflater layoutInflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
