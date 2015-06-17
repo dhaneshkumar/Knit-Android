@@ -205,8 +205,6 @@ public class Utility extends MyActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            resetLocalData();
-
             ParseInstallation pi = ParseInstallation.getCurrentInstallation();
 
             HashMap<String, Object> param = new HashMap<>();
@@ -216,6 +214,7 @@ public class Utility extends MyActionBarActivity {
                 boolean logoutSuccess = ParseCloud.callFunction("appLogout", param);
                 Log.d("DEBUG_UTILITY", "logout() - appLogout cloud function result is " + logoutSuccess);
                 ParseUser.logOut();
+                resetLocalData();
                 success = true;
                 return null;
             }
