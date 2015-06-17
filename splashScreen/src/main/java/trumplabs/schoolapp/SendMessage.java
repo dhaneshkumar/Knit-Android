@@ -97,6 +97,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     public static Activity currentActivity;
     private LinearLayout inviteLayout;
     public static LinearLayout picProgressBarLayout;
+    public static ImageButton sendmsgbutton;
 
 
     @Override
@@ -205,7 +206,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             }
         });
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        //FacebookSdk.sdkInitialize(getApplicationContext());
 
         try {
             Queries memberQuery = new Queries();
@@ -231,7 +232,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         //facebook ad tracking
         // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+        //AppEventsLogger.activateApp(this, Config.FB_APP_ID);
     }
 
     @Override
@@ -240,7 +241,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         //facebook tracking : time spent on app by people
         // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+        //AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
     }
 
     @Override
@@ -640,7 +641,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
     private void sendMsgMethod() {
         // Initializing all the views related to sending message view
-        final ImageButton sendmsgbutton = (ImageButton) findViewById(R.id.sendmsgbttn);
+        sendmsgbutton = (ImageButton) findViewById(R.id.sendmsgbttn);
         typedmsg = (EditText) findViewById(R.id.typedmsg);
         countview = (TextView) findViewById(R.id.lettercount);
         sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
@@ -679,7 +680,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         /*
          * Changing sending button color
          */
-                if (s.length() > 0) {
+                if (s.length() > 0 || sendimgpreview.getVisibility() == View.VISIBLE) {
                     sendmsgbutton.setImageResource(R.drawable.send);
 
                 } else
@@ -844,6 +845,12 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 sendimgpreview.setTag("");
                 sendimgview.setImageBitmap(null);
                 sendimgpreview.setVisibility(View.GONE);
+
+                if(typedmsg.getText() != null)
+                {
+                    if(typedmsg.getText().length()<1)
+                        sendmsgbutton.setImageResource(R.drawable.send_grey);
+                }
             }
         });
     }

@@ -214,7 +214,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 }
             });
         }
-        FacebookSdk.sdkInitialize(getApplicationContext());
+      //  FacebookSdk.sdkInitialize(getApplicationContext());
     }
 
 
@@ -224,7 +224,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         //facebook ad tracking
         // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+       // AppEventsLogger.activateApp(this, Config.FB_APP_ID);
     }
 
     @Override
@@ -233,7 +233,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         //facebook tracking : time spent on app by people
         // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+       // AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
     }
 
 
