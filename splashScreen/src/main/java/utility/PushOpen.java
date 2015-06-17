@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 
 import com.parse.ParseException;
@@ -15,6 +14,7 @@ import com.parse.ParseUser;
 
 import additionals.Invite;
 import additionals.OpenURL;
+import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
@@ -24,7 +24,7 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.SendMessage;
 
-public class PushOpen extends ActionBarActivity {
+public class PushOpen extends MyActionBarActivity {
     String type;
     String action;
 

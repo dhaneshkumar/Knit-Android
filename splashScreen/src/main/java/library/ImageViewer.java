@@ -1,12 +1,12 @@
 package library;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.widget.ImageView;
 
+import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 
-public class ImageViewer extends ActionBarActivity{
+public class ImageViewer extends MyActionBarActivity {
   
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

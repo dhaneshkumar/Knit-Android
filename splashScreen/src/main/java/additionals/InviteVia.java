@@ -7,7 +7,6 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
 import android.text.Html;
 import android.util.Log;
@@ -38,6 +37,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import BackGroundProcesses.InviteTasks;
+import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
@@ -46,7 +46,7 @@ import utility.Utility;
 /**
  * Created by dhanesh on 1/6/15.
  */
-public class InviteVia extends ActionBarActivity{
+public class InviteVia extends MyActionBarActivity {
     static String LOGTAG = "DEBUG_INVITE_PHONE";
 
     private int inviteType = -1;
