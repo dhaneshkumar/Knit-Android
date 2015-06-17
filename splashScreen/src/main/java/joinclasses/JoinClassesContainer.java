@@ -73,14 +73,4 @@ public class JoinClassesContainer extends MyActionBarActivity  {
       return 1;
     }
   }
-
-
-  @Override
-  public void onBackPressed() {
-    // Write your code here
-    Intent intent = new Intent(this, MainActivity.class);
-    startActivity(intent);
-
-    super.onBackPressed();
-  }
 }
