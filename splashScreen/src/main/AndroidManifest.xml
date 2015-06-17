@@ -139,6 +139,7 @@
         <activity android:name="joinclasses.JoinedClassInfo"></activity>
         <activity android:name="trumplabs.schoolapp.Subscribers"></activity>
         <activity android:name="trumplabs.schoolapp.SendMessage"></activity>
+        <activity android:name="trumplabs.schoolapp.ComposeMessage"></activity>
 
         <activity android:name="tutorial.ParentTutorial"></activity>
         <activity android:name="tutorial.TeacherTutorial"></activity>

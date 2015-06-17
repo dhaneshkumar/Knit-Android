@@ -299,11 +299,13 @@ public class Outbox extends Fragment {
             @Override
             public void onClick(View v) {
 
-                action_menu.setVisibility(View.VISIBLE);
+               /* action_menu.setVisibility(View.VISIBLE);
                 action_menu_list.setVisibility(View.VISIBLE);
+                actionButton.setImageResource(R.drawable.ic_edit);*/
 
 
-                actionButton.setImageResource(R.drawable.ic_edit);
+                Intent intent = new Intent(getActivity(), ComposeMessage.class);
+                startActivity(intent);
 
 
             }

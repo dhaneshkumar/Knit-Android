@@ -788,34 +788,6 @@ public class Messages extends Fragment {
                             }
                         });
 
-                        //smaller copy-text menu
-                      /*  LayoutInflater layoutInflater
-                                = (LayoutInflater) getActivity().getBaseContext()
-                                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-                        final View popupView = layoutInflater.inflate(R.layout.copy_text, null);
-
-                        TextView copyTV = (TextView) popupView.findViewById(R.id.copyText);
-
-                        final PopupWindow popupWindow = new PopupWindow(
-                                popupView,
-                                LinearLayout.LayoutParams.WRAP_CONTENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT);
-
-                        popupWindow.setBackgroundDrawable(new BitmapDrawable());
-                        popupWindow.setOutsideTouchable(true);
-
-                        copyTV.setOnClickListener(new OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Utility.copyToClipBoard(getActivity(), "Message", message);
-                                popupWindow.dismiss();
-                            }
-                        });
-
-
-                        popupWindow.showAsDropDown(holder.copyLayout);*/
-
                     }
                 });
             }

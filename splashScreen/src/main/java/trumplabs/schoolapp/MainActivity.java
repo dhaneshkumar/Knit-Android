@@ -318,7 +318,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                 user.put("APP_RATED", true);
                 user.saveEventually();
-
             }
         }
 
