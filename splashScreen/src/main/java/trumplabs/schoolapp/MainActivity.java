@@ -233,10 +233,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     tabcolor.setLayoutParams(params);
                     highLightClassrooms();
                     showButttonContainer(Classrooms.buttonContainer);
-                    if(!Classrooms.showcaseShown){
+                    /*if(!Classrooms.showcaseShown){
                         Classrooms.showFirst();
                         Classrooms.showcaseShown = true;
-                    }
+                    }*/
                 } else if (position == 1) {
                     //setTitle("Inbox");
 

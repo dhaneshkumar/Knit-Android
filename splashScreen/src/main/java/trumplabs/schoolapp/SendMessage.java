@@ -146,6 +146,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         } catch (ParseException e) {
         }
 
+        ClassMsgFunctions.updateTotalClassMessages(groupCode);
+
         if (groupDetails == null)
             groupDetails = new ArrayList<ParseObject>();
 
@@ -816,9 +818,10 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 if (!typedtxt.equals("") && sendimgpreview.getVisibility() == View.GONE) {
                     // when its not an image message******************
                     sendTxtMsgtoSubscribers(typedtxt);
+                    totalClassMessages++;
 
                 } else if (sendimgpreview.getVisibility() == View.VISIBLE) {
-
+                    totalClassMessages++;
                     // Sending an image file
                     // passing image file path and message content as
                     // parameters
@@ -930,11 +933,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     err.printStackTrace();
                 }
 
-                //showing popup if live
-                if (isLive) {
-                    Utility.toastDone("Notification Sent");
-                }
-
                 //view.post
                 if(SendMessage.contentLayout != null) {
                     SendMessage.contentLayout.post(new Runnable() {
@@ -1009,7 +1007,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     SendPendingMessages.addMessageToQueue(sentMsg);
                 } else {
                     e.printStackTrace();
-                    Utility.toastDone("Unable to send message!");
+                    Utility.toast("Unable to send message!");
                 }
             }
         });

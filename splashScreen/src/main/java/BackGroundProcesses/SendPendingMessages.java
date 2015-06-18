@@ -6,10 +6,13 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import library.UtilString;
 import trumplabs.schoolapp.Constants;
@@ -26,7 +29,8 @@ public class SendPendingMessages {
     static List<ParseObject> pendingMessageQueue = null; //data item 1
     static boolean jobRunning = false; //data item 2
 
-    static Set<Long> currentSessionMessageTime = new HashSet<>(); //contains time stamp of messages sent in current session(so that we can show popup for these)
+    static final int toastMessageLimit = 2;
+    public static List<ParseObject> toastMessageList = new CopyOnWriteArrayList<>(); //contains time stamp of latest 2 messages sent in current session(so that we can show popup for these)
 
     public static final String LOGTAG = "DEBUG_SEND_PENDING_MSGS";
     public static void spawnThread(){
@@ -46,6 +50,14 @@ public class SendPendingMessages {
 
         //since job is queue won't be null, but still for safety check null
         synchronized (DATA_LOCK) {
+            //add to toastMessageList
+            if(toastMessageList.size() == toastMessageLimit){
+                Log.d(LOGTAG, "[GUI] addMessageToQueue() removed old from toastMessageList");
+                toastMessageList.remove(0); //remove oldest one
+            }
+            Log.d(LOGTAG, "[GUI] addMessageToQueue() added to toastMessageList");
+            toastMessageList.add(msg);
+
             if(jobRunning) {
                 if (pendingMessageQueue != null) {
                     pendingMessageQueue.add(msg);
@@ -116,7 +128,37 @@ public class SendPendingMessages {
                 if (!UtilString.isBlank(currentMsg.getString("title")) && UtilString.isBlank(currentMsg.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     Log.d(LOGTAG, "pending text msg content : '" + currentMsg.getString("title") + "'");
-                    int result = SendMessage.sendTextMessageCloud(currentMsg, false);
+                    final int result = SendMessage.sendTextMessageCloud(currentMsg, false);
+
+                    Boolean showToast = false;
+                    Date date = currentMsg.getDate("creationTime");
+                    if(date != null){
+                        //check if list contains this date
+                        for(ParseObject msg : SendPendingMessages.toastMessageList){
+                            if(currentMsg == msg){ //same reference because they are the same parse objects
+                                SendPendingMessages.toastMessageList.remove(currentMsg);
+                                showToast = true;
+                            }
+                        }
+                    }
+
+                    //view.post
+                    if(showToast) {
+                        if (SendMessage.contentLayout != null) {
+                            SendMessage.contentLayout.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if(result == 0){
+                                        Utility.toastDone("Notification Sent");
+                                    }
+                                    else{
+                                        Utility.toast("Unable to send message! We will send it later");
+                                    }
+                                }
+                            });
+                        }
+                    }
+
                     if(result == 100){
                         abort = true;
                         continue;
