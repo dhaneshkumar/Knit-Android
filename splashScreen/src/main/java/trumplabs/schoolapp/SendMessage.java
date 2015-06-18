@@ -144,6 +144,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         } catch (ParseException e) {
         }
 
+        ClassMsgFunctions.updateTotalClassMessages(groupCode);
+
         if (groupDetails == null)
             groupDetails = new ArrayList<ParseObject>();
 

@@ -208,10 +208,10 @@ public class Utility extends MyActionBarActivity {
             ParseInstallation pi = ParseInstallation.getCurrentInstallation();
 
             HashMap<String, Object> param = new HashMap<>();
-            param.put("installationObjectId", pi.getString("id"));
+            param.put("installationId", pi.getInstallationId());
 
             try{
-                boolean logoutSuccess = ParseCloud.callFunction("appLogout", param);
+                boolean logoutSuccess = ParseCloud.callFunction("appExit", param);
                 Log.d("DEBUG_UTILITY", "logout() - appLogout cloud function result is " + logoutSuccess);
                 ParseUser.logOut();
                 resetLocalData();

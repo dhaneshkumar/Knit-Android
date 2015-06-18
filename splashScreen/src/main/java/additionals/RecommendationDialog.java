@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -74,19 +75,16 @@ public class RecommendationDialog extends DialogFragment {
             public void onClick(View v) {
                 email = emailId.getText().toString();
 
-                if(UtilString.isBlank(email))
+                if (UtilString.isBlank(email))
                     Utility.toast("Enter your Email-ID");
-                else
-                {
-                    if(Utility.isInternetExist(getActivity())) {
+                else {
+                    if (Utility.isInternetExist(getActivity())) {
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);
 
                         SendInstructions sendInstructions = new SendInstructions();
                         sendInstructions.execute();
-                    }
-                    else
-                    {
+                    } else {
                         Utility.toast("No Internet Connection");
                     }
 
@@ -105,11 +103,19 @@ public class RecommendationDialog extends DialogFragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-            if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) ) {
-                Log.d(LOGTAG, "starting mailing......classCode=" + classCode + ", className="+className + ", email=" + email);
+            ParseUser user = ParseUser.getCurrentUser();
+            String name = null;
+            if(user != null) {
+                name = user.getString("name");
+            }
+
+            if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) && (!UtilString.isBlank(name))) {
+                Log.d(LOGTAG, "starting mailing......classCode=" + classCode + ", className="+className + ", email=" + email + ", name=" + name);
 
                 try {
-                    String urlString = "http://ec2-52-26-56-243.us-west-2.compute.amazonaws.com/createPdf.php?username=" + email + "&code=" + classCode;
+
+
+                    String urlString = "http://ec2-52-26-56-243.us-west-2.compute.amazonaws.com/createPdf.php?email=" + email + "&code=" + classCode + "&name=" + name;
                     Log.d(LOGTAG, "url is " + urlString);
                     URL url = new URL(urlString);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -130,26 +136,6 @@ public class RecommendationDialog extends DialogFragment {
                     Log.d(LOGTAG, "IOException");
                     e.printStackTrace();
                 }
-
-                /*HashMap<String, String> param = new HashMap<>();
-                param.put("classCode", classCode);
-                param.put("className", className);
-                param.put("emailId", email);
-
-
-                boolean result = false;
-                try {
-                    result = ParseCloud.callFunction("mailInstructions", param);
-
-                    if(result)
-                        return true;
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-                return false;
-                */
             }
             return false;
         }
