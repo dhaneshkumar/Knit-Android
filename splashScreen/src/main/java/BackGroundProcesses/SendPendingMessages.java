@@ -64,9 +64,9 @@ public class SendPendingMessages {
     public static void sendPendingMessages(){
 
         synchronized (DATA_LOCK){
-            Log.d(LOGTAG, "sendPendingMessages : start LOCK acquired");
+            Log.d(LOGTAG, "sendPendingMessages : start-LOCK acquired : begin");
             if(jobRunning) {
-                Log.d(LOGTAG, "sendPendingMessages : already one running, returning");
+                Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : already one running, returning");
                 return;
             }
 
@@ -85,9 +85,10 @@ public class SendPendingMessages {
             catch (ParseException e){
                 e.printStackTrace();
                 jobRunning = false;
+                Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : parse exception in find pending msgs query");
                 return;
             }
-            Log.d(LOGTAG, "sendPendingMessages : start : LOCK released");
+            Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : end");
         }
 
         boolean abort = false; //if network error occurred in one of the attempts
@@ -95,27 +96,26 @@ public class SendPendingMessages {
         while (true) {
             ParseObject currentMsg = null;
             synchronized (DATA_LOCK){
-                Log.d(LOGTAG, "sendPendingMessages : loop : LOCK acquired");
+                Log.d(LOGTAG, "sendPendingMessages : loop-LOCK acquired");
                 if(pendingMessageQueue.isEmpty()){
                     jobRunning = false;
-                    Log.d(LOGTAG, "sendPendingMessages : queue empty, exiting");
+                    Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : queue empty, exiting : ");
                     return;
                 }
                 if(abort){
                     jobRunning = false;
-                    Log.d(LOGTAG, "sendPendingMessages : abort signal(network error), exiting");
+                    Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : abort signal(network error), exiting");
                     return;
                 }
-                Log.d(LOGTAG, "sendPendingMessages : picking next item in the queue");
                 currentMsg = pendingMessageQueue.get(0);
-                Log.d(LOGTAG, "sendPendingMessages : loop : LOCK released");
+                Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : picking next item in the queue");
             }
 
             //now try sending this message
             if(currentMsg != null){
                 if (!UtilString.isBlank(currentMsg.getString("title")) && UtilString.isBlank(currentMsg.getString("attachment_name"))) {
                     //title non empty, attachment empty
-                    Log.d(LOGTAG, "pending text msg " + currentMsg.getString("title"));
+                    Log.d(LOGTAG, "pending text msg content : '" + currentMsg.getString("title") + "'");
                     int result = SendMessage.sendTextMessageCloud(currentMsg, false);
                     if(result == 100){
                         abort = true;

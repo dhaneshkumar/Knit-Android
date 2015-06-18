@@ -72,6 +72,8 @@ public class Outbox extends Fragment {
     //handle notification
     private static String action; //LIKE/CONFUSE
     private static String id; //msg object id
+
+    public static boolean needLoading = false; //whether needs new query to fetch newer messages from localstore(offline support)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -657,13 +659,14 @@ stop swipe refreshlayout
 
     class NotificationHandler extends AsyncTask<Void, Void, Void>{
         int msgIndex = -1;
-
         @Override
         protected Void doInBackground(Void... params) {
             if(groupDetails == null) return null;
 
             if(action != null && id != null &&
                     (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))){
+                action = null; //action not used hereafter. Avoid duplicate asynctask invocations
+
                 for(int i=0; i<groupDetails.size(); i++){
                     ParseObject msg = groupDetails.get(i);
                     if(msg.getString("objectId") != null && msg.getString("objectId").equals(id)){

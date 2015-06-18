@@ -872,16 +872,24 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         sentMsg.put("senderId", userId);
         sentMsg.put("userId", userId);
         sentMsg.put("pending", true);
+
+        groupDetails.add(sentMsg);
+        typedmsg.setText(""); //for reuse
+        //Refresh the list
+        myadapter.notifyDataSetChanged(); //immediately show message in the sent list
+
+
+        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() before pin");
         try {
             sentMsg.pin();
         } catch (ParseException e1) {
             e1.printStackTrace();
         }
 
-        groupDetails.add(sentMsg);
-        typedmsg.setText(""); //for reuse
-        //Refresh the list
-        myadapter.notifyDataSetChanged();
+        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() just after pin");
+
+
+        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() before outbox query");
 
         //TODO Notify and update "Outbox" page messages and count also
         Queries outboxQuery = new Queries();
@@ -890,9 +898,10 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             Outbox.groupDetails = outboxItems;
             Outbox.refreshSelf();
         }
+        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() before count query");
 
         Outbox.updateOutboxTotalMessages();
-
+        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() calling add msg to queue");
 
         //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
         SendPendingMessages.addMessageToQueue(sentMsg);
