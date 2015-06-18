@@ -27,6 +27,7 @@ public class FeedBackClass extends DialogFragment {
     View view = getActivity().getLayoutInflater().inflate(R.layout.feedback_layout, null);
     builder.setView(view);
     final Dialog dialog = builder.create();
+    dialog.setCanceledOnTouchOutside(true);
     dialog.show();
     final EditText feedbackcontent = (EditText) view.findViewById(R.id.feedbackcontent);
     feedbackcontent.setOnFocusChangeListener(new View.OnFocusChangeListener() {

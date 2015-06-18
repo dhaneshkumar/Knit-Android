@@ -2,6 +2,7 @@ package profileDetails;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -337,7 +338,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                         if (!UtilString.isBlank(value)) {
 
-                            if(Utility.isInternetExist(ProfilePage.this)) {
+                            if (Utility.isInternetExist(ProfilePage.this)) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(nameInput.getWindowToken(), 0);
@@ -368,12 +369,13 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 nameDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.dismiss();
-                        Log.d("action", getSupportActionBar().getHeight()+" ");
+                        Log.d("action", getSupportActionBar().getHeight() + " ");
 
                     }
                 });
-
-                nameDialog.show();
+                Dialog dialog = nameDialog.create();
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.show();
 
                 break;
 

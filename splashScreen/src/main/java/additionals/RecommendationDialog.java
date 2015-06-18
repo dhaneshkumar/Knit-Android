@@ -39,6 +39,7 @@ public class RecommendationDialog extends DialogFragment {
                 getActivity().getLayoutInflater().inflate(R.layout.recommendation_popup, null);
         builder.setView(view);
         dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
         final TextView send = (TextView) view.findViewById(R.id.send);
@@ -69,7 +70,7 @@ public class RecommendationDialog extends DialogFragment {
                     }
                     else
                     {
-                        Utility.toast("No Internet Connection");
+                        Utility.toast("Sorry! No Internet Connection");
                     }
 
                 }

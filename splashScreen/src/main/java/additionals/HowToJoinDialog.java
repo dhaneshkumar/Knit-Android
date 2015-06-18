@@ -35,6 +35,7 @@ public class HowToJoinDialog extends DialogFragment {
                 getActivity().getLayoutInflater().inflate(R.layout.how_to_join_popup, null);
         builder.setView(view);
         dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
         TextView wayToJoin = (TextView) view.findViewById(R.id.wayToJoin);

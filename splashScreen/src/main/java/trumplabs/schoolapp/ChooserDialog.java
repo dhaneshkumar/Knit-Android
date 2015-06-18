@@ -62,6 +62,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     camerabutton.setOnClickListener(this);
     builder.setView(view);
     Dialog dialog = builder.create();
+    dialog.setCanceledOnTouchOutside(true);
     dialog.show();
 
       if(getArguments() != null) {

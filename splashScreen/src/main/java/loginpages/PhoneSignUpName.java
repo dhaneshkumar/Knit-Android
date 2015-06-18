@@ -123,6 +123,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     getLayoutInflater().inflate(R.layout.signup_phone_dialog, null);
             builder.setView(view);
             final Dialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(true);
             dialog.show();
 
             TextView edit = (TextView) view.findViewById(R.id.edit);

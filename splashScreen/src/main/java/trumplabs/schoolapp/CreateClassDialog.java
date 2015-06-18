@@ -59,6 +59,7 @@ public class CreateClassDialog extends DialogFragment{
                 getActivity().getLayoutInflater().inflate(R.layout.create_class_popup, null);
         builder.setView(view);
         dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
         //Initializing gui elements

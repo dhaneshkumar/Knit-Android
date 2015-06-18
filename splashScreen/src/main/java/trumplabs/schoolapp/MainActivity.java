@@ -1,5 +1,6 @@
 package trumplabs.schoolapp;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -8,10 +9,12 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -64,7 +67,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     TextView tabcolor;
     LinearLayout.LayoutParams params;
     int screenwidth;
-    android.support.v7.app.ActionBar actionbar;
     private static String role;
     int backCount = 0;
     boolean signInFlag = false;
@@ -91,8 +93,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         editLayout = (LinearLayout) findViewById(R.id.editLayout);
         mHeaderProgressBar = (SmoothProgressBar) findViewById(R.id.ptr_progress);
-
-
 
         Map<String, String> dimensions = new HashMap<String, String>();
 // Define ranges to bucket data points into meaningful segments
@@ -155,8 +155,20 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Display mDisplay = this.getWindowManager().getDefaultDisplay();
         screenwidth = mDisplay.getWidth();
         //
-        // Setting action bar properties
-        actionbar = getSupportActionBar();
+
+         /*
+        Setting custom view in action bar
+         */
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayShowCustomEnabled(true);
+
+        //   actionBar.setTitle("science");
+        actionBar.setDisplayShowTitleEnabled(false);
+
+        LayoutInflater inflator = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View v = inflator.inflate(R.layout.action_bar_view, null);
+        actionBar.setCustomView(v);
+
         // To disable the hardware menu button and display the menu in action bar
         try {
             ViewConfiguration config = ViewConfiguration.get(this);
@@ -168,7 +180,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        actionbar.setDisplayShowCustomEnabled(true);
         FragmentManager fragmentmanager = getSupportFragmentManager();
         viewpager.setAdapter(new MyAdapter(fragmentmanager));
         viewpager.setOffscreenPageLimit(2);
@@ -227,23 +238,24 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 scrolling from one tab to other
                  */
                 if (position == 0) {
-                   // setTitle("Outbox");
-                    params.setMargins(positionOffsetPixels / 3, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
+                    params.width = screenwidth*5 / 13;
+
+                    params.setMargins(positionOffsetPixels*4 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                     tabcolor.setLayoutParams(params);
                     highLightClassrooms();
                     showButttonContainer(Classrooms.buttonContainer);
                 } else if (position == 1) {
-                    //setTitle("Inbox");
 
-                    params.setMargins((screenwidth / 3) + (positionOffsetPixels / 3), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                    params.width = screenwidth*5 / 13;
+                    params.setMargins((screenwidth*4 / 13) + (positionOffsetPixels*4 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                     tabcolor.setLayoutParams(params);
 
                     highLightOutbox();
                     hideButttonContainer(Classrooms.buttonContainer);
 
                 } else {
-                    //setTitle("Classrooms");
-                    params.setMargins((2 * screenwidth / 3), 0, 0, 0);
+                    params.width = screenwidth*5 / 13;
+                    params.setMargins((8 * screenwidth / 13), 0, 0, 0);
                     tabcolor.setLayoutParams(params);
                     highLightInbox();
                     hideButttonContainer(Classrooms.buttonContainer);
@@ -549,21 +561,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     //highlight outbox icon
     private void highLightOutbox() {
-        tab2Icon.setTextColor(getResources().getColor(R.color.buttoncolor));
+        tab2Icon.setTextColor(getResources().getColor(R.color.white));
         tab1Icon.setTextColor(getResources().getColor(R.color.light_button_color));
         tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 
     //highlight inbox icon
     private void highLightInbox() {
-        tab3Icon.setTextColor(getResources().getColor(R.color.buttoncolor));
+        tab3Icon.setTextColor(getResources().getColor(R.color.white));
         tab1Icon.setTextColor(getResources().getColor(R.color.light_button_color));
         tab2Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 
     //highlight classroom icon
     private void highLightClassrooms() {
-        tab1Icon.setTextColor(getResources().getColor(R.color.buttoncolor));
+        tab1Icon.setTextColor(getResources().getColor(R.color.white));
         tab2Icon.setTextColor(getResources().getColor(R.color.light_button_color));
         tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }

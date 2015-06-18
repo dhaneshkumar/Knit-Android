@@ -72,6 +72,7 @@ public class JoinClassDialog extends DialogFragment {
                 getActivity().getLayoutInflater().inflate(R.layout.join_class, null);
         builder.setView(view);
         dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
 

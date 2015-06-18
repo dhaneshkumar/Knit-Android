@@ -27,6 +27,7 @@ public class ForgotPassword extends DialogFragment {
         getActivity().getLayoutInflater().inflate(R.layout.custom_forgotpassdialog_layout, null);
     builder.setView(view);
     dialog = builder.create();
+    dialog.setCanceledOnTouchOutside(true);
     dialog.show();
 
     final EditText emailBox = (EditText) view.findViewById(R.id.emailid_forgot);

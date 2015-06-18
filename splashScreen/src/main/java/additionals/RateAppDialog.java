@@ -55,6 +55,7 @@ public class RateAppDialog extends DialogFragment {
 
 
         dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
         return dialog;

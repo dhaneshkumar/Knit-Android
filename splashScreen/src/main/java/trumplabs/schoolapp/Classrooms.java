@@ -467,6 +467,7 @@ public class Classrooms extends Fragment {
                     }
                 });
                 AlertDialog alert = builder.create();
+                alert.setCanceledOnTouchOutside(true);
                 alert.show();
                 return true;
             }

@@ -15,7 +15,8 @@
     <color name="buttoncolor">#29B6F6</color>
     <color name="color_primary">#03A9F4</color>
     <color name="color_secondary">#0288D1</color>
-    <color name="light_button_color">#999999</color>
+    <color name="light_button_color">#ADD9EE</color>
+   <!-- <color name="light_button_color">#999999</color>-->
     <color name="lightbuttoncolor">#33b5e5</color>
     <color name="presscolor">#1c5ed3</color>
     <color name="shadowcolor">#244f9e</color>

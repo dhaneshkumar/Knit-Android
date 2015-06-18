@@ -779,6 +779,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         });
                         builder.setNegativeButton("CANCEL", null);
                         AlertDialog dialog = builder.create();
+                        dialog.setCanceledOnTouchOutside(true);
                         dialog.show();
 
                     }

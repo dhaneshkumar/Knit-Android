@@ -100,6 +100,7 @@ public class FAQs extends MyActionBarActivity {
         }
 
         final Dialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(true);
         dialog.show();
       }
     });

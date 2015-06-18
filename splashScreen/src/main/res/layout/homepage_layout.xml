@@ -57,7 +57,7 @@
             android:id="@+id/tabviewer"
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:background="@color/white"
+            android:background="@color/color_primary"
             android:orientation="vertical">
 
             <LinearLayout
@@ -70,7 +70,7 @@
                 <LinearLayout
                     android:id="@+id/tab1"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="5"
                     android:gravity="center"
                     android:layout_height="wrap_content">
 
@@ -80,10 +80,10 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:gravity="center"
-                        android:text="Classrooms"
+                        android:text="CLASSROOMS"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:textColor="@color/buttoncolor" />
+                        android:textColor="@color/white" />
 
                   <!--  <ImageView
                         android:id="@+id/tab1Icon"
@@ -95,7 +95,7 @@
                 <LinearLayout
                     android:id="@+id/tab2"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="3"
                     android:gravity="center"
                     android:layout_height="wrap_content">
 
@@ -105,10 +105,10 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:gravity="center"
-                        android:text="Sent"
+                        android:text="SENT"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:textColor="@color/buttoncolor" />
+                        android:textColor="@color/white" />
 
 
                     <!--<ImageView
@@ -121,7 +121,7 @@
                 <LinearLayout
                     android:id="@+id/tab3"
                     android:layout_width="0dp"
-                    android:layout_weight="1"
+                    android:layout_weight="5"
                     android:gravity="center"
                     android:layout_height="wrap_content">
 
@@ -131,10 +131,10 @@
                         android:layout_height="wrap_content"
                         android:textSize="16sp"
                         android:gravity="center"
-                        android:text="Received"
+                        android:text="RECEIVED"
                         android:paddingTop="8dp"
                         android:paddingBottom="8dp"
-                        android:textColor="@color/buttoncolor" />
+                        android:textColor="@color/white" />
 
                    <!-- <ImageView
                         android:id="@+id/tab3Icon"
@@ -151,7 +151,7 @@
                 android:id="@+id/tabcolor"
                 android:layout_width="wrap_content"
                 android:layout_height="3dp"
-                android:background="@color/buttoncolor" />
+                android:background="@color/white" />
 
           <!--  <TextView
                 android:layout_width="match_parent"
@@ -163,7 +163,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="1dp"
-            android:background="@color/buttoncolor" />
+            android:background="@color/lightbackgroundcolor" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/pager"
