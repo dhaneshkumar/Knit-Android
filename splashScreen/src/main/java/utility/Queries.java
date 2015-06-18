@@ -656,7 +656,15 @@ public class Queries {
      * @how query locally from sentMessage table and return first 20 messages list
      */
 
-    public List<ParseObject> getLocalOutbox() {
+    public static List<ParseObject> getLocalOutbox() {
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user == null){
+            Utility.logout();
+            return new ArrayList<>();
+        }
+
+        String userId = user.getUsername();
+
         ParseQuery<ParseObject> pendingQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         pendingQuery.fromLocalDatastore();
         pendingQuery.orderByDescending("creationTime");

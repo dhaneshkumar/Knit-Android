@@ -745,15 +745,14 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     e.printStackTrace();
                 }
 
-                if(memberCount < Config.SUBSCRIBER_MIN_LIMIT )
-                {
+                if (memberCount < Config.SUBSCRIBER_MIN_LIMIT) {
                     Utility.toastLong("You don't have any subscriber right now. Invite subscribers to start messaging.");
                     return;
                 }
 
 
                 int hourOfDay = -1;
-                if(session != null) {
+                if (session != null) {
                     //using local time instead of session.getCurrentTime
                     //Date now = session.getCurrentTime();
                     Calendar cal = Calendar.getInstance();
@@ -762,10 +761,10 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 }
 
 
-                if(hourOfDay != -1){
+                if (hourOfDay != -1) {
 
                     //If current message time is not sutaible <9PM- 6AM> then show this warning as popup to users
-                    if(hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime){
+                    if (hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime) {
                         //note >= and < respectively because disallowed are [ >= EndTime and < StartTime]
                         AlertDialog.Builder builder = new AlertDialog.Builder(SendMessage.this);
                         LinearLayout warningView = new LinearLayout(SendMessage.this);
@@ -791,13 +790,11 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         builder.setNegativeButton("CANCEL", null);
                         AlertDialog dialog = builder.create();
                         dialog.show();
-                        
-                    }
-                    else{
+
+                    } else {
                         sendFunction();
                     }
-                }
-                else{
+                } else {
                     sendFunction();
                 }
 
@@ -806,7 +803,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             /*
             Send messages to subscribers
              */
-            public void sendFunction(){
+            public void sendFunction() {
                 Log.d(SendPendingMessages.LOGTAG, "[GUI] sendFunction() called");
                 scrollMyListViewToBottom();  //show sent messages from bottom on clicking send button
                 typedtxt = typedmsg.getText().toString().trim();  //message to send
@@ -861,7 +858,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
         Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() entered");
 
-        ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
+        final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
         sentMsg.put("Creator", sender);
         sentMsg.put("code", groupCode);
         sentMsg.put("title", typedtxt);
@@ -878,33 +875,22 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         //Refresh the list
         myadapter.notifyDataSetChanged(); //immediately show message in the sent list
 
-
-        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() before pin");
-        try {
-            sentMsg.pin();
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
-
-        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() just after pin");
-
-
-        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() before outbox query");
+        sentMsg.pinInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    SendPendingMessages.addMessageToQueue(sentMsg);
+                } else {
+                    e.printStackTrace();
+                    Utility.toastDone("Unable to send message!");
+                }
+            }
+        });
 
         //TODO Notify and update "Outbox" page messages and count also
-        Queries outboxQuery = new Queries();
-        List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-        if (outboxItems != null) {
-            Outbox.groupDetails = outboxItems;
-            Outbox.refreshSelf();
-        }
-        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() before count query");
-
-        Outbox.updateOutboxTotalMessages();
-        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() calling add msg to queue");
+        Outbox.needLoading = true; //handle in MainActivity when tab is changed
 
         //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
-        SendPendingMessages.addMessageToQueue(sentMsg);
     }
 
     /*always called in thread for background sending
@@ -993,8 +979,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         if (filepath == null) return;
 
-        ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-//        sentMsg.put("objectId", objectId);
+        final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
         sentMsg.put("Creator", sender);
         sentMsg.put("code", groupCode);
         sentMsg.put("title", txtmsg);
@@ -1012,29 +997,25 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         if (fileName != null)
             sentMsg.put("attachment_name", fileName);
 
-        try {
-            sentMsg.pin();
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-        }
-
         groupDetails.add(sentMsg);
         typedmsg.setText(""); //for reuse
         //Refresh the list
         myadapter.notifyDataSetChanged();
 
+        sentMsg.pinInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    SendPendingMessages.addMessageToQueue(sentMsg);
+                } else {
+                    e.printStackTrace();
+                    Utility.toastDone("Unable to send message!");
+                }
+            }
+        });
+
         //TODO Notify and update "Outbox" page messages and count also
-        Queries outboxQuery = new Queries();
-        List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-        if (outboxItems != null) {
-            Outbox.groupDetails = outboxItems;
-            Outbox.refreshSelf();
-        }
-
-        Outbox.updateOutboxTotalMessages();
-
-        //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
-        SendPendingMessages.addMessageToQueue(sentMsg);
+        Outbox.needLoading = true; //handle in MainActivity when tab is changed
     }
 
     //refer to sendTextMessageCloud

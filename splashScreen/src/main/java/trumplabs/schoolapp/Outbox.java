@@ -620,33 +620,38 @@ stop swipe refreshlayout
     }
 
 
-
-    class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void>
+    static class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void>
     {
+        List<ParseObject> msgs;
         @Override
         protected Void doInBackground(Void... params) {
+            Outbox.needLoading = false; //clear needLoading flag so that not called twice when Outbox is loaded along with MainActivty and also this flag is set on viewpager change
 
             //retrieving lcoally stored outbox messges
-            groupDetails = query.getLocalOutbox();
-            if (groupDetails == null)
-                groupDetails = new ArrayList<ParseObject>();
+            msgs = Queries.getLocalOutbox();
 
+            updateOutboxTotalMessages();
             return null;
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            Outbox.myadapter.notifyDataSetChanged();
-
-
-            if (groupDetails == null){
-                groupDetails = new ArrayList<ParseObject>();
+            if (msgs == null){
+                msgs = new ArrayList<ParseObject>();
             }
 
-            if (groupDetails.size() == 0)
-                outboxLayout.setVisibility(View.VISIBLE);
-            else
-                outboxLayout.setVisibility(View.GONE);
+            groupDetails = msgs;
+
+            if(Outbox.myadapter != null) {
+                Outbox.myadapter.notifyDataSetChanged();
+            }
+
+            if(outboxLayout != null) {
+                if (groupDetails.size() == 0)
+                    outboxLayout.setVisibility(View.VISIBLE);
+                else
+                    outboxLayout.setVisibility(View.GONE);
+            }
             super.onPostExecute(aVoid);
 
             if(action != null && id != null) {
@@ -657,7 +662,7 @@ stop swipe refreshlayout
         }
     }
 
-    class NotificationHandler extends AsyncTask<Void, Void, Void>{
+    static class NotificationHandler extends AsyncTask<Void, Void, Void>{
         int msgIndex = -1;
         @Override
         protected Void doInBackground(Void... params) {

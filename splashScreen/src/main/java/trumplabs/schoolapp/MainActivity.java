@@ -34,6 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import BackGroundProcesses.Refresher;
+import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import additionals.RateAppDialog;
 import additionals.SpreadWordDialog;
@@ -244,6 +245,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                     highLightOutbox();
                     hideButttonContainer(Classrooms.buttonContainer);
+
+                    if(Outbox.needLoading){
+                        Log.d(SendPendingMessages.LOGTAG, "lazy loading outbox");
+                        Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
+                        outboxAT.execute();
+                    }
 
                 } else {
                     //setTitle("Classrooms");
