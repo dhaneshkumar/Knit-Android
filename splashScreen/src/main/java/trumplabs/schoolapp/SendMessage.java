@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -61,6 +62,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import BackGroundProcesses.MemberList;
+import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -730,6 +732,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             @Override
             public void onClick(View v) {
 
+                Log.d(SendPendingMessages.LOGTAG, "[GUI] send button clicked ");
                 /*
                 For sending a message, you need atleast 1 subscriber
                  */
@@ -804,6 +807,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             Send messages to subscribers
              */
             public void sendFunction(){
+                Log.d(SendPendingMessages.LOGTAG, "[GUI] sendFunction() called");
                 scrollMyListViewToBottom();  //show sent messages from bottom on clicking send button
                 typedtxt = typedmsg.getText().toString().trim();  //message to send
 
@@ -855,6 +859,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     }
 
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
+        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() entered");
 
         ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
         sentMsg.put("Creator", sender);
@@ -888,12 +893,18 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         Outbox.updateOutboxTotalMessages();
 
+
         //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
-        sendTextMessageCloud(sentMsg, true);
+        SendPendingMessages.addMessageToQueue(sentMsg);
     }
 
-    //call in thread for background sending, call in gui if sending live
-    public static void sendTextMessageCloud(final ParseObject msg, final boolean isLive){
+    /*always called in thread for background sending
+     return values
+        0 : success,
+        100 : network error (so abort queue),
+        -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
+    */
+    public static int sendTextMessageCloud(final ParseObject msg, final boolean isLive){
         //if live, then only show "sent" toast
         //sending message using parse cloud function
         HashMap<String, String> params = new HashMap<String, String>();
@@ -901,59 +912,58 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         params.put("classname", msg.getString("name"));
         params.put("message", msg.getString("title"));
 
-        ParseCloud.callFunctionInBackground("sendTextMessage", params, new FunctionCallback<HashMap>() {
-            @Override
-            public void done(HashMap obj, ParseException e) {
+        try{
+            HashMap obj = ParseCloud.callFunction("sendTextMessage", params);
+            if (obj != null) {
+                Date createdAt = (Date) obj.get("createdAt");
+                String objectId = (String) obj.get("messageId");
 
-                if (e == null) {
-                    if (obj != null) {
-                        Date createdAt = (Date) obj.get("createdAt");
-                        String objectId = (String) obj.get("messageId");
-
-                        //updating local time
-                        SessionManager sm = new SessionManager(Application.getAppContext());
-                        if (createdAt != null) {
-                            sm.setCurrentTime(createdAt);
-                        }
-
-                        //update msg and pin
-                        msg.put("objectId", objectId);
-                        msg.put("pending", false);
-                        msg.put("creationTime", createdAt);
-
-                        try {
-                            msg.pin();
-                        } catch (ParseException err) {
-                            err.printStackTrace();
-                        }
-
-                        //showing popup if live
-                        if (isLive) {
-                            Utility.toastDone("Notification Sent");
-                        }
-
-                        //view.post
-                        if(SendMessage.contentLayout != null) {
-                            SendMessage.contentLayout.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if (myadapter != null) {
-                                        myadapter.notifyDataSetChanged();//just notify the pending->sent change
-                                    }
-                                }
-                            });
-                        }
-                        //just notify outbox - no new query or updating count (since an old message just got new status)
-                        Outbox.refreshSelf();
-                    }
-                } else {
-                    // message was not sent
-                    if (isLive) {
-                        Utility.toast("Unable to send now! We'll send it next time you're online");
-                    }
+                //updating local time
+                SessionManager sm = new SessionManager(Application.getAppContext());
+                if (createdAt != null) {
+                    sm.setCurrentTime(createdAt);
                 }
+
+                //update msg and pin
+                msg.put("objectId", objectId);
+                msg.put("pending", false);
+                msg.put("creationTime", createdAt);
+
+                try {
+                    msg.pin();
+                } catch (ParseException err) {
+                    err.printStackTrace();
+                }
+
+                //showing popup if live
+                if (isLive) {
+                    Utility.toastDone("Notification Sent");
+                }
+
+                //view.post
+                if(SendMessage.contentLayout != null) {
+                    SendMessage.contentLayout.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (myadapter != null) {
+                                myadapter.notifyDataSetChanged();//just notify the pending->sent change
+                            }
+                        }
+                    });
+                }
+                //just notify outbox - no new query or updating count (since an old message just got new status)
+                Outbox.refreshSelf();
+                return 0; //success
             }
-        });
+            return -1; //unexpected error
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+            if(e.getCode() == ParseException.CONNECTION_FAILED){
+                return 100; //network error
+            }
+            return -1;
+        }
     }
 
     @Override
@@ -1015,97 +1025,89 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         Outbox.updateOutboxTotalMessages();
 
         //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
-        sendPicMessageCloud(sentMsg, true);
+        SendPendingMessages.addMessageToQueue(sentMsg);
     }
 
-    public static void  sendPicMessageCloud(final ParseObject msg, final boolean isLive){
+    //refer to sendTextMessageCloud
+    public static int sendPicMessageCloud(final ParseObject msg, final boolean isLive) {
         //don't have attachement, objectid
         //update creationTime, pending
         String imageName = null;
         if (msg.containsKey("attachment_name"))
             imageName = msg.getString("attachment_name");
 
-        if(imageName == null) return; //no attachment
+        if (imageName == null) return -1; //no attachment
 
         byte[] data = null;
-        try{
+        try {
             RandomAccessFile f = new RandomAccessFile(Utility.getWorkingAppDir() + "/media/" + imageName, "r");
             data = new byte[(int) f.length()];
             f.read(data);
-        }
-        catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
-            return; //io exception
+            return -1; //io exception
         }
 
         final ParseFile file = new ParseFile(imageName, data);
 
-        file.saveInBackground(new SaveCallback() {
-            public void done(ParseException e) {
+        try {
+            file.save();
+            //sending message using parse cloud function
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            params.put("classcode", msg.getString("code"));
+            params.put("classname", msg.getString("name"));
+            params.put("message", msg.getString("title")); //won't be null
+            params.put("filename", msg.getString("attachment_name"));
+            params.put("parsefile", file);
 
-                if (e == null) {
-                    //sending message using parse cloud function
-                    HashMap<String, Object> params = new HashMap<String, Object>();
-                    params.put("classcode", msg.getString("code"));
-                    params.put("classname", msg.getString("name"));
-                    params.put("message", msg.getString("title")); //won't be null
-                    params.put("filename", msg.getString("attachment_name"));
-                    params.put("parsefile", file);
+            HashMap obj = ParseCloud.callFunction("sendPhotoTextMessage", params);
+            if (obj != null) {
+                Date createdAt = (Date) obj.get("createdAt");
+                String objectId = (String) obj.get("messageId");
 
+                //update msg and pin
+                msg.put("objectId", objectId);
+                msg.put("pending", false);
+                msg.put("creationTime", createdAt);
+                msg.put("attachment", file);
 
-                    ParseCloud.callFunctionInBackground("sendPhotoTextMessage", params, new FunctionCallback<HashMap>() {
+                //saving locally
+                try {
+                    msg.pin();
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
+                }
+
+                //showing popup if live
+                if (isLive) {
+                    Utility.toastDone("Notification Sent");
+                }
+
+                if (SendMessage.contentLayout != null) {
+                    SendMessage.contentLayout.post(new Runnable() {
                         @Override
-                        public void done(HashMap obj, ParseException e) {
-
-                            if (e == null) {
-                                if (obj != null) {
-
-                                    Date createdAt = (Date) obj.get("createdAt");
-                                    String objectId = (String) obj.get("messageId");
-
-                                    //update msg and pin
-                                    msg.put("objectId", objectId);
-                                    msg.put("pending", false);
-                                    msg.put("creationTime", createdAt);
-                                    msg.put("attachment", file);
-
-                                    //saving locally
-                                    try {
-                                        msg.pin();
-                                    } catch (ParseException e1) {
-                                        e1.printStackTrace();
-                                    }
-
-                                    //showing popup if live
-                                    if (isLive) {
-                                        Utility.toastDone("Notification Sent");
-                                    }
-
-                                    if(SendMessage.contentLayout != null) {
-                                        SendMessage.contentLayout.post(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                if (myadapter != null) {
-                                                    myadapter.notifyDataSetChanged();//just notify the pending->sent change
-                                                }
-                                            }
-                                        });
-                                    }
-                                    //just notify outbox - no new query or updating count (since an old message just got new status)
-                                    Outbox.refreshSelf();
-                                }
+                        public void run() {
+                            if (myadapter != null) {
+                                myadapter.notifyDataSetChanged();//just notify the pending->sent change
                             }
                         }
                     });
-                } else {
-                    if(isLive) {
-                        Utility.toast("Sorry, sending failed now. We'll send it next time you're online");
-                    }
                 }
+                //just notify outbox - no new query or updating count (since an old message just got new status)
+                Outbox.refreshSelf();
+                return 0;
             }
-        });
+            return -1;
+        }
+        catch(ParseException esave){
+            esave.printStackTrace();
+            if(esave.getCode() == ParseException.CONNECTION_FAILED){
+                return 100;
+            }
+            return -1;
+            //Utility.toast("Sorry, sending failed now. We'll send it next time you're online");
+        }
     }
-
     /*
      * scroll to bottom
      */
