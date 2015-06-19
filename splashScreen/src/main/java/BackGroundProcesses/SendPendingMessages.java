@@ -6,16 +6,13 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import library.UtilString;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Outbox;
 import trumplabs.schoolapp.SendMessage;
 import utility.Utility;
@@ -29,11 +26,17 @@ public class SendPendingMessages {
     static List<ParseObject> pendingMessageQueue = null; //data item 1
     static boolean jobRunning = false; //data item 2
 
+    static boolean isLive = false; //this flag tells whether latest request was from GUI and if yes then show the toast if no internet connection error
+    //needs to be set in spawnThread and cleared when job is over
+
     static final int toastMessageLimit = 2;
     public static List<ParseObject> toastMessageList = new CopyOnWriteArrayList<>(); //contains time stamp of latest 2 messages sent in current session(so that we can show popup for these)
 
     public static final String LOGTAG = "DEBUG_SEND_PENDING_MSGS";
-    public static void spawnThread(){
+
+    //This is called from GUI as it spawns a new thread
+    public static void spawnThread(boolean gui){
+        isLive = gui;
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -44,7 +47,11 @@ public class SendPendingMessages {
         t.start();
     }
 
-    //called when
+    public static boolean isJobRunning(){
+        return jobRunning;
+    }
+
+    //called when send button clicked in SendMessage page(GUI)
     public static void addMessageToQueue(ParseObject msg){
         Log.d(LOGTAG, "[GUI] addMessageToQueue() entered");
 
@@ -61,15 +68,23 @@ public class SendPendingMessages {
             if(jobRunning) {
                 if (pendingMessageQueue != null) {
                     pendingMessageQueue.add(msg);
-                    Log.d(LOGTAG, "addMessageToQueue added to queue");
+                    SendMessage.sendButtonClicked = false; //Since added to queue, hence a job is already running
+                    Log.d(LOGTAG, "[GUI] addMessageToQueue() added to queue");
                 }
             }
             else{
-                Log.d(LOGTAG, "addMessageToQueue spawn new thread");
-                spawnThread();
+                Log.d(LOGTAG, "[GUI] addMessageToQueue() spawn new thread");
+                spawnThread(true);
             }
         }
         Log.d(LOGTAG, "[GUI] addMessageToQueue() exit");
+    }
+
+    //notifies adapters of SendMessage and Outbox
+    //called when jobRunning state changes
+    public static void notifyAllAdapters(){
+        SendMessage.notifyAdapter();
+        Outbox.notifyAdapter();
     }
 
     //must always be called in a thread, it first finds dirty messages(in asc order) and sends them one by one, aborts if anyone fails due to network error
@@ -85,6 +100,8 @@ public class SendPendingMessages {
             Log.d(LOGTAG, "sendPendingMessages : job started");
 
             jobRunning = true;
+            SendMessage.sendButtonClicked = false; //Since new job has now started
+            notifyAllAdapters();
 
             ParseQuery parseQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
             parseQuery.fromLocalDatastore();
@@ -97,6 +114,8 @@ public class SendPendingMessages {
             catch (ParseException e){
                 e.printStackTrace();
                 jobRunning = false;
+                isLive = false;
+                notifyAllAdapters();
                 Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : parse exception in find pending msgs query");
                 return;
             }
@@ -111,11 +130,17 @@ public class SendPendingMessages {
                 Log.d(LOGTAG, "sendPendingMessages : loop-LOCK acquired");
                 if(pendingMessageQueue.isEmpty()){
                     jobRunning = false;
+                    isLive = false;
+                    //notify SendMessage adapter so that retry button may be shown/hidden
+                    notifyAllAdapters();
                     Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : queue empty, exiting : ");
                     return;
                 }
                 if(abort){
                     jobRunning = false;
+                    isLive = false;
+                    //notify SendMessage adapter so that retry button may be shown/hidden
+                    notifyAllAdapters();
                     Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : abort signal(network error), exiting");
                     return;
                 }
@@ -142,14 +167,21 @@ public class SendPendingMessages {
                         }
                     }
 
-                    //view.post
+                    if(result == 100 && isLive){
+                        showToast = true; //if network error and latest request was gui(send/retry) then show toast of "internet connection"
+                    }
+
+                    //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null
                     if(showToast) {
-                        if (SendMessage.contentLayout != null) {
-                            SendMessage.contentLayout.post(new Runnable() {
+                        if (MainActivity.viewpager != null) {
+                            MainActivity.viewpager.post(new Runnable() {
                                 @Override
                                 public void run() {
                                     if(result == 0){
                                         Utility.toastDone("Notification Sent");
+                                    }
+                                    else if(result == 100){//aborting
+                                        Utility.toast("Sending failed ! Check your internet connection !");
                                     }
                                     else{
                                         Utility.toast("Unable to send message! We will send it later");

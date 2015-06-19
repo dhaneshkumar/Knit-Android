@@ -54,7 +54,7 @@ import utility.Utility;
  * This Activity shows home page of our app. It contains three fragments outbox, inbox and classrooms.
  */
 public class MainActivity extends MyActionBarActivity implements TabListener {
-    static ViewPager viewpager;
+    public static ViewPager viewpager;
     LinearLayout tabviewer;
     LinearLayout tab1;
     LinearLayout tab2;

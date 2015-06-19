@@ -38,13 +38,11 @@ import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -56,7 +54,6 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -101,6 +98,11 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     private LinearLayout inviteLayout;
     public static LinearLayout picProgressBarLayout;
 
+    /* offline msg flags*/
+    public static boolean sendButtonClicked = false; //to show status 'sending' in msg items when background sender job is NOT running & is about to get start(i.e jobRunning flag not set)
+    //this is a quick hack because thread is spawned only when message has been pinned locally(after slight delay), however message is shown in the list immediately.
+    //So we need to show the status of msg as 'sending' even though jobRunning flag is not yet set
+    //It is cleared when either msg is added to queue or new job started
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,11 +226,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
-
     }
-
 
     @Override
     protected void onResume() {
@@ -246,6 +244,20 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         //facebook tracking : time spent on app by people
         // Logs 'app deactivate' App Event.
         AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+    }
+
+    public static void notifyAdapter(){
+        //view.post
+        if(SendMessage.contentLayout != null) {
+            SendMessage.contentLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (myadapter != null) {
+                        myadapter.notifyDataSetChanged();//just notify the pending->sent change
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -420,10 +432,11 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             }
 
             boolean pending = msg.getBoolean("pending"); //if this key is not available (for older messages)
-                                                                     //get pending "false" & that's what we want
+            //get pending "false" & that's what we want
             if(pending){
                 timestampmsg = "pending..";
             }
+
 
             final String imagepath;
             if (msg.containsKey("attachment_name"))
@@ -442,7 +455,35 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             TextView likeCountArea = (TextView) row.findViewById(R.id.like);
             TextView confusedCountArea = (TextView) row.findViewById(R.id.confusion);
             TextView seenCountArea = (TextView) row.findViewById(R.id.seen);
+            TextView retryButton = (TextView) row.findViewById(R.id.retry);
 
+            if(pending){//this message is not yet sent
+                seenCountArea.setVisibility(View.GONE);
+                retryButton.setVisibility(View.VISIBLE);
+                if(SendPendingMessages.isJobRunning() || sendButtonClicked){
+                    retryButton.setClickable(false);
+                    retryButton.setText("Sending");
+                    retryButton.setTextColor(getResources().getColor(R.color.grey_light));
+                }
+                else{
+                    retryButton.setClickable(true);
+                    retryButton.setText(" Retry ");
+                    retryButton.setTextColor(getResources().getColor(R.color.buttoncolor));
+
+                    retryButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
+                            SendPendingMessages.spawnThread(true);
+                            myadapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+            else{
+                seenCountArea.setVisibility(View.VISIBLE);
+                retryButton.setVisibility(View.GONE);
+            }
 
             int likeCount = Utility.nonNegative(msg.getInt(Constants.LIKE_COUNT));
             int confusedCount = Utility.nonNegative(msg.getInt(Constants.CONFUSED_COUNT));
@@ -540,7 +581,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                                 }
 
                                 // //////////////////////////////////////////
-                                // myadapter.notifyDataSetChanged();
                                 Utility.createThumbnail(SendMessage.this, imagepath);
                                 Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
                                 imgmsgview.setImageBitmap(mynewBitmap);
@@ -875,6 +915,10 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         groupDetails.add(sentMsg);
         typedmsg.setText(""); //for reuse
+
+        //so as to immediately show this msg as 'sending' in the list
+        sendButtonClicked = true;
+
         //Refresh the list
         myadapter.notifyDataSetChanged(); //immediately show message in the sent list
 
@@ -934,16 +978,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 }
 
                 //view.post
-                if(SendMessage.contentLayout != null) {
-                    SendMessage.contentLayout.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (myadapter != null) {
-                                myadapter.notifyDataSetChanged();//just notify the pending->sent change
-                            }
-                        }
-                    });
-                }
+                notifyAdapter();
                 //just notify outbox - no new query or updating count (since an old message just got new status)
                 Outbox.refreshSelf();
                 return 0; //success
@@ -998,6 +1033,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         groupDetails.add(sentMsg);
         typedmsg.setText(""); //for reuse
         //Refresh the list
+        sendButtonClicked = true;
         myadapter.notifyDataSetChanged();
 
         sentMsg.pinInBackground(new SaveCallback() {
@@ -1071,16 +1107,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     Utility.toastDone("Notification Sent");
                 }
 
-                if (SendMessage.contentLayout != null) {
-                    SendMessage.contentLayout.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (myadapter != null) {
-                                myadapter.notifyDataSetChanged();//just notify the pending->sent change
-                            }
-                        }
-                    });
-                }
+                notifyAdapter();
                 //just notify outbox - no new query or updating count (since an old message just got new status)
                 Outbox.refreshSelf();
                 return 0;

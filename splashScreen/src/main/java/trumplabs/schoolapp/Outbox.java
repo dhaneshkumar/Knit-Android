@@ -43,6 +43,7 @@ import java.util.Date;
 import java.util.List;
 
 import BackGroundProcesses.Refresher;
+import BackGroundProcesses.SendPendingMessages;
 import BackGroundProcesses.SyncMessageDetails;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -270,6 +271,17 @@ public class Outbox extends Fragment {
         }
     }
 
+    public static void notifyAdapter(){
+        if(outboxListv != null){
+            outboxListv.post(new Runnable() {
+                @Override
+                public void run() {
+                    myadapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -293,6 +305,7 @@ public class Outbox extends Fragment {
         TextView likes;
         TextView confused;
         TextView seen;
+        TextView retryButton;
 
         //constructor
         public ViewHolder(View row) {
@@ -307,6 +320,7 @@ public class Outbox extends Fragment {
             likes = (TextView) row.findViewById(R.id.like);
             confused = (TextView) row.findViewById(R.id.confusion);
             seen = (TextView) row.findViewById(R.id.seen);
+            retryButton = (TextView) row.findViewById(R.id.retry);
         }
     }
 
@@ -395,6 +409,36 @@ public class Outbox extends Fragment {
 
             //setting timestamp in view
             holder.timestampmsg.setText(timestampmsg);
+
+            //retry button handle
+            if(pending){//this message is not yet sent
+                holder.seen.setVisibility(View.GONE);
+                holder.retryButton.setVisibility(View.VISIBLE);
+                if(SendPendingMessages.isJobRunning()){
+                    holder.retryButton.setClickable(false);
+                    holder.retryButton.setText("Sending");
+                    holder.retryButton.setTextColor(getResources().getColor(R.color.grey_light));
+                }
+                else{
+                    holder.retryButton.setClickable(true);
+                    holder.retryButton.setText(" Retry ");
+                    holder.retryButton.setTextColor(getResources().getColor(R.color.buttoncolor));
+                    holder.retryButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
+                            SendPendingMessages.spawnThread(true);
+                            myadapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+            else{
+                holder.seen.setVisibility(View.VISIBLE);
+                holder.retryButton.setVisibility(View.GONE);
+            }
+
+
 
             /*
             Retrieving image attachment if exist
