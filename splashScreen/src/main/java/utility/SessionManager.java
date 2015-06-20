@@ -1,57 +1,51 @@
 package utility;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.os.Build;
 import android.util.Log;
 
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import library.UtilString;
 import trumplabs.schoolapp.Constants;
 
 @SuppressLint("SimpleDateFormat")
 public class SessionManager {
-  // Shared Preferences
-  public static SharedPreferences pref;
+    // Shared Preferences
+    public static SharedPreferences pref;
 
-  // Editor for Shared preferences
-  Editor editor;
+    // Editor for Shared preferences
+    Editor editor;
 
-  // Context
-  Context _context;
+    // Context
+    Context _context;
 
-  // Shared pref mode
-  int PRIVATE_MODE = 0;
+    // Shared pref mode
+    int PRIVATE_MODE = 0;
 
-  private static final String PREF_NAME = "AndroidHivePref";
-  public static final String APP_OPENING_COUNT = "app_opening_count";
-  public static final String SIGNUP = "signUP";
-  public static final String CHILD_NAME_LIST ="childNameList";
-  public static final String DEFAULT_CLASS_EXIST = "defaultClasExist";
-  public static final String TIME_DELTA = "time_delta";
-  public static final String ACTIONBAR_HEIGHT = "actionBarHeight";
+    private static final String PREF_NAME = "AndroidHivePref";
+    public static final String APP_OPENING_COUNT = "app_opening_count";
+    public static final String SIGNUP = "signUP";
+    public static final String TIME_DELTA = "time_delta";
+    public static final String ACTIONBAR_HEIGHT = "actionBarHeight";
+    public static final String USER_HAS_JOINED_CLASS = "userHasJoinedClass";
 
-  public SessionManager() {}
+    public SessionManager() {}
 
 
-  public SessionManager(Context c) {
-    this._context = c;
-    pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-    editor = pref.edit();
-  }
+    public SessionManager(Context c) {
+        this._context = c;
+        pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+    }
 
 
     //range ID_LOW to ID_HIGH { 0 to (ID_LOW-1) reserved for NORMAL notification or other newer types }
@@ -63,90 +57,51 @@ public class SessionManager {
         if(id < ID_LOW || id > ID_HIGH){
             id = ID_LOW;
         }
-        editor.putInt("notification_id", id+1);
+        editor.putInt("notification_id", id + 1);
         editor.commit();
         return id;
     }
-  
-  /*
-   * maintaining child list
-   */
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-  public void addChildName(String childNmae)
-  {
-    Set<String> childSet = pref.getStringSet(CHILD_NAME_LIST, null);
-    
-    if(childSet == null)
-      childSet = new HashSet<String>();
-    
-    childSet.add(childNmae);
-    editor.putStringSet(CHILD_NAME_LIST, childSet);
-    editor.commit();
-    
-  }
 
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-  public List<String> getChildList()
-  {
-    Set<String> childSet = pref.getStringSet(CHILD_NAME_LIST, null);
-    
-    List<String> childList;
-    if(childSet != null)
-    {
-      childList= new ArrayList<String>(childSet);
-      return childList;
-    }
-    else
-      return null;
-  }
-  
-  
-  @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-  public void reSetChildList()
-  {
-    editor.putStringSet(CHILD_NAME_LIST, null);
-    editor.commit();
-   
-  }
+
 
     /************************************************************************/
   /*
    * keeping app opening count
    */
-  public void setAppOpeningCount() {
-    int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
-    Log.d("DEBUG_SESSION_MANAGER", "setAppOpeningCount from " + openingCount);
+    public void setAppOpeningCount() {
+        int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
+        Log.d("DEBUG_SESSION_MANAGER", "setAppOpeningCount from " + openingCount);
 
-    openingCount++;
-    editor.putInt(APP_OPENING_COUNT, openingCount);
-    editor.commit();
-  }
+        openingCount++;
+        editor.putInt(APP_OPENING_COUNT, openingCount);
+        editor.commit();
+    }
 
-  public void reSetAppOpeningCount() {
-    Log.d("DEBUG_SESSION_MANAGER", "resetAppOpeningCount");
-    editor.putInt(APP_OPENING_COUNT, 0);
-    editor.commit();
-  }
+    public void reSetAppOpeningCount() {
+        Log.d("DEBUG_SESSION_MANAGER", "resetAppOpeningCount");
+        editor.putInt(APP_OPENING_COUNT, 0);
+        editor.commit();
+    }
 
-  public int getAppOpeningCount() {
-    int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
-    Log.d("DEBUG_SESSION_MANAGER", "getAppOpeningCount = " + openingCount);
-    return openingCount;
-  }
+    public int getAppOpeningCount() {
+        int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
+        Log.d("DEBUG_SESSION_MANAGER", "getAppOpeningCount = " + openingCount);
+        return openingCount;
+    }
 
-  /*********************************************************************************/
+    /*********************************************************************************/
 
-  //Handle reinstall/relogin to prevent duplicate outbox data
-  // 0 means no local valid data present. So clear local outbox and fetch new messages
-  // 1 means valid data. So no need to download outbox messages
-  public void setOutboxLocalState(int val, String userId){
-    editor.putInt("outbox-" + userId, val);
-    editor.commit();
-  }
+    //Handle reinstall/relogin to prevent duplicate outbox data
+    // 0 means no local valid data present. So clear local outbox and fetch new messages
+    // 1 means valid data. So no need to download outbox messages
+    public void setOutboxLocalState(int val, String userId){
+        editor.putInt("outbox-" + userId, val);
+        editor.commit();
+    }
 
-  public int getOutboxLocalState(String userId){
-    return pref.getInt("outbox-" + userId, 0);
-  }
+    public int getOutboxLocalState(String userId){
+        return pref.getInt("outbox-" + userId, 0);
+    }
 
     /*
         Handle reisntall/relogin to see if Codegroup data for joined and created clasees has been
@@ -164,48 +119,35 @@ public class SessionManager {
     }
 
     /*
-   * Checking its sign up or login.
+   * Checking its sign up or login.  **************************************************
    */
-  public void setSignUpAccount()
-  {
-    editor.putBoolean(SIGNUP, true);
-    editor.commit();
-  }
-  
-  public boolean getSignUpAccount()
-  {
-    boolean signup = pref.getBoolean(SIGNUP, false);
-    return signup;
-  }
-  
-  public void reSetSignUpAccount()
-  {
-    editor.putBoolean(SIGNUP, false);
-    editor.commit();
-  }
-
-  public boolean getDefaultClassJoinStatus(){
-      return pref.getBoolean("default-class-join-status", false);
-  }
-
-    public void setDefaultClassJoinStatus(){
-        editor.putBoolean("default-class-join-status", true);
+    public void setSignUpAccount()
+    {
+        editor.putBoolean(SIGNUP, true);
         editor.commit();
     }
 
-    public void reSetDefaultClassJoinStatus(){
-        editor.putBoolean("default-class-join-status", false);
+    public boolean getSignUpAccount()
+    {
+        boolean signup = pref.getBoolean(SIGNUP, false);
+        return signup;
+    }
+
+    public void reSetSignUpAccount()
+    {
+        editor.putBoolean(SIGNUP, false);
         editor.commit();
     }
 
-  public void setAlarmEventState(String eventId, boolean state){
-    editor.putBoolean(eventId, state);
-    editor.commit();
-  }
 
-  public boolean getAlarmEventState(String eventId){
-      return pref.getBoolean(eventId, false);
-  }
+    public void setAlarmEventState(String eventId, boolean state){
+        editor.putBoolean(eventId, state);
+        editor.commit();
+    }
+
+    public boolean getAlarmEventState(String eventId){
+        return pref.getBoolean(eventId, false);
+    }
 
   /*
    * updating current time
@@ -232,34 +174,11 @@ public class SessionManager {
         long delta = pref.getLong(TIME_DELTA, 0);
 
         Calendar now = Calendar.getInstance();
-        now.add(Calendar.MILLISECOND, (int)delta);
+        now.add(Calendar.MILLISECOND, (int) delta);
 //    Log.d("DEBUG_SESSION_MANAGER", "server time is " + now.getTimeInMillis());
 
         return now.getTime();
     }
-  
-  /*
-   * Check whether default group exist or not. This not used - use getDefaultClassJoinStatus, etc ...
-   */
-
-  /*public void setDefaultClassExtst() {
-
-    editor.putBoolean(DEFAULT_CLASS_EXIST, true);
-    editor.commit();
-  }
-  
-  public boolean getDefaultClassExtst() {
-
-    boolean flag= pref.getBoolean(DEFAULT_CLASS_EXIST, false);
-    return flag;
-  }
-  
-  public void reSetDefaultClassExtst() {
-
-    editor.putBoolean(DEFAULT_CLASS_EXIST, false);
-    editor.commit();
-
-  }*/
 
 
     /*
@@ -291,10 +210,10 @@ public class SessionManager {
             e.printStackTrace();
         }
 
-     return null;
+        return null;
     }
 
-/***************************************************************************************/
+    /***************************************************************************************/
 
     /*
     * Maintaining action bar height
@@ -315,5 +234,23 @@ public class SessionManager {
     }
 
     /******************************************************************************************/
+
+
+    /**
+     * User has joined any classroom or not, anytime
+     */
+    public void setHasUserJoinedClass()
+    {
+        //variable format : username + flag
+        editor.putBoolean(USER_HAS_JOINED_CLASS + ParseUser.getCurrentUser().getUsername() , true);
+        editor.commit();
+    }
+
+    public boolean getHasUserJoinedClass()
+    {
+        return pref.getBoolean(USER_HAS_JOINED_CLASS + ParseUser.getCurrentUser().getUsername(), false);
+    }
+
+
 
 }

@@ -8,7 +8,6 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -307,7 +306,6 @@ public class JoinClassDialog extends DialogFragment {
                 * Change first letter to caps
                 */
                 SessionManager session = new SessionManager(Application.getAppContext());
-                session.addChildName(childName);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null) {
                     int result = JoinedHelper.joinClass(code, childName);
@@ -343,16 +341,19 @@ public class JoinClassDialog extends DialogFragment {
                 //Refreshing joined class adapter
                 Classrooms.joinedGroups = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
 
-                if(Classrooms.joinedGroups != null && Classrooms.joinedGroups.size() ==1)
+                SessionManager sessionManager = new SessionManager(Application.getAppContext());
+
+                if(!sessionManager.getHasUserJoinedClass() && Classrooms.joinedGroups != null && Classrooms.joinedGroups.size() > 0)
                 {
+                    //USEr has joined class atleast once : setting flag for that
+                    sessionManager.setHasUserJoinedClass();
+
                     //Adding an extra tab
                     MainActivity.tab3Icon.setVisibility(View.VISIBLE);
                     MainActivity.tab1Icon.setText("SENT");
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 0, LinearLayout.LayoutParams.WRAP_CONTENT, 3);
                     MainActivity.tab1Icon.setLayoutParams(layoutParams);
-                    FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-
-                    MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                    MainActivity.myAdapter.notifyDataSetChanged();
                 }
 
                 if(Classrooms.joinedClassAdapter != null)
@@ -379,16 +380,6 @@ public class JoinClassDialog extends DialogFragment {
 
                 if( Messages.myadapter != null)
                     Messages.myadapter.notifyDataSetChanged();
-
-
-                //Refreshing suggestion adapter
-             /*   Classrooms.suggestedGroups = JoinedHelper.getSuggestionList(ParseUser.getCurrentUser().getUsername());
-                if(Classrooms.suggestedGroups == null)
-                    Classrooms.suggestedGroups = new ArrayList<ParseObject>();
-
-                if(Classrooms.suggestedClassAdapter != null)
-                    Classrooms.suggestedClassAdapter.notifyDataSetChanged();*/
-
 
                 dialog.dismiss();
 

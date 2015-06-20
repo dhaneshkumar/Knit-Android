@@ -64,8 +64,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     private int backCount = 0;
     public static LinearLayout progressBarLayout;
     public static SmoothProgressBar mHeaderProgressBar;
-    private static int userJoinedClassroomCount;
     public static MyAdapter myAdapter;
+    public static SessionManager sessionManager;
 
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
@@ -76,10 +76,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         setContentView(R.layout.homepage_layout);
 
         ParseUser user = ParseUser.getCurrentUser();
-        if(user.getList(Constants.JOINED_GROUPS) != null)
-            userJoinedClassroomCount = user.getList(Constants.JOINED_GROUPS).size();
-        else
-            userJoinedClassroomCount = 0;
 
         //check for current user loggedin or not
         if (user == null)
@@ -103,11 +99,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Check for app re-installation. In case of reinstallation or delete data appOpeningCount set to zero.
         So, we retrieve all data from server.
          */
-        final SessionManager session = new SessionManager(Application.getAppContext());
-        final int appOpeningCount = session.getAppOpeningCount();
+        if(sessionManager == null)
+            sessionManager = new SessionManager(Application.getAppContext());
+
+        final int appOpeningCount = sessionManager.getAppOpeningCount();
         if (appOpeningCount == 0) {
-            session.setAppOpeningCount();
-            if (!session.getSignUpAccount()) {
+            sessionManager.setAppOpeningCount();
+            if (!sessionManager.getSignUpAccount()) {
                 progressBarLayout.setVisibility(View.VISIBLE);
 
                 //call refresher
@@ -158,11 +156,15 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         myAdapter = new MyAdapter(fragmentmanager);
         viewpager.setAdapter(myAdapter);
 
+
+
         //Set the number of pages that should be retained to either side of the current page
-        if(userJoinedClassroomCount >0)
+        if(sessionManager.getHasUserJoinedClass())
             viewpager.setOffscreenPageLimit(2);
         else
             viewpager.setOffscreenPageLimit(1);
+
+
         //setting tab click functionality
         tab1Icon.setOnClickListener(new OnClickListener() {
 
@@ -194,7 +196,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         //gui setup according to ROLE
         if (role.equals("teacher")) {
 
-            if(userJoinedClassroomCount > 0) {
+            if(sessionManager.getHasUserJoinedClass()) {
                 tab3Icon.setVisibility(View.VISIBLE);
             }
             else {
@@ -209,8 +211,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         } else {
             LinearLayout parentLayout = (LinearLayout) findViewById(R.id.tabviewer);
             parentLayout.setVisibility(View.GONE);
-            //actionbar.setTitle("Inbox");
-            // params.width = screenwidth;
         }
 
         //swipe feature implementation
@@ -226,19 +226,19 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 /*
                 scrolling from one tab to other
                  */
-                if(userJoinedClassroomCount >0) {
+                if(sessionManager.getHasUserJoinedClass()) {
 
                     if (position == 0) {
                         params.width = screenwidth * 5 / 13;
 
-                        params.setMargins(positionOffsetPixels * 4 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
+                        params.setMargins(positionOffsetPixels * 3 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
                         hideButttonContainer(Classrooms.buttonContainer);
                     } else if (position == 1) {
 
                         params.width = screenwidth * 5 / 13;
-                        params.setMargins((screenwidth * 4 / 13) + (positionOffsetPixels * 4 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                        params.setMargins((screenwidth * 3 / 13) + (positionOffsetPixels * 5 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
 
                         highLightTab2();
@@ -290,7 +290,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         /**
          * setting action bar height to display no internet connection bar
          */
-        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
         int actionBarHeight = sessionManager.getActionBarHeight();
 
         if(actionBarHeight == 0) {
@@ -321,7 +320,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             SpreadWordDialog spreadWordDialog = new SpreadWordDialog();
             spreadWordDialog.show(fm, "recommend app");
 
-            session.setAppOpeningCount();
+            sessionManager.setAppOpeningCount();
         }
 
         //show rate app dialog after using 10 times app
@@ -407,14 +406,22 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         switch (item.getItemId()) {
 
+
+
             case R.id.joinedclasses:
                 startActivity(new Intent(this, JoinClassesContainer.class));
                 break;
 
-            case R.id.joinclass:
+            case R.id.createclass:
                 FragmentManager fm = getSupportFragmentManager();
+                CreateClassDialog createClassDialog = new CreateClassDialog();
+                createClassDialog.show(fm,"create class");
+                break;
+
+            case R.id.joinclass:
+                FragmentManager fm1 = getSupportFragmentManager();
                 JoinClassDialog joinClassDialog = new JoinClassDialog();
-                joinClassDialog.show(fm, "Join Class");
+                joinClassDialog.show(fm1, "Join Class");
                 break;
 
             case R.id.profile:
@@ -452,6 +459,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         public MyAdapter(FragmentManager fm) {
             super(fm);
+
+            if(sessionManager == null)
+                sessionManager = new SessionManager(Application.getAppContext());
         }
 
         @Override
@@ -460,7 +470,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             Fragment fragment = null;
             if (role.equals("teacher")) {
 
-                if(userJoinedClassroomCount > 0) {
+                if(sessionManager.getHasUserJoinedClass()) {
                     switch (arg0) {
                         case 0:
                             fragment = new Outbox();
@@ -497,7 +507,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         public int getCount() {
             if (role.equals("teacher")) {
 
-                if(userJoinedClassroomCount > 0)
+                if(sessionManager.getHasUserJoinedClass())
                     return 3;
                 else
                     return 2;

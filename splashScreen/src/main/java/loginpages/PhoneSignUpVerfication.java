@@ -274,12 +274,19 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
                             taskSuccess = true;
+
+                            SessionManager session = new SessionManager(Application.getAppContext());
+
+                            //If user has joined any class then locally saving it in session manager
+                            if(user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0)
+                            session.setHasUserJoinedClass();
+
                             if(isLogin){
                                 PostLoginTask postLoginTask = new PostLoginTask(user);
                                 postLoginTask.execute();
                             }
                             else {
-                                SessionManager session = new SessionManager(Application.getAppContext());
+
                                 session.setSignUpAccount();
 
                                 // The current user is now set to user. Do registration in default class

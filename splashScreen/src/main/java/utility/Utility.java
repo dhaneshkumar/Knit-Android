@@ -185,8 +185,6 @@ public class Utility extends MyActionBarActivity {
             SessionManager session = new SessionManager(Application.getAppContext());
             session.reSetAppOpeningCount();
             session.reSetSignUpAccount();
-            session.reSetChildList();
-            session.reSetDefaultClassJoinStatus();
             session.reSetActionBarHeight();
 
             ParseInstallation pi = ParseInstallation.getCurrentInstallation();

@@ -96,19 +96,18 @@ public class JoinedHelper {
 
             if(codeGroupObject != null) {
 
+                //fetching parse user's joined group details
+                try {
+                    user.fetch();
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
                 Log.d("join", "code object not null");
                 //successfully joined the classroom
                 codeGroupObject.put("userId", userId);
                 try {
                     codeGroupObject.pin();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-
-                //fetching parse user's joined group details
-                try {
-                    user.fetch();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
