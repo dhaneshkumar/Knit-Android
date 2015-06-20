@@ -145,7 +145,7 @@ public class RecommendationDialog extends DialogFragment {
 
             if(aBoolean)
             {
-                Utility.toast("Instructions sent on your email-id");
+                Utility.toast("Instructions sent to '" + email + "'");
                 dialog.dismiss();
             }
             else

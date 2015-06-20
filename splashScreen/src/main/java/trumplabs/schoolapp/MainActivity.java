@@ -94,16 +94,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
 
 
-        Map<String, String> dimensions = new HashMap<String, String>();
-// Define ranges to bucket data points into meaningful segments
-        dimensions.put("priceRange", "1000-1500");
-// Did the user filter the query?
-        dimensions.put("source", "craigslist");
-// Do searches happen more often on weekdays or weekends?
-        dimensions.put("dayType", "weekday");
-// Send the dimensions to Parse along with the 'search' event
-        ParseAnalytics.trackEvent("search", dimensions);
-
         /*
         Check for app reinstallation. In case of reinstallation or delete data appOpeningCount set to zero.
         So, we retrieve all data from server.
