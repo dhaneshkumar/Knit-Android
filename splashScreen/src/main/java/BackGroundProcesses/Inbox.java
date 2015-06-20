@@ -91,8 +91,6 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
           MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
       if (MainActivity.progressBarLayout != null)
           MainActivity.progressBarLayout.setVisibility(View.GONE);
-      if (MainActivity.editLayout != null)
-          MainActivity.editLayout.setVisibility(View.VISIBLE);
 
       if(Messages.myadapter != null)
           Messages.myadapter.notifyDataSetChanged();

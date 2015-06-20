@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     android:text="Knit"
     android:textStyle="bold"
-    android:textSize="24sp"
+    android:textSize="22sp"
     android:textColor="@color/white"
     />
 

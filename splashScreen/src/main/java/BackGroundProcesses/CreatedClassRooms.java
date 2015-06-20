@@ -79,8 +79,6 @@ public class CreatedClassRooms extends AsyncTask<Void, Void, String[]> {
 
       if (MainActivity.progressBarLayout != null)
           MainActivity.progressBarLayout.setVisibility(View.GONE);
-      if (MainActivity.editLayout != null)
-          MainActivity.editLayout.setVisibility(View.VISIBLE);
 
      /*
      * Updating member list

@@ -454,6 +454,8 @@ public class PhoneSignUpVerfication extends ActionBarActivity {
 
             Intent intent = new Intent(activityContext, MainActivity.class);
             intent.putExtra("flag", "SIGNUP");
+            if (ParseUser.getCurrentUser().getString("role").equals(Constants.TEACHER))
+                intent.putExtra("VIEWPAGERINDEX", 1);
             activityContext.startActivity(intent);
 
 

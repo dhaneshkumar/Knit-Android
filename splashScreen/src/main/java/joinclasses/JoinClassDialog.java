@@ -8,6 +8,7 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -120,8 +121,9 @@ public class JoinClassDialog extends DialogFragment {
 
             //if user is a student and joining class from suggestions, then directly join the class
             if(role.equals(Constants.STUDENT)) {
+
                 //checking for internet connection
-                if (Utility.isInternetOn(getActivity())) {
+                if(Utility.isInternetExist(getActivity())) {
 
                     //calling background function to join clas
                     AddChild_Background rcb = new AddChild_Background();
@@ -338,9 +340,20 @@ public class JoinClassDialog extends DialogFragment {
                 if(getActivity()!=null)
                     Utility.toastDone("ClassRoom Joined");
 
-
                 //Refreshing joined class adapter
                 Classrooms.joinedGroups = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
+
+                if(Classrooms.joinedGroups != null && Classrooms.joinedGroups.size() ==1)
+                {
+                    //Adding an extra tab
+                    MainActivity.tab3Icon.setVisibility(View.VISIBLE);
+                    MainActivity.tab1Icon.setText("SENT");
+                    LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 0, LinearLayout.LayoutParams.WRAP_CONTENT, 3);
+                    MainActivity.tab1Icon.setLayoutParams(layoutParams);
+                    FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
+
+                    MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
+                }
 
                 if(Classrooms.joinedClassAdapter != null)
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();

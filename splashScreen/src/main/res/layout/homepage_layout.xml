@@ -36,141 +36,66 @@
             android:textColor="@color/black" />
     </LinearLayout>
 
+
     <LinearLayout
-        android:id="@+id/editLayout"
+        android:id="@+id/tabviewer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical">
+        android:layout_height="wrap_content"
+        android:background="@color/color_primary"
+        android:orientation="horizontal">
 
         <TextView
-            android:id="@+id/internetbar"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:background="@color/internetbarcolor"
+            android:id="@+id/tab1Icon"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
             android:gravity="center"
-            android:text="No internet Connection"
-            android:textColor="@color/white"
-            android:visibility="gone" />
-
-        <LinearLayout
-            android:id="@+id/tabviewer"
-            android:layout_width="match_parent"
-            android:layout_height="48dp"
-            android:background="@color/color_primary"
-            android:orientation="vertical">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:orientation="horizontal">
-
-                <LinearLayout
-                    android:id="@+id/tab1"
-                    android:layout_width="0dp"
-                    android:layout_weight="5"
-                    android:gravity="center"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tab1Icon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:gravity="center"
-                        android:text="CLASSROOMS"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="@color/white" />
-
-                  <!--  <ImageView
-                        android:id="@+id/tab1Icon"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/outbox" />-->
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab2"
-                    android:layout_width="0dp"
-                    android:layout_weight="3"
-                    android:gravity="center"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tab2Icon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:gravity="center"
-                        android:text="SENT"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="@color/white" />
-
-
-                    <!--<ImageView
-                        android:id="@+id/tab2Icon"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/inbox_grey" />-->
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tab3"
-                    android:layout_width="0dp"
-                    android:layout_weight="5"
-                    android:gravity="center"
-                    android:layout_height="wrap_content">
-
-                    <TextView
-                        android:id="@+id/tab3Icon"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:textSize="16sp"
-                        android:gravity="center"
-                        android:text="RECEIVED"
-                        android:paddingTop="8dp"
-                        android:paddingBottom="8dp"
-                        android:textColor="@color/white" />
-
-                   <!-- <ImageView
-                        android:id="@+id/tab3Icon"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:background="@drawable/classroom_grey" />-->
-                </LinearLayout>
-
-
-            </LinearLayout>
-
-
-            <TextView
-                android:id="@+id/tabcolor"
-                android:layout_width="wrap_content"
-                android:layout_height="3dp"
-                android:background="@color/white" />
-
-          <!--  <TextView
-                android:layout_width="match_parent"
-                android:layout_height="2dp"
-                android:layout_gravity="left"
-                android:background="@color/buttoncolor" />-->
-        </LinearLayout>
+            android:text="SENT"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
+            android:textColor="@color/white" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="1dp"
-            android:background="@color/lightbackgroundcolor" />
+            android:id="@+id/tab2Icon"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:gravity="center"
+            android:text="CLASSROOMS"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
+            android:textColor="@color/white" />
 
-        <android.support.v4.view.ViewPager
-            android:id="@+id/pager"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:background="@color/white"></android.support.v4.view.ViewPager>
+        <TextView
+            android:id="@+id/tab3Icon"
+            android:layout_width="0dp"
+            android:layout_weight="5"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:text="RECEIVED"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
+            android:textColor="@color/white" />
     </LinearLayout>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:background="@color/color_primary"
+    android:layout_height="wrap_content">
+    <TextView
+        android:id="@+id/tabcolor"
+        android:layout_width="wrap_content"
+        android:layout_height="3dp"
+        android:background="@color/white" />
+</LinearLayout>
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/pager"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/white"></android.support.v4.view.ViewPager>
 
 </LinearLayout>

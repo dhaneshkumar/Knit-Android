@@ -12,8 +12,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
-import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -29,12 +29,9 @@ import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 import BackGroundProcesses.Refresher;
 import additionals.Invite;
@@ -56,56 +53,54 @@ import utility.Utility;
  * This Activity shows home page of our app. It contains three fragments outbox, inbox and classrooms.
  */
 public class MainActivity extends MyActionBarActivity implements TabListener {
-    static ViewPager viewpager;
-    LinearLayout tabviewer;
-    LinearLayout tab1;
-    LinearLayout tab2;
-    LinearLayout tab3;
-    private TextView tab1Icon;
-    private TextView tab2Icon;
-    private TextView tab3Icon;
-    TextView tabcolor;
-    LinearLayout.LayoutParams params;
-    int screenwidth;
+    public static ViewPager viewpager;
+    public static TextView tab1Icon;
+    public static TextView tab2Icon;
+    public static TextView tab3Icon;
+    private TextView tabcolor;
+    private LinearLayout.LayoutParams params;
+    private int screenwidth;
     private static String role;
-    int backCount = 0;
-    boolean signInFlag = false;
+    private int backCount = 0;
     public static LinearLayout progressBarLayout;
-    public static LinearLayout editLayout;
     public static SmoothProgressBar mHeaderProgressBar;
+    private static int userJoinedClassroomCount;
+    public static MyAdapter myAdapter;
 
-    static boolean isEventCheckerAlarmTriggered = false; //flag telling whether alarm for event checker has been triggered or not
+    //flag telling whether alarm for event checker has been triggered or not
+    static boolean isEventCheckerAlarmTriggered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("DEBUG_TEMPORARY", "onCreate Called");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
-        signInFlag = false;
-       // overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out); //setting animation
-        ParseUser parseObject = ParseUser.getCurrentUser();
 
-        //check for current user loggedin
-        if (parseObject == null)
-            {Utility.logout(); return;}
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user.getList(Constants.JOINED_GROUPS) != null)
+            userJoinedClassroomCount = user.getList(Constants.JOINED_GROUPS).size();
+        else
+            userJoinedClassroomCount = 0;
 
+        //check for current user loggedin or not
+        if (user == null)
+        {Utility.logout(); return;}
 
+        // Initialize elements
+        viewpager = (ViewPager) findViewById(R.id.pager);
+        tabcolor = (TextView) findViewById(R.id.tabcolor);
+        tab1Icon = (TextView) findViewById(R.id.tab1Icon);
+        tab2Icon = (TextView) findViewById(R.id.tab2Icon);
+        tab3Icon = (TextView) findViewById(R.id.tab3Icon);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
-        editLayout = (LinearLayout) findViewById(R.id.editLayout);
         mHeaderProgressBar = (SmoothProgressBar) findViewById(R.id.ptr_progress);
 
-        Map<String, String> dimensions = new HashMap<String, String>();
-// Define ranges to bucket data points into meaningful segments
-        dimensions.put("priceRange", "1000-1500");
-// Did the user filter the query?
-        dimensions.put("source", "craigslist");
-// Do searches happen more often on weekdays or weekends?
-        dimensions.put("dayType", "weekday");
-// Send the dimensions to Parse along with the 'search' event
-        ParseAnalytics.trackEvent("search", dimensions);
+        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
+        tab1Icon.setTypeface(typeFace);
+        tab2Icon.setTypeface(typeFace);
+        tab3Icon.setTypeface(typeFace);
 
         /*
-        Check for app reinstallation. In case of reinstallation or delete data appOpeningCount set to zero.
+        Check for app re-installation. In case of reinstallation or delete data appOpeningCount set to zero.
         So, we retrieve all data from server.
          */
         final SessionManager session = new SessionManager(Application.getAppContext());
@@ -113,9 +108,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         if (appOpeningCount == 0) {
             session.setAppOpeningCount();
             if (!session.getSignUpAccount()) {
-                //Log.d("MAINACTIVITY_CALLING_REFRESHER", "showing progress");
                 progressBarLayout.setVisibility(View.VISIBLE);
-                editLayout.setVisibility(View.GONE);
 
                 //call refresher
                 Runnable r = new Runnable() {
@@ -130,39 +123,18 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         }
 
-        String userId = parseObject.getUsername();
-        role = parseObject.getString(Constants.ROLE);
-
-
-        // initialize elements
-        viewpager = (ViewPager) findViewById(R.id.pager);
-        tabviewer = (LinearLayout) findViewById(R.id.tabviewer);
-        tab1 = (LinearLayout) findViewById(R.id.tab1);
-        tab2 = (LinearLayout) findViewById(R.id.tab2);
-        tab3 = (LinearLayout) findViewById(R.id.tab3);
-        tabcolor = (TextView) findViewById(R.id.tabcolor);
-        tab1Icon = (TextView) findViewById(R.id.tab1Icon);
-        tab2Icon = (TextView) findViewById(R.id.tab2Icon);
-        tab3Icon = (TextView) findViewById(R.id.tab3Icon);
-
-        Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
-        tab1Icon.setTypeface(typeFace);
-        tab2Icon.setTypeface(typeFace);
-        tab3Icon.setTypeface(typeFace);
+        role = user.getString(Constants.ROLE);
 
         // setting layout params for tab color
         params = (LinearLayout.LayoutParams) tabcolor.getLayoutParams();
         Display mDisplay = this.getWindowManager().getDefaultDisplay();
         screenwidth = mDisplay.getWidth();
-        //
 
          /*
-        Setting custom view in action bar
+            Setting custom view in action bar <Increased font size and bold>
          */
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayShowCustomEnabled(true);
-
-        //   actionBar.setTitle("science");
         actionBar.setDisplayShowTitleEnabled(false);
 
         LayoutInflater inflator = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -180,33 +152,40 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        FragmentManager fragmentmanager = getSupportFragmentManager();
-        viewpager.setAdapter(new MyAdapter(fragmentmanager));
-        viewpager.setOffscreenPageLimit(2);
 
+        FragmentManager fragmentmanager = getSupportFragmentManager();
+
+        myAdapter = new MyAdapter(fragmentmanager);
+        viewpager.setAdapter(myAdapter);
+
+        //Set the number of pages that should be retained to either side of the current page
+        if(userJoinedClassroomCount >0)
+            viewpager.setOffscreenPageLimit(2);
+        else
+            viewpager.setOffscreenPageLimit(1);
         //setting tab click functionality
-        tab1.setOnClickListener(new OnClickListener() {
+        tab1Icon.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                highLightClassrooms();
+                highLightTab1();
                 viewpager.setCurrentItem(0);
             }
         });
-        tab2.setOnClickListener(new OnClickListener() {
+        tab2Icon.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                highLightOutbox();
+                highLightTab2();
                 viewpager.setCurrentItem(1);
             }
         });
 
-        tab3.setOnClickListener(new OnClickListener() {
+        tab3Icon.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                highLightInbox();
+                highLightTab3();
                 viewpager.setCurrentItem(2);
             }
         });
@@ -214,15 +193,25 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         //gui setup according to ROLE
         if (role.equals("teacher")) {
-            params.width = screenwidth / 3;
+
+            if(userJoinedClassroomCount > 0) {
+                tab3Icon.setVisibility(View.VISIBLE);
+            }
+            else {
+                tab3Icon.setVisibility(View.GONE);
+                tab1Icon.setText("MESSAGES");
+                tab1Icon.setTextSize(16);
+                tab1Icon.setGravity(Gravity.CENTER);
+
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 0, LinearLayout.LayoutParams.WRAP_CONTENT, 5);
+                tab1Icon.setLayoutParams(layoutParams);
+            }
         } else {
             LinearLayout parentLayout = (LinearLayout) findViewById(R.id.tabviewer);
             parentLayout.setVisibility(View.GONE);
             //actionbar.setTitle("Inbox");
             // params.width = screenwidth;
         }
-        params.setMargins(0, 0, 0, 0);
-        tabcolor.setLayoutParams(params);
 
         //swipe feature implementation
         viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -237,28 +226,46 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 /*
                 scrolling from one tab to other
                  */
-                if (position == 0) {
-                    params.width = screenwidth*5 / 13;
+                if(userJoinedClassroomCount >0) {
 
-                    params.setMargins(positionOffsetPixels*4 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
-                    tabcolor.setLayoutParams(params);
-                    highLightClassrooms();
-                    showButttonContainer(Classrooms.buttonContainer);
-                } else if (position == 1) {
+                    if (position == 0) {
+                        params.width = screenwidth * 5 / 13;
 
-                    params.width = screenwidth*5 / 13;
-                    params.setMargins((screenwidth*4 / 13) + (positionOffsetPixels*4 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
-                    tabcolor.setLayoutParams(params);
+                        params.setMargins(positionOffsetPixels * 4 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
+                        tabcolor.setLayoutParams(params);
+                        highLightTab1();
+                        hideButttonContainer(Classrooms.buttonContainer);
+                    } else if (position == 1) {
 
-                    highLightOutbox();
-                    hideButttonContainer(Classrooms.buttonContainer);
+                        params.width = screenwidth * 5 / 13;
+                        params.setMargins((screenwidth * 4 / 13) + (positionOffsetPixels * 4 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                        tabcolor.setLayoutParams(params);
 
-                } else {
-                    params.width = screenwidth*5 / 13;
-                    params.setMargins((8 * screenwidth / 13), 0, 0, 0);
-                    tabcolor.setLayoutParams(params);
-                    highLightInbox();
-                    hideButttonContainer(Classrooms.buttonContainer);
+                        highLightTab2();
+                        showButttonContainer(Classrooms.buttonContainer);
+
+                    } else {
+                        params.width = screenwidth * 5 / 13;
+                        params.setMargins((8 * screenwidth / 13), 0, 0, 0);
+                        tabcolor.setLayoutParams(params);
+                        highLightTab3();
+                        hideButttonContainer(Classrooms.buttonContainer);
+                    }
+                }else
+                {
+                    params.width = screenwidth  / 2;
+                    if (position == 0) {
+                        params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
+                        tabcolor.setLayoutParams(params);
+                        highLightTab1();
+                        hideButttonContainer(Classrooms.buttonContainer);
+                    } else {
+                        params.setMargins((screenwidth /2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                        tabcolor.setLayoutParams(params);
+                        highLightTab2();
+                        showButttonContainer(Classrooms.buttonContainer);
+                    }
+
                 }
             }
 
@@ -268,8 +275,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         });
 
-        //ViewPager.setCurrentItem(int pageIndex, boolean isSmoothScroll);
-
         if(getIntent() != null && getIntent().getExtras() != null) {
             int currentItem = getIntent().getExtras().getInt("VIEWPAGERINDEX", -1);
             if (currentItem != -1) {
@@ -278,15 +283,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         if(!isEventCheckerAlarmTriggered){
-            //Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "triggering alarm on app opening");
             AlarmTrigger.triggerEventCheckerAlarm(Application.getAppContext());
             isEventCheckerAlarmTriggered = true;
         }
-        else{
-            //Log.d("DEBUG_MAIN_ACTIVITY_ALARM", "alarm already triggered");
-        }
-
-
+/*************+++++++++++++++++++++++++++++++++++++++++++++++============================================*/
+        /**
+         * setting action bar height to display no internet connection bar
+         */
         final SessionManager sessionManager = new SessionManager(Application.getAppContext());
         int actionBarHeight = sessionManager.getActionBarHeight();
 
@@ -309,20 +312,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             thread.start();
         }
 
+        /*******************************************************************************************************/
+
         //show recommend app dialog
-        if(appOpeningCount == 6 || appOpeningCount == 20) {
+        if(appOpeningCount == 6 || appOpeningCount == 21) {
 
-                FragmentManager fm = getSupportFragmentManager();
-                SpreadWordDialog spreadWordDialog = new SpreadWordDialog();
-                spreadWordDialog.show(fm, "recommend app");
+            FragmentManager fm = getSupportFragmentManager();
+            SpreadWordDialog spreadWordDialog = new SpreadWordDialog();
+            spreadWordDialog.show(fm, "recommend app");
 
-                session.setAppOpeningCount();
+            session.setAppOpeningCount();
         }
 
         //show rate app dialog after using 10 times app
         if(appOpeningCount == 11) {
 
-            ParseUser user = ParseUser.getCurrentUser() ;
             if( user!= null && !user.getBoolean("APP_RATED")) { //checking whether already app rated or not
                 FragmentManager fm = getSupportFragmentManager();
                 RateAppDialog rateAppDialog = new RateAppDialog();
@@ -333,28 +337,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         }
 
-        //check if parent/student has just signed up and show join class dialog
+        //Check if parent/student has just signed up and show join class dialog
         Intent intent = getIntent();
         if(intent != null && intent.getExtras() != null) {
-            Log.d("DEBUG_MAIN", "extras non null");
             String signup = intent.getExtras().getString("flag");
-            if(signup != null){
-                Log.d("DEBUG_MAIN", "signup flag is " + signup + "; role " + role);
-            }
-            else{
-                Log.d("DEBUG_MAIN", "signup flag is null; role is" + role);
-            }
 
             if(!UtilString.isBlank(signup) && signup.equalsIgnoreCase("SIGNUP")) {
                 intent.putExtra("flag", "false"); //set flag to something else
                 setIntent(intent);
 
-              /*  if (role.equalsIgnoreCase("student") || role.equalsIgnoreCase("parent")) {
-                    Log.d("DEBUG_MAIN", "creating join class dialog");
+                if (role.equalsIgnoreCase("student") || role.equalsIgnoreCase("parent")) {
                     FragmentManager fm = getSupportFragmentManager();
                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                     joinClassDialog.show(fm, "Join Class");
-                }*/
+                }
+
                 if(role.equalsIgnoreCase("teacher"))
                 {
                     FragmentManager fm = getSupportFragmentManager();
@@ -365,49 +362,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     createClassDialog.show(fm, "create Class");
                 }
 
-               Constants.signup_classrooms= true;
-               Constants.signup_inbox= true;
-               Constants.signup_outbox = true;
+                Constants.signup_classrooms= true;
+                Constants.signup_inbox= true;
+                Constants.signup_outbox = true;
             }
         }
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-//        testing notification actions :
-//        development_knit - User : 0000001017
-
-//        if(showNot){
-//
-//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.parentTip1Content , Constants.DEFAULT_NAME, Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
-//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.parentNoActivityContent, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_TEACHER_ACTION);
-//
-//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherNoActivityContent, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.CREATE_CLASS_ACTION);
-//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherTip1Content, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.OUTBOX_ACTION);
-//
-//            Bundle extras = new Bundle();
-//            String className = "CUP";
-//            String classCode = "ASH8636";
-//            extras.putString("grpCode", classCode);
-//            extras.putString("grpName", className);
-//            NotificationGenerator.generateNotification(this, "Your classroom " + className + EventCheckerAlarmReceiver.teacherNoSubContent, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_PARENT_ACTION, extras);
-//            NotificationGenerator.generateNotification(this, EventCheckerAlarmReceiver.teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION, extras);
-//            NotificationGenerator.generateNotification(this, "10" + EventCheckerAlarmReceiver.teacherConfusingMsgContent + className, Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.OUTBOX_ACTION);
-//
-//            /*test merging in case of normal notification*/
-//            NotificationGenerator.generateNotification(this, "Message 1 = " + EventCheckerAlarmReceiver.parentTip1Content , "Mr XYZ", Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
-//            NotificationGenerator.generateNotification(this, "Message 2 = " +  EventCheckerAlarmReceiver.teacherTip1Content, "Miss PQR", Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
-//
-//            showNot = false;
-//        }
     }
 
-//    static boolean showNot = true; //temporary hack to show notification once on app start
 
     @Override
     protected void onResume() {
         super.onResume();
         Application.mainActivityVisible = true;
         AppEventsLogger.activateApp(this, Config.FB_APP_ID);
-        Log.d("DEBUG_MAIN_ACTIVITY", "visibility TRUE");
     }
 
     @Override
@@ -415,7 +384,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         super.onPause();
         Application.mainActivityVisible = false;
         AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
-        Log.d("DEBUG_MAIN_ACTIVITY", "visibility FALSE");
     }
 
     @Override
@@ -480,7 +448,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         return super.onOptionsItemSelected(item);
     }
 
-    static class MyAdapter extends FragmentPagerAdapter {
+    public static class MyAdapter extends FragmentPagerAdapter {
 
         public MyAdapter(FragmentManager fm) {
             super(fm);
@@ -491,19 +459,33 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             Fragment fragment = null;
             if (role.equals("teacher")) {
-                switch (arg0) {
-                    case 0:
 
-                        fragment = new Classrooms();
-                        break;
-                    case 1:
-                        fragment = new Outbox();
-                        break;
-                    case 2:
-                        fragment = new Messages();
-                        break;
-                    default:
-                        break;
+                if(userJoinedClassroomCount > 0) {
+                    switch (arg0) {
+                        case 0:
+                            fragment = new Outbox();
+                            break;
+                        case 1:
+                            fragment = new Classrooms();
+                            break;
+                        case 2:
+                            fragment = new Messages();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+                else {
+                    switch (arg0) {
+                        case 0:
+                            fragment = new Outbox();
+                            break;
+                        case 1:
+                            fragment = new Classrooms();
+                            break;
+                        default:
+                            break;
+                    }
                 }
             } else
                 fragment = new Messages();
@@ -514,7 +496,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         @Override
         public int getCount() {
             if (role.equals("teacher")) {
-                return 3;
+
+                if(userJoinedClassroomCount > 0)
+                    return 3;
+                else
+                    return 2;
             } else
                 return 1;
         }
@@ -542,39 +528,33 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     @Override
     public void onTabReselected(Tab arg0, FragmentTransaction arg1) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onTabSelected(Tab arg0, FragmentTransaction arg1) {
-        // TODO Auto-generated method stub
-
     }
 
     @Override
     public void onTabUnselected(Tab arg0, FragmentTransaction arg1) {
-        // TODO Auto-generated method stub
-
     }
 
 
     //highlight outbox icon
-    private void highLightOutbox() {
+    private void highLightTab2() {
         tab2Icon.setTextColor(getResources().getColor(R.color.white));
         tab1Icon.setTextColor(getResources().getColor(R.color.light_button_color));
         tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 
     //highlight inbox icon
-    private void highLightInbox() {
+    private void highLightTab3() {
         tab3Icon.setTextColor(getResources().getColor(R.color.white));
         tab1Icon.setTextColor(getResources().getColor(R.color.light_button_color));
         tab2Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 
     //highlight classroom icon
-    private void highLightClassrooms() {
+    private void highLightTab1() {
         tab1Icon.setTextColor(getResources().getColor(R.color.white));
         tab2Icon.setTextColor(getResources().getColor(R.color.light_button_color));
         tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
@@ -606,7 +586,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Animation bottomUp = AnimationUtils.loadAnimation(this,
                 R.anim.bottom_down);
         buttonContainer.setAnimation(bottomUp);
-       // bottomUp.setDuration(100);
+        // bottomUp.setDuration(100);
         bottomUp.start();
         buttonContainer.setVisibility(View.GONE);
     }

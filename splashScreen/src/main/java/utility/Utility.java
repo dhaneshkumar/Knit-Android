@@ -454,22 +454,21 @@ public class Utility extends MyActionBarActivity {
         return "just now";
     }
 
-    public static final boolean isInternetOn(Activity activity) {
+    /**
+     * Checks for internet connection but doesn't show any popup
+     * @param activity
+     * @return
+     */
+    public static final boolean isInternetExistWithoutPopup(Activity activity) {
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
+
         // are we connected to the net
-        if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED
-                || connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED) {
-            // message to screen for testing (if req)
-            final TextView internetbar = (TextView) activity.findViewById(R.id.internetbar);
-            internetbar.setVisibility(View.GONE);
+        if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.CONNECTED || connec.getNetworkInfo(1).getState() == NetworkInfo.State.CONNECTED)
             return true;
-        } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
-                || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
-            activity.findViewById(R.id.internetbar).setVisibility(View.VISIBLE);
+        else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED)
             return false;
-        }
 
         return false;
     }
