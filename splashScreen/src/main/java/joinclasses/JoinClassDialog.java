@@ -332,7 +332,6 @@ public class JoinClassDialog extends DialogFragment {
         protected void onPostExecute(Boolean result) {
 
             if (result) {
-
                 if(getActivity()!=null)
                     Utility.toastDone("ClassRoom Joined");
 
@@ -373,8 +372,6 @@ public class JoinClassDialog extends DialogFragment {
 
                 if(Classrooms.suggestedClassAdapter != null)
                     Classrooms.suggestedClassAdapter.notifyDataSetChanged();*/
-
-
                 dialog.dismiss();
 
             } else {
@@ -384,10 +381,10 @@ public class JoinClassDialog extends DialogFragment {
                     Utility.toast("Entered class-code doesn't exist. \n Please enter correct code");
                 else
                     Utility.toast("Sorry, Something went wrong. Try Again.");
-
-                progressLayout.setVisibility(View.GONE);
-                contentLayout.setVisibility(View.VISIBLE);
             }
+
+            progressLayout.setVisibility(View.GONE);
+            contentLayout.setVisibility(View.VISIBLE);
         }
     }
 
