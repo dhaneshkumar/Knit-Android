@@ -1,5 +1,6 @@
 package trumplabs.schoolapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -27,8 +28,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ActionItemTarget;
+import com.github.amlcurran.showcaseview.targets.ActionViewTarget;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -58,6 +64,8 @@ import utility.Utility;
  * Class for Inbox's functions & activity
  */
 public class Messages extends Fragment {
+    private static Activity getactivity;
+
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
     private RecyclerView listv;
@@ -85,6 +93,8 @@ public class Messages extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        getactivity = getActivity();
+
         mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
         mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
 
@@ -934,6 +944,70 @@ public class Messages extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /********** showcase ***********/
+
+    static ShowcaseView showcaseView1, showcaseView2;
+    static boolean showcaseShown = false;
+
+    public static void showFirstParent(final View t1, final View t2){
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+
+        ShowcaseView.Builder builder = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.25f)
+                .setFont(showcaseFont)
+
+                .setContentTitle("To join a class, click on the highlighted button")
+                .setButtonText("Next")
+                        //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView1.hide();
+                        Messages.showSecond(t2);
+                    }
+                });
+
+        builder.setTarget(new ViewTarget(t1));
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder.setButtonPosition(layoutParams);
+
+        showcaseView1 = builder.getShowcaseView();
+        builder.build();
+    }
+
+    public static void showSecond(final View t2){
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+
+        ShowcaseView.Builder builder = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.25f)
+                .setFont(showcaseFont)
+
+                .setContentTitle("To see your joined classes, click on the circled menu item")
+                .setButtonText("Next")
+                        //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView2.hide();
+                    }
+                });
+
+        builder.setTarget(new ViewTarget(t2));
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder.setButtonPosition(layoutParams);
+
+        showcaseView2 = builder.getShowcaseView();
+        builder.build();
     }
 
 

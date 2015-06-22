@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -370,6 +371,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                Constants.signup_outbox = true;
             }
         }
+
         FacebookSdk.sdkInitialize(getApplicationContext());
 
 //        testing notification actions :
@@ -429,6 +431,36 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             inflater.inflate(R.menu.mainactivity_for_teachers, menu);
         else
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
+
+        if (!role.equals("teacher")) {
+            //prepare action views for menu items - join and joined
+            ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
+            ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
+
+            joinClassActionView.setImageResource(R.drawable.ic_action_import);
+            joinedClassesActionView.setImageResource(R.drawable.ic_action_document);
+
+            joinClassActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm, "Join Class");
+                }
+            });
+
+            joinedClassesActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, JoinClassesContainer.class));
+                }
+            });
+
+            if (!Messages.showcaseShown) {
+                Messages.showFirstParent(joinClassActionView, joinedClassesActionView);
+                Messages.showcaseShown = true;
+            }
+        }
 
         return true;
     }

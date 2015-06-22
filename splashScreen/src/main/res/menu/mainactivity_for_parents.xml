@@ -15,12 +15,14 @@
     <item
         android:id="@+id/joinclass"
         android:icon="@drawable/ic_action_import"
+        app:actionViewClass="android.widget.ImageView"
         android:title="Join a Class"
         app:showAsAction="always"/>
 
     <item
         android:id="@+id/joinedclasses"
         android:icon="@drawable/ic_action_document"
+        app:actionViewClass="android.widget.ImageView"
         android:title="Joined Classes"
         app:showAsAction="always"/>
 
