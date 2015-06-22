@@ -434,8 +434,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         if (!role.equals("teacher")) {
             //prepare action views for menu items - join and joined
-            ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
-            ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
+            final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
+            final ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
 
             joinClassActionView.setImageResource(R.drawable.ic_action_import);
             joinedClassesActionView.setImageResource(R.drawable.ic_action_document);
@@ -456,10 +456,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            if (!Messages.showcaseShown) {
-                Messages.showFirstParent(joinClassActionView, joinedClassesActionView);
-                Messages.showcaseShown = true;
-            }
+            //setting up views to highlight
+            Log.d("_TEMP_", "setting up action bar views to showcase");
+            Messages.t1 = joinClassActionView;
+            Messages.t2 = joinedClassesActionView;
         }
 
         return true;

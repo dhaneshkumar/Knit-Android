@@ -20,6 +20,8 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -87,6 +89,7 @@ public class Messages extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         layoutinflater = inflater   ;
+        setHasOptionsMenu(true);
         getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         return inflater.inflate(R.layout.msgcontainer, container, false);
     }
@@ -245,7 +248,6 @@ public class Messages extends Fragment {
         listv.setAdapter(myadapter);
 
         super.onActivityCreated(savedInstanceState);
-
     /*
      * setup the action bar with pull to refresh layout
      */
@@ -414,6 +416,19 @@ public class Messages extends Fragment {
         });
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+
+        Log.d("_TEMP_", "fragment onCreateOptionsMenu : trying to call showFirstParent");
+        if (!ParseUser.getCurrentUser().getString("role").equals("teacher") && !Messages.showcaseShown) {
+            Messages.showFirstParent();
+            Messages.showcaseShown = true;
+        }
+        else{
+            Log.d("_TEMP_", "either user or flag not set");
+        }
+    }
     /*
      * LRU Functions *************************************************
      */
@@ -948,10 +963,13 @@ public class Messages extends Fragment {
 
     /********** showcase ***********/
 
+    public static View t1, t2; //to highlight in showcase
     static ShowcaseView showcaseView1, showcaseView2;
     static boolean showcaseShown = false;
 
-    public static void showFirstParent(final View t1, final View t2){
+    public static void showFirstParent(){
+        Log.d("_TEMP_", "showFirstParent called");
+        if(t1 == null || t2 == null) return;
         Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
 
         ShowcaseView.Builder builder = new ShowcaseView.Builder(getactivity)
