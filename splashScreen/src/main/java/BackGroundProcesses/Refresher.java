@@ -114,7 +114,11 @@ public class Refresher {
 
             //Send all pending invites
             InviteTasks.sendAllPendingInvites();
-        } else {
+
+            //Send all pending messages
+            SendPendingMessages.sendPendingMessages(); //direct call since already in a thread
+        }
+        else {
             Log.d("DEBUG_REFRESHER", "User NULL");
             SessionManager session = new SessionManager(Application.getAppContext());
             session.reSetAppOpeningCount();

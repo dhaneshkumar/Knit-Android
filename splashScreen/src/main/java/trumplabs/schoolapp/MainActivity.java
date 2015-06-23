@@ -20,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +35,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import BackGroundProcesses.Refresher;
+import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import additionals.RateAppDialog;
 import additionals.SpreadWordDialog;
@@ -222,6 +224,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     tabcolor.setLayoutParams(params);
                     highLightClassrooms();
                     showButttonContainer(Classrooms.buttonContainer);
+                    /*if(!Classrooms.showcaseShown){
+                        Classrooms.showFirst();
+                        Classrooms.showcaseShown = true;
+                    }*/
                 } else if (position == 1) {
                     //setTitle("Inbox");
 
@@ -230,6 +236,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                     highLightOutbox();
                     hideButttonContainer(Classrooms.buttonContainer);
+
+                    if(Outbox.needLoading){
+                        Log.d(SendPendingMessages.LOGTAG, "lazy loading outbox");
+                        Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
+                        outboxAT.execute();
+                    }
 
                 } else {
                     //setTitle("Classrooms");
@@ -349,6 +361,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                Constants.signup_outbox = true;
             }
         }
+
         FacebookSdk.sdkInitialize(getApplicationContext());
 
 //        testing notification actions :
@@ -408,6 +421,36 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             inflater.inflate(R.menu.mainactivity_for_teachers, menu);
         else
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
+
+        if (!role.equals("teacher")) {
+            //prepare action views for menu items - join and joined
+            final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
+            final ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
+
+            joinClassActionView.setImageResource(R.drawable.ic_action_import);
+            joinedClassesActionView.setImageResource(R.drawable.ic_action_document);
+
+            joinClassActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm, "Join Class");
+                }
+            });
+
+            joinedClassesActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, JoinClassesContainer.class));
+                }
+            });
+
+            //setting up views to highlight
+            Log.d("_TEMP_", "setting up action bar views to showcase");
+            Messages.t1 = joinClassActionView;
+            Messages.t2 = joinedClassesActionView;
+        }
 
         return true;
     }

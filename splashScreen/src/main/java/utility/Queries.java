@@ -336,11 +336,27 @@ public class Queries {
         } else
             groupDetails = new ArrayList<ParseObject>();
 
+
+        List<ParseObject> pendingMessages = new ArrayList<>();
+        if(!flag) {//since getting first batch of messagess(not on scroll), so get all pending messages first and show them as latest
+
+            ParseQuery<ParseObject> pendingQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+            pendingQuery.fromLocalDatastore();
+            pendingQuery.orderByDescending("creationTime");
+            pendingQuery.whereEqualTo("userId", userId);
+            pendingQuery.whereEqualTo("pending", true);
+            pendingQuery.whereEqualTo("code", groupCode);
+            pendingQuery.setLimit(Config.outboxMsgCount);
+
+            pendingMessages = pendingQuery.find();
+        }
+
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         query.fromLocalDatastore();
         query.orderByDescending("creationTime");
         query.whereEqualTo("userId", userId);
         query.whereEqualTo("code", groupCode);
+        query.whereNotEqualTo("pending", true);
 
         if (flag)
             query.setLimit(2 * createMsgCount);
@@ -354,117 +370,12 @@ public class Queries {
 
         // appending extra objects to the end of list
 
-        if (msgList1 != null) {
-            for (int i = 0; i < msgList1.size(); i++) {
-                groupDetails.add(0, msgList1.get(i));
-
-
-            }
-
-
+        for(int i=0; i<pendingMessages.size(); i++){
+            groupDetails.add(0, pendingMessages.get(i));
         }
 
-        return groupDetails;
-    }
-
-    /*
-     * Retreiving created messages from server
-     */
-    public List<ParseObject> getServerCreateMsgs(final String groupCode,
-                                                 List<ParseObject> groupDetails, boolean extra) throws ParseException {
-
-
-        // Setting latest and old timestamp
-
-        if (Constants.serverMsgCounter == null)
-            Constants.serverMsgCounter = new HashMap<String, Integer>();
-
-        if (Constants.serverMsgCounter.get(groupCode) != null
-                && Constants.serverMsgCounter.get(groupCode) < 3 * createMsgCount)
-            ;
-        else {
-
-            Date oldTime = null;
-
-            if (groupDetails != null && groupDetails.size() > 0) {
-                // newTime = msgs.get(0).getString("timeStamp");
-
-                if ((Date) groupDetails.get(0).get("creationTime") != null)
-                    oldTime = (Date) groupDetails.get(0).get("creationTime");
-            }
-
-            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
-            query.orderByDescending(Constants.TIMESTAMP);
-            query.whereEqualTo("code", groupCode);
-            query.setLimit(3 * createMsgCount);
-
-            if (oldTime != null) {
-                query.whereLessThan(Constants.TIMESTAMP, oldTime);
-
-            }
-
-            try {
-                List<ParseObject> newmsgs = query.find();
-
-                if (newmsgs != null) {
-
-          /*
-           * If all obj are fetched then no request should be sent to server , that's why we are
-           * keeping the count
-           */
-                    Constants.serverMsgCounter.put(groupCode, newmsgs.size());
-
-                    Queries2 listQuery = new Queries2();
-
-
-                    for (int k = 0; k < newmsgs.size(); k++) {
-
-            /*
-             * check item already stored or not comparing usring title and date
-             */
-                        if (listQuery.isItemExist(groupDetails, newmsgs.get(k)))
-                            continue;
-
-                        if (!extra) {
-                            // Adding new msgs to msg list
-
-                            // Storing new msgs to local database
-
-                            ParseObject messages = newmsgs.get(k);
-
-                            ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-                            sentMsg.put("objectId", messages.getObjectId());
-                            sentMsg.put("Creator", messages.getString("Creator"));
-                            sentMsg.put("code", messages.getString("code"));
-                            sentMsg.put("title", messages.getString("title"));
-                            sentMsg.put("name", messages.getString("name"));
-                            sentMsg.put("creationTime", messages.getCreatedAt());
-                            sentMsg.put("senderId", messages.getString("senderId"));
-                            sentMsg.put("userId", userId);
-
-
-                            Utility.ls(messages.getString("code") +  "  :  " + messages.getString("title"));
-
-                            if (messages.get("attachment") != null)
-                                sentMsg.put("attachment", messages.get("attachment"));
-                            if (messages.getString("attachment_name") != null)
-                                sentMsg.put("attachment_name", messages.getString("attachment_name"));
-                            if (messages.get("senderpic") != null)
-                                sentMsg.put("senderpic", messages.get("senderpic"));
-                            sentMsg.pin();
-
-                            messages.put("creationTime", messages.getCreatedAt());
-                            groupDetails.add(0, messages);
-
-
-                        }
-                    }
-
-                } else
-                    Constants.serverMsgCounter.put(groupCode, 0);
-
-            } catch (ParseException e) {
-            }
+        for (int i = 0; i < msgList1.size(); i++) {
+            groupDetails.add(0, msgList1.get(i));
         }
 
         return groupDetails;
@@ -745,22 +656,50 @@ public class Queries {
      * @how query locally from sentMessage table and return first 20 messages list
      */
 
-    public List<ParseObject> getLocalOutbox() {
+    public static List<ParseObject> getLocalOutbox() {
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user == null){
+            Utility.logout();
+            return new ArrayList<>();
+        }
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-        query.fromLocalDatastore();
-        query.orderByDescending("creationTime");
-        query.whereEqualTo("userId", userId);
-        query.setLimit(Config.outboxMsgCount);
+        String userId = user.getUsername();
 
-        List<ParseObject> outboxList = null;
+        ParseQuery<ParseObject> pendingQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+        pendingQuery.fromLocalDatastore();
+        pendingQuery.orderByDescending("creationTime");
+        pendingQuery.whereEqualTo("userId", userId);
+        pendingQuery.whereEqualTo("pending", true);
+        pendingQuery.setLimit(Config.outboxMsgCount);
+
+        List<ParseObject> pendingMessages = null;
         try {
-            outboxList = query.find();
+            pendingMessages = pendingQuery.find();
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
-        return outboxList;
+        ParseQuery<ParseObject> sentQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+        sentQuery.fromLocalDatastore();
+        sentQuery.orderByDescending("creationTime");
+        sentQuery.whereEqualTo("userId", userId);
+        sentQuery.whereNotEqualTo("pending", true); //not equal to
+        sentQuery.setLimit(Config.outboxMsgCount);
+
+        List<ParseObject> sentMessages = null;
+        try {
+            sentMessages = sentQuery.find();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        if(pendingMessages == null || sentMessages == null){//though this won't happen
+            return new ArrayList<>();
+        }
+
+        //append sentMessages at end of pendingMessages
+        pendingMessages.addAll(sentMessages);
+        return pendingMessages;
     }
 
     public List<ParseObject> getExtraLocalOutbox(List<ParseObject> msgs) throws ParseException {

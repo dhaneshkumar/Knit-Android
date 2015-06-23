@@ -16,11 +16,11 @@ import trumplabs.schoolapp.Constants;
 public class AlarmTrigger {
     static int EVENT_CHECKER_ALARM_ID = 1; //this  is the id event checker alarm
 
-    static int EVENT_CHECKER_INTERVAL = 15 * Constants.MINUTE_MILLISEC; //15 minutes
+    static int EVENT_CHECKER_INTERVAL = 30 * Constants.MINUTE_MILLISEC; //15 minutes
 
     static int REFRESHER_ALARM_ID = 2; //this  is the id refresher alarm
 
-    static int REFRESHER_INTERVAL = 15 * Constants.MINUTE_MILLISEC; //15 minutes
+    static int REFRESHER_INTERVAL = 5 * Constants.MINUTE_MILLISEC; //15 minutes
 
     public static void triggerEventCheckerAlarm(Context context){
 
