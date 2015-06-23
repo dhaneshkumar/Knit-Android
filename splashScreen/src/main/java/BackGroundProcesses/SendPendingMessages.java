@@ -150,61 +150,62 @@ public class SendPendingMessages {
 
             //now try sending this message
             if(currentMsg != null){
+                int res = -1;
                 if (!UtilString.isBlank(currentMsg.getString("title")) && UtilString.isBlank(currentMsg.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     Log.d(LOGTAG, "pending text msg content : '" + currentMsg.getString("title") + "'");
-                    final int result = SendMessage.sendTextMessageCloud(currentMsg, false);
-
-                    Boolean showToast = false;
-                    Date date = currentMsg.getDate("creationTime");
-                    if(date != null){
-                        //check if list contains this date
-                        for(ParseObject msg : SendPendingMessages.toastMessageList){
-                            if(currentMsg == msg){ //same reference because they are the same parse objects
-                                SendPendingMessages.toastMessageList.remove(currentMsg);
-                                showToast = true;
-                            }
-                        }
-                    }
-
-                    if(result == 100 && isLive){
-                        showToast = true; //if network error and latest request was gui(send/retry) then show toast of "internet connection"
-                    }
-
-                    //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null
-                    if(showToast) {
-                        if (MainActivity.viewpager != null) {
-                            MainActivity.viewpager.post(new Runnable() {
-                                @Override
-                                public void run() {
-                                    if(result == 0){
-                                        Utility.toastDone("Notification Sent");
-                                    }
-                                    else if(result == 100){//aborting
-                                        Utility.toast("Sending failed ! Check your internet connection !");
-                                    }
-                                    else{
-                                        Utility.toast("Unable to send message! We will send it later");
-                                    }
-                                }
-                            });
-                        }
-                    }
-
-                    if(result == 100){
-                        abort = true;
-                        continue;
-                    }
+                    res = SendMessage.sendTextMessageCloud(currentMsg, false);
                 }
+
                 if (!UtilString.isBlank(currentMsg.getString("attachment_name"))) {
                     //title non empty, attachment empty
-                    Log.d(LOGTAG, "pending text msg " + currentMsg.getString("title"));
-                    int result = SendMessage.sendPicMessageCloud(currentMsg, false);
-                    if(result == 100){
-                        abort = true;
-                        continue;
+                    Log.d(LOGTAG, "pending pic msg attachment name : " + currentMsg.getString("attachment_name"));
+                    res = SendMessage.sendPicMessageCloud(currentMsg, false);
+                }
+
+                final int result = res;
+
+                //process the result
+                Boolean showToast = false;
+
+                //check if list contains this message
+                for(ParseObject msg : SendPendingMessages.toastMessageList){
+                    if(currentMsg == msg){ //same reference because they are the same parse objects
+                        SendPendingMessages.toastMessageList.remove(currentMsg);
+                        showToast = true;
                     }
                 }
+
+                Log.d(LOGTAG, "result=" + result + " isLive=" + isLive);
+
+                if(result == 100 && isLive){
+                    showToast = true; //if network error and latest request was gui(send/retry) then show toast of "internet connection"
+                }
+
+                //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null if the app is running
+                if(showToast) {
+                    if (MainActivity.viewpager != null) {
+                        MainActivity.viewpager.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                if(result == 0){
+                                    Utility.toastDone("Notification Sent");
+                                }
+                                else if(result == 100){//aborting
+                                    Utility.toast("Sending failed ! Check your internet connection !");
+                                }
+                                else{
+                                    Utility.toast("Unable to send message! We will send it later");
+                                }
+                            }
+                        });
+                    }
+                }
+
+                /*if(res == 100){
+                    abort = true;
+                    continue;
+                }*/
             }
 
             //pending msg queue is not empty, remove this currentMsg from queue

@@ -1081,8 +1081,11 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         final ParseFile file = new ParseFile(imageName, data);
 
+        Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size " + data.length + " bytes");
+
         try {
             file.save();
+            Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
             //sending message using parse cloud function
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("classcode", msg.getString("code"));
@@ -1092,6 +1095,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             params.put("parsefile", file);
 
             HashMap obj = ParseCloud.callFunction("sendPhotoTextMessage", params);
+
+            Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : calling cloud function success");
             if (obj != null) {
                 Date createdAt = (Date) obj.get("createdAt");
                 String objectId = (String) obj.get("messageId");
