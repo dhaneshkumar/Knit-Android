@@ -29,7 +29,7 @@ public class Config {
   4. Set flag to allow to join his own class.  # false : Knit & #true for testing
    */
   //flag to show teacher can join his own class or not
-  public static final boolean CAN_JOIN_OWN_CLASS = true;
+  public static final boolean CAN_JOIN_OWN_CLASS = false;
 
   /*
   5. Set flag to detect invalid number.  #true : knit & #false for testing
