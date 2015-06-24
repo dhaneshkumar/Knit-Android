@@ -568,7 +568,7 @@ public class Utility extends MyActionBarActivity {
 
     public static String classColourCode(String className) {
         String[] colours =
-                {"#E6CA5A", "#E4944D", "#E5766A", "#60D1D9", "#BD81D5", "#6AAEDB", "#67D595"};
+                {"#3F51B5", "#7B1FA2", "#0097A7", "#00796B", "#455A64", "#E64A19", "#388E3C"};
 
         int hashCode = className.hashCode();
 

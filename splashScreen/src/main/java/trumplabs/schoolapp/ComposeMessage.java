@@ -1,24 +1,22 @@
 package trumplabs.schoolapp;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.Context;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.os.Build;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
-import android.util.Log;
-import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
+import android.webkit.WebView;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.TableLayout;
-import android.widget.TableRow;
 import android.widget.TextView;
 
 import com.parse.ParseUser;
@@ -27,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import trumplab.textslate.R;
+import utility.Tools;
 import utility.Utility;
 
 /**
@@ -35,10 +34,15 @@ import utility.Utility;
 public class ComposeMessage extends ActionBarActivity {
 
     private RelativeLayout sendTo;
-    private TableLayout selectedLayout;
     private List<List<String>> classList;
-    private List<List<String>> selectedClassList;
-    private int displayWidth;
+    private final String TRUE = "true";
+    private final String FALSE = "false";
+    private String selectedClasses="";
+    private WebView selectedClassTV;
+    private TextView classTextView;
+    private List<String> selectedClassNames;
+    private ImageView doneImageView;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,184 +50,64 @@ public class ComposeMessage extends ActionBarActivity {
         setContentView(R.layout.compose_message);
 
         sendTo = (RelativeLayout) findViewById(R.id.sendTo);
-        selectedLayout = (TableLayout) findViewById(R.id.selectedClass);
+        final ListView classeslistview = (ListView) findViewById(R.id.classeslistview);
+        selectedClassTV = (WebView) findViewById(R.id.selectedClass);
+        selectedClassTV.getSettings().setJavaScriptEnabled(true);
+        selectedClassTV.loadUrl("file:///android_asset/selectClass.html");
+        doneImageView = (ImageView) findViewById(R.id.done);
+
+        classTextView = (TextView) findViewById(R.id.classTV);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("New Message");
 
         classList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
-        selectedClassList = new ArrayList<>();
+        if(classList == null)
+            classList = new ArrayList<List<String>>();
+
+        selectedClassNames = new ArrayList<>();
+
+
+        //adding false string as 3rd column to array <Class-code, class-name, "false">
+        for(int i=0; i<classList.size(); i++)
+        {
+            List<String> item = classList.get(i);
+            if(item.size()<3)
+                item.add(FALSE);
+            else
+                item.add(2, FALSE);
+        }
+
 
         sendTo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(classList == null || classList.size() ==0)
-                    Utility.toast("Sorry! You have not created any classroom.");
-                else
-                    showSelectColoursDialog();
+                if(classeslistview.getVisibility() == View.VISIBLE) {
+                    classeslistview.setVisibility(View.GONE);
+                    selectedClassTV.setVisibility(View.GONE);
+                    classTextView.setVisibility(View.VISIBLE);
+                    doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_mode_edit));
+
+                }
+                else {
+                    Tools.hideKeyboard(ComposeMessage.this);
+                    classeslistview.setVisibility(View.VISIBLE);
+                    selectedClassTV.setVisibility(View.VISIBLE);
+                    classTextView.setVisibility(View.GONE);
+                    doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_tick));
+
+                }
             }
         });
 
-        //measuring screen width
-        WindowManager w = getWindowManager();
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point size = new Point();
-            w.getDefaultDisplay().getSize(size);
-            displayWidth = (int) (size.x * 0.95);   //taking 0.95 of screen to use
-        } else {
-            Display d = w.getDefaultDisplay();
-            displayWidth = (int) (d.getWidth() * 0.95);
-        }
+        //setting adapter
+
+        SelectClassAdapter selectClassAdapter = new SelectClassAdapter();
+        classeslistview.setAdapter(selectClassAdapter);
     }
 
-    protected void showSelectColoursDialog() {
-
-        if(classList == null || classList.size() ==0)
-            return;
-
-        if(selectedClassList == null)
-            selectedClassList = new ArrayList<>();
-
-        boolean[] checkedClasses = new boolean[classList.size()];
-
-        int count = classList.size();
-
-        String[] classNamesArray = new String[count];
-
-        for(int i = 0; i < count; i++) {
-            classNamesArray[i] = classList.get(i).get(1);
-
-            for(int j=0; j<selectedClassList.size(); j++)
-            {
-                if(selectedClassList.get(j).get(0).equals(classList.get(i).get(0))) {
-                    checkedClasses[i] = true;
-                    break;
-                }
-                else
-                    checkedClasses[i] =false;
-            }
-        }
-
-        DialogInterface.OnMultiChoiceClickListener classesDialogListener = new DialogInterface.OnMultiChoiceClickListener() {
-
-            @Override
-
-            public void onClick(DialogInterface dialog, int postion, boolean isChecked) {
-
-                if(isChecked)
-                    selectedClassList.add(classList.get(postion));
-
-                else
-                    selectedClassList.remove(classList.get(postion));
-
-                onChangeSelectedColours();
-
-            }
-
-        };
-
-
-
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Select Classrooms");
-
-        builder.setMultiChoiceItems(classNamesArray, checkedClasses, classesDialogListener);
-
-        AlertDialog dialog = builder.create();
-        dialog.setCanceledOnTouchOutside(true);
-        dialog.show();
-
-    }
-
-
-    protected void onChangeSelectedColours() {
-
-        String str= "";
-        int totalwidth = 0;
-
-        //remove old views
-        selectedLayout.removeAllViews();
-
-        for(int i=0; i<selectedClassList.size(); i++)
-        {
-            str += selectedClassList.get(i).get(1);
-
-            TextView textview = new TextView(this);
-            textview.setText(selectedClassList.get(i).get(1));
-            textview.setPadding(16, 8, 16, 8);
-            textview.setTextSize(16);
-            textview.setTextColor(Color.BLUE);
-
-            int count = selectedLayout.getChildCount();
-            if( count > 0)
-            {
-                View view = selectedLayout.getChildAt(count-1);
-
-                if (view instanceof TableRow) {
-                    TableRow row = (TableRow) view;
-                    row.addView(textview);
-                }
-
-                view.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener() {
-                    @Override
-                    public void onSystemUiVisibilityChange(int visibility) {
-
-                    }
-                });
-            }
-            else
-            {
-                TableRow row = new TableRow(this);
-                row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                row.addView(textview);
-                selectedLayout.addView(row);
-            }
-        }
-
-        Utility.toast(str);
-
-    }
-
-    @Override
-    public void onWindowFocusChanged (boolean hasFocus) {
-        // the height will be set at this point
-
-        Log.d("compose", "0000 width = "  + " - " + displayWidth);
-
-        int count = selectedLayout.getChildCount();
-        if( count !=0)
-        {
-            View view = selectedLayout.getChildAt(count-1);
-
-            if (view instanceof TableRow) {
-                TableRow row = (TableRow) view;
-
-                int lastColumn = row.getChildCount()-1;
-
-                if(row.getWidth() > displayWidth && lastColumn >=0)
-                {
-                    View tv = row.getChildAt(lastColumn);
-                    TextView textView = (TextView) tv;
-
-                    row.removeViewAt(lastColumn);
-
-                    //creat a new row and put there last element
-
-                    Log.d("compose", "0000 width = " +  textView.getWidth() + " - " + displayWidth);
-                    //adding to new row
-
-                    TableRow new_row = new TableRow(this);
-                    new_row.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-                    new_row.addView(textView);
-                    selectedLayout.addView(new_row);
-                }
-
-            }
-        }
-
-    }
 
         @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -239,15 +123,146 @@ public class ComposeMessage extends ActionBarActivity {
 
         switch (item.getItemId()) {
             case android.R.id.home:
+                Tools.hideKeyboard(ComposeMessage.this);
                 onBackPressed();
                 break;
             default:
                 break;
         }
+
         return super.onOptionsItemSelected(item);
     }
 
+    class SelectClassAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+
+            if (classList == null)
+                classList = new ArrayList<List<String>>();
+
+            return classList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return classList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
 
 
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            View row = convertView;
+            if (row == null) {
+                LayoutInflater inflater = (LayoutInflater) ComposeMessage.this
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                row = inflater.inflate(R.layout.select_class_item, parent, false);
+            }
 
+            final LinearLayout headerLayout = (LinearLayout) row.findViewById(R.id.header);
+            final TextView headerText = (TextView) row.findViewById(R.id.headerText);
+            TextView className = (TextView) row.findViewById(R.id.classname);
+            final ImageView headerImage = (ImageView) row.findViewById(R.id.headerImage);
+            RelativeLayout rootLayout = (RelativeLayout) row.findViewById(R.id.root);
+
+            final List<String> item = classList.get(position);
+            className.setText(item.get(1));
+
+            if(item.size()>2)
+            {
+                if(item.get(2).equals(FALSE))
+                {
+                    //setting background color of circular image
+                    GradientDrawable gradientdrawable = (GradientDrawable) headerLayout.getBackground();
+                    gradientdrawable.setColor(Color.parseColor(Utility.classColourCode(item.get(1).toUpperCase())));
+
+                    headerText.setVisibility(View.VISIBLE);
+                    headerImage.setVisibility(View.GONE);
+                    headerText.setText(item.get(1).substring(0, 1).toUpperCase());    //setting front end of circular image
+                }
+                else
+                {
+                    //setting background color of circular image - blue
+                    GradientDrawable gradientdrawable = (GradientDrawable) headerLayout.getBackground();
+                    gradientdrawable.setColor(getResources().getColor(R.color.color_primary));
+
+                    headerText.setVisibility(View.GONE);
+                    headerImage.setVisibility(View.VISIBLE);
+                }
+            }
+
+            rootLayout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(item.size()>2)
+                    {
+                        final String mimeType = "text/html";
+                        final String encoding = "UTF-8";
+                        String content ="<span style=\" border: 1px solid #0288D1;display:inline-block; padding: 8px 16px;  font-size: 14px; background: #03A9F4; color:#ffffff; margin-bottom:5px; margin-right:5px; border-radius: 25px;\">"
+                                + item.get(1) + "</span>";
+
+                        String tvContent =  item.get(1).trim();
+
+                        if(item.get(2).equals(TRUE))
+                        {
+                            item.add(2, FALSE); //removing selection
+                            selectedClasses = selectedClasses.replace(content, "");
+
+                            selectedClassNames.remove(tvContent);
+
+                            //setting background color of circular image
+                            GradientDrawable gradientdrawable = (GradientDrawable) headerLayout.getBackground();
+                            gradientdrawable.setColor(Color.parseColor(Utility.classColourCode(item.get(1).toUpperCase())));
+
+                            headerText.setVisibility(View.VISIBLE);
+                            headerImage.setVisibility(View.GONE);
+                            headerText.setText(item.get(1).substring(0, 1).toUpperCase());    //setting front end of circular image
+                        }
+                        else
+                        {
+                            item.add(2, TRUE); //adding to selection
+
+                            selectedClasses += content;
+                            selectedClassNames.add(tvContent);
+
+                            //setting background color of circular image - blue
+                            GradientDrawable gradientdrawable = (GradientDrawable) headerLayout.getBackground();
+                            gradientdrawable.setColor(getResources().getColor(R.color.color_primary));
+
+                            headerText.setVisibility(View.GONE);
+                            headerImage.setVisibility(View.VISIBLE);
+                        }
+
+                        selectedClassTV.loadUrl("javascript:replace( '" + selectedClasses + "')");
+
+                       int size = selectedClassNames.size();
+
+                        String start = "";
+                        String end = "";
+
+                        if(size ==1)
+                            start = selectedClassNames.get(0);
+                        else if(size > 1)
+                            start = selectedClassNames.get(0) + ", " + selectedClassNames.get(1);
+
+                        if(size >2)
+                        {
+                            end = " & " + (size - 2) +" more";
+                        }
+
+                        classTextView.setText(start + end);
+
+                    }
+                }
+            });
+
+
+            return row;
+        }
+    }
 }
