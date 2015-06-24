@@ -12,7 +12,7 @@ android {
         release {
             /*minifyEnabled true
            shrinkResources true*/
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.txt'
         }
         debug {
             /*minifyEnabled true
@@ -30,6 +30,7 @@ repositories { mavenCentral() }
 dependencies {
     compile project(':library')
     compile project(':main')
+    compile project(':showcaseview')
     compile 'com.android.support:appcompat-v7:22.0.+'
     compile 'com.android.support:recyclerview-v7:21.0.+'
     compile 'com.facebook.android:facebook-android-sdk:4.0.+'

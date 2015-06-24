@@ -18,6 +18,9 @@ public class Application extends android.app.Application {
 	 private static Context context;
 	 private Activity mCurrentActivity = null;
 
+     public static boolean userFetchedOnce = false;
+     public static boolean joinedSyncOnce = false; //sync joined classes info only once on app start
+
      public static boolean mainActivityVisible = false; //whether MainActivity is visible or not.
      public static Date lastTimeInboxSync = null;
      public static Date lastTimeOutboxSync = null;

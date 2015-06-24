@@ -1,6 +1,5 @@
 package joinclasses;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,7 +10,6 @@ import android.view.MenuItem;
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
-import trumplabs.schoolapp.MainActivity;
 
 public class JoinClassesContainer extends MyActionBarActivity  {
   android.support.v7.app.ActionBar actionbar;
@@ -72,15 +70,5 @@ public class JoinClassesContainer extends MyActionBarActivity  {
     public int getCount() {
       return 1;
     }
-  }
-
-
-  @Override
-  public void onBackPressed() {
-    // Write your code here
-    Intent intent = new Intent(this, MainActivity.class);
-    startActivity(intent);
-
-    super.onBackPressed();
   }
 }

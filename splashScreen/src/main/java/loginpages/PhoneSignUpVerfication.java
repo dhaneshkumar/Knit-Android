@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.util.Log;
 import android.view.Menu;
@@ -28,6 +27,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import additionals.SmsListener;
+import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -41,7 +41,7 @@ import utility.Utility;
 /**
  * Created by ashish on 26/2/15.
  */
-public class PhoneSignUpVerfication extends ActionBarActivity {
+public class PhoneSignUpVerfication extends MyActionBarActivity {
     public static EditText verificationCodeET;
     static ProgressDialog pdialog;
     static SmoothProgressBar smoothProgressBar;

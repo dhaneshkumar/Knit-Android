@@ -11,7 +11,6 @@ import android.widget.LinearLayout;
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -99,28 +98,25 @@ public class SplashScreen extends MyActionBarActivity {
     dimensions.put("count", "dailyCount");
 
     String timeSession = "not set";
-    try {
-      if (session.getCurrentTime() != null) {
-        Date currentTime = session.getCurrentTime();
+    if (session.getCurrentTime() != null) {
+      Date currentTime = session.getCurrentTime();
 
-        SimpleDateFormat ft = new SimpleDateFormat("HH:mm");
-        String timeStamp = ft.format(currentTime);
-        if (timeStamp != null) {
-          if (timeStamp.compareTo("04:00") <= 0 && timeStamp.compareTo("00:01") >= 0)
-            timeSession = "00:01 - 04:00";
-          else if (timeStamp.compareTo("08:00") <= 0 && timeStamp.compareTo("04:00") >= 0)
-            timeSession = "04:00 - 08:00";
-          else if (timeStamp.compareTo("12:00") <= 0 && timeStamp.compareTo("08:00") >= 0)
-            timeSession = "08:00 - 12:00";
-          else if (timeStamp.compareTo("16:00") <= 0 && timeStamp.compareTo("12:00") >= 0)
-            timeSession = "12:00 - 16:00";
-          else if (timeStamp.compareTo("20:00") <= 0 && timeStamp.compareTo("16:00") >= 0)
-            timeSession = "16:00 - 20:00";
-          else if (timeStamp.compareTo("24:00") <= 0 && timeStamp.compareTo("20:00") >= 0)
-            timeSession = "20:00 - 23:59";
-        }
+      SimpleDateFormat ft = new SimpleDateFormat("HH:mm");
+      String timeStamp = ft.format(currentTime);
+      if (timeStamp != null) {
+        if (timeStamp.compareTo("04:00") <= 0 && timeStamp.compareTo("00:01") >= 0)
+          timeSession = "00:01 - 04:00";
+        else if (timeStamp.compareTo("08:00") <= 0 && timeStamp.compareTo("04:00") >= 0)
+          timeSession = "04:00 - 08:00";
+        else if (timeStamp.compareTo("12:00") <= 0 && timeStamp.compareTo("08:00") >= 0)
+          timeSession = "08:00 - 12:00";
+        else if (timeStamp.compareTo("16:00") <= 0 && timeStamp.compareTo("12:00") >= 0)
+          timeSession = "12:00 - 16:00";
+        else if (timeStamp.compareTo("20:00") <= 0 && timeStamp.compareTo("16:00") >= 0)
+          timeSession = "16:00 - 20:00";
+        else if (timeStamp.compareTo("24:00") <= 0 && timeStamp.compareTo("20:00") >= 0)
+          timeSession = "20:00 - 23:59";
       }
-    } catch (ParseException e1) {
     }
 
 

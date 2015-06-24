@@ -120,7 +120,10 @@
         android:text="ERROR !"
         android:textColor="@color/grey_light"
         android:textSize="16sp"
-        android:padding="32dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
         android:layout_marginTop="8dp"
         android:visibility="gone"
         />

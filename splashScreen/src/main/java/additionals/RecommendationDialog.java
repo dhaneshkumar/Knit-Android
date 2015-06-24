@@ -11,10 +11,16 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.ParseCloud;
-import com.parse.ParseException;
+import com.parse.ParseUser;
 
-import java.util.HashMap;
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import library.UtilString;
 import trumplab.textslate.R;
@@ -24,6 +30,7 @@ import utility.Utility;
  * Show dialog to send instructions to user
  */
 public class RecommendationDialog extends DialogFragment {
+    static final String LOGTAG = "DEBUG_RECO_DIALOG";
     private Dialog dialog;
     private LinearLayout progressLayout;
     private LinearLayout contentLayout;
@@ -57,11 +64,10 @@ public class RecommendationDialog extends DialogFragment {
             public void onClick(View v) {
                 email = emailId.getText().toString();
 
-                if(UtilString.isBlank(email))
+                if (UtilString.isBlank(email))
                     Utility.toast("Enter your Email-ID");
-                else
-                {
-                    if(Utility.isInternetExist(getActivity())) {
+                else {
+                    if (Utility.isInternetExist(getActivity())) {
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);
 
@@ -88,45 +94,49 @@ public class RecommendationDialog extends DialogFragment {
 
         @Override
         protected Boolean doInBackground(Void... params) {
-
-
-            Log.d("recom", "starting mailing......");
-            Log.d("recom", classCode);
-            Log.d("recom", className);
-            Log.d("recom", email);
-
-            if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) )
-            {
-                HashMap<String, String> param = new HashMap<>();
-                param.put("classCode", classCode);
-                param.put("className", className);
-                param.put("emailId", email);
-
-                boolean result = false;
-                try {
-                    result = ParseCloud.callFunction("mailInstructions", param);
-
-                    if(result)
-                        return true;
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-                return false;
+            ParseUser user = ParseUser.getCurrentUser();
+            String name = null;
+            if(user != null) {
+                name = user.getString("name");
             }
 
+            if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) && (!UtilString.isBlank(name))) {
+                Log.d(LOGTAG, "starting mailing......classCode=" + classCode + ", className="+className + ", email=" + email + ", name=" + name);
 
+                try {
+
+
+                    String urlString = "http://ec2-52-26-56-243.us-west-2.compute.amazonaws.com/createPdf.php?email=" + email + "&code=" + classCode + "&name=" + name;
+                    Log.d(LOGTAG, "url is " + urlString);
+                    URL url = new URL(urlString);
+                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    InputStream in = new BufferedInputStream(conn.getInputStream());
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+                    StringBuilder total = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        total.append(line);
+                    }
+                    String response = total.toString();
+                    Log.d(LOGTAG, "response is " + response);
+                    return true;
+                } catch (MalformedURLException e) {
+                    Log.d(LOGTAG, "MalformedURLException");
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    Log.d(LOGTAG, "IOException");
+                    e.printStackTrace();
+                }
+            }
             return false;
         }
-
 
         @Override
         protected void onPostExecute(Boolean aBoolean) {
 
             if(aBoolean)
             {
-                Utility.toast("Instructions sent on your email-id");
+                Utility.toast("Instructions sent to '" + email + "'");
                 dialog.dismiss();
             }
             else

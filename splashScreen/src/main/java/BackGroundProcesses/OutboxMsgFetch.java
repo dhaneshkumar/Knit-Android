@@ -107,8 +107,7 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
             Outbox.updateOutboxTotalMessages();
 
             //update the groupDetails of Outbox fragment so that it can use it in adapter
-            Queries query = new Queries();
-            Outbox.groupDetails = query.getLocalOutbox(); //get locally stored outbox messages and notify adapter
+            Outbox.groupDetails = Queries.getLocalOutbox(); //get locally stored outbox messages and notify adapter
 
             //Notify Outbox fragment about these new messages
             Outbox.refreshSelf();

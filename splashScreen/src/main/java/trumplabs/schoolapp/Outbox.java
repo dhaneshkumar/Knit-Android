@@ -46,6 +46,7 @@ import java.util.Date;
 import java.util.List;
 
 import BackGroundProcesses.Refresher;
+import BackGroundProcesses.SendPendingMessages;
 import BackGroundProcesses.SyncMessageDetails;
 import library.UtilString;
 import trumplab.textslate.R;
@@ -77,6 +78,8 @@ public class Outbox extends Fragment {
     //handle notification
     private static String action; //LIKE/CONFUSE
     private static String id; //msg object id
+
+    public static boolean needLoading = false; //whether needs new query to fetch newer messages from localstore(offline support)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -245,14 +248,13 @@ public class Outbox extends Fragment {
                         }
                     }
                 }
-
                 outbox_instructions.setVisibility(View.GONE);
                 outbox_headup.setVisibility(View.GONE);
                 Constants.signup_outbox = false;
             }
         });
 
-        if(Refresher.isSufficientGapOutbox() && Utility.isInternetExist(getActivity())){
+        if(Refresher.isSufficientGapOutbox() && Utility.isInternetExistWithoutPopup()){
             Log.d("DEBUG_MESSAGES", "calling Outbox update since sufficient gap");
 
             if(outboxRefreshLayout!=null){
@@ -273,7 +275,6 @@ public class Outbox extends Fragment {
         else{
             Log.d("DEBUG_MESSAGES", "skipping outbox update : gap " + Refresher.isSufficientGapOutbox());
         }
-
 
         //Initializing compose button
         final ActionButton actionButton = (ActionButton) getActivity().findViewById(R.id.action_button);
@@ -330,6 +331,26 @@ public class Outbox extends Fragment {
 
 
 
+        //before showing no internet popup make sure view is created
+        if(outboxListv != null) {
+            outboxListv.post(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.isInternetExist(getActivity());
+                }
+            });
+        }
+    }
+
+    public static void notifyAdapter(){
+        if(outboxListv != null){
+            outboxListv.post(new Runnable() {
+                @Override
+                public void run() {
+                    myadapter.notifyDataSetChanged();
+                }
+            });
+        }
     }
 
 
@@ -357,6 +378,7 @@ public class Outbox extends Fragment {
         TextView seen;
         LinearLayout root;
         LinearLayout head;
+        TextView retryButton;
 
         //constructor
         public ViewHolder(View row) {
@@ -373,6 +395,7 @@ public class Outbox extends Fragment {
             seen = (TextView) row.findViewById(R.id.seen);
             root = (LinearLayout) row.findViewById(R.id.rootLayout);
             head = (LinearLayout) row.findViewById(R.id.headLayout);
+            retryButton = (TextView) row.findViewById(R.id.retry);
         }
     }
 
@@ -399,26 +422,24 @@ public class Outbox extends Fragment {
 
             //setting message in view
             String msg = groupdetails1.getString("title");
-            if(msg == null || msg.trim().equals(""))
+            if (msg == null || msg.trim().equals(""))
                 holder.msgtxtcontent.setVisibility(View.GONE);
             else
                 holder.msgtxtcontent.setVisibility(View.VISIBLE);
             holder.msgtxtcontent.setText(msg);
 
-            String className= null;
+            String className = null;
             //setting class name
-            if(groupdetails1.getString("name") != null) {
+            if (groupdetails1.getString("name") != null) {
                 holder.classname.setText(groupdetails1.getString("name"));
                 className = groupdetails1.getString("name");
-            }
-            else
-            {
+            } else {
                 //previous version support < in the version from now onwards storing class name also>
                 String groupCode = groupdetails1.getString("code");
 
 
                 //Retrieving from shared preferences to access fast
-                className =session.getClassName(groupCode);
+                className = session.getClassName(groupCode);
                 holder.classname.setText(className);
 
 
@@ -427,7 +448,7 @@ public class Outbox extends Fragment {
             int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
             int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
             int seenCount = Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT));
-            if(seenCount < likeCount + confusedCount){//for consistency(SC >= LC + CC) - might not be correct though
+            if (seenCount < likeCount + confusedCount) {//for consistency(SC >= LC + CC) - might not be correct though
                 seenCount = likeCount + confusedCount;
             }
 
@@ -442,7 +463,7 @@ public class Outbox extends Fragment {
             /*
             Retrieving timestamp
              */
-            String timestampmsg = null;
+            String timestampmsg = "";
             try {
                 Date cdate = groupdetails1.getCreatedAt();
 
@@ -451,313 +472,353 @@ public class Outbox extends Fragment {
 
                 //finding difference of current & createdAt timestamp
                 timestampmsg = Utility.convertTimeStamp(cdate);
-
-                //setting timestamp in view
-                holder.timestampmsg.setText(timestampmsg);
             } catch (java.text.ParseException e) {
             }
 
             //setting cardview for higher api using elevation
 
             int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-            if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP){
+            if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
                 holder.head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
 
-            }
+                boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
+                if (pending) {
+                    timestampmsg = "pending..";
+                }
+
+                //setting timestamp in view
+                holder.timestampmsg.setText(timestampmsg);
+
+                //retry button handle
+                if (pending) {//this message is not yet sent
+                    holder.seen.setVisibility(View.GONE);
+                    holder.retryButton.setVisibility(View.VISIBLE);
+                    if (SendPendingMessages.isJobRunning()) {
+                        holder.retryButton.setClickable(false);
+                        holder.retryButton.setText("Sending");
+                        holder.retryButton.setTextColor(getResources().getColor(R.color.grey_light));
+                    } else {
+                        holder.retryButton.setClickable(true);
+                        holder.retryButton.setText(" Retry ");
+                        holder.retryButton.setTextColor(getResources().getColor(R.color.buttoncolor));
+                        holder.retryButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
+                                SendPendingMessages.spawnThread(true);
+                                myadapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+                } else {
+                    holder.seen.setVisibility(View.VISIBLE);
+                    holder.retryButton.setVisibility(View.GONE);
+                }
 
 
 
             /*
             Retrieving image attachment if exist
              */
-            final String imagepath;
-            if (groupdetails1.containsKey("attachment_name"))
-                imagepath = groupdetails1.getString("attachment_name");
-            else
-                imagepath = "";
+                final String imagepath;
+                if (groupdetails1.containsKey("attachment_name"))
+                    imagepath = groupdetails1.getString("attachment_name");
+                else
+                    imagepath = "";
 
-            holder.uploadprogressbar.setVisibility(View.GONE);
+                holder.uploadprogressbar.setVisibility(View.GONE);
 
-            //If image attachment exist, display image
-            if (!UtilString.isBlank(imagepath)) {
-                holder.imgmsgview.setVisibility(View.VISIBLE);
+                //If image attachment exist, display image
+                if (!UtilString.isBlank(imagepath)) {
+                    holder.imgmsgview.setVisibility(View.VISIBLE);
 
-                holder.uploadprogressbar.setTag("Progress");
-                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
-                if (imgFile.exists() && !thumbnailFile.exists())
-                    Utility.createThumbnail(getActivity(), imagepath);
-                if (imgFile.exists()) {
-                    // if image file present locally
-                    Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                    holder.imgmsgview.setTag(imgFile.getAbsolutePath());
-                    holder.imgmsgview.setImageBitmap(myBitmap);
-                } else {
-                    // else we Have to download image from server
-                    ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
-                    holder.uploadprogressbar.setVisibility(View.VISIBLE);
-                    imagefile.getDataInBackground(new GetDataCallback() {
-                        public void done(byte[] data, ParseException e) {
-                            if (e == null) {
-                                // ////Image download successful
-                                FileOutputStream fos;
-                                try {
-                                    //store image
-                                    fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                    holder.uploadprogressbar.setTag("Progress");
+                    File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                    final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
+                    if (imgFile.exists() && !thumbnailFile.exists())
+                        Utility.createThumbnail(getActivity(), imagepath);
+                    if (imgFile.exists()) {
+                        // if image file present locally
+                        Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                        holder.imgmsgview.setTag(imgFile.getAbsolutePath());
+                        holder.imgmsgview.setImageBitmap(myBitmap);
+                    } else {
+                        // else we Have to download image from server
+                        ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
+                        holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                        imagefile.getDataInBackground(new GetDataCallback() {
+                            public void done(byte[] data, ParseException e) {
+                                if (e == null) {
+                                    // ////Image download successful
+                                    FileOutputStream fos;
                                     try {
-                                        fos.write(data);
-                                    } catch (IOException e1) {
-                                        e1.printStackTrace();
-                                    } finally {
+                                        //store image
+                                        fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imagepath);
                                         try {
-                                            fos.close();
+                                            fos.write(data);
                                         } catch (IOException e1) {
                                             e1.printStackTrace();
+                                        } finally {
+                                            try {
+                                                fos.close();
+                                            } catch (IOException e1) {
+                                                e1.printStackTrace();
+                                            }
                                         }
+                                    } catch (FileNotFoundException e2) {
+                                        e2.printStackTrace();
                                     }
-                                } catch (FileNotFoundException e2) {
-                                    e2.printStackTrace();
+
+                                    Utility.createThumbnail(myActivity, imagepath);
+                                    Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                                    holder.imgmsgview.setImageBitmap(mynewBitmap);
+                                    holder.uploadprogressbar.setVisibility(View.GONE);
+                                    // Might be a problem when net is too slow :/
+                                } else {
+                                    // Image not downloaded
+                                    holder.uploadprogressbar.setVisibility(View.GONE);
                                 }
-
-                                Utility.createThumbnail(myActivity, imagepath);
-                                Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                                holder.imgmsgview.setImageBitmap(mynewBitmap);
-                                holder.uploadprogressbar.setVisibility(View.GONE);
-                                // Might be a problem when net is too slow :/
-                            } else {
-                                // Image not downloaded
-                                holder.uploadprogressbar.setVisibility(View.GONE);
                             }
-                        }
-                    });
+                        });
 
-                    holder.imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                    holder.imgmsgview.setImageBitmap(null);
+                        holder.imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                        holder.imgmsgview.setImageBitmap(null);
 
-                    // imgmsgview.setVisibility(View.GONE);
+                        // imgmsgview.setVisibility(View.GONE);
 
 
-                }
+                    }
 
-                holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
+                    holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
                             Intent imgintent = new Intent();
                             imgintent.setAction(Intent.ACTION_VIEW);
                             imgintent.setDataAndType(Uri.parse("file://" + (String) holder.imgmsgview.getTag()), "image/*");
                             startActivity(imgintent);
+                        }
+                    });
+
+
+                } else {
+                    holder.imgmsgview.setVisibility(View.GONE);
+                }
+            }
+        }
+
+
+            @Override
+            public int getItemCount() {
+
+                if (groupDetails == null) {
+                    groupDetails = new ArrayList<ParseObject>();
+                }
+
+                if (groupDetails.size() == 0)
+                    outboxLayout.setVisibility(View.VISIBLE);
+                else
+                    outboxLayout.setVisibility(View.GONE);
+
+                return groupDetails.size();
+            }
+
+    }
+
+
+        @Override
+        public boolean onOptionsItemSelected(MenuItem item) {
+            switch (item.getItemId()) {
+
+                //on refresh option selected from options menu
+                case R.id.refresh:
+
+                    if (Utility.isInternetExist(getActivity())) {
+
+                        if (outboxRefreshLayout != null) {
+                            runSwipeRefreshLayout(outboxRefreshLayout, 10);
+                        }
+                        outboxRefreshLayout.setRefreshing(true);
+
+                        //update outbox in background
+                        refreshCountInBackground();
+                        //stop refreshing in above method inside view.post
+
+                    }
+                    break;
+                default:
+                    break;
+            }
+            return super.onOptionsItemSelected(item);
+        }
+
+
+        //Refresh the layout. For e.g if outbox messages have changed
+        public static void refreshSelf() {
+            if (Outbox.outboxRefreshLayout != null) {
+                Outbox.outboxRefreshLayout.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
+                        outboxRefreshLayout.setRefreshing(false);
+                        if (groupDetails == null || groupDetails.size() == 0) {
+                            outboxLayout.setVisibility(View.VISIBLE);
+                        } else {
+                            outboxLayout.setVisibility(View.GONE);
+                        }
+
+                        if (Outbox.myadapter != null) {
+                            Outbox.myadapter.notifyDataSetChanged();
+                        }
                     }
                 });
-
-
-            } else {
-                holder.imgmsgview.setVisibility(View.GONE);
             }
         }
 
+        public static void refreshCountCore() {
+            //set lastTimeOutboxSync
+            Application.lastTimeOutboxSync = Calendar.getInstance().getTime();
 
-        @Override
-        public int getItemCount() {
-
-        if (groupDetails == null){
-            groupDetails = new ArrayList<ParseObject>();
+            Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox and setting lastTimeOutboxSync");
+            SyncMessageDetails.fetchLikeConfusedCountOutbox();
+            //following is the onpostexecute thing
+            refreshSelf();
         }
 
-        if (groupDetails.size() == 0)
-                outboxLayout.setVisibility(View.VISIBLE);
-        else
-                outboxLayout.setVisibility(View.GONE);
-
-            return groupDetails.size();
-        }
-    }
-
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-
-            //on refresh option selected from options menu
-            case R.id.refresh:
-
-                if(Utility.isInternetExist(getActivity())) {
-
-                    if (outboxRefreshLayout != null) {
-                        runSwipeRefreshLayout(outboxRefreshLayout, 10);
-                    }
-                    outboxRefreshLayout.setRefreshing(true);
-
-                   //update outbox in background
-                    refreshCountInBackground();
-                    //stop refreshing in above method inside view.post
-
-                }
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    //Refresh the layout. For e.g if outbox messages have changed
-    public static void refreshSelf(){
-        if (Outbox.outboxRefreshLayout != null){
-            Outbox.outboxRefreshLayout.post(new Runnable() {
+        //update like/confused/seen count for sent messages in a background thread
+        public static void refreshCountInBackground() {
+            Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
+                    refreshCountCore();
+                }
+            };
+
+            Thread t = new Thread(r);
+            t.setPriority(Thread.MIN_PRIORITY);
+            t.start();
+        }
+
+        /*
+    stop swipe refreshlayout
+     */
+        public static void runSwipeRefreshLayout(final SwipeRefreshLayout outboxRefreshLayout, final int seconds) {
+
+            if (outboxRefreshLayout == null)
+                return;
+
+            outboxRefreshLayout.setRefreshing(true);
+            if (MainActivity.mHeaderProgressBar != null)
+                MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+
+            //start handler for 10 secs.  <to stop refreshbar>
+            final Handler h = new Handler() {
+                @Override
+                public void handleMessage(Message message) {
+
                     outboxRefreshLayout.setRefreshing(false);
-                    if (groupDetails == null || groupDetails.size() == 0) {
+                }
+            };
+            h.sendMessageDelayed(new Message(), seconds * 1000);
+        }
+
+        public static void updateOutboxTotalMessages() {
+
+            Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
+
+            //update totalOutboxMessages
+            ParseUser user = ParseUser.getCurrentUser();
+
+            if (user == null) {
+                Utility.logout();
+                return;
+            }
+
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+            query.fromLocalDatastore();
+            query.whereEqualTo("userId", user.getUsername());
+            try {
+                totalOutboxMessages = query.count();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
+        }
+
+
+        static class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void> {
+            List<ParseObject> msgs;
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                Outbox.needLoading = false; //clear needLoading flag so that not called twice when Outbox is loaded along with MainActivty and also this flag is set on viewpager change
+
+                //retrieving lcoally stored outbox messges
+                msgs = Queries.getLocalOutbox();
+
+                updateOutboxTotalMessages();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (msgs == null) {
+                    msgs = new ArrayList<ParseObject>();
+                }
+
+                groupDetails = msgs;
+
+                if (Outbox.myadapter != null) {
+                    Outbox.myadapter.notifyDataSetChanged();
+                }
+
+                if (outboxLayout != null) {
+                    if (groupDetails.size() == 0)
                         outboxLayout.setVisibility(View.VISIBLE);
-                    } else {
+                    else
                         outboxLayout.setVisibility(View.GONE);
-                    }
-
-                    if(Outbox.myadapter != null){
-                        Outbox.myadapter.notifyDataSetChanged();
-                    }
                 }
-            });
-        }
-    }
+                super.onPostExecute(aVoid);
 
-    public static void refreshCountCore(){
-        //set lastTimeOutboxSync
-        Application.lastTimeOutboxSync = Calendar.getInstance().getTime();
-
-        Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox and setting lastTimeOutboxSync");
-        SyncMessageDetails.fetchLikeConfusedCountOutbox();
-        //following is the onpostexecute thing
-        refreshSelf();
-    }
-
-    //update like/confused/seen count for sent messages in a background thread
-    public static void refreshCountInBackground(){
-        Runnable r = new Runnable() {
-            @Override
-            public void run(){
-                refreshCountCore();
-            }
-        };
-
-        Thread t = new Thread(r);
-        t.setPriority(Thread.MIN_PRIORITY);
-        t.start();
-    }
-
-    /*
-stop swipe refreshlayout
- */
-    public static void runSwipeRefreshLayout(final SwipeRefreshLayout outboxRefreshLayout, final int seconds) {
-
-        if (outboxRefreshLayout == null)
-            return;
-
-        outboxRefreshLayout.setRefreshing(true);
-        if (MainActivity.mHeaderProgressBar != null)
-            MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
-
-        //start handler for 10 secs.  <to stop refreshbar>
-        final Handler h = new Handler() {
-            @Override
-            public void handleMessage(Message message) {
-
-                outboxRefreshLayout.setRefreshing(false);
-            }
-        };
-        h.sendMessageDelayed(new Message(), seconds * 1000);
-    }
-
-    public static void updateOutboxTotalMessages(){
-
-        Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
-
-        //update totalOutboxMessages
-        ParseUser user = ParseUser.getCurrentUser();
-
-        if (user == null)
-            {Utility.logout(); return;}
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-        query.fromLocalDatastore();
-        query.whereEqualTo("userId", user.getUsername());
-        try{
-            totalOutboxMessages = query.count();
-        }
-        catch(ParseException e){
-            e.printStackTrace();
-        }
-        Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
-    }
-
-
-
-    class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void>
-    {
-        @Override
-        protected Void doInBackground(Void... params) {
-
-            //retrieving lcoally stored outbox messges
-            groupDetails = query.getLocalOutbox();
-            if (groupDetails == null)
-                groupDetails = new ArrayList<ParseObject>();
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Outbox.myadapter.notifyDataSetChanged();
-
-
-            if (groupDetails == null){
-                groupDetails = new ArrayList<ParseObject>();
-            }
-
-            if (groupDetails.size() == 0)
-                outboxLayout.setVisibility(View.VISIBLE);
-            else
-                outboxLayout.setVisibility(View.GONE);
-            super.onPostExecute(aVoid);
-
-            if(action != null && id != null) {
-                //handle the notification in asynctask
-                NotificationHandler notificationHandler = new NotificationHandler();
-                notificationHandler.execute();
-            }
-        }
-    }
-
-    class NotificationHandler extends AsyncTask<Void, Void, Void>{
-        int msgIndex = -1;
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            if(groupDetails == null) return null;
-
-            if(action != null && id != null &&
-                    (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))){
-                for(int i=0; i<groupDetails.size(); i++){
-                    ParseObject msg = groupDetails.get(i);
-                    if(msg.getString("objectId") != null && msg.getString("objectId").equals(id)){
-                        msgIndex = i;
-                        break;
-                    }
+                if (action != null && id != null) {
+                    //handle the notification in asynctask
+                    NotificationHandler notificationHandler = new NotificationHandler();
+                    notificationHandler.execute();
                 }
             }
-            return null;
         }
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            if(Outbox.outboxListv.getAdapter() == null) return;
-            if(msgIndex >=0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
-                Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
-                Outbox.outboxListv.smoothScrollToPosition(msgIndex);
-                action = null;
-                id = null; //do not repeat
+        static class NotificationHandler extends AsyncTask<Void, Void, Void> {
+            int msgIndex = -1;
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                if (groupDetails == null) return null;
+
+                if (action != null && id != null &&
+                        (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))) {
+                    action = null; //action not used hereafter. Avoid duplicate asynctask invocations
+
+                    for (int i = 0; i < groupDetails.size(); i++) {
+                        ParseObject msg = groupDetails.get(i);
+                        if (msg.getString("objectId") != null && msg.getString("objectId").equals(id)) {
+                            msgIndex = i;
+                            break;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                if (Outbox.outboxListv.getAdapter() == null) return;
+                if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
+                    Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
+                    Outbox.outboxListv.smoothScrollToPosition(msgIndex);
+                    action = null;
+                    id = null; //do not repeat
+                }
             }
         }
     }
-}

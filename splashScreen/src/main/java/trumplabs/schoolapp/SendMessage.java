@@ -15,6 +15,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -35,15 +36,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
-import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
@@ -60,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import BackGroundProcesses.MemberList;
+import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -75,7 +73,7 @@ import utility.Utility;
  */
 public class SendMessage extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
     private ListView listv;                   //listview to show sent messages
-    private myBaseAdapter myadapter;        //Adapter for listview
+    private static myBaseAdapter myadapter;        //Adapter for listview
     private int ACTION_MODE_NO;
     private ArrayList<ParseObject> selectedlistitems; // To delete selected messages
     public static String groupCode;      //class-code
@@ -97,7 +95,13 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     public static Activity currentActivity;
     private LinearLayout inviteLayout;
     public static LinearLayout picProgressBarLayout;
+    public static ImageButton sendmsgbutton;
 
+    /* offline msg flags*/
+    public static boolean sendButtonClicked = false; //to show status 'sending' in msg items when background sender job is NOT running & is about to get start(i.e jobRunning flag not set)
+    //this is a quick hack because thread is spawned only when message has been pinned locally(after slight delay), however message is shown in the list immediately.
+    //So we need to show the status of msg as 'sending' even though jobRunning flag is not yet set
+    //It is cleared when either msg is added to queue or new job started
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +146,8 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             groupDetails = query.getLocalCreateMsgs(groupCode, groupDetails, false);
         } catch (ParseException e) {
         }
+
+        ClassMsgFunctions.updateTotalClassMessages(groupCode);
 
         if (groupDetails == null)
             groupDetails = new ArrayList<ParseObject>();
@@ -205,7 +211,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             }
         });
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
+        //FacebookSdk.sdkInitialize(getApplicationContext());
 
         try {
             Queries memberQuery = new Queries();
@@ -219,11 +225,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         } catch (ParseException e) {
             e.printStackTrace();
         }
-
-
-
     }
-
 
     @Override
     protected void onResume() {
@@ -231,7 +233,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         //facebook ad tracking
         // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+        //AppEventsLogger.activateApp(this, Config.FB_APP_ID);
     }
 
     @Override
@@ -240,7 +242,21 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
         //facebook tracking : time spent on app by people
         // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+        //AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+    }
+
+    public static void notifyAdapter(){
+        //view.post
+        if(SendMessage.contentLayout != null) {
+            SendMessage.contentLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (myadapter != null) {
+                        myadapter.notifyDataSetChanged();//just notify the pending->sent change
+                    }
+                }
+            });
+        }
     }
 
     @Override
@@ -404,20 +420,27 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             } else {
             }
 
-            final ParseObject groupdetails1 = groupDetails.get(position);  //selected object
+            final ParseObject msg = groupDetails.get(position);  //selected object
             String stringmsg = (String) getItem(position);      //selected messages
 
             //retrieving the message sent time
-            String timestampmsg = null;
+            String timestampmsg = "";
             try {
-                Date cdate = (Date) groupdetails1.get("creationTime");
+                Date cdate = (Date) msg.get("creationTime");
                 timestampmsg = Utility.convertTimeStamp(cdate);
             } catch (java.text.ParseException e) {
             }
 
+            boolean pending = msg.getBoolean("pending"); //if this key is not available (for older messages)
+            //get pending "false" & that's what we want
+            if(pending){
+                timestampmsg = "pending..";
+            }
+
+
             final String imagepath;
-            if (groupdetails1.containsKey("attachment_name"))
-                imagepath = groupdetails1.getString("attachment_name");
+            if (msg.containsKey("attachment_name"))
+                imagepath = msg.getString("attachment_name");
             else
                 imagepath = "";
 
@@ -432,11 +455,39 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             TextView likeCountArea = (TextView) row.findViewById(R.id.like);
             TextView confusedCountArea = (TextView) row.findViewById(R.id.confusion);
             TextView seenCountArea = (TextView) row.findViewById(R.id.seen);
+            TextView retryButton = (TextView) row.findViewById(R.id.retry);
 
+            if(pending){//this message is not yet sent
+                seenCountArea.setVisibility(View.GONE);
+                retryButton.setVisibility(View.VISIBLE);
+                if(SendPendingMessages.isJobRunning() || sendButtonClicked){
+                    retryButton.setClickable(false);
+                    retryButton.setText("Sending");
+                    retryButton.setTextColor(getResources().getColor(R.color.grey_light));
+                }
+                else{
+                    retryButton.setClickable(true);
+                    retryButton.setText(" Retry ");
+                    retryButton.setTextColor(getResources().getColor(R.color.buttoncolor));
 
-            int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
-            int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
-            int seenCount = Utility.nonNegative(groupdetails1.getInt(Constants.SEEN_COUNT));
+                    retryButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
+                            SendPendingMessages.spawnThread(true);
+                            myadapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            }
+            else{
+                seenCountArea.setVisibility(View.VISIBLE);
+                retryButton.setVisibility(View.GONE);
+            }
+
+            int likeCount = Utility.nonNegative(msg.getInt(Constants.LIKE_COUNT));
+            int confusedCount = Utility.nonNegative(msg.getInt(Constants.CONFUSED_COUNT));
+            int seenCount = Utility.nonNegative(msg.getInt(Constants.SEEN_COUNT));
             if(seenCount < likeCount + confusedCount){ //for consistency(SC >= LC + CC) - might not be correct though
                 seenCount = likeCount + confusedCount;
             }
@@ -447,14 +498,14 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
             String className= null;
             //setting class name
-            if(groupdetails1.getString("name") != null) {
-                classNameTV.setText(groupdetails1.getString("name"));
-                className = groupdetails1.getString("name");
+            if(msg.getString("name") != null) {
+                classNameTV.setText(msg.getString("name"));
+                className = msg.getString("name");
             }
             else
             {
                 //previous version support < in the version from now onwards storing class name also>
-                String groupCode = groupdetails1.getString("code");
+                String groupCode = msg.getString("code");
 
                 //Retrieving from shared preferences to access fast
                 className =session.getClassName(groupCode);
@@ -504,7 +555,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     timestampview.setText(timestampmsg);
                 } else {
                     // else download image from server and then display it
-                    ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
+                    ParseFile imagefile = (ParseFile) msg.get("attachment");
                     uploadprogressbar.setVisibility(View.VISIBLE);
                     imagefile.getDataInBackground(new GetDataCallback() {
                         public void done(byte[] data, ParseException e) {
@@ -530,7 +581,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                                 }
 
                                 // //////////////////////////////////////////
-                                // myadapter.notifyDataSetChanged();
                                 Utility.createThumbnail(SendMessage.this, imagepath);
                                 Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
                                 imgmsgview.setImageBitmap(mynewBitmap);
@@ -553,7 +603,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             }
 
             row.setBackgroundColor(getResources().getColor(R.color.transparent));
-            if (ACTION_MODE_NO == 1 && selectedlistitems.contains(groupdetails1)) {
+            if (ACTION_MODE_NO == 1 && selectedlistitems.contains(msg)) {
                 row.setBackgroundColor(getResources().getColor(R.color.highlightcolor));
             }
             return row;
@@ -561,7 +611,6 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     }
 
     public void initialiseListViewMethods() {
-
 
         /*
         On scrolling list view, load more messages from local storage
@@ -641,7 +690,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
 
     private void sendMsgMethod() {
         // Initializing all the views related to sending message view
-        final ImageButton sendmsgbutton = (ImageButton) findViewById(R.id.sendmsgbttn);
+        sendmsgbutton = (ImageButton) findViewById(R.id.sendmsgbttn);
         typedmsg = (EditText) findViewById(R.id.typedmsg);
         countview = (TextView) findViewById(R.id.lettercount);
         sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
@@ -665,9 +714,12 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         typedmsg.addTextChangedListener(new TextWatcher() {
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count){}
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
 
             @Override
             public void afterTextChanged(Editable s) {
@@ -680,7 +732,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         /*
          * Changing sending button color
          */
-                if (s.length() > 0) {
+                if (s.length() > 0 || sendimgpreview.getVisibility() == View.VISIBLE) {
                     sendmsgbutton.setImageResource(R.drawable.send);
 
                 } else
@@ -722,6 +774,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             @Override
             public void onClick(View v) {
 
+                Log.d(SendPendingMessages.LOGTAG, "[GUI] send button clicked ");
                 /*
                 For sending a message, you need atleast 1 subscriber
                  */
@@ -734,15 +787,14 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                     e.printStackTrace();
                 }
 
-                if(memberCount < Config.SUBSCRIBER_MIN_LIMIT )
-                {
+                if (memberCount < Config.SUBSCRIBER_MIN_LIMIT) {
                     Utility.toastLong("You don't have any subscriber right now. Invite subscribers to start messaging.");
                     return;
                 }
 
 
                 int hourOfDay = -1;
-                if(session != null) {
+                if (session != null) {
                     //using local time instead of session.getCurrentTime
                     //Date now = session.getCurrentTime();
                     Calendar cal = Calendar.getInstance();
@@ -751,10 +803,10 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 }
 
 
-                if(hourOfDay != -1){
+                if (hourOfDay != -1) {
 
                     //If current message time is not sutaible <9PM- 6AM> then show this warning as popup to users
-                    if(hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime){
+                    if (hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime) {
                         //note >= and < respectively because disallowed are [ >= EndTime and < StartTime]
                         AlertDialog.Builder builder = new AlertDialog.Builder(SendMessage.this);
                         LinearLayout warningView = new LinearLayout(SendMessage.this);
@@ -782,12 +834,10 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                         dialog.setCanceledOnTouchOutside(true);
                         dialog.show();
 
-                    }
-                    else{
+                    } else {
                         sendFunction();
                     }
-                }
-                else{
+                } else {
                     sendFunction();
                 }
 
@@ -796,29 +846,28 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             /*
             Send messages to subscribers
              */
-            public void sendFunction(){
+            public void sendFunction() {
+                Log.d(SendPendingMessages.LOGTAG, "[GUI] sendFunction() called");
                 scrollMyListViewToBottom();  //show sent messages from bottom on clicking send button
                 typedtxt = typedmsg.getText().toString().trim();  //message to send
 
-                //check internet connection
+                //check internet connection - NOT REQUIRED - as offline messaging support
 
-                if(!Utility.isInternetExist(SendMessage.this)) {
+                /*if(!Utility.isInternetExist(SendMessage.this)) {
                     return;
-                }
+                }*/
                 if (!typedtxt.equals("") && sendimgpreview.getVisibility() == View.GONE) {
                     // when its not an image message******************
                     sendTxtMsgtoSubscribers(typedtxt);
+                    totalClassMessages++;
 
                 } else if (sendimgpreview.getVisibility() == View.VISIBLE) {
-
+                    totalClassMessages++;
                     // Sending an image file
-                    try {
-                        // passing image file path and message content as
-                        // parameters
-                        sendPic((String) sendimgpreview.getTag(), typedtxt);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    // passing image file path and message content as
+                    // parameters
+                    sendPic((String) sendimgpreview.getTag(), typedtxt);
+
                     // for image we try to keep track of progress
                     typedmsg.setText("");
                     sendimgpreview.setTag("");
@@ -846,118 +895,110 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
                 sendimgpreview.setTag("");
                 sendimgview.setImageBitmap(null);
                 sendimgpreview.setVisibility(View.GONE);
+
+                if(typedmsg.getText() != null)
+                {
+                    if(typedmsg.getText().length()<1)
+                        sendmsgbutton.setImageResource(R.drawable.send_grey);
+                }
             }
         });
     }
 
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
+        Log.d(SendPendingMessages.LOGTAG, "[GUI] sendTxtMsgtoSubscribers() entered");
 
-        //adding item to the listview
-        final ParseObject groupDetails1 = new ParseObject(Constants.GROUP_DETAILS);
-        groupDetails1.put("code", groupCode);
-        groupDetails1.put("title", typedtxt);
-        groupDetails1.put("Creator", sender);
-        groupDetails1.put("name", grpName);
-        groupDetails1.put("senderId", userId);
+        final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
+        sentMsg.put("Creator", sender);
+        sentMsg.put("code", groupCode);
+        sentMsg.put("title", typedtxt);
+        sentMsg.put("name", grpName);
 
-        groupDetails.add(groupDetails1);
-        typedmsg.setText("");
-        myadapter.notifyDataSetChanged();
-        updProgressBar.setVisibility(View.VISIBLE);
+        SessionManager session = new SessionManager(Application.getAppContext());
+        sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+        sentMsg.put("senderId", userId);
+        sentMsg.put("userId", userId);
+        sentMsg.put("pending", true);
 
+        groupDetails.add(sentMsg);
+        typedmsg.setText(""); //for reuse
 
-        //sending message using parse cloud function
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("classcode", groupCode);
-        params.put("classname", grpName);
-        params.put("message", typedtxt);
+        //so as to immediately show this msg as 'sending' in the list
+        sendButtonClicked = true;
 
+        //Refresh the list
+        myadapter.notifyDataSetChanged(); //immediately show message in the sent list
 
-        ParseCloud.callFunctionInBackground("sendTextMessage", params, new FunctionCallback<HashMap>() {
+        sentMsg.pinInBackground(new SaveCallback() {
             @Override
-            public void done(HashMap obj, ParseException e) {
-
+            public void done(ParseException e) {
                 if (e == null) {
-                    if (obj != null) {
-
-                        Date createdAt = (Date) obj.get("createdAt");
-                        String objectId = (String) obj.get("messageId");
-
-                        updProgressBar.setVisibility(View.GONE);
-
-                        ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-                        sentMsg.put("objectId", objectId);
-                        sentMsg.put("Creator", groupDetails1.getString("Creator"));
-                        sentMsg.put("code", groupDetails1.getString("code"));
-                        sentMsg.put("title", groupDetails1.getString("title"));
-                        sentMsg.put("name", groupDetails1.getString("name"));
-                        sentMsg.put("creationTime", createdAt);
-                        sentMsg.put("senderId", userId);
-                        sentMsg.put("userId", userId);
-                        try {
-                            sentMsg.pin();
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-
-
-                        //update outbox message count
-                        Outbox.updateOutboxTotalMessages();
-
-                        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-                        query.fromLocalDatastore();
-                        query.orderByDescending("creationTime");
-                        query.whereEqualTo("userId", userId);
-                        query.whereEqualTo("code", groupCode);
-
-                        List<ParseObject> msgList1;
-                        try {
-                            msgList1 = query.find();
-
-                            groupDetails.clear();
-                            if (msgList1 != null) {
-                                for (int i = 0; i < msgList1.size(); i++) {
-                                    groupDetails.add(0, msgList1.get(i));
-                                }
-                            }
-                        } catch (ParseException e1) {
-                        }
-
-                        //updating local time
-                        SessionManager sm = new SessionManager(Application.getAppContext());
-                        if (createdAt != null) {
-                            sm.setCurrentTime(createdAt);
-                        }
-
-                        //showing popup
-                        Utility.toastDone("Notification Sent");
-
-                        //updating outbox
-                        Queries outboxQuery = new Queries();
-
-                        List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-                        if (outboxItems != null) {
-                            Outbox.groupDetails = outboxItems;
-
-                            if (Outbox.myadapter != null)
-                                Outbox.myadapter.notifyDataSetChanged();
-
-                            if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
-                                Outbox.outboxLayout.setVisibility(View.GONE);
-                        }
-
-                    }
+                    SendPendingMessages.addMessageToQueue(sentMsg);
                 } else {
-                    // message was not sent
-                    groupDetails.remove(groupDetails1); //removing entry from list view
-                    myadapter.notifyDataSetChanged();
-                    Utility.toast("Oops! Message wasn't sent. Try Again!");
-                    updProgressBar.setVisibility(View.GONE);
                     e.printStackTrace();
-
+                    Utility.toastDone("Unable to send message!");
                 }
             }
         });
+
+        //TODO Notify and update "Outbox" page messages and count also
+        Outbox.needLoading = true; //handle in MainActivity when tab is changed
+
+        //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
+    }
+
+    /*always called in thread for background sending
+     return values
+        0 : success,
+        100 : network error (so abort queue),
+        -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
+    */
+    public static int sendTextMessageCloud(final ParseObject msg, final boolean isLive){
+        //if live, then only show "sent" toast
+        //sending message using parse cloud function
+        HashMap<String, String> params = new HashMap<String, String>();
+        params.put("classcode", msg.getString("code"));
+        params.put("classname", msg.getString("name"));
+        params.put("message", msg.getString("title"));
+
+        try{
+            HashMap obj = ParseCloud.callFunction("sendTextMessage", params);
+            if (obj != null) {
+                Date createdAt = (Date) obj.get("createdAt");
+                String objectId = (String) obj.get("messageId");
+
+                //updating local time
+                SessionManager sm = new SessionManager(Application.getAppContext());
+                if (createdAt != null) {
+                    sm.setCurrentTime(createdAt);
+                }
+
+                //update msg and pin
+                msg.put("objectId", objectId);
+                msg.put("pending", false);
+                msg.put("creationTime", createdAt);
+
+                try {
+                    msg.pin();
+                } catch (ParseException err) {
+                    err.printStackTrace();
+                }
+
+                //view.post
+                notifyAdapter();
+                //just notify outbox - no new query or updating count (since an old message just got new status)
+                Outbox.refreshSelf();
+                return 0; //success
+            }
+            return -1; //unexpected error
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+            if(e.getCode() == ParseException.CONNECTION_FAILED){
+                return 100; //network error
+            }
+            return -1;
+        }
     }
 
     @Override
@@ -974,146 +1015,126 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     }
 
     // Send Image Pic
-    private void sendPic(String filepath, String txtmsg) throws IOException {
+    private void sendPic(String filepath, String txtmsg){
+
+        if (filepath == null) return;
+
+        final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
+        sentMsg.put("Creator", sender);
+        sentMsg.put("code", groupCode);
+        sentMsg.put("title", txtmsg);
+        sentMsg.put("name", grpName);
+        SessionManager session = new SessionManager(Application.getAppContext());
+        sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+        sentMsg.put("senderId", userId);
+        sentMsg.put("userId", userId);
+        sentMsg.put("pending", true);
 
         // /Creating ParseFile (Not yet uploaded)
-        int slashindex = ((String) sendimgpreview.getTag()).lastIndexOf("/");
-        final String fileName = ((String) sendimgpreview.getTag()).substring(slashindex + 1);// image file //
+        int slashindex = filepath.lastIndexOf("/");
+        final String fileName = filepath.substring(slashindex + 1);// image file //
 
-        RandomAccessFile f = new RandomAccessFile(filepath, "r");
-        byte[] data = new byte[(int) f.length()];
-        f.read(data);
-        final ParseFile file = new ParseFile(fileName, data);
+        if (fileName != null)
+            sentMsg.put("attachment_name", fileName);
 
-        // /saving the sent image message details on App//////////////////////
-        final ParseObject groupDetails1 = new ParseObject(Constants.GROUP_DETAILS);
-
-        //Adding this object to list view
-        groupDetails1.put("code", groupCode);
-        groupDetails1.put("title", txtmsg);
-        groupDetails1.put("Creator", sender);
-        groupDetails1.put("name", grpName);
-        groupDetails1.put("senderId", userId);
-        groupDetails1.put("attachment_name", fileName);
-        groupDetails.add(groupDetails1);
+        groupDetails.add(sentMsg);
+        typedmsg.setText(""); //for reuse
+        //Refresh the list
+        sendButtonClicked = true;
         myadapter.notifyDataSetChanged();
-        // Now the image is shown in the list view
 
-        // //Uploading the image file/////////////////////
-        updProgressBar.setVisibility(View.VISIBLE);
-
-        file.saveInBackground(new SaveCallback() {
+        sentMsg.pinInBackground(new SaveCallback() {
+            @Override
             public void done(ParseException e) {
-
                 if (e == null) {
-                    //file uploading completed
-                    updProgressBar.setVisibility(View.GONE);
-
-                    //sending the message details to server since file is uploaded
-                    int index = groupDetails.indexOf(groupDetails1);
-                    if (index >= 0)
-                        groupDetails.set(index, groupDetails1);// replacing with the
-
-
-                    //sending message using parse cloud function
-                    HashMap<String, Object> msg = new HashMap<String, Object>();
-                    msg.put("classcode", groupCode);
-                    msg.put("classname", grpName);
-                    msg.put("message", typedtxt);
-                    msg.put("filename", fileName);
-                    msg.put("parsefile", file);
-
-
-                    ParseCloud.callFunctionInBackground("sendPhotoTextMessage", msg, new FunctionCallback<HashMap>() {
-                        @Override
-                        public void done(HashMap obj, ParseException e) {
-
-                            if (e == null) {
-                                if (obj != null) {
-
-                                    Date createdAt = (Date) obj.get("createdAt");
-                                    String objectId = (String) obj.get("messageId");
-
-                                    updProgressBar.setVisibility(View.GONE);
-
-                                    ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-                                    sentMsg.put("objectId", objectId);
-                                    sentMsg.put("Creator", groupDetails1.getString("Creator"));
-                                    sentMsg.put("code", groupDetails1.getString("code"));
-                                    sentMsg.put("title", groupDetails1.getString("title"));
-                                    sentMsg.put("name", groupDetails1.getString("name"));
-                                    sentMsg.put("creationTime", createdAt);
-                                    sentMsg.put("senderId", userId);
-                                    sentMsg.put("userId", userId);
-                                    if (file != null)
-                                        sentMsg.put("attachment", file);
-                                    if (fileName != null)
-                                        sentMsg.put("attachment_name", fileName);
-
-                                    //saving locally
-                                    try {
-                                        sentMsg.pin();
-                                    } catch (ParseException e1) {
-                                        e1.printStackTrace();
-                                    }
-
-                                    // Removing old object
-                                    groupDetails.remove(groupDetails1);
-
-                                    //update outbox message count
-                                    Outbox.updateOutboxTotalMessages();
-
-                                    ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-                                    query.fromLocalDatastore();
-                                    query.orderByDescending("creationTime");
-                                    query.whereEqualTo("userId", userId);
-                                    query.whereEqualTo("code", groupCode);
-
-                                    List<ParseObject> msgList1;
-                                    try {
-                                        msgList1 = query.find();
-
-                                        groupDetails.clear();
-                                        if (msgList1 != null) {
-                                            for (int i = 0; i < msgList1.size(); i++) {
-                                                groupDetails.add(0, msgList1.get(i));
-                                            }
-                                        }
-                                    } catch (ParseException e1) {
-                                    }
-
-                                    //showing popup
-                                    Utility.toastDone("Notification Sent");
-
-                                    //updating outbox
-                                    Queries outboxQuery = new Queries();
-
-                                    List<ParseObject> outboxItems = outboxQuery.getLocalOutbox();
-                                    if (outboxItems != null) {
-                                        Outbox.groupDetails = outboxItems;
-
-                                        if (Outbox.myadapter != null)
-                                            Outbox.myadapter.notifyDataSetChanged();
-
-                                        if (Outbox.outboxLayout != null && Outbox.groupDetails.size() > 0)
-                                            Outbox.outboxLayout.setVisibility(View.GONE);
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-
+                    SendPendingMessages.addMessageToQueue(sentMsg);
                 } else {
-                    updProgressBar.setVisibility(View.GONE);
-                    Utility.toast("Sorry, Can't sent this image.");
-                    groupDetails.remove(groupDetails1);
-                    myadapter.notifyDataSetChanged();
+                    e.printStackTrace();
+                    Utility.toast("Unable to send message!");
                 }
             }
         });
+
+        //TODO Notify and update "Outbox" page messages and count also
+        Outbox.needLoading = true; //handle in MainActivity when tab is changed
     }
 
+    //refer to sendTextMessageCloud
+    public static int sendPicMessageCloud(final ParseObject msg, final boolean isLive) {
+        //don't have attachement, objectid
+        //update creationTime, pending
+        String imageName = null;
+        if (msg.containsKey("attachment_name"))
+            imageName = msg.getString("attachment_name");
+
+        if (imageName == null) return -1; //no attachment
+
+        byte[] data = null;
+        try {
+            RandomAccessFile f = new RandomAccessFile(Utility.getWorkingAppDir() + "/media/" + imageName, "r");
+            data = new byte[(int) f.length()];
+            f.read(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return -1; //io exception
+        }
+
+        final ParseFile file = new ParseFile(imageName, data);
+
+        Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size " + data.length + " bytes");
+
+        try {
+            file.save();
+            Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
+            //sending message using parse cloud function
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            params.put("classcode", msg.getString("code"));
+            params.put("classname", msg.getString("name"));
+            params.put("message", msg.getString("title")); //won't be null
+            params.put("filename", msg.getString("attachment_name"));
+            params.put("parsefile", file);
+
+            HashMap obj = ParseCloud.callFunction("sendPhotoTextMessage", params);
+
+            Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : calling cloud function success");
+            if (obj != null) {
+                Date createdAt = (Date) obj.get("createdAt");
+                String objectId = (String) obj.get("messageId");
+
+                //update msg and pin
+                msg.put("objectId", objectId);
+                msg.put("pending", false);
+                msg.put("creationTime", createdAt);
+                msg.put("attachment", file);
+
+                //saving locally
+                try {
+                    msg.pin();
+                } catch (ParseException e1) {
+                    e1.printStackTrace();
+                }
+
+                //showing popup if live
+                if (isLive) {
+                    Utility.toastDone("Notification Sent");
+                }
+
+                notifyAdapter();
+                //just notify outbox - no new query or updating count (since an old message just got new status)
+                Outbox.refreshSelf();
+                return 0;
+            }
+            return -1;
+        }
+        catch(ParseException esave){
+            esave.printStackTrace();
+            if(esave.getCode() == ParseException.CONNECTION_FAILED){
+                return 100;
+            }
+            return -1;
+            //Utility.toast("Sorry, sending failed now. We'll send it next time you're online");
+        }
+    }
     /*
      * scroll to bottom
      */

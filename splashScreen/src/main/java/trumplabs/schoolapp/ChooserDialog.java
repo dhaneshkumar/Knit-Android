@@ -368,8 +368,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
             if (SendMessage.picProgressBarLayout != null)
                 SendMessage.picProgressBarLayout.setVisibility(View.GONE);
 
-            if (SendMessage.sendimgpreview != null)
+            if (SendMessage.sendimgpreview != null) {
                 SendMessage.sendimgpreview.setVisibility(View.VISIBLE);
+
+                //setting 'send button' color to blue
+                if(SendMessage.sendmsgbutton != null)
+                    SendMessage.sendmsgbutton.setImageResource(R.drawable.send);
+            }
         }
 
       if (flag) {

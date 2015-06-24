@@ -41,6 +41,7 @@ public class FeedBackClass extends DialogFragment {
     });
 
     TextView sendfb = (TextView) view.findViewById(R.id.sendfeedback);
+    final TextView cancel = (TextView) view.findViewById(R.id.cancel);
     sendfb.setOnClickListener(new OnClickListener() {
 
       @Override
@@ -55,33 +56,29 @@ public class FeedBackClass extends DialogFragment {
             ParseCloud.callFunctionInBackground("feedback", parameters, new FunctionCallback<Boolean>() {
                 @Override
                 public void done(Boolean result, ParseException e) {
-                    if(e == null) {
+                    if (e == null) {
                         Utility.toast("Thanks for the feedback! :)");
-                    }
-                    else{
+                    } else {
                         Utility.toast("Oops, could not submit your feedback !");
                         e.printStackTrace();
                     }
                 }
             });
-          /*
-          final ParseObject feedbacks = new ParseObject("Feedbacks");
-          feedbacks.put("content", content);
-          feedbacks.put("emailId", ParseUser.getCurrentUser().getEmail());
-          feedbacks.saveInBackground(new SaveCallback() {
 
-            @Override
-            public void done(ParseException e) {
-              if (e != null)
-                feedbacks.saveEventually();
-              Utility.toast("Thanks for the feedback! :)");
-            }
-          });
-          */
+            dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
           getDialog().dismiss();
         }
       }
     });
+
+     cancel.setOnClickListener(new OnClickListener() {
+         @Override
+         public void onClick(View v) {
+             dialog.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+             getDialog().dismiss();
+         }
+     });
+
     return dialog;
   }
 }

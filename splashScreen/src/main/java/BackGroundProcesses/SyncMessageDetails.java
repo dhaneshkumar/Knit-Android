@@ -196,7 +196,7 @@ public class SyncMessageDetails {
                         msg.put(Constants.SEEN_COUNT, counts.get(0));
                         msg.put(Constants.LIKE_COUNT, counts.get(1) - synced_like + like);
                         msg.put(Constants.CONFUSED_COUNT, counts.get(2) - synced_confusing + confusing);
-                        Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
+                        //Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }
 

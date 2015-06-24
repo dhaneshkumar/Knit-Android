@@ -20,8 +20,11 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -49,7 +52,7 @@ import utility.Utility;
  * Shows all the created classrooms
  */
 public class Classrooms extends Fragment {
-    private Activity getactivity;
+    private static Activity getactivity;
     private library.ExpandableListView createdClassListView;
     private library.ExpandableListView joinedClassListView;
     public static List<List<String>> createdGroups;
@@ -71,8 +74,11 @@ public class Classrooms extends Fragment {
     private TextView cardContent;
     private LinearLayout blank_classroom;
 
+    private boolean isTeacher;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         layoutinflater = inflater;
 
         View layoutview = inflater.inflate(R.layout.classrooms, container, false);
@@ -81,6 +87,7 @@ public class Classrooms extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         buttonContainer = (LinearLayout) getActivity().findViewById(R.id.buttonContainer);
 
@@ -100,14 +107,14 @@ public class Classrooms extends Fragment {
         TextView createClassLink = (TextView) getActivity().findViewById(R.id.createClassLink);
         TextView classRoomtitle = (TextView) getActivity().findViewById(R.id.classroom_detail);
 
-
         //Setting condensed font
         Typeface typeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/roboto-condensed.bold.ttf");
         createdClassTV.setTypeface(typeFace);
         joinedClassTV.setTypeface(typeFace);
 
 
-        if(ParseUser.getCurrentUser().getString("role").equals("teacher"))
+        isTeacher = ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER);
+        if(isTeacher)
         {
             cardContent.setText("Here you will see your created and joined classrooms. You can also join and create new classrooms.");
         }
@@ -116,9 +123,8 @@ public class Classrooms extends Fragment {
             cardContent.setText("Here you will see your joined classrooms. You can also join new classrooms.");
         }
 
-
         //signup check
-        if(getActivity().getIntent() != null)
+        if(isTeacher && getActivity().getIntent() != null)
         {
             if(getActivity().getIntent().getExtras() != null)
             {
@@ -147,7 +153,8 @@ public class Classrooms extends Fragment {
 
 
         //show create class option only for teachers
-        if(!ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)) {
+        if(!isTeacher) {
+            createdClassTV.setVisibility(View.GONE);
             createClassTV.setVisibility(View.GONE);
             createdClassListView.setVisibility(View.GONE);
 
@@ -201,18 +208,20 @@ public class Classrooms extends Fragment {
         }
 
 
+        //only if is teacher
+        if(isTeacher) {
         /*
         Initializing created class list and it's Adapter
          */
-        createdGroups = parseObject.getList(Constants.CREATED_GROUPS);
-        if (createdGroups == null) {
-            createdGroups = new ArrayList<List<String>>();
+            createdGroups = parseObject.getList(Constants.CREATED_GROUPS);
+            if (createdGroups == null) {
+                createdGroups = new ArrayList<List<String>>();
+            }
+
+            createdClassAdapter = new CreatedClassAdapter();
+            createdClassListView.setAdapter(createdClassAdapter);
+            createdClassListView.setExpanded(true);
         }
-
-        createdClassAdapter = new CreatedClassAdapter();
-        createdClassListView.setAdapter(createdClassAdapter);
-        createdClassListView.setExpanded(true);
-
       /*
        Initializing joined class list and it's Adapter
        */
@@ -222,25 +231,28 @@ public class Classrooms extends Fragment {
         joinedClassListView.setAdapter(joinedClassAdapter);
         joinedClassListView.setExpanded(true);
 
+        //only for teacher
+        if(isTeacher) {
         /*
         On click create button , open up dialog box to crate class
          */
-        createClassTV.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            createClassTV.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                //setting action bar height locally
-                final SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                int actionBarHeight = sessionManager.getActionBarHeight();
+                    //setting action bar height locally
+                    final SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                    int actionBarHeight = sessionManager.getActionBarHeight();
 
-                if(actionBarHeight == 0)
-                    sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
+                    if (actionBarHeight == 0)
+                        sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
 
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     CreateClassDialog createClassDialog = new CreateClassDialog();
                     createClassDialog.show(fm, "create Class");
-            }
-        });
+                }
+            });
+        }
 
          /*
         On click join button , open up dialog box to join class
@@ -253,18 +265,18 @@ public class Classrooms extends Fragment {
                 final SessionManager sessionManager = new SessionManager(Application.getAppContext());
                 int actionBarHeight = sessionManager.getActionBarHeight();
 
-                if(actionBarHeight == 0) {
+                if (actionBarHeight == 0) {
 
                     //In case of teacher classroom is inside MainActivity activity but for parents, its in JoinClassContainer activity
 
-                    if(ParseUser.getCurrentUser().getString("role").equals(Constants.TEACHER))
+                    if (isTeacher)
                         sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
                     else
                         sessionManager.setActionBarHeight(((JoinClassesContainer) getActivity()).getSupportActionBar().getHeight());
                 }
-                    FragmentManager fm = getActivity().getSupportFragmentManager();
-                    JoinClassDialog joinClassDialog = new JoinClassDialog();
-                    joinClassDialog.show(fm, "Join Class");
+                FragmentManager fm = getActivity().getSupportFragmentManager();
+                JoinClassDialog joinClassDialog = new JoinClassDialog();
+                joinClassDialog.show(fm, "Join Class");
             }
         });
 
@@ -282,21 +294,18 @@ public class Classrooms extends Fragment {
             classroom_headup.setVisibility(View.GONE);
         }
 
-
         classroom_ok.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(Constants.signup_outbox)
-                {
-                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                if (Constants.signup_outbox) {
+                    if (isTeacher) {
                         FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
                         MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
                         MainActivity.viewpager.setCurrentItem(1);
                     }
-                }
-                else if(Constants.signup_inbox) {
-                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
+                } else if (Constants.signup_inbox) {
+                    if (isTeacher) {
                         FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
                         MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
                         MainActivity.viewpager.setCurrentItem(2);
@@ -308,10 +317,73 @@ public class Classrooms extends Fragment {
                 Constants.signup_classrooms = false;
             }
         });
-
-        super.onActivityCreated(savedInstanceState);
     }
 
+    /********** showcase ***********/
+
+    static ShowcaseView showcaseView1, showcaseView2;
+    static boolean showcaseShown = false;
+
+    public static void showFirst(){
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+
+        ShowcaseView.Builder builder1 = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.45f)
+                .setFont(showcaseFont)
+
+                .setTarget(new ViewTarget(R.id.joinClassTV, getactivity))
+                .setContentTitle("To join a class, click on the highlighted button")
+                .setButtonText("Next")
+                        //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView1.hide();
+                        Classrooms.showSecond();
+                    }
+                });
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder1.setButtonPosition(layoutParams);
+
+        showcaseView1 = builder1.getShowcaseView();
+        builder1.build();
+    }
+
+    public static void showSecond(){
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+        ShowcaseView.Builder builder2 = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.55f)
+                .setFont(showcaseFont)
+
+                .setTarget(new ViewTarget(R.id.createClassTV, getactivity))
+                .setContentTitle("To create a class, click on the circled button")
+                .setButtonText("Next")
+                        //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView2.hide();
+                        Classrooms.showThird();
+                    }
+                });
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder2.setButtonPosition(layoutParams);
+
+        showcaseView2 = builder2.getShowcaseView();
+        builder2.build();
+    }
+
+    public static void showThird(){
+
+    }
     /*
         returns non-null list containing joined groups(removing Kio class as a quick hack)
      */
@@ -343,10 +415,11 @@ public class Classrooms extends Fragment {
                         Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
                     }
 
-                    //refreshing class-list in background
-                    CreatedClassRooms createdClassList = new CreatedClassRooms();
-                    createdClassList.execute();
-
+                    if(isTeacher) {
+                        //refreshing class-list in background
+                        CreatedClassRooms createdClassList = new CreatedClassRooms();
+                        createdClassList.execute();
+                    }
                     //refreshing joined classes list
                     JoinedClassRooms joinClass = new JoinedClassRooms();
                     joinClass.execute();
@@ -434,37 +507,38 @@ public class Classrooms extends Fragment {
 
     public void initialiseListViewMethods() {
 
+        //only for teacher
+        if(isTeacher) {
+            /**
+             * setting long pressed list item functionality
+             */
+            createdClassListView.setOnItemLongClickListener(new OnItemLongClickListener() {
 
-        /**
-         * setting long pressed list item functionality
-         */
-        createdClassListView.setOnItemLongClickListener(new OnItemLongClickListener() {
+                @Override
+                public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
 
-            @Override
-            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                    final View finalview = view;
 
-                final View finalview = view;
+                    final CharSequence[] items = {"Copy Code", "Copy Class Name"};
 
-                final CharSequence[] items = {"Copy Code", "Copy Class Name"};
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("Make your selection");
-                builder.setItems(items, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        // Do something with the selection
-                        switch (item) {
-                            case 0:
-                                Utility.copyToClipBoard(getActivity(), "ClassCode",
-                                        ((TextView) finalview.findViewById(R.id.classcode1)).getText().toString());
-                                break;
-                            case 1:
-                                Utility.copyToClipBoard(getActivity(), "ClassName",
-                                        ((TextView) finalview.findViewById(R.id.classname1)).getText().toString());
-                                break;
-                            default:
-                                break;
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Make your selection");
+                    builder.setItems(items, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int item) {
+                            // Do something with the selection
+                            switch (item) {
+                                case 0:
+                                    Utility.copyToClipBoard(getActivity(), "ClassCode",
+                                            ((TextView) finalview.findViewById(R.id.classcode1)).getText().toString());
+                                    break;
+                                case 1:
+                                    Utility.copyToClipBoard(getActivity(), "ClassName",
+                                            ((TextView) finalview.findViewById(R.id.classname1)).getText().toString());
+                                    break;
+                                default:
+                                    break;
+                            }
                         }
-                    }
                 });
                 AlertDialog alert = builder.create();
                 alert.setCanceledOnTouchOutside(true);
@@ -474,23 +548,23 @@ public class Classrooms extends Fragment {
         });
 
 
-        /**
-         * setting list item clicked functionality
-         */
-        createdClassListView.setOnItemClickListener(new OnItemClickListener() {
+            /**
+             * setting list item clicked functionality
+             */
+            createdClassListView.setOnItemClickListener(new OnItemClickListener() {
 
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Intent intent = new Intent(getactivity, SendMessage.class);
+                    Intent intent = new Intent(getactivity, SendMessage.class);
 
-                intent.putExtra("classCode", createdGroups.get(position).get(0));
-                intent.putExtra("className", createdGroups.get(position).get(1));
-                startActivity(intent);
-            }
-        });
+                    intent.putExtra("classCode", createdGroups.get(position).get(0));
+                    intent.putExtra("className", createdGroups.get(position).get(1));
+                    startActivity(intent);
+                }
+            });
 
-
+        }
 
         /**
          * setting list item clicked functionality

@@ -191,7 +191,27 @@
                     android:textColor="@color/grey_light"
                     android:textSize="12sp"
                     android:gravity="right"
+                    android:visibility="gone"
                     android:layout_alignBottom="@+id/confusion"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <TextView
+                    android:id="@+id/retry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:visibility="visible"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:clickable="false"
+                    android:text=" Retry "
+                    android:textColor="@color/buttoncolor"
+                    android:textSize="12sp"
+                    android:background="@drawable/button_color_boundry"
+                    android:textAllCaps="false"
+                    android:layout_alignBottom="@+id/confusion"
+                    android:typeface="monospace"
                     android:layout_alignParentRight="true"
                     android:layout_alignParentEnd="true" />
 

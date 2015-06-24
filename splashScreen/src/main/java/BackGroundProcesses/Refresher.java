@@ -30,9 +30,16 @@ public class Refresher {
       /*
        * Storing current time stamp
        */
+
+            //fetch user only once when app starts - just to make user object sync
+            if(!Application.userFetchedOnce){
+                Log.d("DEBUG_REFRESHER", "Fetching user once");
+                freshUser.fetchInBackground();
+                Application.userFetchedOnce = true;
+            }
+
             if(Application.mainActivityVisible) {
                     Utility.updateCurrentTimeInBackground(freshUser);
-                    freshUser.fetchIfNeededInBackground();
             }
 
             Log.d("DEBUG_REFRESHER",  "calling background tasks");
@@ -73,13 +80,14 @@ public class Refresher {
              /*
              * Updating joined classes teacher details(name, profile pic) if gap is larger than Config.joinedClassUpdateGap
              */
-            if(isSufficientGapJoined()) {
+            if(!Application.joinedSyncOnce) {
+                Application.joinedSyncOnce = true;
                 final JoinedClassRooms joinClass = new JoinedClassRooms();
                 joinClass.doInBackgroundCore();
                 joinClass.onPostExecuteHelper();
             }
             else{
-                Log.d("DEBUG_REFRESHER", "refresher joined classes update : gap " + isSufficientGapJoined());
+                Log.d("DEBUG_REFRESHER", "refresher joined classes update - done once");
             }
 
             //Refresh local outbox data, if not in valid state, clear and fetch new.
@@ -106,6 +114,9 @@ public class Refresher {
 
             //Send all pending invites
             InviteTasks.sendAllPendingInvites();
+
+            //Send all pending messages
+            SendPendingMessages.sendPendingMessages(); //direct call since already in a thread
         }
         else {
             Log.d("DEBUG_REFRESHER", "User NULL");

@@ -1,5 +1,6 @@
 package trumplabs.schoolapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -20,6 +21,8 @@ import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,8 +31,11 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -59,9 +65,11 @@ import utility.Utility;
  * Class for Inbox's functions & activity
  */
 public class Messages extends Fragment {
+    private static Activity getactivity;
+
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
-    private RecyclerView listv;
+    private static RecyclerView listv;
     private LinearLayoutManager mLayoutManager;
     public static RecyclerView.Adapter myadapter;
     public static SwipeRefreshLayout mPullToRefreshLayout;
@@ -80,12 +88,15 @@ public class Messages extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         layoutinflater = inflater   ;
+        setHasOptionsMenu(true);
         getActivity().overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
         return inflater.inflate(R.layout.msgcontainer, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        getactivity = getActivity();
+
         mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
         mPullToRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
 
@@ -109,7 +120,7 @@ public class Messages extends Fragment {
                     intent.putExtra("pushOpen", false);
                     getActivity().setIntent(intent);
 
-                    if(Utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExistWithoutPopup()) {
                         Log.d("DEBUG_MESSAGES", "calling Inbox async task because of pushOpen flag");
                         refreshServerMessage = true;
                         /*
@@ -128,7 +139,7 @@ public class Messages extends Fragment {
 
 
         if(!refreshServerMessage) {//if pushOpen flag not set in intent
-            if (Refresher.isSufficientGapInbox() && Utility.isInternetExist(getActivity())) {
+            if (Refresher.isSufficientGapInbox() && Utility.isInternetExistWithoutPopup()) {
                 Log.d("DEBUG_MESSAGES", "calling Inbox async task since sufficient gap");
                 refreshServerMessage = true; //we are calling inbox if gap is sufficient
             } else {
@@ -236,52 +247,6 @@ public class Messages extends Fragment {
         listv.setAdapter(myadapter);
 
         super.onActivityCreated(savedInstanceState);
-
-    /*
-     * setup the action bar with pull to refresh layout
-     */
-       /* mPullToRefreshLayout = (PullToRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
-        ActionBarPullToRefresh.from(getActivity()).allChildrenArePullable().listener(this)
-                .setup(mPullToRefreshLayout);*/
-
-        //
-        // listv.setOnItemLongClickListener(new OnItemLongClickListener() {
-        //
-        // @Override
-        // public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-        // final View finalview = view;
-        //
-        // final CharSequence[] items = {"Copy Message", "Copy Class Name", "Copy Sender Name"};
-        //
-        // AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        // builder.setTitle("Make your selection");
-        // builder.setItems(items, new DialogInterface.OnClickListener() {
-        // public void onClick(DialogInterface dialog, int item) {
-        // // Do something with the selection
-        // switch (item) {
-        // case 0:
-        // Utility.copyToClipBoard(getActivity(), "ClassMessage",
-        // ((TextView) finalview.findViewById(R.id.msgs)).getText().toString());
-        // break;
-        // case 1:
-        // Utility.copyToClipBoard(getActivity(), "ClassName",
-        // ((TextView) finalview.findViewById(R.id.groupName)).getText().toString());
-        // break;
-        //
-        // case 2:
-        // Utility.copyToClipBoard(getActivity(), "SenderName",
-        // ((TextView) finalview.findViewById(R.id.sender)).getText().toString());
-        // break;
-        // default:
-        // break;
-        // }
-        // }
-        // });
-        // AlertDialog alert = builder.create();
-        // alert.show();
-        // return true;
-        // }
-        // });
 
     /*
      * On scrolling down the list view display extra messages.
@@ -403,8 +368,31 @@ public class Messages extends Fragment {
                 Constants.signup_inbox = false;
             }
         });
+
+        //before showing no internet popup make sure view is created
+        if(listv != null) {
+            listv.post(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.isInternetExist(getActivity());
+                }
+            });
+        }
     }
 
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+
+        Log.d("_TEMP_", "fragment onCreateOptionsMenu : trying to call showFirstParent");
+        if (!ParseUser.getCurrentUser().getString("role").equals("teacher") && !Messages.showcaseShown) {
+            Messages.showFirstParent();
+            Messages.showcaseShown = true;
+        }
+        else{
+            Log.d("_TEMP_", "either user or flag not set");
+        }
+    }
     /*
      * LRU Functions *************************************************
      */
@@ -919,6 +907,73 @@ public class Messages extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    /********** showcase ***********/
+
+    public static View t1, t2; //to highlight in showcase
+    static ShowcaseView showcaseView1, showcaseView2;
+    static boolean showcaseShown = false;
+
+    public static void showFirstParent(){
+        Log.d("_TEMP_", "showFirstParent called");
+        if(t1 == null || t2 == null) return;
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+
+        ShowcaseView.Builder builder = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.25f)
+                .setFont(showcaseFont)
+
+                .setContentTitle("To join a class, click on the highlighted button")
+                .setButtonText("Next")
+                        //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView1.hide();
+                        Messages.showSecond(t2);
+                    }
+                });
+
+        builder.setTarget(new ViewTarget(t1));
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder.setButtonPosition(layoutParams);
+
+        showcaseView1 = builder.getShowcaseView();
+        builder.build();
+    }
+
+    public static void showSecond(final View t2){
+        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+
+        ShowcaseView.Builder builder = new ShowcaseView.Builder(getactivity)
+                .setStyle(R.style.ShowcaseView)
+                .setScaleMultipler(0.25f)
+                .setFont(showcaseFont)
+
+                .setContentTitle("To see your joined classes, click on the circled menu item")
+                .setButtonText("Next")
+                        //.hideOnTouchOutside()
+                .setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showcaseView2.hide();
+                    }
+                });
+
+        builder.setTarget(new ViewTarget(t2));
+
+        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
+        builder.setButtonPosition(layoutParams);
+
+        showcaseView2 = builder.getShowcaseView();
+        builder.build();
     }
 
 

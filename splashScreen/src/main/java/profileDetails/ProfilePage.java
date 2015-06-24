@@ -25,8 +25,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
 import com.parse.FindCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
@@ -49,7 +47,6 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
-import utility.Config;
 import utility.Utility;
 
 public class ProfilePage extends MyActionBarActivity implements OnClickListener {
@@ -192,7 +189,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 Uri uri = Uri.parse("market://details?id=" + getPackageName());
                 Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
 
-                if(Utility.isInternetExist(this)) {
+                if(Utility.isInternetExistWithoutPopup()) {
                     try {
                         startActivity(myAppLinkToMarket);
                     } catch (ActivityNotFoundException e) {
@@ -205,7 +202,17 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 }
             }
         }
-        FacebookSdk.sdkInitialize(getApplicationContext());
+
+        //before showing no internet popup make sure view is created
+        if(profileLayout != null) {
+            profileLayout.post(new Runnable() {
+                @Override
+                public void run() {
+                    Utility.isInternetExist(ProfilePage.this);
+                }
+            });
+        }
+      //  FacebookSdk.sdkInitialize(getApplicationContext());
     }
 
 
@@ -215,7 +222,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         //facebook ad tracking
         // Logs 'install' and 'app activate' App Events.
-        AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+       // AppEventsLogger.activateApp(this, Config.FB_APP_ID);
     }
 
     @Override
@@ -224,7 +231,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         //facebook tracking : time spent on app by people
         // Logs 'app deactivate' App Event.
-        AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
+       // AppEventsLogger.deactivateApp(this, Config.FB_APP_ID);
     }
 
 
@@ -448,7 +455,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 if(Utility.isInternetExist(ProfilePage.this)) {
 
                     {
-                        Utility.logoutProfilePage(ProfilePage.this);
+                        Utility.logoutProfilePage();
                         return;
                     }
                 }

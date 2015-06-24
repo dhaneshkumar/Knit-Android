@@ -12,6 +12,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBar.Tab;
 import android.support.v7.app.ActionBar.TabListener;
+import android.util.Log;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,6 +24,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -235,6 +237,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
                         hideButttonContainer(Classrooms.buttonContainer);
+                      /*  if(Outbox.needLoading){
+                            Log.d(SendPendingMessages.LOGTAG, "lazy loading outbox");
+                            Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
+                           8 outboxAT.execute();
+                        }*/
                     } else if (position == 1) {
 
                         params.width = screenwidth * 5 / 13;
@@ -265,7 +272,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         highLightTab2();
                         showButttonContainer(Classrooms.buttonContainer);
                     }
-
                 }
             }
 
@@ -366,6 +372,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 Constants.signup_outbox = true;
             }
         }
+
         FacebookSdk.sdkInitialize(getApplicationContext());
 
     }
@@ -396,6 +403,36 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             inflater.inflate(R.menu.mainactivity_for_teachers, menu);
         else
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
+
+        if (!role.equals("teacher")) {
+            //prepare action views for menu items - join and joined
+            final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
+            final ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
+
+            joinClassActionView.setImageResource(R.drawable.ic_action_import);
+            joinedClassesActionView.setImageResource(R.drawable.ic_action_document);
+
+            joinClassActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm, "Join Class");
+                }
+            });
+
+            joinedClassesActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    startActivity(new Intent(MainActivity.this, JoinClassesContainer.class));
+                }
+            });
+
+            //setting up views to highlight
+            Log.d("_TEMP_", "setting up action bar views to showcase");
+            Messages.t1 = joinClassActionView;
+            Messages.t2 = joinedClassesActionView;
+        }
 
         return true;
     }

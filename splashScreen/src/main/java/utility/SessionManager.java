@@ -10,7 +10,6 @@ import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -169,14 +168,12 @@ public class SessionManager {
 
     /*
       server_time = local_time + delta(stored in shared prefs)
+      return value is non-null
      */
-    public Date getCurrentTime() throws ParseException {
+    public Date getCurrentTime(){
         long delta = pref.getLong(TIME_DELTA, 0);
-
         Calendar now = Calendar.getInstance();
         now.add(Calendar.MILLISECOND, (int) delta);
-//    Log.d("DEBUG_SESSION_MANAGER", "server time is " + now.getTimeInMillis());
-
         return now.getTime();
     }
 
