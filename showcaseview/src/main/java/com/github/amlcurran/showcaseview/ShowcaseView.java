@@ -335,12 +335,12 @@ public class ShowcaseView extends RelativeLayout
         double distanceFromFocus = Math.sqrt(Math.pow(xDelta, 2) + Math.pow(yDelta, 2));
 
         if (MotionEvent.ACTION_UP == motionEvent.getAction() &&
-                hideOnTouch && distanceFromFocus > showcaseDrawer.getBlockedRadius()) {
+                hideOnTouch /*&& distanceFromFocus > showcaseDrawer.getBlockedRadius()*/) {
             this.hide();
             return true;
         }
 
-        return blockTouches && distanceFromFocus > showcaseDrawer.getBlockedRadius();
+        return blockTouches /*&& distanceFromFocus > showcaseDrawer.getBlockedRadius()*/;
     }
 
     private static void insertShowcaseView(ShowcaseView showcaseView, Activity activity) {

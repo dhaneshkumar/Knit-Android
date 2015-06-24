@@ -10,6 +10,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 import com.parse.ParseException;
@@ -321,6 +324,7 @@ public class Classrooms extends Fragment {
 
     /********** showcase ***********/
 
+    static ImageView cIcon, jIcon; //icons to hightlight
     static ShowcaseView showcaseView1, showcaseView2;
     static boolean showcaseShown = false;
 
@@ -329,27 +333,42 @@ public class Classrooms extends Fragment {
 
         ShowcaseView.Builder builder1 = new ShowcaseView.Builder(getactivity)
                 .setStyle(R.style.ShowcaseView)
-                .setScaleMultipler(0.45f)
+                .setScaleMultipler(0.25f)
                 .setFont(showcaseFont)
-
-                .setTarget(new ViewTarget(R.id.joinClassTV, getactivity))
-                .setContentTitle("To join a class, click on the highlighted button")
+                .setTarget(new ViewTarget(cIcon))
+                .setContentTitle("To create a class, click on the highlighted button")
                 .setButtonText("Next")
-                        //.hideOnTouchOutside()
-                .setOnClickListener(new OnClickListener() {
+                .hideOnTouchOutside() //now event the showcase area is outside
+                .setShowcaseEventListener(new OnShowcaseEventListener() {
+                    @Override
+                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                        Classrooms.showSecond();
+                    }
+
+                    @Override
+                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                    }
+
+                    @Override
+                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                    }
+                });
+                /*.setOnClickListener(new OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         showcaseView1.hide();
-                        Classrooms.showSecond();
                     }
-                });
+                });*/
 
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
-        builder1.setButtonPosition(layoutParams);
+        /*RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        builder1.setButtonPosition(layoutParams);*/
 
         showcaseView1 = builder1.getShowcaseView();
+        showcaseView1.hideButton();
         builder1.build();
     }
 
@@ -357,12 +376,12 @@ public class Classrooms extends Fragment {
         Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
         ShowcaseView.Builder builder2 = new ShowcaseView.Builder(getactivity)
                 .setStyle(R.style.ShowcaseView)
-                .setScaleMultipler(0.55f)
+                .setScaleMultipler(0.25f)
                 .setFont(showcaseFont)
 
-                .setTarget(new ViewTarget(R.id.createClassTV, getactivity))
-                .setContentTitle("To create a class, click on the circled button")
-                .setButtonText("Next")
+                .setTarget(new ViewTarget(jIcon))
+                .setContentTitle("To join a class, click on the circled button")
+                .setButtonText("Done")
                         //.hideOnTouchOutside()
                 .setOnClickListener(new OnClickListener() {
                     @Override
@@ -502,6 +521,20 @@ public class Classrooms extends Fragment {
             classname1.setText(classnamestr.toUpperCase());                 //setting class name
 
             return row;
+        }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
+        super.onCreateOptionsMenu(menu, menuInflater);
+
+        Log.d("_TEMP_", "classrooms fragment onCreateOptionsMenu : trying to call showFirstParent");
+        if (ParseUser.getCurrentUser().getString("role").equals("teacher") && !Classrooms.showcaseShown) {
+            Classrooms.showFirst();
+            Classrooms.showcaseShown = true;
+        }
+        else{
+            Log.d("_TEMP_", "classrooms fragment : either user or flag not set");
         }
     }
 

@@ -481,129 +481,129 @@ public class Outbox extends Fragment {
             if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
                 holder.root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
                 holder.head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
+            }
 
-                boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
-                if (pending) {
-                    timestampmsg = "pending..";
-                }
+            boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
+            if (pending) {
+                timestampmsg = "pending..";
+            }
 
-                //setting timestamp in view
-                holder.timestampmsg.setText(timestampmsg);
+            //setting timestamp in view
+            holder.timestampmsg.setText(timestampmsg);
 
-                //retry button handle
-                if (pending) {//this message is not yet sent
-                    holder.seen.setVisibility(View.GONE);
-                    holder.retryButton.setVisibility(View.VISIBLE);
-                    if (SendPendingMessages.isJobRunning()) {
-                        holder.retryButton.setClickable(false);
-                        holder.retryButton.setText("Sending");
-                        holder.retryButton.setTextColor(getResources().getColor(R.color.grey_light));
-                    } else {
-                        holder.retryButton.setClickable(true);
-                        holder.retryButton.setText(" Retry ");
-                        holder.retryButton.setTextColor(getResources().getColor(R.color.buttoncolor));
-                        holder.retryButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
-                                SendPendingMessages.spawnThread(true);
-                                myadapter.notifyDataSetChanged();
-                            }
-                        });
-                    }
+            //retry button handle
+            if (pending) {//this message is not yet sent
+                holder.seen.setVisibility(View.GONE);
+                holder.retryButton.setVisibility(View.VISIBLE);
+                if (SendPendingMessages.isJobRunning()) {
+                    holder.retryButton.setClickable(false);
+                    holder.retryButton.setText("Sending");
+                    holder.retryButton.setTextColor(getResources().getColor(R.color.grey_light));
                 } else {
-                    holder.seen.setVisibility(View.VISIBLE);
-                    holder.retryButton.setVisibility(View.GONE);
+                    holder.retryButton.setClickable(true);
+                    holder.retryButton.setText(" Retry ");
+                    holder.retryButton.setTextColor(getResources().getColor(R.color.buttoncolor));
+                    holder.retryButton.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
+                            SendPendingMessages.spawnThread(true);
+                            myadapter.notifyDataSetChanged();
+                        }
+                    });
                 }
+            } else {
+                holder.seen.setVisibility(View.VISIBLE);
+                holder.retryButton.setVisibility(View.GONE);
+            }
 
 
 
             /*
             Retrieving image attachment if exist
              */
-                final String imagepath;
-                if (groupdetails1.containsKey("attachment_name"))
-                    imagepath = groupdetails1.getString("attachment_name");
-                else
-                    imagepath = "";
+            final String imagepath;
+            if (groupdetails1.containsKey("attachment_name"))
+                imagepath = groupdetails1.getString("attachment_name");
+            else
+                imagepath = "";
 
-                holder.uploadprogressbar.setVisibility(View.GONE);
+            holder.uploadprogressbar.setVisibility(View.GONE);
 
-                //If image attachment exist, display image
-                if (!UtilString.isBlank(imagepath)) {
-                    holder.imgmsgview.setVisibility(View.VISIBLE);
+            //If image attachment exist, display image
+            if (!UtilString.isBlank(imagepath)) {
+                holder.imgmsgview.setVisibility(View.VISIBLE);
 
-                    holder.uploadprogressbar.setTag("Progress");
-                    File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                    final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
-                    if (imgFile.exists() && !thumbnailFile.exists())
-                        Utility.createThumbnail(getActivity(), imagepath);
-                    if (imgFile.exists()) {
-                        // if image file present locally
-                        Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                        holder.imgmsgview.setTag(imgFile.getAbsolutePath());
-                        holder.imgmsgview.setImageBitmap(myBitmap);
-                    } else {
-                        // else we Have to download image from server
-                        ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
-                        holder.uploadprogressbar.setVisibility(View.VISIBLE);
-                        imagefile.getDataInBackground(new GetDataCallback() {
-                            public void done(byte[] data, ParseException e) {
-                                if (e == null) {
-                                    // ////Image download successful
-                                    FileOutputStream fos;
+                holder.uploadprogressbar.setTag("Progress");
+                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
+                if (imgFile.exists() && !thumbnailFile.exists())
+                    Utility.createThumbnail(getActivity(), imagepath);
+                if (imgFile.exists()) {
+                    // if image file present locally
+                    Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                    holder.imgmsgview.setTag(imgFile.getAbsolutePath());
+                    holder.imgmsgview.setImageBitmap(myBitmap);
+                } else {
+                    // else we Have to download image from server
+                    ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
+                    holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                    imagefile.getDataInBackground(new GetDataCallback() {
+                        public void done(byte[] data, ParseException e) {
+                            if (e == null) {
+                                // ////Image download successful
+                                FileOutputStream fos;
+                                try {
+                                    //store image
+                                    fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imagepath);
                                     try {
-                                        //store image
-                                        fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                                        fos.write(data);
+                                    } catch (IOException e1) {
+                                        e1.printStackTrace();
+                                    } finally {
                                         try {
-                                            fos.write(data);
+                                            fos.close();
                                         } catch (IOException e1) {
                                             e1.printStackTrace();
-                                        } finally {
-                                            try {
-                                                fos.close();
-                                            } catch (IOException e1) {
-                                                e1.printStackTrace();
-                                            }
                                         }
-                                    } catch (FileNotFoundException e2) {
-                                        e2.printStackTrace();
                                     }
-
-                                    Utility.createThumbnail(myActivity, imagepath);
-                                    Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                                    holder.imgmsgview.setImageBitmap(mynewBitmap);
-                                    holder.uploadprogressbar.setVisibility(View.GONE);
-                                    // Might be a problem when net is too slow :/
-                                } else {
-                                    // Image not downloaded
-                                    holder.uploadprogressbar.setVisibility(View.GONE);
+                                } catch (FileNotFoundException e2) {
+                                    e2.printStackTrace();
                                 }
+
+                                Utility.createThumbnail(myActivity, imagepath);
+                                Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                                holder.imgmsgview.setImageBitmap(mynewBitmap);
+                                holder.uploadprogressbar.setVisibility(View.GONE);
+                                // Might be a problem when net is too slow :/
+                            } else {
+                                // Image not downloaded
+                                holder.uploadprogressbar.setVisibility(View.GONE);
                             }
-                        });
-
-                        holder.imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                        holder.imgmsgview.setImageBitmap(null);
-
-                        // imgmsgview.setVisibility(View.GONE);
-
-
-                    }
-
-                    holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent imgintent = new Intent();
-                            imgintent.setAction(Intent.ACTION_VIEW);
-                            imgintent.setDataAndType(Uri.parse("file://" + (String) holder.imgmsgview.getTag()), "image/*");
-                            startActivity(imgintent);
                         }
                     });
 
+                    holder.imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                    holder.imgmsgview.setImageBitmap(null);
 
-                } else {
-                    holder.imgmsgview.setVisibility(View.GONE);
+                    // imgmsgview.setVisibility(View.GONE);
+
+
                 }
+
+                holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent imgintent = new Intent();
+                        imgintent.setAction(Intent.ACTION_VIEW);
+                        imgintent.setDataAndType(Uri.parse("file://" + (String) holder.imgmsgview.getTag()), "image/*");
+                        startActivity(imgintent);
+                    }
+                });
+
+
+            } else {
+                holder.imgmsgview.setVisibility(View.GONE);
             }
         }
 

@@ -404,7 +404,36 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         else
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
 
-        if (!role.equals("teacher")) {
+        if(role.equals(Constants.TEACHER)){
+            //prepare action views for menu items - create and join
+            final ImageView createClassActionView = (ImageView) menu.findItem(R.id.createclass).getActionView();
+            final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
+            createClassActionView.setImageResource(R.drawable.ic_action_add);
+            joinClassActionView.setImageResource(R.drawable.ic_action_import);
+
+            createClassActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    CreateClassDialog createClassDialog = new CreateClassDialog();
+                    createClassDialog.show(fm, "create class");
+                }
+            });
+
+            joinClassActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm1 = getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm1, "Join Class");
+                }
+            });
+
+            Log.d("_TEMP_", "(teacher)setting up action bar views to showcase");
+            Classrooms.cIcon = createClassActionView;
+            Classrooms.jIcon = joinClassActionView;
+        }
+        else{
             //prepare action views for menu items - join and joined
             final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
             final ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
@@ -429,7 +458,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             });
 
             //setting up views to highlight
-            Log.d("_TEMP_", "setting up action bar views to showcase");
+            Log.d("_TEMP_", "(parent)setting up action bar views to showcase");
             Messages.t1 = joinClassActionView;
             Messages.t2 = joinedClassesActionView;
         }
@@ -450,12 +479,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 break;
 
             case R.id.createclass:
+                //not used here. set in onCreateOptionsMenu
                 FragmentManager fm = getSupportFragmentManager();
                 CreateClassDialog createClassDialog = new CreateClassDialog();
                 createClassDialog.show(fm,"create class");
                 break;
 
             case R.id.joinclass:
+                //not used here. set in onCreateOptionsMenu
                 FragmentManager fm1 = getSupportFragmentManager();
                 JoinClassDialog joinClassDialog = new JoinClassDialog();
                 joinClassDialog.show(fm1, "Join Class");
