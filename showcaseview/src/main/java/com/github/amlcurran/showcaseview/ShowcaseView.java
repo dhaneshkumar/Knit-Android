@@ -37,6 +37,8 @@ import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.targets.Target;
 
+import java.util.List;
+
 import static com.github.amlcurran.showcaseview.AnimationFactory.AnimationEndListener;
 import static com.github.amlcurran.showcaseview.AnimationFactory.AnimationStartListener;
 
@@ -58,6 +60,9 @@ public class ShowcaseView extends RelativeLayout
     // Showcase metrics
     private int showcaseX = -1;
     private int showcaseY = -1;
+
+    Point[] showcaseAuxPoints; //extra points to highlight
+
     private float scaleMultiplier = 1f;
 
     // Touch items
@@ -148,6 +153,15 @@ public class ShowcaseView extends RelativeLayout
         }
         showcaseX = x;
         showcaseY = y;
+        //init();
+        invalidate();
+    }
+
+    public void setAuxPoints(Point[] auxPoints) {
+        if (shotStateStore.hasShot()) {
+            return;
+        }
+        this.showcaseAuxPoints = auxPoints;
         //init();
         invalidate();
     }
@@ -272,6 +286,11 @@ public class ShowcaseView extends RelativeLayout
         // Draw the showcase drawable
         if (!hasNoTarget) {
             showcaseDrawer.drawShowcase(bitmapBuffer, showcaseX, showcaseY, scaleMultiplier);
+            if(showcaseAuxPoints != null){
+                for(Point c : showcaseAuxPoints) {
+                    showcaseDrawer.drawShowcase(bitmapBuffer, c.x, c.y, scaleMultiplier);
+                }
+            }
             showcaseDrawer.drawToCanvas(canvas, bitmapBuffer);
         }
 
@@ -449,6 +468,11 @@ public class ShowcaseView extends RelativeLayout
             return this;
         }
 
+        public Builder setShowcase(Target target, boolean animate) {
+            showcaseView.setShowcase(target, animate);
+            return this;
+        }
+
         /**
          * Set the style of the ShowcaseView. See the sample app for example styles.
          */
@@ -535,6 +559,23 @@ public class ShowcaseView extends RelativeLayout
          */
         public Builder setButtonPosition(RelativeLayout.LayoutParams layoutParams) {
             showcaseView.setButtonPosition(layoutParams);
+            return this;
+        }
+
+        /*
+         * hide button
+         */
+
+        public Builder hideButton(){
+            showcaseView.hideButton();
+            return this;
+        }
+
+        /*
+            set aux points to highlight
+         */
+        public Builder setAuxPoints(Point[] auxPoints) {
+            showcaseView.setAuxPoints(auxPoints);
             return this;
         }
     }

@@ -766,4 +766,11 @@ public class Utility extends MyActionBarActivity {
         }
         return jsonObject;
     }
+
+    //convert 'dpi'(density independent pixels) to actual pixels according to screen density
+    public static int dpiToPixels(int dpi){
+        float scale = Application.getAppContext().getResources().getDisplayMetrics().density;
+        int pixels = (int) (dpi * scale + 0.5f);
+        return pixels;
+    }
 }

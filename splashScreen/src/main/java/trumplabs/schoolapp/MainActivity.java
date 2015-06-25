@@ -47,6 +47,7 @@ import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
+import tutorial.ShowcaseCreator;
 import utility.Config;
 import utility.SessionManager;
 import utility.Utility;
@@ -71,6 +72,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
+
+    static boolean isTeacherCreateShowcaseShown = false; //could keep in shared prefs
+    static boolean isParentJoinShowcaseShown = false; //could keep in shared prefs
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -408,6 +412,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             //prepare action views for menu items - create and join
             final ImageView createClassActionView = (ImageView) menu.findItem(R.id.createclass).getActionView();
             final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
+
+
+            int pixels = Utility.dpiToPixels(56); //56 dpi is the default spacing between action bar items
+
+            createClassActionView.setMinimumWidth(pixels);
+            joinClassActionView.setMinimumWidth(pixels);
+
             createClassActionView.setImageResource(R.drawable.ic_action_add);
             joinClassActionView.setImageResource(R.drawable.ic_action_import);
 
@@ -430,13 +441,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             });
 
             Log.d("_TEMP_", "(teacher)setting up action bar views to showcase");
-            Classrooms.cIcon = createClassActionView;
-            Classrooms.jIcon = joinClassActionView;
+
+            if(!MainActivity.isTeacherCreateShowcaseShown /* && SIGNUP flag is set*/) {
+                MainActivity.isTeacherCreateShowcaseShown = true;
+                ShowcaseCreator.teacherHighlightCreate(this, createClassActionView, joinClassActionView); //show now
+            }
         }
         else{
             //prepare action views for menu items - join and joined
             final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
             final ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
+
+            int pixels = Utility.dpiToPixels(56); //56 dpi is the default spacing between action bar items
+
+            joinClassActionView.setMinimumWidth(pixels);
+            joinedClassesActionView.setMinimumWidth(pixels);
 
             joinClassActionView.setImageResource(R.drawable.ic_action_import);
             joinedClassesActionView.setImageResource(R.drawable.ic_action_document);
@@ -461,6 +480,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             Log.d("_TEMP_", "(parent)setting up action bar views to showcase");
             Messages.t1 = joinClassActionView;
             Messages.t2 = joinedClassesActionView;
+
+            if(!MainActivity.isParentJoinShowcaseShown /* && SIGNUP flag is set*/) {
+                MainActivity.isTeacherCreateShowcaseShown = true;
+                ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now
+            }
         }
 
         return true;
