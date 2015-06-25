@@ -20,4 +20,4 @@
     android:layout_height="wrap_content"
     android:adjustViewBounds="true"
     android:src="@drawable/pointer"
-    android:id="@id/showcase_button" />
+    android:id="@+id/pointer" />

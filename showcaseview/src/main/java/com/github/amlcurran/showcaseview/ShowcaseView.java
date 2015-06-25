@@ -36,6 +36,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.targets.Target;
 
@@ -57,6 +58,8 @@ public class ShowcaseView extends RelativeLayout
     private final ImageView mEndButton;
 
     private ImageView pointer;
+    private TextView description;
+    Typeface font;
 
     private final TextDrawer textDrawer;
     private final ShowcaseDrawer showcaseDrawer;
@@ -155,6 +158,21 @@ public class ShowcaseView extends RelativeLayout
         params.topMargin = y; //Your Y coordinate
         pointer.setLayoutParams(params);
         addView(pointer);
+    }
+
+    public void setDescription(String text){//pointer has been set and hence its id available
+        if(pointer == null) return;
+        Log.d("_SHOWCASE", "adding description=" + text);
+        description = (TextView) LayoutInflater.from(activityContext).inflate(R.layout.description, null);
+
+        description.setTypeface(font);
+        description.setText(text);
+        description.setTextSize(16); //change this
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
+        params.addRule(RelativeLayout.LEFT_OF, R.id.next);
+        params.addRule(RelativeLayout.BELOW, R.id.pointer);
+        description.setLayoutParams(params);
+        addView(description);
     }
 
     private boolean hasShot() {
@@ -316,7 +334,7 @@ public class ShowcaseView extends RelativeLayout
         }
 
         // Draw the text on the screen, recalculating its position if necessary
-        textDrawer.draw(canvas);
+        //textDrawer.draw(canvas);
 
         super.dispatchDraw(canvas);
 
@@ -526,6 +544,7 @@ public class ShowcaseView extends RelativeLayout
         public Builder setFont(Typeface font){
             showcaseView.textDrawer.setFont(font);
             showcaseView.mEndButton2.setTypeface(font);
+            showcaseView.font = font;
             return this;
         }
 

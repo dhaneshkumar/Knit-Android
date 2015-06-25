@@ -80,6 +80,7 @@ public class ShowcaseCreator {
 
                 double scalingFactor = 2.0/3; //according to pointer width and action bar icon width
                 showcaseView.setPointer(jIconCenter.x - (int) (targetView.getWidth() * scalingFactor) , jIconCenter.y + targetView.getHeight());
+                showcaseView.setDescription("To create a class, click on the highlighted button");
 
                 builder.build();
             }
@@ -94,7 +95,7 @@ public class ShowcaseCreator {
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
-                        .setContentTitle("To join a class, click on the circled button");
+                        .setContentText("To join a class, click on the circled button");
 
                 ViewTarget jIconViewTarget = new ViewTarget(targetView);
                 Point center = jIconViewTarget.getPoint(); //join class action item
@@ -106,6 +107,7 @@ public class ShowcaseCreator {
 
                 double scalingFactor = 2.0/3;
                 showcaseView1.setPointer(jIconCenter.x - (int) (targetView.getWidth() * scalingFactor) , jIconCenter.y + targetView.getHeight());
+                showcaseView1.setDescription("Click here to join a class");
 
                 builder.build();
             }
