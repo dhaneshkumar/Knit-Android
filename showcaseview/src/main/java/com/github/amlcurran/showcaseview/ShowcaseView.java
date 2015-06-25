@@ -27,12 +27,14 @@ import android.graphics.PorterDuff;
 import android.graphics.Typeface;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.targets.Target;
@@ -47,10 +49,15 @@ import static com.github.amlcurran.showcaseview.AnimationFactory.AnimationStartL
  */
 public class ShowcaseView extends RelativeLayout
         implements View.OnTouchListener, ShowcaseViewApi {
+    private Context activityContext;
 
     private static final int HOLO_BLUE = Color.parseColor("#33B5E5");
 
-    private final Button mEndButton;
+    private final Button mEndButton2;
+    private final ImageView mEndButton;
+
+    private ImageView pointer;
+
     private final TextDrawer textDrawer;
     private final ShowcaseDrawer showcaseDrawer;
     private final ShowcaseAreaCalculator showcaseAreaCalculator;
@@ -87,6 +94,7 @@ public class ShowcaseView extends RelativeLayout
 
     protected ShowcaseView(Context context, AttributeSet attrs, int defStyle, boolean newStyle) {
         super(context, attrs, defStyle);
+        activityContext = context;
 
         ApiUtils apiUtils = new ApiUtils();
         animationFactory = new AnimatorAnimationFactory();
@@ -106,7 +114,9 @@ public class ShowcaseView extends RelativeLayout
         fadeInMillis = getResources().getInteger(android.R.integer.config_mediumAnimTime);
         fadeOutMillis = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 
-        mEndButton = (Button) LayoutInflater.from(context).inflate(R.layout.showcase_button, null);
+        mEndButton2 = (Button) LayoutInflater.from(context).inflate(R.layout.showcase_button, null);
+        mEndButton = (ImageView) LayoutInflater.from(context).inflate(R.layout.showcase_image_next, null);
+
         if (newStyle) {
             showcaseDrawer = new NewShowcaseDrawer(getResources());
         } else {
@@ -130,13 +140,21 @@ public class ShowcaseView extends RelativeLayout
             lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             lps.setMargins(margin, margin, margin, margin);
             mEndButton.setLayoutParams(lps);
-            mEndButton.setText(android.R.string.ok);
+            mEndButton2.setText(android.R.string.ok);
             if (!hasCustomClickListener) {
                 mEndButton.setOnClickListener(hideOnClickListener);
             }
             addView(mEndButton);
         }
+    }
 
+    public void setPointer(int x, int y){
+        pointer = (ImageView) LayoutInflater.from(activityContext).inflate(R.layout.pointer_arrow, null);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
+        params.leftMargin = x; //Your X coordinate
+        params.topMargin = y; //Your Y coordinate
+        pointer.setLayoutParams(params);
+        addView(pointer);
     }
 
     private boolean hasShot() {
@@ -179,6 +197,9 @@ public class ShowcaseView extends RelativeLayout
 
                     updateBitmap();
                     Point targetPoint = target.getPoint();
+
+                    Log.d("_SHOWCASE_", "x=" + targetPoint.x + ",y=" + targetPoint.y);
+
                     if (targetPoint != null) {
                         hasNoTarget = false;
                         if (animate) {
@@ -258,8 +279,8 @@ public class ShowcaseView extends RelativeLayout
     }
 
     public void setButtonText(CharSequence text) {
-        if (mEndButton != null) {
-            mEndButton.setText(text);
+        if (mEndButton2 != null) {
+            mEndButton2.setText(text);
         }
     }
 
@@ -504,7 +525,7 @@ public class ShowcaseView extends RelativeLayout
 
         public Builder setFont(Typeface font){
             showcaseView.textDrawer.setFont(font);
-            showcaseView.mEndButton.setTypeface(font);
+            showcaseView.mEndButton2.setTypeface(font);
             return this;
         }
 
@@ -550,7 +571,7 @@ public class ShowcaseView extends RelativeLayout
          * Set the button text
          */
         public Builder setButtonText(CharSequence text) {
-            showcaseView.mEndButton.setText(text);
+            showcaseView.mEndButton2.setText(text);
             return this;
         }
 
@@ -664,7 +685,7 @@ public class ShowcaseView extends RelativeLayout
         showcaseDrawer.setShowcaseColour(showcaseColor);
         showcaseDrawer.setBackgroundColour(backgroundColor);
         tintButton(showcaseColor, tintButton);
-        mEndButton.setText(buttonText);
+        mEndButton2.setText(buttonText);
         textDrawer.setTitleStyling(titleTextAppearance);
         textDrawer.setDetailStyling(detailTextAppearance);
         hasAlteredText = true;
@@ -676,9 +697,9 @@ public class ShowcaseView extends RelativeLayout
 
     private void tintButton(int showcaseColor, boolean tintButton) {
         if (tintButton) {
-            mEndButton.getBackground().setColorFilter(showcaseColor, PorterDuff.Mode.MULTIPLY);
+            mEndButton2.getBackground().setColorFilter(showcaseColor, PorterDuff.Mode.MULTIPLY);
         } else {
-            mEndButton.getBackground().setColorFilter(HOLO_BLUE, PorterDuff.Mode.MULTIPLY);
+            mEndButton2.getBackground().setColorFilter(HOLO_BLUE, PorterDuff.Mode.MULTIPLY);
         }
     }
 
