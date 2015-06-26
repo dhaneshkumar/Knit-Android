@@ -5,6 +5,5 @@
     android:layout_height="wrap_content"
     android:text="Click on this button to create a new class."
     android:textColor="@android:color/white"
-    android:layout_alignParentLeft="true"
-    android:layout_alignParentBottom="true"
+    android:gravity="center"
     android:id="@+id/description" />

@@ -476,11 +476,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            //setting up views to highlight
-            Log.d("_TEMP_", "(parent)setting up action bar views to showcase");
-            Messages.t1 = joinClassActionView;
-            Messages.t2 = joinedClassesActionView;
-
             if(!MainActivity.isParentJoinShowcaseShown /* && SIGNUP flag is set*/) {
                 MainActivity.isTeacherCreateShowcaseShown = true;
                 ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now

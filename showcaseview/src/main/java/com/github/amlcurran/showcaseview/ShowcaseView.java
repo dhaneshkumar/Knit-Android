@@ -55,7 +55,7 @@ public class ShowcaseView extends RelativeLayout
     private static final int HOLO_BLUE = Color.parseColor("#33B5E5");
 
     private final Button mEndButton2;
-    private final ImageView mEndButton;
+    private final TextView mEndButton;
 
     private ImageView pointer;
     private TextView description;
@@ -118,7 +118,7 @@ public class ShowcaseView extends RelativeLayout
         fadeOutMillis = getResources().getInteger(android.R.integer.config_mediumAnimTime);
 
         mEndButton2 = (Button) LayoutInflater.from(context).inflate(R.layout.showcase_button, null);
-        mEndButton = (ImageView) LayoutInflater.from(context).inflate(R.layout.showcase_image_next, null);
+        mEndButton = (TextView) LayoutInflater.from(context).inflate(R.layout.showcase_image_next, null);
 
         if (newStyle) {
             showcaseDrawer = new NewShowcaseDrawer(getResources());
@@ -169,8 +169,8 @@ public class ShowcaseView extends RelativeLayout
         description.setText(text);
         description.setTextSize(16); //change this
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
-        params.addRule(RelativeLayout.LEFT_OF, R.id.next);
         params.addRule(RelativeLayout.BELOW, R.id.pointer);
+        params.addRule(CENTER_HORIZONTAL);
         description.setLayoutParams(params);
         addView(description);
     }
@@ -543,7 +543,8 @@ public class ShowcaseView extends RelativeLayout
 
         public Builder setFont(Typeface font){
             showcaseView.textDrawer.setFont(font);
-            showcaseView.mEndButton2.setTypeface(font);
+//            showcaseView.mEndButton2.setTypeface(font);
+            showcaseView.mEndButton.setTypeface(font);
             showcaseView.font = font;
             return this;
         }

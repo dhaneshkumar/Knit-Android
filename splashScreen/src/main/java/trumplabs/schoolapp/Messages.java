@@ -380,19 +380,6 @@ public class Messages extends Fragment {
         }
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater menuInflater) {
-        super.onCreateOptionsMenu(menu, menuInflater);
-
-        Log.d("_TEMP_", "fragment onCreateOptionsMenu : trying to call showFirstParent");
-        if (!ParseUser.getCurrentUser().getString("role").equals("teacher") && !Messages.showcaseShown) {
-            Messages.showFirstParent();
-            Messages.showcaseShown = true;
-        }
-        else{
-            Log.d("_TEMP_", "either user or flag not set");
-        }
-    }
     /*
      * LRU Functions *************************************************
      */
@@ -910,71 +897,6 @@ public class Messages extends Fragment {
     }
 
     /********** showcase ***********/
-
-    public static View t1, t2; //to highlight in showcase
-    static ShowcaseView showcaseView1, showcaseView2;
-    static boolean showcaseShown = false;
-
-    public static void showFirstParent(){
-        Log.d("_TEMP_", "showFirstParent called");
-        if(t1 == null || t2 == null) return;
-        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
-
-        ShowcaseView.Builder builder = new ShowcaseView.Builder(getactivity)
-                .setStyle(R.style.ShowcaseView)
-                .setScaleMultipler(0.25f)
-                .setFont(showcaseFont)
-
-                .setContentTitle("To join a class, click on the highlighted button")
-                .setButtonText("Next")
-                        //.hideOnTouchOutside()
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showcaseView1.hide();
-                        Messages.showSecond(t2);
-                    }
-                });
-
-        builder.setTarget(new ViewTarget(t1));
-
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
-        builder.setButtonPosition(layoutParams);
-
-        showcaseView1 = builder.getShowcaseView();
-        builder.build();
-    }
-
-    public static void showSecond(final View t2){
-        Typeface showcaseFont = Typeface.createFromAsset(getactivity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
-
-        ShowcaseView.Builder builder = new ShowcaseView.Builder(getactivity)
-                .setStyle(R.style.ShowcaseView)
-                .setScaleMultipler(0.25f)
-                .setFont(showcaseFont)
-
-                .setContentTitle("To see your joined classes, click on the circled menu item")
-                .setButtonText("Next")
-                        //.hideOnTouchOutside()
-                .setOnClickListener(new OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        showcaseView2.hide();
-                    }
-                });
-
-        builder.setTarget(new ViewTarget(t2));
-
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
-        layoutParams.addRule(RelativeLayout.CENTER_VERTICAL);
-        builder.setButtonPosition(layoutParams);
-
-        showcaseView2 = builder.getShowcaseView();
-        builder.build();
-    }
 
 
     void liked(ImageView likeIcon, TextView likes, LinearLayout likeButton) {
