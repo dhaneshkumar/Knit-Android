@@ -31,9 +31,13 @@ import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
 import BackGroundProcesses.Refresher;
 import BackGroundProcesses.SendPendingMessages;
@@ -82,11 +86,24 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         //TODO delete from here
         //Constants.IS_SIGNUP = true;
-        SessionManager mgr = new SessionManager(Application.getAppContext());
+        /*SessionManager mgr = new SessionManager(Application.getAppContext());
         String t1 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
         String t2 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
         mgr.setTutorialState(t1, false);
-        mgr.setTutorialState(t2, false);
+        mgr.setTutorialState(t2, false);*/
+
+        //delete SentMessges
+        /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
+        deleteOutbox.fromLocalDatastore();
+        deleteOutbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        try{
+            List<ParseObject> msgs = deleteOutbox.find();
+            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            ParseObject.unpinAll(msgs);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }*/
         //TODO delete upto here
 
         super.onCreate(savedInstanceState);
@@ -255,7 +272,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         if(Outbox.needLoading){
                             Log.d(SendPendingMessages.LOGTAG, "lazy loading outbox");
                             Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                            outboxAT.execute();
+                            outboxAT.execute();//it also sets the 'needLoading' flag false
                         }
                     } else if (position == 1) {
 

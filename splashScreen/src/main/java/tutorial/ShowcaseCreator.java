@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -248,9 +249,18 @@ public class ShowcaseCreator {
 
                 ShowcaseView showcaseView1 = builder.getShowcaseView();
 
+                boolean above = true; //pointer and text will be above, hence we need to calculate the x,y properly for pointer
+                Display mDisplay = activity.getWindowManager().getDefaultDisplay();
+                int windowHeight = mDisplay.getHeight();
+
                 double scalingFactor = 2.0/3;
-                showcaseView1.setPointer(center2.x - (int) (likeView.getWidth() * scalingFactor), center.y + likeView.getHeight());
-                showcaseView1.flipPointerHorizontally();
+                int pointerXLeft = center2.x - (int) (likeView.getWidth() * scalingFactor);
+                int pointerYBelow = windowHeight - center2.y + likeView.getHeight();
+                Log.d("_TUTORIAL_", "window h=" + windowHeight + ", center x=" + center2.x + ", y=" + center2.y + " likeview h=" + likeView.getHeight() + ", pointerYBelow=" + pointerYBelow);
+
+                //center.y + likeView.getHeight()
+                showcaseView1.setPointer(pointerXLeft, pointerYBelow, above);
+                showcaseView1.flipPointer();
                 showcaseView1.setDescription("Use these two buttons to respond to messages. Use thumbs up to like and '?' to show you are confused");
 
                 builder.build();
@@ -282,10 +292,19 @@ public class ShowcaseCreator {
 
                 ShowcaseView showcaseView1 = builder.getShowcaseView();
 
+                boolean above = true; //pointer and text will be above, hence we need to calculate the x,y properly for pointer
+                Display mDisplay = activity.getWindowManager().getDefaultDisplay();
+                int windowHeight = mDisplay.getHeight();
+
                 double scalingFactor = 2.0/3;
-                showcaseView1.setPointer(center2.x - (int) (likeView.getWidth() * scalingFactor), center.y + likeView.getHeight());
-                showcaseView1.flipPointerHorizontally();
-                showcaseView1.setDescription("Here you can see how many parents/students like your post or are confused about it. They can respond using only two buttons");
+                int pointerXLeft = center2.x - (int) (likeView.getWidth() * scalingFactor);
+                int pointerYBelow = windowHeight - center2.y + likeView.getHeight();
+                Log.d("_TUTORIAL_", "window h=" + windowHeight + ", center x=" + center2.x + ", y=" + center2.y + " likeview h=" + likeView.getHeight() + ", pointerYBelow=" + pointerYBelow);
+
+                //center.y + likeView.getHeight()
+                showcaseView1.setPointer(pointerXLeft, pointerYBelow, above);
+                showcaseView1.flipPointer();
+                showcaseView1.setDescription("Here you can see how many parents/students like your post or are confused about it. They can respond using only two buttons", above);
 
                 builder.build();
             }

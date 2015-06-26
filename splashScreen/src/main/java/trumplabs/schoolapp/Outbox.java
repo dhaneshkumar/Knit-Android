@@ -612,6 +612,7 @@ public class Outbox extends Fragment {
 
             //if a) first msg, b) is a teacher & c) already not shown
             if(position == 0 && !responseTutorialShown && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)){
+                Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(!mgr.getTutorialState(tutorialId)) {

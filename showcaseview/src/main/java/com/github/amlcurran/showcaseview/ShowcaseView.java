@@ -152,20 +152,41 @@ public class ShowcaseView extends RelativeLayout
     }
 
     public void setPointer(int x, int y){
+        setPointer(x, y, false);
+    }
+
+    public void setPointer(int x, int y, boolean above){
         pointer = (ImageView) LayoutInflater.from(activityContext).inflate(R.layout.pointer_arrow, null);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
+
+        params.addRule(ALIGN_PARENT_LEFT);
         params.leftMargin = x; //Your X coordinate
-        params.topMargin = y; //Your Y coordinate
+
+        if(above){
+            params.addRule(ALIGN_PARENT_BOTTOM);
+            params.bottomMargin = y; //Your Y coordinate in case of measured from bottom edge of screen
+        }
+        else{
+            params.addRule(ALIGN_PARENT_TOP);
+            params.topMargin = y; //Your Y coordinate default
+        }
+
         pointer.setLayoutParams(params);
         addView(pointer);
     }
 
-    public void flipPointerHorizontally(){//for like/confuse
-        pointer.setScaleX(-1);
-        pointer.setScaleY(0.7f); //make little smaller since space crunching
+    //      /
+    //    \|/
+    public void flipPointer(){//for like/confuse
+        pointer.setScaleX(-1); //horizontally
+        pointer.setScaleY(-0.7f); //make little smaller and flipped since space crunching
     }
 
-    public void setDescription(String text){//pointer has been set and hence its id available
+    public void setDescription(String text){
+        setDescription(text, false);
+    }
+
+    public void setDescription(String text, boolean above){//pointer has been set and hence its id available
         if(pointer == null) return;
         Log.d("_SHOWCASE", "adding description=" + text);
         description = (TextView) LayoutInflater.from(activityContext).inflate(R.layout.description, null);
@@ -174,7 +195,12 @@ public class ShowcaseView extends RelativeLayout
         description.setText(text);
         description.setTextSize(16); //change this
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
-        params.addRule(RelativeLayout.BELOW, R.id.pointer);
+        if(above) {
+            params.addRule(RelativeLayout.ABOVE, R.id.pointer);
+        }
+        else{
+            params.addRule(RelativeLayout.BELOW, R.id.pointer);
+        }
         params.addRule(CENTER_HORIZONTAL);
         description.setLayoutParams(params);
         addView(description);
