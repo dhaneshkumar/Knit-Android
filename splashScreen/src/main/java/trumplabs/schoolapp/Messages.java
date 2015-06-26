@@ -86,7 +86,7 @@ public class Messages extends Fragment {
     private LinearLayout inbox_instructions;
     private TextView inbox_ok;
 
-    private static boolean responseTutorialShown = false; //keep in shared preferences
+    public static boolean responseTutorialShown = false; //keep in shared preferences
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -867,11 +867,15 @@ public class Messages extends Fragment {
             }
 
             //if a) first msg, b) not a teacher & c) already not shown
+            Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown);
+
             if(position == 0 && !responseTutorialShown && !ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)){
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+                Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId);
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(!mgr.getTutorialState(tutorialId)) {
                     mgr.setTutorialState(tutorialId, true);
+                    Log.d(ShowcaseCreator.LOGTAG, "(parent) creating response tutorial");
                     ShowcaseCreator.parentHighlightResponseButtons(getactivity, holder.likeButton, holder.confuseButton);
                 }
                 responseTutorialShown = true;

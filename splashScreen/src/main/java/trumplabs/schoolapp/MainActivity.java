@@ -78,14 +78,15 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
 
-    static boolean isTeacherCreateShowcaseShown = false;
-    static boolean isParentJoinShowcaseShown = false;
+    public static boolean isTeacherCreateShowcaseShown = false;
+    public static boolean isParentJoinShowcaseShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        //TODO delete from here
+        //TODO delete from here(TESTING APP TUTORIAL FUNCTIONALITY)
         //Constants.IS_SIGNUP = true;
+
         /*SessionManager mgr = new SessionManager(Application.getAppContext());
         String t1 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
         String t2 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
@@ -98,6 +99,32 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         deleteOutbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
         try{
             List<ParseObject> msgs = deleteOutbox.find();
+            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            ParseObject.unpinAll(msgs);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }*/
+
+        //delete Inbox messages
+        /*ParseQuery deleteInbox = new ParseQuery(Constants.GROUP_DETAILS);
+        deleteInbox.fromLocalDatastore();
+        deleteInbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        try{
+            List<ParseObject> msgs = deleteInbox.find();
+            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            ParseObject.unpinAll(msgs);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }*/
+
+        //delete Inbox messages
+        /*ParseQuery deleteLocal = new ParseQuery("LocalMessages");
+        deleteLocal.fromLocalDatastore();
+        deleteLocal.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        try{
+            List<ParseObject> msgs = deleteLocal.find();
             Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
             ParseObject.unpinAll(msgs);
         }
@@ -468,10 +495,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            Log.d("_TEMP_", "(teacher)setting up action bar views to showcase");
+            Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + isTeacherCreateShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
 
             if(!MainActivity.isTeacherCreateShowcaseShown && Constants.IS_SIGNUP) {
                 MainActivity.isTeacherCreateShowcaseShown = true;
+                Log.d(ShowcaseCreator.LOGTAG, "teacher create: creating showcase");
                 ShowcaseCreator.teacherHighlightCreate(this, createClassActionView, joinClassActionView); //show now
             }
         }
@@ -504,8 +532,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
+            Log.d(ShowcaseCreator.LOGTAG, "parent join: flag=" + isParentJoinShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
             if(!MainActivity.isParentJoinShowcaseShown && Constants.IS_SIGNUP) {
                 MainActivity.isParentJoinShowcaseShown = true;
+                Log.d(ShowcaseCreator.LOGTAG, "parent join:  creataing the showcase");
                 ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now
             }
         }

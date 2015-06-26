@@ -34,6 +34,8 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
+import trumplabs.schoolapp.Messages;
+import trumplabs.schoolapp.Outbox;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -458,6 +460,13 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             //variable storing that its first time app <signup>user
             Constants.IS_SIGNUP = true;
+
+            //reset all tutorial flags just in case another user signs up using the same mobile(without re-opening app)
+            //this case is quite rate but still to be on the safe side
+            MainActivity.isTeacherCreateShowcaseShown = false;
+            MainActivity.isParentJoinShowcaseShown = false;
+            Messages.responseTutorialShown = false;
+            Outbox.responseTutorialShown = false;
 
             Intent intent = new Intent(activityContext, MainActivity.class);
             intent.putExtra("flag", "SIGNUP");

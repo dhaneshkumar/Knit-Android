@@ -82,7 +82,7 @@ public class Outbox extends Fragment {
 
     public static boolean needLoading = false; //whether needs new query to fetch newer messages from localstore(offline support)
 
-    private static boolean responseTutorialShown = false; //show in shared prefs
+    public static boolean responseTutorialShown = false; //show in shared prefs
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

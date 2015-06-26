@@ -26,6 +26,8 @@ import trumplabs.schoolapp.CreateClassDialog;
  */
 public class ShowcaseCreator {
 
+    public static final String LOGTAG = "_TUTORIAL_";
+
     static ShowcaseView.Builder getDefaultBuilder(final Activity activity){
         //assume activity not null
         Typeface showcaseFont = Typeface.createFromAsset(activity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
