@@ -1,9 +1,12 @@
 package trumplabs.schoolapp;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -11,8 +14,10 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -21,6 +26,7 @@ import android.widget.TextView;
 
 import com.parse.ParseUser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +37,7 @@ import utility.Utility;
 /**
  * Created by dhanesh on 16/6/15.
  */
-public class ComposeMessage extends ActionBarActivity {
+public class ComposeMessage extends ActionBarActivity implements ChooserDialog.CommunicatorInterface{
 
     private RelativeLayout sendTo;
     private List<List<String>> classList;
@@ -42,6 +48,10 @@ public class ComposeMessage extends ActionBarActivity {
     private TextView classTextView;
     private List<String> selectedClassNames;
     private ImageView doneImageView;
+    public static LinearLayout sendimgpreview;
+    public static LinearLayout picProgressBarLayout;
+    public static ImageView sendimgview;
+    private Button removebutton;
 
 
     @Override
@@ -52,32 +62,85 @@ public class ComposeMessage extends ActionBarActivity {
         sendTo = (RelativeLayout) findViewById(R.id.sendTo);
         final ListView classeslistview = (ListView) findViewById(R.id.classeslistview);
         selectedClassTV = (WebView) findViewById(R.id.selectedClass);
-        selectedClassTV.getSettings().setJavaScriptEnabled(true);
         selectedClassTV.loadUrl("file:///android_asset/selectClass.html");
+        selectedClassTV.getSettings().setJavaScriptEnabled(true);
         doneImageView = (ImageView) findViewById(R.id.done);
-
         classTextView = (TextView) findViewById(R.id.classTV);
+        sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
+        picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
+        sendimgview = (ImageView) findViewById(R.id.attachedimg);
+        removebutton = (Button) findViewById(R.id.removebutton);
+        GradientDrawable gradientdrawable = (GradientDrawable) removebutton.getBackground();
+        gradientdrawable.setColor(getResources().getColor(R.color.color_secondary));
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("New Message");
 
+        selectedClassNames = new ArrayList<>();
         classList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
         if(classList == null)
             classList = new ArrayList<List<String>>();
 
-        selectedClassNames = new ArrayList<>();
+        String selectedClassCode = null;
+        boolean selectAllClasses = false;
 
-
-        //adding false string as 3rd column to array <Class-code, class-name, "false">
-        for(int i=0; i<classList.size(); i++)
+        if(getIntent() != null && getIntent().getExtras() != null)
         {
-            List<String> item = classList.get(i);
-            if(item.size()<3)
-                item.add(FALSE);
-            else
-                item.add(2, FALSE);
+
+            if(getIntent().getExtras().getBoolean("SELECT_ALL"))
+            {
+                selectAllClasses = true;
+                for(int i=0; i < classList.size();i++) {
+                    selectedClassNames.add(classList.get(i).get(1));
+
+                    selectedClasses +="<span style=\" border: 1px solid #0288D1;display:inline-block; padding: 8px 16px;  font-size: 14px; background: #03A9F4; color:#ffffff; margin-bottom:5px; margin-right:5px; border-radius: 25px;\">"
+                            + classList.get(i).get(1) + "</span>";
+                }
+            }
+            else {
+                if(getIntent().getExtras().getString("CLASS_CODE") != null)
+                {
+                    selectedClassCode = getIntent().getExtras().getString("CLASS_CODE");
+                    String selectedClassName = getIntent().getExtras().getString("CLASS_NAME");
+
+                    selectedClassNames.add(selectedClassName);
+
+                    selectedClasses ="<span style=\" border: 1px solid #0288D1;display:inline-block; padding: 8px 16px;  font-size: 14px; background: #03A9F4; color:#ffffff; margin-bottom:5px; margin-right:5px; border-radius: 25px;\">"
+                            + selectedClassName + "</span>";
+                }
+            }
+
+
+            final String finalWebViewContent = selectedClasses;
+            selectedClassTV.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    selectedClassTV.loadUrl("javascript:replace( '" + selectedClasses + "')");
+                }
+            });
+
+          //  selectedClassTV.loadUrl("javascript:replace( '" + selectedClasses + "')");
+
         }
 
+        classTextView.setText(displayText(selectedClassNames));
+
+        if (selectAllClasses) {
+            for (int i = 0; i < classList.size(); i++) {
+                classList.get(i).add(2, TRUE);
+            }
+        } else {
+            for (int i = 0; i < classList.size(); i++) {
+                List<String> item = classList.get(i);
+
+                item.add(2, FALSE);
+
+                if (selectedClassCode != null) {
+                    if (item.get(0).equals(selectedClassCode))
+                        item.add(2, TRUE);
+                }
+            }
+        }
 
         sendTo.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -91,11 +154,18 @@ public class ComposeMessage extends ActionBarActivity {
 
                 }
                 else {
-                    Tools.hideKeyboard(ComposeMessage.this);
-                    classeslistview.setVisibility(View.VISIBLE);
-                    selectedClassTV.setVisibility(View.VISIBLE);
-                    classTextView.setVisibility(View.GONE);
-                    doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_tick));
+
+                   if(classList.size() > 0) {
+                       Tools.hideKeyboard(ComposeMessage.this);
+                       classeslistview.setVisibility(View.VISIBLE);
+                       selectedClassTV.setVisibility(View.VISIBLE);
+                       classTextView.setVisibility(View.GONE);
+                       doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_tick));
+                   }
+                    else {
+                       classTextView.setText("Sorry! No Created Classrooms");
+                       classTextView.setTextColor(Color.RED);
+                   }
 
                 }
             }
@@ -106,6 +176,21 @@ public class ComposeMessage extends ActionBarActivity {
 
         SelectClassAdapter selectClassAdapter = new SelectClassAdapter();
         classeslistview.setAdapter(selectClassAdapter);
+
+        // remove the image ready to be sent
+        removebutton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendimgpreview.setTag("");
+                sendimgview.setImageBitmap(null);
+                sendimgpreview.setVisibility(View.GONE);
+
+               /* if (typedmsg.getText() != null) {
+                    if (typedmsg.getText().length() < 1)
+                        sendmsgbutton.setImageResource(R.drawable.send_grey);
+                }*/
+            }
+        });
     }
 
 
@@ -126,6 +211,18 @@ public class ComposeMessage extends ActionBarActivity {
                 Tools.hideKeyboard(ComposeMessage.this);
                 onBackPressed();
                 break;
+
+            case R.id.attachment:
+                FragmentManager fm = getSupportFragmentManager();
+                ChooserDialog openchooser = new ChooserDialog();
+                openchooser.show(fm, "Add Image");
+                break;
+
+            case R.id.send:
+                ComposeMessageHelper composeMessageHelper = new ComposeMessageHelper(ComposeMessage.this, "MATH", "RAN1382");
+                composeMessageHelper.send();
+                break;
+
             default:
                 break;
         }
@@ -133,6 +230,23 @@ public class ComposeMessage extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void sendImagePic(String imgname) {
+
+        // The image was brought into the App folder hence only name was passed
+        ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
+        ComposeMessage.sendimgpreview.setTag(Utility.getWorkingAppDir() + "/media/" + imgname);
+        File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imgname);
+
+        // The thumbnail is already created
+        Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+        sendimgview.setImageBitmap(myBitmap);
+    }
+
+
+    /**
+     * Adapter to show created class lists while selecting classrooms to send msg
+     */
     class SelectClassAdapter extends BaseAdapter {
 
         @Override
@@ -201,8 +315,6 @@ public class ComposeMessage extends ActionBarActivity {
                 public void onClick(View v) {
                     if(item.size()>2)
                     {
-                        final String mimeType = "text/html";
-                        final String encoding = "UTF-8";
                         String content ="<span style=\" border: 1px solid #0288D1;display:inline-block; padding: 8px 16px;  font-size: 14px; background: #03A9F4; color:#ffffff; margin-bottom:5px; margin-right:5px; border-radius: 25px;\">"
                                 + item.get(1) + "</span>";
 
@@ -239,23 +351,7 @@ public class ComposeMessage extends ActionBarActivity {
                         }
 
                         selectedClassTV.loadUrl("javascript:replace( '" + selectedClasses + "')");
-
-                       int size = selectedClassNames.size();
-
-                        String start = "";
-                        String end = "";
-
-                        if(size ==1)
-                            start = selectedClassNames.get(0);
-                        else if(size > 1)
-                            start = selectedClassNames.get(0) + ", " + selectedClassNames.get(1);
-
-                        if(size >2)
-                        {
-                            end = " & " + (size - 2) +" more";
-                        }
-
-                        classTextView.setText(start + end);
+                        classTextView.setText(displayText(selectedClassNames));
 
                     }
                 }
@@ -264,5 +360,34 @@ public class ComposeMessage extends ActionBarActivity {
 
             return row;
         }
+    }
+
+
+    /**
+     *
+     * @param selectedClassNames
+     * @return string to display in format of < & -- more>
+     */
+    private String displayText(List<String> selectedClassNames)
+    {
+        String start = "";
+        String end = "";
+
+        if(selectedClassNames == null)
+            return "";
+
+        int size = selectedClassNames.size();
+
+        if(size ==1)
+            start = selectedClassNames.get(0);
+        else if(size > 1)
+            start = selectedClassNames.get(0) + ", " + selectedClassNames.get(1);
+
+        if(size >2)
+        {
+            end = " & " + (size - 2) +" more";
+        }
+
+        return start+end;
     }
 }

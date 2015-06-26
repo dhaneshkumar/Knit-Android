@@ -16,6 +16,12 @@ gen/
 .gradle/
 build/
 
+# .idea files
+.idea/
+
+# .iml files
+*.iml
+
 # Local configuration file (sdk path, etc)
 local.properties
 
@@ -28,3 +34,5 @@ proguard/
 .idea/libraries/*.xml
 .idea/*.xml
 *.iml
+
+gradlew

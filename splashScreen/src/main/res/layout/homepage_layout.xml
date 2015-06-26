@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightbackgroundcolor"
@@ -16,6 +16,7 @@
 
     <LinearLayout
         android:id="@+id/progressBarLayout"
+        android:layout_below="@+id/ptr_progress"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
@@ -39,6 +40,7 @@
 
     <LinearLayout
         android:id="@+id/tabviewer"
+        android:layout_below="@+id/progressBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/color_primary"
@@ -80,22 +82,60 @@
             android:paddingBottom="12dp"
             android:textColor="@color/white" />
     </LinearLayout>
-<LinearLayout
-    android:layout_width="match_parent"
-    android:background="@color/color_primary"
-    android:layout_height="wrap_content">
-    <TextView
-        android:id="@+id/tabcolor"
-        android:layout_width="wrap_content"
-        android:layout_height="3dp"
-        android:background="@color/white" />
-</LinearLayout>
+    <LinearLayout
+        android:id="@+id/tabBottom"
+        android:layout_width="match_parent"
+        android:background="@color/color_primary"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tabviewer"
+        >
+        <TextView
+            android:id="@+id/tabcolor"
+            android:layout_width="wrap_content"
+            android:layout_height="3dp"
+            android:background="@color/white" />
+    </LinearLayout>
 
     <android.support.v4.view.ViewPager
         android:id="@+id/pager"
+        android:layout_below="@+id/tabBottom"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="match_parent"
         android:layout_weight="1"
         android:background="@color/white"></android.support.v4.view.ViewPager>
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/action_menu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#f1f1f1"
+        android:alpha="0.9"
+        android:visibility="gone"
+        android:orientation="vertical">
+    </RelativeLayout>
+
+
+    <ListView
+        android:id="@+id/action_menu_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:paddingLeft="16dp"
+        android:visibility="gone"
+        android:divider="@null"
+        android:paddingRight="24dp"
+        android:layout_above="@+id/action_button"
+        >
+    </ListView>
+
+    <com.software.shell.fab.ActionButton
+        android:id="@+id/action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        />
+
+
+</RelativeLayout>

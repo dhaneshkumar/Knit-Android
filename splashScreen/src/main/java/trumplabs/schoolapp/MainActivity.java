@@ -2,7 +2,9 @@ package trumplabs.schoolapp;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -22,10 +24,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,8 +41,10 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+import com.software.shell.fab.ActionButton;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.List;
 
 import BackGroundProcesses.Refresher;
@@ -74,6 +82,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static SmoothProgressBar mHeaderProgressBar;
     public static MyAdapter myAdapter;
     public static SessionManager sessionManager;
+    private ListView action_menu_list;
+    private RelativeLayout action_menu;
+    private List<List<String >> classList;
+    private boolean isFloatingButtonCliked = false;
+    Typeface lighttypeFace;
 
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
@@ -152,11 +165,22 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         tab3Icon = (TextView) findViewById(R.id.tab3Icon);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         mHeaderProgressBar = (SmoothProgressBar) findViewById(R.id.ptr_progress);
+        action_menu = (RelativeLayout) findViewById(R.id.action_menu);
+        action_menu_list = (ListView) findViewById(R.id.action_menu_list);
+
+        FloatOptionsAdapter floatOptionsAdapter = new FloatOptionsAdapter();
+        action_menu_list.setAdapter(floatOptionsAdapter);
 
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
+        lighttypeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
         tab1Icon.setTypeface(typeFace);
         tab2Icon.setTypeface(typeFace);
         tab3Icon.setTypeface(typeFace);
+
+        classList = user.getList(Constants.CREATED_GROUPS);
+
+        if(classList == null)
+            classList = new ArrayList<>();
 
         /*
         Check for app re-installation. In case of reinstallation or delete data appOpeningCount set to zero.
@@ -450,6 +474,77 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }*/
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+
+        //Initializing compose button
+        final ActionButton actionButton = (ActionButton) findViewById(R.id.action_button);
+
+        // To set button color for normal state:
+        actionButton.setButtonColor(Color.parseColor("#039BE5"));
+
+        //#E53935 -  red(600)
+        // To set button color for pressed state:
+        actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
+
+        //Setting image in floating button
+        actionButton.setImageResource(R.drawable.ic_edit);
+
+        // To enable or disable Ripple Effect:
+        actionButton.setRippleEffectEnabled(true);
+
+
+
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(classList.size() == 0)
+                {
+                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                    startActivity(intent);
+                }
+                else if(classList.size() == 1)
+                {
+                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                    intent.putExtra("CLASS_CODE", classList.get(0).get(0));
+                    intent.putExtra("CLASS_NAME", classList.get(0).get(1));
+                    startActivity(intent);
+                }
+                else {
+
+                    action_menu.setVisibility(View.VISIBLE);
+                    action_menu_list.setVisibility(View.VISIBLE);
+
+                    if (isFloatingButtonCliked) {
+                        Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                        startActivity(intent);
+                        isFloatingButtonCliked = false;
+                        action_menu.setVisibility(View.GONE);
+                        action_menu_list.setVisibility(View.GONE);
+                    } else
+                        isFloatingButtonCliked = true;
+                }
+            }
+        });
+
+
+        action_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action_menu.setVisibility(View.GONE);
+                action_menu_list.setVisibility(View.GONE);
+                isFloatingButtonCliked = false;
+            }
+        });
+
+       /* action_menu_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action_menu.setVisibility(View.VISIBLE);
+                action_menu_list.setVisibility(View.VISIBLE);
+            }
+        });*/
+
     }
 
 
@@ -760,5 +855,98 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         // bottomUp.setDuration(100);
         bottomUp.start();
         buttonContainer.setVisibility(View.GONE);
+    }
+
+    class FloatOptionsAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+
+            if (classList == null)
+                classList = new ArrayList<List<String>>();
+
+            if (classList.size() > 1)
+                return classList.size() + 1;
+            else
+                return classList.size();
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return classList.get(position);
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public boolean isEnabled (int position) {
+            return false;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            View row = convertView;
+            if (row == null) {
+                LayoutInflater inflater = (LayoutInflater) MainActivity.this
+                        .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                row = inflater.inflate(R.layout.float_button_options, parent, false);
+            }
+
+            TextView headerText = (TextView) row.findViewById(R.id.optionItem);
+            TextView emptyBox = (TextView) row.findViewById(R.id.emptyBox);
+            LinearLayout option = (LinearLayout) row.findViewById(R.id.option);
+            TextView headerIcon = (TextView) row.findViewById(R.id.headerText);
+            headerIcon.setTypeface(lighttypeFace);
+
+            if (classList.size() > 1) {
+                if (position == 0) {
+                    headerText.setText("SELECT ALL");
+                    headerIcon.setText("*");
+                } else {
+                    headerText.setText(classList.get(position - 1).get(1));
+                    headerIcon.setText(classList.get(position - 1).get(1).substring(0, 1).toUpperCase());
+                }
+            } else {
+                headerText.setText(classList.get(position).get(1));
+                headerIcon.setText(classList.get(position).get(1).substring(0, 1).toUpperCase());
+            }
+
+            GradientDrawable gradientdrawable = (GradientDrawable) headerIcon.getBackground();
+            gradientdrawable.setColor(getResources().getColor(R.color.color_secondary));
+
+            emptyBox.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    action_menu.setVisibility(View.GONE);
+                    action_menu_list.setVisibility(View.GONE);
+                    isFloatingButtonCliked = false;
+
+                }
+            });
+
+            option.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+
+                    if(position ==0)
+                        intent.putExtra("SELECT_ALL", true);
+                    else {
+                        intent.putExtra("CLASS_CODE", classList.get(position - 1).get(0));
+                        intent.putExtra("CLASS_NAME", classList.get(position - 1).get(1));
+                    }
+
+                    startActivity(intent);
+                    isFloatingButtonCliked = false;
+                    action_menu.setVisibility(View.GONE);
+                    action_menu_list.setVisibility(View.GONE);
+                }
+            });
+
+            return row;
+        }
     }
 }
