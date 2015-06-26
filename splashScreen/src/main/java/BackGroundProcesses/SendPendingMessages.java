@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import library.UtilString;
+import trumplabs.schoolapp.ComposeMessageHelper;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Outbox;
@@ -153,13 +154,13 @@ public class SendPendingMessages {
                 if (!UtilString.isBlank(currentMsg.getString("title")) && UtilString.isBlank(currentMsg.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     Log.d(LOGTAG, "pending text msg content : '" + currentMsg.getString("title") + "'");
-                    res = SendMessage.sendTextMessageCloud(currentMsg, false);
+                    res = ComposeMessageHelper.sendTextMessageCloud(currentMsg, false);
                 }
 
                 if (!UtilString.isBlank(currentMsg.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     Log.d(LOGTAG, "pending pic msg attachment name : " + currentMsg.getString("attachment_name"));
-                    res = SendMessage.sendPicMessageCloud(currentMsg, false);
+                    res = ComposeMessageHelper.sendPicMessageCloud(currentMsg, false);
                 }
 
                 final int result = res;

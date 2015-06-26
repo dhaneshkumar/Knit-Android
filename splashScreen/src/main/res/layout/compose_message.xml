@@ -87,10 +87,55 @@
             android:textSize="17sp"
             android:hint="Type your message here"
             android:text=""
-
-
+            android:id="@+id/typedmsg"
             >
         </EditText>
+
+        <LinearLayout
+            android:id="@+id/progressBarLayout"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:layout_marginLeft="16dp"
+            android:gravity="center"
+            android:background="@color/lightbackgroundcolor"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ProgressBar
+                android:id="@+id/progressBar1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/imgpreview"
+            android:layout_width="wrap_content"
+            android:layout_height="112dp"
+            android:layout_margin="16dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/attachedimg"
+                android:layout_width="112dp"
+                android:layout_height="112dp"
+                android:background="@color/lightbackgroundcolor">
+
+            </ImageView>
+
+            <Button
+                android:id="@+id/removebutton"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:text="X"
+                android:layout_gravity="center"
+                android:layout_marginLeft="16dp"
+                android:background="@drawable/circle"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+        </LinearLayout>
+
+
     </LinearLayout>
 
 </ScrollView>

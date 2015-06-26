@@ -183,11 +183,11 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
           // changing visibility option of progressbar and imageview
 
           if(!profileCall) {
-              if (SendMessage.picProgressBarLayout != null)
-                  SendMessage.picProgressBarLayout.setVisibility(View.VISIBLE);
+              if (ComposeMessage.picProgressBarLayout != null)
+                  ComposeMessage.picProgressBarLayout.setVisibility(View.VISIBLE);
 
-              if (SendMessage.sendimgpreview != null)
-                  SendMessage.sendimgpreview.setVisibility(View.GONE);
+              if (ComposeMessage.sendimgpreview != null)
+                  ComposeMessage.sendimgpreview.setVisibility(View.GONE);
           }
           /*
            * Executing background class to load image in imageview from gallery and photos app
@@ -365,15 +365,15 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
       // changing visibility option
         if(!profileCall) {
-            if (SendMessage.picProgressBarLayout != null)
-                SendMessage.picProgressBarLayout.setVisibility(View.GONE);
+            if (ComposeMessage.picProgressBarLayout != null)
+                ComposeMessage.picProgressBarLayout.setVisibility(View.GONE);
 
-            if (SendMessage.sendimgpreview != null) {
-                SendMessage.sendimgpreview.setVisibility(View.VISIBLE);
+            if (ComposeMessage.sendimgpreview != null) {
+                ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
 
-                //setting 'send button' color to blue
-                if(SendMessage.sendmsgbutton != null)
-                    SendMessage.sendmsgbutton.setImageResource(R.drawable.send);
+              /*  //setting 'send button' color to blue
+                if(ComposeMessage.sendmsgbutton != null)
+                    ComposeMessage.sendmsgbutton.setImageResource(R.drawable.send);*/
             }
         }
 
