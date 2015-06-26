@@ -160,6 +160,11 @@ public class ShowcaseView extends RelativeLayout
         addView(pointer);
     }
 
+    public void flipPointerHorizontally(){//for like/confuse
+        pointer.setScaleX(-1);
+        pointer.setScaleY(0.7f); //make little smaller since space crunching
+    }
+
     public void setDescription(String text){//pointer has been set and hence its id available
         if(pointer == null) return;
         Log.d("_SHOWCASE", "adding description=" + text);
@@ -324,12 +329,22 @@ public class ShowcaseView extends RelativeLayout
 
         // Draw the showcase drawable
         if (!hasNoTarget) {
-            showcaseDrawer.drawShowcase(bitmapBuffer, showcaseX, showcaseY, scaleMultiplier);
+            //first draw the circles
+            showcaseDrawer.drawShowcase(bitmapBuffer, showcaseX, showcaseY, scaleMultiplier, false);
             if(showcaseAuxPoints != null){
                 for(Point c : showcaseAuxPoints) {
-                    showcaseDrawer.drawShowcase(bitmapBuffer, c.x, c.y, scaleMultiplier);
+                    showcaseDrawer.drawShowcase(bitmapBuffer, c.x, c.y, scaleMultiplier, false);
                 }
             }
+
+            //Now erase the circular area to get better overlap
+            showcaseDrawer.drawShowcase(bitmapBuffer, showcaseX, showcaseY, scaleMultiplier, true);
+            if(showcaseAuxPoints != null){
+                for(Point c : showcaseAuxPoints) {
+                    showcaseDrawer.drawShowcase(bitmapBuffer, c.x, c.y, scaleMultiplier, true);
+                }
+            }
+
             showcaseDrawer.drawToCanvas(canvas, bitmapBuffer);
         }
 

@@ -118,4 +118,10 @@ public class Constants {
     public static boolean signup_inbox = false;
     public static boolean signup_outbox = false;
     public static boolean IS_SIGNUP = false;
+
+    public static class TutorialKeys{
+      //<username> + <key> becomes the key for shared preferences
+      public static final String PARENT_RESPONSE = "_parent_response_tutorial";
+      public static final String TEACHER_RESPONSE = "_teacher_response_tutorial";
+    }
 }

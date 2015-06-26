@@ -3,6 +3,9 @@ package tutorial;
 import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,7 +16,9 @@ import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.PointTarget;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
+import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.CreateClassDialog;
 
 /**
  * Created by ashish on 25/6/15.
@@ -71,9 +76,9 @@ public class ShowcaseCreator {
                 Point center = target.getPoint(); //join class action item
                 builder.setTarget(new PointTarget(center));
 
-                double scalingFactor = 2.0/3; //according to pointer width and action bar icon width
+                double scalingFactor = 2.0 / 3; //according to pointer width and action bar icon width
                 final ShowcaseView showcaseView = builder.getShowcaseView();
-                showcaseView.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor) , center.y + targetView.getHeight());
+                showcaseView.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor), center.y + targetView.getHeight());
                 showcaseView.setDescription("To create a class, click on the highlighted button");
 
                 builder.build();
@@ -90,6 +95,33 @@ public class ShowcaseCreator {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
                         .setContentText("To join a class, click on the circled button");
+
+                builder.setScaleMultipler(0.25f)
+                        .setContentText("To create a class, click on the highlighted button")
+                        .setShowcaseEventListener(new OnShowcaseEventListener() {
+                            @Override
+                            public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                                //show create class dialog
+                                if (activity != null) {
+                                    FragmentManager fm = ((FragmentActivity) (activity)).getSupportFragmentManager(); //MyActionBarActivity (our base class) is FragmentActivity derivative
+                                    CreateClassDialog createClassDialog = new CreateClassDialog();
+                                    Bundle args = new Bundle();
+                                    args.putString("flag", "SIGNUP");
+                                    createClassDialog.setArguments(args);
+                                    createClassDialog.show(fm, "create Class");
+                                }
+                            }
+
+                            @Override
+                            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                            }
+
+                            @Override
+                            public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                            }
+                        });
 
                 ViewTarget target = new ViewTarget(targetView);
                 Point center = target.getPoint(); //join class action item
@@ -157,8 +189,28 @@ public class ShowcaseCreator {
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
-                        .setContentTitle("Click here to see your joined classes");
+                        .setContentTitle("Click here to see your joined classes")
+                        .setShowcaseEventListener(new OnShowcaseEventListener() {
+                            @Override
+                            public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                                //show join class dialog
+                                if(activity != null){
+                                    FragmentManager fm = ((FragmentActivity) (activity)).getSupportFragmentManager(); //MyActionBarActivity (our base class) is FragmentActivity derivative
+                                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                                    joinClassDialog.show(fm, "Join Class");
+                                }
+                            }
 
+                            @Override
+                            public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                            }
+
+                            @Override
+                            public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                            }
+                        });
                 ViewTarget target = new ViewTarget(targetView);
                 Point center = target.getPoint(); //join class action item
                 //Log.d("_SHOWCASE_", "jIconCenter x=" + centerWithOffset.x + ", y=" + centerWithOffset.y + ", w=" + targetView.getWidth());
@@ -169,6 +221,71 @@ public class ShowcaseCreator {
                 double scalingFactor = 2.0/3;
                 showcaseView1.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor), center.y + targetView.getHeight());
                 showcaseView1.setDescription("Click here to see your joined classes");
+
+                builder.build();
+            }
+        });
+    }
+
+    //using PointTarget
+    public static void parentHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
+        likeView.post(new Runnable() {
+            @Override
+            public void run() {
+                ShowcaseView.Builder builder = getDefaultBuilder(activity);
+                builder.setScaleMultipler(0.30f)
+                        .setContentTitle("Click here to see your joined classes");
+
+                ViewTarget target = new ViewTarget(likeView);
+                Point center = target.getPoint();
+
+                ViewTarget target2 = new ViewTarget(confuseView);
+                Point center2 = target2.getPoint();
+
+                //Log.d("_SHOWCASE_", "jIconCenter x=" + centerWithOffset.x + ", y=" + centerWithOffset.y + ", w=" + targetView.getWidth());
+                builder.setTarget(new PointTarget(center2)); //main target
+                builder.setAuxPoints(new Point[]{center});
+
+                ShowcaseView showcaseView1 = builder.getShowcaseView();
+
+                double scalingFactor = 2.0/3;
+                showcaseView1.setPointer(center2.x - (int) (likeView.getWidth() * scalingFactor), center.y + likeView.getHeight());
+                showcaseView1.flipPointerHorizontally();
+                showcaseView1.setDescription("Use these two buttons to respond to messages. Use thumbs up to like and '?' to show you are confused");
+
+                builder.build();
+            }
+        });
+    }
+
+    //in outbox(targets are the text containing the counts. So center showcase at the right end of these views
+    // so that we are roughly at center of combined view(count textview + icon imageview)
+    public static void teacherHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
+        likeView.post(new Runnable() {
+            @Override
+            public void run() {
+                ShowcaseView.Builder builder = getDefaultBuilder(activity);
+                builder.setScaleMultipler(0.25f)
+                        .setContentTitle("Click here to see your joined classes");
+
+                ViewTarget target = new ViewTarget(likeView);
+                Point center = target.getPoint();
+                center = new Point(center.x + likeView.getWidth()/2, center.y);
+
+                ViewTarget target2 = new ViewTarget(confuseView);
+                Point center2 = target2.getPoint();
+                center2 = new Point(center2.x + likeView.getWidth()/2, center2.y); //width of both like and confused view are same
+
+                //Log.d("_SHOWCASE_", "jIconCenter x=" + centerWithOffset.x + ", y=" + centerWithOffset.y + ", w=" + targetView.getWidth());
+                builder.setTarget(new PointTarget(center2)); //main target
+                builder.setAuxPoints(new Point[]{center});
+
+                ShowcaseView showcaseView1 = builder.getShowcaseView();
+
+                double scalingFactor = 2.0/3;
+                showcaseView1.setPointer(center2.x - (int) (likeView.getWidth() * scalingFactor), center.y + likeView.getHeight());
+                showcaseView1.flipPointerHorizontally();
+                showcaseView1.setDescription("Here you can see how many parents/students like your post or are confused about it. They can respond using only two buttons");
 
                 builder.build();
             }

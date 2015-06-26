@@ -50,6 +50,7 @@ import BackGroundProcesses.SendPendingMessages;
 import BackGroundProcesses.SyncMessageDetails;
 import library.UtilString;
 import trumplab.textslate.R;
+import tutorial.ShowcaseCreator;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -80,6 +81,9 @@ public class Outbox extends Fragment {
     private static String id; //msg object id
 
     public static boolean needLoading = false; //whether needs new query to fetch newer messages from localstore(offline support)
+
+    private static boolean responseTutorialShown = false; //show in shared prefs
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
@@ -605,23 +609,34 @@ public class Outbox extends Fragment {
             } else {
                 holder.imgmsgview.setVisibility(View.GONE);
             }
+
+            //if a) first msg, b) is a teacher & c) already not shown
+            if(position == 0 && !responseTutorialShown && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)){
+                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+                SessionManager mgr = new SessionManager(Application.getAppContext());
+                if(!mgr.getTutorialState(tutorialId)) {
+                    mgr.setTutorialState(tutorialId, true);
+                    ShowcaseCreator.teacherHighlightResponseButtons(getActivity(), holder.likes, holder.confused);
+                }
+                responseTutorialShown = true;
+            }
         }
 
 
-            @Override
-            public int getItemCount() {
+        @Override
+        public int getItemCount() {
 
-                if (groupDetails == null) {
-                    groupDetails = new ArrayList<ParseObject>();
-                }
-
-                if (groupDetails.size() == 0)
-                    outboxLayout.setVisibility(View.VISIBLE);
-                else
-                    outboxLayout.setVisibility(View.GONE);
-
-                return groupDetails.size();
+            if (groupDetails == null) {
+                groupDetails = new ArrayList<ParseObject>();
             }
+
+            if (groupDetails.size() == 0)
+                outboxLayout.setVisibility(View.VISIBLE);
+            else
+                outboxLayout.setVisibility(View.GONE);
+
+            return groupDetails.size();
+        }
 
     }
 

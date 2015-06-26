@@ -36,6 +36,7 @@ import com.parse.ParseUser;
 import java.lang.reflect.Field;
 
 import BackGroundProcesses.Refresher;
+import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import additionals.RateAppDialog;
 import additionals.SpreadWordDialog;
@@ -73,11 +74,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
 
-    static boolean isTeacherCreateShowcaseShown = false; //could keep in shared prefs
-    static boolean isParentJoinShowcaseShown = false; //could keep in shared prefs
+    static boolean isTeacherCreateShowcaseShown = false;
+    static boolean isParentJoinShowcaseShown = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //TODO delete from here
+        //Constants.IS_SIGNUP = true;
+        SessionManager mgr = new SessionManager(Application.getAppContext());
+        String t1 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+        String t2 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+        mgr.setTutorialState(t1, false);
+        mgr.setTutorialState(t2, false);
+        //TODO delete upto here
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
 
@@ -241,11 +252,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
                         hideButttonContainer(Classrooms.buttonContainer);
-                      /*  if(Outbox.needLoading){
+                        if(Outbox.needLoading){
                             Log.d(SendPendingMessages.LOGTAG, "lazy loading outbox");
                             Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                           8 outboxAT.execute();
-                        }*/
+                            outboxAT.execute();
+                        }
                     } else if (position == 1) {
 
                         params.width = screenwidth * 5 / 13;
@@ -347,7 +358,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         //Check if parent/student has just signed up and show join class dialog
-        Intent intent = getIntent();
+        //Not used. Show the dialog after tutorial is over
+        /*Intent intent = getIntent();
         if(intent != null && intent.getExtras() != null) {
             String signup = intent.getExtras().getString("flag");
 
@@ -375,10 +387,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 Constants.signup_inbox= true;
                 Constants.signup_outbox = true;
             }
-        }
+        }*/
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-
     }
 
 
@@ -442,7 +453,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             Log.d("_TEMP_", "(teacher)setting up action bar views to showcase");
 
-            if(!MainActivity.isTeacherCreateShowcaseShown /* && SIGNUP flag is set*/) {
+            if(!MainActivity.isTeacherCreateShowcaseShown && Constants.IS_SIGNUP) {
                 MainActivity.isTeacherCreateShowcaseShown = true;
                 ShowcaseCreator.teacherHighlightCreate(this, createClassActionView, joinClassActionView); //show now
             }
@@ -476,8 +487,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            if(!MainActivity.isParentJoinShowcaseShown /* && SIGNUP flag is set*/) {
-                MainActivity.isTeacherCreateShowcaseShown = true;
+            if(!MainActivity.isParentJoinShowcaseShown && Constants.IS_SIGNUP) {
+                MainActivity.isParentJoinShowcaseShown = true;
                 ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now
             }
         }

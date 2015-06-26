@@ -56,6 +56,7 @@ import BackGroundProcesses.Refresher;
 import joinclasses.JoinClassDialog;
 import library.UtilString;
 import trumplab.textslate.R;
+import tutorial.ShowcaseCreator;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -84,6 +85,8 @@ public class Messages extends Fragment {
     private ImageView inbox_headup;
     private LinearLayout inbox_instructions;
     private TextView inbox_ok;
+
+    private static boolean responseTutorialShown = false; //keep in shared preferences
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -863,6 +866,16 @@ public class Messages extends Fragment {
                 holder.imgframelayout.setVisibility(View.GONE);
             }
 
+            //if a) first msg, b) not a teacher & c) already not shown
+            if(position == 0 && !responseTutorialShown && !ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)){
+                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+                SessionManager mgr = new SessionManager(Application.getAppContext());
+                if(!mgr.getTutorialState(tutorialId)) {
+                    mgr.setTutorialState(tutorialId, true);
+                    ShowcaseCreator.parentHighlightResponseButtons(getactivity, holder.likeButton, holder.confuseButton);
+                }
+                responseTutorialShown = true;
+            }
         }
     }
 
