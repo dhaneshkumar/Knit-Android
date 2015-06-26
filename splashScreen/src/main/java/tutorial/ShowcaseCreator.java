@@ -50,7 +50,7 @@ public class ShowcaseCreator {
     public static void teacherHighlightCreate(final Activity activity, final View targetView, final View targetView2){
         //post on target i.e when target is ready and hence its position and size are set
 
-        targetView.post(new Runnable() {
+        targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
@@ -86,13 +86,13 @@ public class ShowcaseCreator {
 
                 builder.build();
             }
-        });
+        }, 100);
     }
 
     //using PointTarget
     public static void teacherHighlightJoin(final Activity activity, final View targetView){
         //post on target i.e when target is ready and hence its position and size are set
-        targetView.post(new Runnable() {
+        targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
@@ -140,7 +140,7 @@ public class ShowcaseCreator {
 
                 builder.build();
             }
-        });
+        }, 100);
     }
 
 
@@ -148,7 +148,7 @@ public class ShowcaseCreator {
     //using ViewTarget
     public static void parentHighlightJoin(final Activity activity, final View targetView, final View targetView2){
 
-        targetView.post(new Runnable() {
+        targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
@@ -182,12 +182,12 @@ public class ShowcaseCreator {
 
                 builder.build();
             }
-        });
+        }, 100);
     }
 
     //using PointTarget
     public static void parentHighlightJoinedClasses(final Activity activity, final View targetView){
-        targetView.post(new Runnable() {
+        targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
@@ -227,12 +227,12 @@ public class ShowcaseCreator {
 
                 builder.build();
             }
-        });
+        }, 100);
     }
 
     //using PointTarget
     public static void parentHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
-        likeView.post(new Runnable() {
+        likeView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
@@ -267,13 +267,13 @@ public class ShowcaseCreator {
 
                 builder.build();
             }
-        });
+        }, 100);
     }
 
     //in outbox(targets are the text containing the counts. So center showcase at the right end of these views
     // so that we are roughly at center of combined view(count textview + icon imageview)
     public static void teacherHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
-        likeView.post(new Runnable() {
+        likeView.postDelayed(new Runnable() {
             @Override
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
@@ -310,7 +310,7 @@ public class ShowcaseCreator {
 
                 builder.build();
             }
-        });
+        }, 100);
     }
 
     //highlight target along with points on left and right(distance = target view width)

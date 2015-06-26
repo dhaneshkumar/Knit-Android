@@ -86,7 +86,7 @@ public class Messages extends Fragment {
     private LinearLayout inbox_instructions;
     private TextView inbox_ok;
 
-    public static boolean responseTutorialShown = false; //keep in shared preferences
+    public static boolean responseTutorialShown = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -866,10 +866,13 @@ public class Messages extends Fragment {
                 holder.imgframelayout.setVisibility(View.GONE);
             }
 
-            //if a) first msg, b) not a teacher & c) already not shown
-            Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown);
+            //if a) first msg, b) already not shown, c) either non-teacher or fragment # visible is 2 (ie. Messages tab)
+            String role = ParseUser.getCurrentUser().getString(Constants.ROLE);
 
-            if(position == 0 && !responseTutorialShown && !ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)){
+            Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
+                    + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
+
+            if(position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2)){
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
                 Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId);
                 SessionManager mgr = new SessionManager(Application.getAppContext());

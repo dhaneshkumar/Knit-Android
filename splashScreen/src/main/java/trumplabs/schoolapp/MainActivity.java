@@ -81,6 +81,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static boolean isTeacherCreateShowcaseShown = false;
     public static boolean isParentJoinShowcaseShown = false;
 
+    public static int fragmentVisible = 0; //which fragment is visible, changed in viewpager's PageChangeListener
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -296,8 +298,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
                         hideButttonContainer(Classrooms.buttonContainer);
+                        fragmentVisible = 0;
                         if(Outbox.needLoading){
-                            Log.d(SendPendingMessages.LOGTAG, "lazy loading outbox");
+                            Log.d(SendPendingMessages.LOGTAG, "(has joined class) lazy loading outbox");
                             Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
                             outboxAT.execute();//it also sets the 'needLoading' flag false
                         }
@@ -307,6 +310,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         params.setMargins((screenwidth * 3 / 13) + (positionOffsetPixels * 5 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
 
+                        fragmentVisible = 1;
                         highLightTab2();
                         showButttonContainer(Classrooms.buttonContainer);
 
@@ -315,20 +319,32 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         params.setMargins((8 * screenwidth / 13), 0, 0, 0);
                         tabcolor.setLayoutParams(params);
                         highLightTab3();
+                        fragmentVisible = 2;
+                        if(Messages.myadapter != null){
+                            Messages.myadapter.notifyDataSetChanged(); //we're in gui now
+                        }
                         hideButttonContainer(Classrooms.buttonContainer);
                     }
-                }else
-                {
+                }
+                else {
                     params.width = screenwidth  / 2;
                     if (position == 0) {
                         params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
                         hideButttonContainer(Classrooms.buttonContainer);
+                        fragmentVisible = 0;
+
+                        if(Outbox.needLoading){
+                            Log.d(SendPendingMessages.LOGTAG, "(no joined class) lazy loading outbox");
+                            Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
+                            outboxAT.execute();//it also sets the 'needLoading' flag false
+                        }
                     } else {
                         params.setMargins((screenwidth /2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
                         highLightTab2();
+                        fragmentVisible = 1;
                         showButttonContainer(Classrooms.buttonContainer);
                     }
                 }
@@ -495,7 +511,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + isTeacherCreateShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
+            //Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + isTeacherCreateShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
 
             if(!MainActivity.isTeacherCreateShowcaseShown && Constants.IS_SIGNUP) {
                 MainActivity.isTeacherCreateShowcaseShown = true;
