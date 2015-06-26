@@ -261,7 +261,7 @@ public class ShowcaseCreator {
                 //center.y + likeView.getHeight()
                 showcaseView1.setPointer(pointerXLeft, pointerYBelow, above);
                 showcaseView1.flipPointer();
-                showcaseView1.setDescription("Use these two buttons to respond to messages. Use thumbs up to like and '?' to show you are confused");
+                showcaseView1.setDescription("Use these two buttons to respond to messages. Use thumbs up to like and '?' to show you are confused", above);
 
                 builder.build();
             }
