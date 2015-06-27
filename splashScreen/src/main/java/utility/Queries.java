@@ -328,9 +328,10 @@ public class Queries {
 
     public List<ParseObject> getLocalCreateMsgs(String groupCode, List<ParseObject> groupDetails,
                                                 boolean flag) throws ParseException {
+
         Date oldTime = null;
 
-        if (groupDetails != null && groupDetails.size() > 0) {
+        if (groupDetails != null && groupDetails.size() > 0 && flag /*important as append to older list only if flag is set*/) {
             int lastItem = groupDetails.size()-1;
             if (groupDetails.get(lastItem).get("creationTime") != null)
                 oldTime = (Date) groupDetails.get(lastItem).get("creationTime");

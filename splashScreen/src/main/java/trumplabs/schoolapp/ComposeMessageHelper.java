@@ -1,16 +1,10 @@
 package trumplabs.schoolapp;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -22,7 +16,6 @@ import com.parse.SaveCallback;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +23,6 @@ import java.util.List;
 import BackGroundProcesses.SendPendingMessages;
 import library.UtilString;
 import trumplab.textslate.R;
-import utility.Config;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -120,6 +112,7 @@ public class ComposeMessageHelper {
                     }
                 }
             });
+
         }
 
         if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
@@ -155,11 +148,14 @@ public class ComposeMessageHelper {
 
             Log.d(ComposeMessage.LOGTAG, "source inside - current # sendmessage msgs=" + SendMessage.groupDetails.size());
             for(ParseObject msg : messagesToSend){
-                SendMessage.groupDetails.add(0, msg);
+                //TODO add only if its code equal to current SendMessage instance's codegroup
+                if(msg.getString("code") != null && SendMessage.groupCode != null && msg.getString("code").equals(SendMessage.groupCode)) {
+                    SendMessage.groupDetails.add(0, msg);
+                    SendMessage.totalClassMessages++; //increment one by one only for the concerned messages
+                }
             }
 
             SendMessage.notifyAdapter(); //just notify, as the content(new msg) has been added
-            SendMessage.totalClassMessages += messagesToSend.size();
 
             Log.d(ComposeMessage.LOGTAG, "source inside - added to SendMessage.groupdetails #=" + messagesToSend.size() +
                     " total SendMessage count=" + SendMessage.totalClassMessages + ", #visible outbox msgs=" + SendMessage.groupDetails.size());

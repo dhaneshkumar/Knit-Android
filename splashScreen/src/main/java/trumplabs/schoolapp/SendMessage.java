@@ -64,7 +64,7 @@ public class SendMessage extends MyActionBarActivity  {
     private static myBaseAdapter myadapter;        //Adapter for listview
     private int ACTION_MODE_NO;
     private ArrayList<ParseObject> selectedlistitems; // To delete selected messages
-    private static String groupCode;      //class-code
+    public static String groupCode;      //class-code
     public static List<ParseObject> groupDetails;     // List of group messages
     private static String grpName;        //class-name
     private Queries query;
@@ -83,6 +83,7 @@ public class SendMessage extends MyActionBarActivity  {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ccmsging_layout);
 
@@ -117,6 +118,8 @@ public class SendMessage extends MyActionBarActivity  {
         {
             Utility.logout(); return;}
 
+
+        groupDetails = new ArrayList<>(); //important since now its static variable so need to reset
         // retrieving sent messages of given class from local database
         try {
             groupDetails = query.getLocalCreateMsgs(groupCode, groupDetails, false);
