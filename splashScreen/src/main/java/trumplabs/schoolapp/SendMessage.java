@@ -64,9 +64,9 @@ public class SendMessage extends MyActionBarActivity  {
     private static myBaseAdapter myadapter;        //Adapter for listview
     private int ACTION_MODE_NO;
     private ArrayList<ParseObject> selectedlistitems; // To delete selected messages
-    public static String groupCode;      //class-code
-    private List<ParseObject> groupDetails;     // List of group messages
-    public static String grpName;        //class-name
+    private static String groupCode;      //class-code
+    public static List<ParseObject> groupDetails;     // List of group messages
+    private static String grpName;        //class-name
     private Queries query;
     public static LinearLayout progressLayout;
     private SessionManager session;
@@ -222,6 +222,7 @@ public class SendMessage extends MyActionBarActivity  {
             public void onClick(View v) {
 
                 Intent intent = new Intent(SendMessage.this, ComposeMessage.class);
+                intent.putExtra(Constants.ComposeSource.KEY, Constants.ComposeSource.INSIDE);
                 intent.putExtra("CLASS_CODE", groupCode);
                 intent.putExtra("CLASS_NAME", grpName);
                 startActivity(intent);

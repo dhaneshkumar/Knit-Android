@@ -123,6 +123,10 @@ public class ComposeMessageHelper {
         }
 
         if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
+            //just update Outbox msgs and notify. No need to worry about SendMessage page as from here
+            // we will return to OUTSIDE and when we go to SendMessage page its onCreate will be called
+            // By that time, new msgs would have been pinned and will appear when queried
+
             if(Outbox.groupDetails == null){
                 Outbox.groupDetails = new ArrayList<>();
             }
@@ -135,17 +139,33 @@ public class ComposeMessageHelper {
 
             Outbox.totalOutboxMessages += messagesToSend.size(); //totalOutboxMessages would have a proper value since source is MainActivity
 
-            Log.d(ComposeMessage.LOGTAG, "source outside - adding to Outbox.groupdetails #=" + messagesToSend.size() +
-                    " total outbox count=" + Outbox.totalOutboxMessages + ", # outbox msgs=" + Outbox.groupDetails.size());
+            Log.d(ComposeMessage.LOGTAG, "source outside - added to Outbox.groupdetails #=" + messagesToSend.size() +
+                    " total outbox count=" + Outbox.totalOutboxMessages + ", #visible outbox msgs=" + Outbox.groupDetails.size());
         }
-        else{
+        else{//source is INSIDE i.e
+            //From here will return to SendMessage of the class
             //add to SendMessage, update total count, notify its adapter
             //set Outbox.needLoading flag true so that when we reach outbox on swiping from classrooms page, we're done
+
+            Outbox.needLoading = true;
+
+            if(SendMessage.groupDetails == null){
+                SendMessage.groupDetails = new ArrayList<>();
+            }
+
+            Log.d(ComposeMessage.LOGTAG, "source inside - current # sendmessage msgs=" + SendMessage.groupDetails.size());
+            for(ParseObject msg : messagesToSend){
+                SendMessage.groupDetails.add(0, msg);
+            }
+
+            SendMessage.notifyAdapter(); //just notify, as the content(new msg) has been added
+            SendMessage.totalClassMessages += messagesToSend.size();
+
+            Log.d(ComposeMessage.LOGTAG, "source inside - added to SendMessage.groupdetails #=" + messagesToSend.size() +
+                    " total SendMessage count=" + SendMessage.totalClassMessages + ", #visible outbox msgs=" + SendMessage.groupDetails.size());
         }
 
-        ComposeMessage.sendButtonClicked = true;
-
-        //Outbox.needLoading = true; //handle in MainActivity when tab is changed
+        ComposeMessage.sendButtonClicked = true; //Quick hack to compensate delayed(after pinning of msgs) spawning of pending msg thread
     }
 
     /*always called in thread for background sending

@@ -940,7 +940,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 public void onClick(View v) {
                     Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
 
-                    intent.putExtra("SOURCE", "OUTSIDE"); //i.e not from within a particular classroom's page
+                    intent.putExtra(Constants.ComposeSource.KEY, Constants.ComposeSource.OUTSIDE); //i.e not from within a particular classroom's page
 
                     if(position ==0)
                         intent.putExtra("SELECT_ALL", true);

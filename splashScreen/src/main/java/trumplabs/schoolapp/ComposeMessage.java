@@ -127,8 +127,8 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                 }
             }
 
-            if(getIntent().getExtras().getString("SOURCE") != null){
-                source = getIntent().getExtras().getString("SOURCE");
+            if(getIntent().getExtras().getString(Constants.ComposeSource.KEY) != null){
+                source = getIntent().getExtras().getString(Constants.ComposeSource.KEY);
             }
 
             final String finalWebViewContent = selectedClasses;

@@ -126,6 +126,7 @@ public class Constants {
     }
 
     public static class ComposeSource{
+      public static final String KEY = "SOURCE";
       public static final String INSIDE = "INSIDE";
       public static final String OUTSIDE = "OUTSIDE";
     }
