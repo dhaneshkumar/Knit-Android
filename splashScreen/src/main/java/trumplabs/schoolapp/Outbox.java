@@ -60,7 +60,7 @@ public class Outbox extends Fragment {
     protected LayoutInflater layoutinflater;
     public static RecycleAdapter myadapter;
     private static RecyclerView outboxListv;
-    Queries query;
+    private Queries query;
     public static List<ParseObject> groupDetails; // List of group messages
     Activity myActivity;
     private LinearLayoutManager mLayoutManager;

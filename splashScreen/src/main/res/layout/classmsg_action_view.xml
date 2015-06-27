@@ -17,9 +17,9 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="tap to view subscribers"
-        android:textColor="@color/white"
-        android:id="@+id/textView4"
+        android:text="class-code"
+        android:textColor="#E6EDF1"
+        android:id="@+id/class_code"
         android:textSize="11sp"
         android:layout_marginTop="-4dp"
         android:layout_below="@+id/className"

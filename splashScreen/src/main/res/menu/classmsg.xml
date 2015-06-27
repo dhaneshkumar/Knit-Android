@@ -2,12 +2,14 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
+    <item android:id="@+id/copyCode"
+        app:showAsAction="never"
+        android:title="Copy Class code"/>
+
     <item android:id="@+id/deleteclassmenu"
        app:showAsAction="never"
        android:title="Delete Class"/>
 
-    <item android:id="@+id/copyCode"
-        app:showAsAction="never"
-        android:title="Copy Class code"/>
+
     
 </menu>

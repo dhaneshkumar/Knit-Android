@@ -1,20 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/lightbackgroundcolor"
     android:gravity="center_horizontal"
     android:orientation="vertical">
-
-    <TextView
-        android:id="@+id/internetbar"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:background="@color/internetbarcolor"
-        android:gravity="center"
-        android:text="No internet Connection"
-        android:textColor="@color/white"
-        android:visibility="gone" />
 
     <LinearLayout
         android:id="@+id/progresslayout"
@@ -32,33 +22,102 @@
 
     <LinearLayout
         android:id="@+id/contentLayout"
+        android:layout_below="@+id/progresslayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/inviteLayout"
+
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:padding="6dp"
             android:background="@color/white">
 
+            <RelativeLayout
+                android:id="@+id/memberLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="5"
+                android:paddingRight="16dp"
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="6dp"
+                android:gravity="center"
+                >
             <ImageButton
+                android:id="@+id/members"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/plus_blue"
+                android:layout_centerVertical="true"
+                android:background="@drawable/ic_action_users"
                 />
-
+            <TextView
+                android:id="@+id/memberCount"
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="8dp"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/members"
+                android:text="5"
+                android:textStyle="bold"
+                android:textColor="@color/color_secondary"
+                android:textSize="16sp"
+                />
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Members"
+                android:layout_marginTop="-2dp"
+                android:textColor="@color/greyDark"
+                android:layout_alignLeft="@+id/memberCount"
+                android:layout_below="@+id/memberCount"
+                android:textSize="13sp" />
+            </RelativeLayout>
+
+            <TextView
+                android:layout_width="1dp"
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp"
+                android:layout_height="wrap_content"
+                android:background="#CBCBCB"
+                android:layout_gravity="center"
+                />
+            <RelativeLayout
+                android:id="@+id/inviteLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="6"
                 android:gravity="center"
-                android:layout_marginLeft="4dp"
-                android:text="Invite Parents &amp; Students"
-                android:textColor="@color/buttoncolor"
-                android:textSize="16sp" />
+                android:paddingTop="4dp"
+                android:paddingBottom="6dp"
+                >
+                <ImageButton
+                    android:id="@+id/addMemberIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/add_user"
+                    />
+                <TextView
+                    android:id="@+id/addText"
+                    android:layout_marginLeft="8dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/addMemberIcon"
+                    android:text="Invite"
+                    android:textStyle="bold"
+                    android:textColor="@color/color_secondary"
+                    android:textSize="16sp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="-2dp"
+                    android:text="Students &amp; Parents"
+                    android:textColor="@color/greyDark"
+                    android:layout_alignLeft="@+id/addText"
+                    android:layout_below="@+id/addText"
+                    android:textSize="13sp" />
+            </RelativeLayout>
         </LinearLayout>
 
         <TextView
@@ -70,153 +129,21 @@
             android:id="@+id/classmsglistview"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_marginBottom="4dp"
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
-            android:layout_marginTop="8dp"
+            android:layout_marginTop="4dp"
             android:layout_weight="1"
             android:background="@color/lightbackgroundcolor"
             android:divider="@color/lightbackgroundcolor"
             android:dividerHeight="8dp"
-            android:stackFromBottom="true"
-            android:transcriptMode="normal" />
-
-        <ProgressBar
-            android:id="@+id/updprogressbar"
-            android:layout_width="match_parent"
-            android:layout_height="24dp"
-            android:layout_gravity="center"
-            android:background="@color/transparent"
-            android:visibility="visible" />
-
-        <LinearLayout
-            android:id="@+id/progressBarLayout"
-            android:layout_width="match_parent"
-            android:layout_height="124dp"
-            android:layout_marginBottom="4dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="0dp"
-            android:background="@color/white"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <ProgressBar
-                android:id="@+id/progressBar1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="5dp"
-                android:text="Loading Image..."
-                android:textSize="18dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/imgpreview"
-            android:layout_width="match_parent"
-            android:layout_height="124dp"
-            android:background="@color/white"
-            android:padding="6dp"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/attachedimg"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:background="@color/lightbackgroundcolor"></ImageView>
-
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="124dp"
-                android:gravity="center"
-                android:orientation="vertical">
-
-                <Button
-                    android:id="@+id/viewbutton"
-                    android:layout_width="96dp"
-                    android:layout_height="48dp"
-                    android:text="View"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-
-                <Button
-                    android:id="@+id/removebutton"
-                    android:layout_width="96dp"
-                    android:layout_height="48dp"
-                    android:text="Remove"
-                    android:textColor="@color/black"
-                    android:textSize="14sp" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/buttoncolor" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:paddingTop="5dp">
-
-            <ImageButton
-                android:id="@+id/gallery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@drawable/plus_blue"
-                android:minHeight="32dp"
-                android:minWidth="32dp"
-                android:padding="6dp"
-                android:src="@drawable/plus_blue" />
-
-            <EditText
-                android:id="@+id/typedmsg"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginBottom="4dp"
-                android:layout_weight="1"
-                android:background="#00000000"
-                android:hint="Type your message here..."
-                android:maxLength="300"
-                android:paddingBottom="10dp"
-                android:paddingLeft="4dp"
-                android:paddingRight="2dp"
-                android:paddingTop="5dp"
-                android:textColor="@color/black"
-                android:textCursorDrawable="@null"
-                android:textSize="16sp">
-
-                <requestFocus />
-            </EditText>
-
-
-            <TextView
-                android:id="@+id/lettercount"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:gravity="center"
-                android:text=""
-                android:textColor="@color/buttoncolor"
-                android:textSize="12sp" />
-
-            <ImageButton
-                android:id="@+id/sendmsgbttn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="@color/white"
-                android:minHeight="48dp"
-                android:minWidth="48dp"
-                android:layout_marginTop="-2dp"
-                android:src="@drawable/send_grey" />
-        </LinearLayout>
+            />
     </LinearLayout>
-</LinearLayout>
+
+    <com.software.shell.fab.ActionButton
+        android:id="@+id/action_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        />
+</RelativeLayout>
