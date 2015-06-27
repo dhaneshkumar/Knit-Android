@@ -4,12 +4,14 @@
     <item android:id="@+id/createclass"
         app:showAsAction="always"
         android:title="CREATE"
+        app:actionViewClass="android.widget.ImageView"
         android:icon="@drawable/ic_action_add"
         />
 
     <item android:id="@+id/joinclass"
         app:showAsAction="always"
         android:icon="@drawable/ic_action_import"
+        app:actionViewClass="android.widget.ImageView"
         android:title="JOIN"/>
 
     <item android:id="@+id/refresh"

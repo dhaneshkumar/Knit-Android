@@ -148,6 +148,17 @@ public class SessionManager {
         return pref.getBoolean(eventId, false);
     }
 
+
+    //id is <username>_<tutorial_name>
+    public void setTutorialState(String id, boolean state){
+        editor.putBoolean(id, state);
+        editor.commit();
+    }
+
+    public boolean getTutorialState(String eventId){
+        return pref.getBoolean(eventId, false);
+    }
+
   /*
    * updating current time
    * We will store delta instead of server time.

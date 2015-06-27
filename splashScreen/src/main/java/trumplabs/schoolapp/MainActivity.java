@@ -37,6 +37,9 @@ import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.software.shell.fab.ActionButton;
 
@@ -45,6 +48,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import BackGroundProcesses.Refresher;
+import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import additionals.RateAppDialog;
 import additionals.SpreadWordDialog;
@@ -56,6 +60,7 @@ import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
+import tutorial.ShowcaseCreator;
 import utility.Config;
 import utility.SessionManager;
 import utility.Utility;
@@ -86,8 +91,63 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
 
+    public static boolean isTeacherCreateShowcaseShown = false;
+    public static boolean isParentJoinShowcaseShown = false;
+
+    public static int fragmentVisible = 0; //which fragment is visible, changed in viewpager's PageChangeListener
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //TODO delete from here(TESTING APP TUTORIAL FUNCTIONALITY)
+        //Constants.IS_SIGNUP = true;
+
+        /*SessionManager mgr = new SessionManager(Application.getAppContext());
+        String t1 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+        String t2 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+        mgr.setTutorialState(t1, false);
+        mgr.setTutorialState(t2, false);*/
+
+        //delete SentMessges
+        /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
+        deleteOutbox.fromLocalDatastore();
+        deleteOutbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        try{
+            List<ParseObject> msgs = deleteOutbox.find();
+            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            ParseObject.unpinAll(msgs);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }*/
+
+        //delete Inbox messages
+        /*ParseQuery deleteInbox = new ParseQuery(Constants.GROUP_DETAILS);
+        deleteInbox.fromLocalDatastore();
+        deleteInbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        try{
+            List<ParseObject> msgs = deleteInbox.find();
+            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            ParseObject.unpinAll(msgs);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }*/
+
+        //delete Inbox messages
+        /*ParseQuery deleteLocal = new ParseQuery("LocalMessages");
+        deleteLocal.fromLocalDatastore();
+        deleteLocal.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        try{
+            List<ParseObject> msgs = deleteLocal.find();
+            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            ParseObject.unpinAll(msgs);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }*/
+        //TODO delete upto here
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
 
@@ -262,17 +322,19 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
                         hideButttonContainer(Classrooms.buttonContainer);
-                      /*  if(Outbox.needLoading){
-                            Log.d(SendPendingMessages.LOGTAG, "lazy loading outbox");
+                        fragmentVisible = 0;
+                        if(Outbox.needLoading){
+                            Log.d(SendPendingMessages.LOGTAG, "(has joined class) lazy loading outbox");
                             Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                           8 outboxAT.execute();
-                        }*/
+                            outboxAT.execute();//it also sets the 'needLoading' flag false
+                        }
                     } else if (position == 1) {
 
                         params.width = screenwidth * 5 / 13;
                         params.setMargins((screenwidth * 3 / 13) + (positionOffsetPixels * 5 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
 
+                        fragmentVisible = 1;
                         highLightTab2();
                         showButttonContainer(Classrooms.buttonContainer);
 
@@ -281,20 +343,32 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         params.setMargins((8 * screenwidth / 13), 0, 0, 0);
                         tabcolor.setLayoutParams(params);
                         highLightTab3();
+                        fragmentVisible = 2;
+                        if(Messages.myadapter != null){
+                            Messages.myadapter.notifyDataSetChanged(); //we're in gui now
+                        }
                         hideButttonContainer(Classrooms.buttonContainer);
                     }
-                }else
-                {
+                }
+                else {
                     params.width = screenwidth  / 2;
                     if (position == 0) {
                         params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
                         hideButttonContainer(Classrooms.buttonContainer);
+                        fragmentVisible = 0;
+
+                        if(Outbox.needLoading){
+                            Log.d(SendPendingMessages.LOGTAG, "(no joined class) lazy loading outbox");
+                            Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
+                            outboxAT.execute();//it also sets the 'needLoading' flag false
+                        }
                     } else {
                         params.setMargins((screenwidth /2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
                         highLightTab2();
+                        fragmentVisible = 1;
                         showButttonContainer(Classrooms.buttonContainer);
                     }
                 }
@@ -368,7 +442,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         //Check if parent/student has just signed up and show join class dialog
-        Intent intent = getIntent();
+        //Not used. Show the dialog after tutorial is over
+        /*Intent intent = getIntent();
         if(intent != null && intent.getExtras() != null) {
             String signup = intent.getExtras().getString("flag");
 
@@ -396,7 +471,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 Constants.signup_inbox= true;
                 Constants.signup_outbox = true;
             }
-        }
+        }*/
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
@@ -499,10 +574,55 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         else
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
 
-        if (!role.equals("teacher")) {
+        if(role.equals(Constants.TEACHER)){
+            //prepare action views for menu items - create and join
+            final ImageView createClassActionView = (ImageView) menu.findItem(R.id.createclass).getActionView();
+            final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
+
+
+            int pixels = Utility.dpiToPixels(56); //56 dpi is the default spacing between action bar items
+
+            createClassActionView.setMinimumWidth(pixels);
+            joinClassActionView.setMinimumWidth(pixels);
+
+            createClassActionView.setImageResource(R.drawable.ic_action_add);
+            joinClassActionView.setImageResource(R.drawable.ic_action_import);
+
+            createClassActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm = getSupportFragmentManager();
+                    CreateClassDialog createClassDialog = new CreateClassDialog();
+                    createClassDialog.show(fm, "create class");
+                }
+            });
+
+            joinClassActionView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentManager fm1 = getSupportFragmentManager();
+                    JoinClassDialog joinClassDialog = new JoinClassDialog();
+                    joinClassDialog.show(fm1, "Join Class");
+                }
+            });
+
+            //Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + isTeacherCreateShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
+
+            if(!MainActivity.isTeacherCreateShowcaseShown && Constants.IS_SIGNUP) {
+                MainActivity.isTeacherCreateShowcaseShown = true;
+                Log.d(ShowcaseCreator.LOGTAG, "teacher create: creating showcase");
+                ShowcaseCreator.teacherHighlightCreate(this, createClassActionView, joinClassActionView); //show now
+            }
+        }
+        else{
             //prepare action views for menu items - join and joined
             final ImageView joinClassActionView = (ImageView) menu.findItem(R.id.joinclass).getActionView();
             final ImageView joinedClassesActionView = (ImageView) menu.findItem(R.id.joinedclasses).getActionView();
+
+            int pixels = Utility.dpiToPixels(56); //56 dpi is the default spacing between action bar items
+
+            joinClassActionView.setMinimumWidth(pixels);
+            joinedClassesActionView.setMinimumWidth(pixels);
 
             joinClassActionView.setImageResource(R.drawable.ic_action_import);
             joinedClassesActionView.setImageResource(R.drawable.ic_action_document);
@@ -523,10 +643,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            //setting up views to highlight
-            Log.d("_TEMP_", "setting up action bar views to showcase");
-            Messages.t1 = joinClassActionView;
-            Messages.t2 = joinedClassesActionView;
+            Log.d(ShowcaseCreator.LOGTAG, "parent join: flag=" + isParentJoinShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
+            if(!MainActivity.isParentJoinShowcaseShown && Constants.IS_SIGNUP) {
+                MainActivity.isParentJoinShowcaseShown = true;
+                Log.d(ShowcaseCreator.LOGTAG, "parent join:  creataing the showcase");
+                ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now
+            }
         }
 
         return true;
@@ -545,12 +667,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 break;
 
             case R.id.createclass:
+                //not used here. set in onCreateOptionsMenu
                 FragmentManager fm = getSupportFragmentManager();
                 CreateClassDialog createClassDialog = new CreateClassDialog();
                 createClassDialog.show(fm,"create class");
                 break;
 
             case R.id.joinclass:
+                //not used here. set in onCreateOptionsMenu
                 FragmentManager fm1 = getSupportFragmentManager();
                 JoinClassDialog joinClassDialog = new JoinClassDialog();
                 joinClassDialog.show(fm1, "Join Class");

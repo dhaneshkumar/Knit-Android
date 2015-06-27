@@ -30,3 +30,9 @@ proguard/
 
 # Log Files
 *.log
+
+.idea/libraries/*.xml
+.idea/*.xml
+*.iml
+
+gradlew

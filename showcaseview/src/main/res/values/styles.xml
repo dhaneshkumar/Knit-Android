@@ -36,7 +36,7 @@
     <style name="ShowcaseView">
         <item name="sv_titleTextAppearance">@style/TextAppearance.ShowcaseView.Title</item>
         <item name="sv_detailTextAppearance">@style/TextAppearance.ShowcaseView.Detail</item>
-        <item name="sv_backgroundColor">#E0070707</item>
+        <item name="sv_backgroundColor">#CA070707</item>
         <item name="sv_buttonText">@android:string/ok</item>
     </style>
 

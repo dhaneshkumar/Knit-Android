@@ -41,7 +41,7 @@ class NewShowcaseDrawer extends StandardShowcaseDrawer {
     }
 
     @Override
-    public void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier) {
+    public void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier, boolean erase) {
         Canvas bufferCanvas = new Canvas(buffer);
         eraserPaint.setAlpha(ALPHA_60_PERCENT);
         bufferCanvas.drawCircle(x, y, outerRadius*scaleMultiplier, eraserPaint);

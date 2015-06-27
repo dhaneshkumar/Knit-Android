@@ -26,7 +26,7 @@ interface ShowcaseDrawer {
 
     void setShowcaseColour(int color);
 
-    void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier);
+    void drawShowcase(Bitmap buffer, float x, float y, float scaleMultiplier, boolean erase);
 
     int getShowcaseWidth();
 
