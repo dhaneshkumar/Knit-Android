@@ -96,6 +96,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     public static int fragmentVisible = 0; //which fragment is visible, changed in viewpager's PageChangeListener
 
+    public static boolean goToOutboxFlag = false; //when returns from Message Composer, go directly to Outbox
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -553,6 +554,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         super.onResume();
         Application.mainActivityVisible = true;
         AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+        if(goToOutboxFlag){
+            Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() going to outbox tab");
+            goToOutboxFlag = false;
+            if(viewpager != null) {
+                viewpager.setCurrentItem(0, false); //0th is the outbox tab
+            }
+        }
     }
 
     @Override
@@ -931,6 +939,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+
+                    intent.putExtra("SOURCE", "OUTSIDE"); //i.e not from within a particular classroom's page
 
                     if(position ==0)
                         intent.putExtra("SELECT_ALL", true);

@@ -124,4 +124,9 @@ public class Constants {
       public static final String PARENT_RESPONSE = "_parent_response_tutorial";
       public static final String TEACHER_RESPONSE = "_teacher_response_tutorial";
     }
+
+    public static class ComposeSource{
+      public static final String INSIDE = "INSIDE";
+      public static final String OUTSIDE = "OUTSIDE";
+    }
 }

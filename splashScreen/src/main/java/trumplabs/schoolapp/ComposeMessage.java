@@ -1,6 +1,8 @@
 package trumplabs.schoolapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -8,6 +10,8 @@ import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,9 +32,11 @@ import com.parse.ParseUser;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import trumplab.textslate.R;
+import utility.Config;
 import utility.Tools;
 import utility.Utility;
 
@@ -38,7 +44,7 @@ import utility.Utility;
  * Created by dhanesh on 16/6/15.
  */
 public class ComposeMessage extends ActionBarActivity implements ChooserDialog.CommunicatorInterface{
-
+    public static final String LOGTAG = "DEBUG_COMPOSE_MESSAGE";
     private RelativeLayout sendTo;
     private List<List<String>> classList;
     private final String TRUE = "true";
@@ -53,6 +59,17 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
     public static ImageView sendimgview;
     private Button removebutton;
 
+    public static String source = Constants.ComposeSource.INSIDE;
+                                //i.e inside the particular class page
+                                //"OUTSIDE" i.e from MainActivity
+    //will be used by ComposeMessageHelper to decide what all things to update on sending a message
+
+
+    /* offline msg flags*/
+    public static boolean sendButtonClicked = false; //to show status 'sending' in msg items when background sender job is NOT running & is about to get start(i.e jobRunning flag not set)
+    //this is a quick hack because thread is spawned only when message has been pinned locally(after slight delay), however message is shown in the list immediately.
+    //So we need to show the status of msg as 'sending' even though jobRunning flag is not yet set
+    //It is cleared when either msg is added to queue or new job started
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +127,9 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                 }
             }
 
+            if(getIntent().getExtras().getString("SOURCE") != null){
+                source = getIntent().getExtras().getString("SOURCE");
+            }
 
             final String finalWebViewContent = selectedClasses;
             selectedClassTV.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
@@ -219,8 +239,8 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                 break;
 
             case R.id.send:
-                ComposeMessageHelper composeMessageHelper = new ComposeMessageHelper(ComposeMessage.this, "MATH", "RAN1382");
-                composeMessageHelper.send();
+                Tools.hideKeyboard(ComposeMessage.this);
+                checkTime();
                 break;
 
             default:
@@ -228,6 +248,76 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void  checkTime()
+    {
+        int hourOfDay = -1;
+
+        //using local time instead of session.getCurrentTime
+        Calendar cal = Calendar.getInstance();
+        hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
+
+        Log.d(ComposeMessage.LOGTAG, "send() : hourOfDay=" + hourOfDay);
+
+        if (hourOfDay != -1) {
+
+            //If current message time is not sutaible <9PM- 6AM> then show this warning as popup to users
+            if (hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime) {
+                //note >= and < respectively because disallowed are [ >= EndTime and < StartTime]
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                LinearLayout warningView = new LinearLayout(this);
+                warningView.setOrientation(LinearLayout.VERTICAL);
+                LinearLayout.LayoutParams nameParams =
+                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT);
+                nameParams.setMargins(30, 30, 30, 30);
+
+                final TextView nameInput = new TextView(this);
+                nameInput.setTextSize(16);
+                nameInput.setText(Config.messageTimeWarning);
+                nameInput.setGravity(Gravity.CENTER_HORIZONTAL);
+                warningView.addView(nameInput, nameParams);
+                builder.setView(warningView);
+
+
+                builder.setPositiveButton("SEND", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        sendNow();
+                    }
+                });
+                builder.setNegativeButton("CANCEL", null);
+                AlertDialog dialog = builder.create();
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.show();
+
+            } else {
+                sendNow();
+            }
+        } else {
+            sendNow();
+        }
+    }
+
+    public void sendNow(){
+        //get the selected classes from classlist here
+        List<List<String>> selectedClassList = new ArrayList<>();
+        for(List<String> c : classList){
+            if(c.size() > 2 && c.get(2).equals(TRUE)){
+                selectedClassList.add(c);
+            }
+        }
+
+        Log.d(LOGTAG, "selectedClassList size=" + selectedClassList.size());
+
+        ComposeMessageHelper composeMessageHelper = new ComposeMessageHelper(this, selectedClassList);
+        composeMessageHelper.sendFunction();
+
+        if(source.equals(Constants.ComposeSource.OUTSIDE)){
+            MainActivity.goToOutboxFlag = true;
+        }
+
+        finish(); //activity over. Return to parent(MainActivity or SendMessage - whatsoever it may be)
     }
 
     @Override

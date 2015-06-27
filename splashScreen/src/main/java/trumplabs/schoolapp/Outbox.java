@@ -442,7 +442,7 @@ public class Outbox extends Fragment {
             if (pending) {//this message is not yet sent
                 holder.seen.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.VISIBLE);
-                if (SendPendingMessages.isJobRunning()) {
+                if (SendPendingMessages.isJobRunning() || ComposeMessage.sendButtonClicked) {
                     holder.retryButton.setClickable(false);
                     holder.retryButton.setText("Sending");
                     holder.retryButton.setTextColor(getResources().getColor(R.color.grey_light));

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
@@ -20,9 +21,11 @@ import com.parse.SaveCallback;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import BackGroundProcesses.SendPendingMessages;
 import library.UtilString;
@@ -39,20 +42,17 @@ public class ComposeMessageHelper {
     private Context context;
     private String typedtxt;
 
-    private String groupCode;
-    private String grpName;
+    List<List<String>> selectedClassList;
     private String sender;
     private String userId;        //really needed to store ???????????????
     private ParseUser user;
     private SessionManager session;
 
-    ComposeMessageHelper(Activity context, String grpName, String groupCode)
+    ComposeMessageHelper(Activity context, List<List<String>> classList)
     {
         this.context = context;
-        this.grpName = grpName;
-        this.groupCode = groupCode;
+        this.selectedClassList = classList;
         typedmsg = (EditText) context.findViewById(R.id.typedmsg);
-
 
         user = ParseUser.getCurrentUser();
         userId = user.getUsername();
@@ -60,62 +60,12 @@ public class ComposeMessageHelper {
         session = new SessionManager(Application.getAppContext());
     }
 
-    public void  send()
-    {
-        int hourOfDay = -1;
-        if (session != null) {
-            //using local time instead of session.getCurrentTime
-            //Date now = session.getCurrentTime();
-            Calendar cal = Calendar.getInstance();
-            //cal.setTime(now);
-            hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
-        }
-
-
-        if (hourOfDay != -1) {
-
-            //If current message time is not sutaible <9PM- 6AM> then show this warning as popup to users
-            if (hourOfDay >= Config.messageNormalEndTime || hourOfDay < Config.messageNormalStartTime) {
-                //note >= and < respectively because disallowed are [ >= EndTime and < StartTime]
-                AlertDialog.Builder builder = new AlertDialog.Builder(context);
-                LinearLayout warningView = new LinearLayout(context);
-                warningView.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout.LayoutParams nameParams =
-                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT);
-                nameParams.setMargins(30, 30, 30, 30);
-
-                final TextView nameInput = new TextView(context);
-                nameInput.setTextSize(16);
-                nameInput.setText(Config.messageTimeWarning);
-                nameInput.setGravity(Gravity.CENTER_HORIZONTAL);
-                warningView.addView(nameInput, nameParams);
-                builder.setView(warningView);
-
-
-                builder.setPositiveButton("SEND", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        sendFunction();
-                    }
-                });
-                builder.setNegativeButton("CANCEL", null);
-                AlertDialog dialog = builder.create();
-                dialog.setCanceledOnTouchOutside(true);
-                dialog.show();
-
-            } else {
-                sendFunction();
-            }
-        } else {
-            sendFunction();
-        }
-    }
-
     /*
     Send messages to subscribers
      */
     public void sendFunction() {
 
+        Log.d(ComposeMessage.LOGTAG, "helper : sendFunction()");
         typedtxt = typedmsg.getText().toString().trim();  //message to send
 
         //check internet connection - NOT REQUIRED - as offline messaging support
@@ -142,37 +92,60 @@ public class ComposeMessageHelper {
         }
     }
 
-
-
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
+        List<ParseObject> messagesToSend = new ArrayList<>();
+        for(List<String> cls : selectedClassList){
+            final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
+            sentMsg.put("Creator", sender);
+            sentMsg.put("code", cls.get(0)); //code @ 0
+            sentMsg.put("title", typedtxt);
+            sentMsg.put("name", cls.get(1)); //name @ 1
+            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+            sentMsg.put("senderId", userId);
+            sentMsg.put("userId", userId);
+            sentMsg.put("pending", true);
 
-        final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-        sentMsg.put("Creator", sender);
-        sentMsg.put("code", groupCode);
-        sentMsg.put("title", typedtxt);
-        sentMsg.put("name", grpName);
-        sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
-        sentMsg.put("senderId", userId);
-        sentMsg.put("userId", userId);
+            typedmsg.setText(""); //for reuse
 
-        typedmsg.setText(""); //for reuse
+            messagesToSend.add(sentMsg);
 
-        sentMsg.pinInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    SendPendingMessages.addMessageToQueue(sentMsg);
-                } else {
-                    e.printStackTrace();
-                    Utility.toastDone("Sorry! Can't send your message");
+            sentMsg.pinInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        SendPendingMessages.addMessageToQueue(sentMsg);
+                    } else {
+                        e.printStackTrace();
+                        Utility.toastDone("Sorry! Can't send your message");
+                    }
                 }
+            });
+        }
+
+        if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
+            if(Outbox.groupDetails == null){
+                Outbox.groupDetails = new ArrayList<>();
             }
-        });
+            Log.d(ComposeMessage.LOGTAG, "source outside - current # outbox msgs=" + Outbox.groupDetails.size());
+            for(ParseObject msg : messagesToSend){
+                Outbox.groupDetails.add(0, msg);
+            }
 
-        //TODO Notify and update "Outbox" page messages and count also
-        Outbox.needLoading = true; //handle in MainActivity when tab is changed
+            Outbox.refreshSelf();//not just adapter notify but also make sure that the layout changes(No sent messages -> msg list)
 
-        //updProgressBar.setVisibility(View.VISIBLE); not needed now as immediately showing the offline message
+            Outbox.totalOutboxMessages += messagesToSend.size(); //totalOutboxMessages would have a proper value since source is MainActivity
+
+            Log.d(ComposeMessage.LOGTAG, "source outside - adding to Outbox.groupdetails #=" + messagesToSend.size() +
+                    " total outbox count=" + Outbox.totalOutboxMessages + ", # outbox msgs=" + Outbox.groupDetails.size());
+        }
+        else{
+            //add to SendMessage, update total count, notify its adapter
+            //set Outbox.needLoading flag true so that when we reach outbox on swiping from classrooms page, we're done
+        }
+
+        ComposeMessage.sendButtonClicked = true;
+
+        //Outbox.needLoading = true; //handle in MainActivity when tab is changed
     }
 
     /*always called in thread for background sending
@@ -212,8 +185,9 @@ public class ComposeMessageHelper {
                     err.printStackTrace();
                 }
 
+                SendMessage.notifyAdapter();
                 //just notify outbox - no new query or updating count (since an old message just got new status)
-                Outbox.refreshSelf();
+                Outbox.notifyAdapter();
                 return 0; //success
             }
             return -1; //unexpected error
@@ -227,47 +201,68 @@ public class ComposeMessageHelper {
         }
     }
 
-
-
     // Send Image Pic
     private void sendPic(String filepath, String txtmsg){
+        List<ParseObject> messagesToSend = new ArrayList<>();
+        for(List<String> cls : selectedClassList) {
+            if (filepath == null) return;
 
-        if (filepath == null) return;
+            final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
+            sentMsg.put("Creator", sender);
+            sentMsg.put("code", cls.get(0));
+            sentMsg.put("title", txtmsg);
+            sentMsg.put("name", cls.get(1));
+            SessionManager session = new SessionManager(Application.getAppContext());
+            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+            sentMsg.put("senderId", userId);
+            sentMsg.put("userId", userId);
+            sentMsg.put("pending", true);
 
-        final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-        sentMsg.put("Creator", sender);
-        sentMsg.put("code", groupCode);
-        sentMsg.put("title", txtmsg);
-        sentMsg.put("name", grpName);
-        SessionManager session = new SessionManager(Application.getAppContext());
-        sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
-        sentMsg.put("senderId", userId);
-        sentMsg.put("userId", userId);
-        sentMsg.put("pending", true);
+            int slashindex = filepath.lastIndexOf("/");
+            final String fileName = filepath.substring(slashindex + 1);// image file //
 
-        // /Creating ParseFile (Not yet uploaded)
-        int slashindex = filepath.lastIndexOf("/");
-        final String fileName = filepath.substring(slashindex + 1);// image file //
+            if (fileName != null)
+                sentMsg.put("attachment_name", fileName);
 
-        if (fileName != null)
-            sentMsg.put("attachment_name", fileName);
+            typedmsg.setText(""); //for reuse
 
-        typedmsg.setText(""); //for reuse
+            messagesToSend.add(sentMsg);
 
-        sentMsg.pinInBackground(new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    SendPendingMessages.addMessageToQueue(sentMsg);
-                } else {
-                    e.printStackTrace();
-                    Utility.toast("Unable to send message!");
+            sentMsg.pinInBackground(new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e == null) {
+                        SendPendingMessages.addMessageToQueue(sentMsg);
+                    } else {
+                        e.printStackTrace();
+                        Utility.toast("Unable to send message!");
+                    }
                 }
+            });
+        }
+
+        if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
+
+            if(Outbox.groupDetails == null){
+                Outbox.groupDetails = new ArrayList<>();
             }
-        });
+            for(ParseObject msg : messagesToSend){
+                Outbox.groupDetails.add(0, msg);
+            }
+
+            Outbox.refreshSelf();
+
+            Outbox.totalOutboxMessages += messagesToSend.size(); //totalOutboxMessages would have a proper value since source is MainActivity
+        }
+        else{
+            //add to SendMessage, update total count, notify its adapter
+            //set Outbox.needLoading flag true so that when we reach outbox on swiping from classrooms page, we're done
+        }
+
+        ComposeMessage.sendButtonClicked = true;
 
         //TODO Notify and update "Outbox" page messages and count also
-        Outbox.needLoading = true; //handle in MainActivity when tab is changed
+        //Outbox.needLoading = true; //handle in MainActivity when tab is changed
     }
 
     //refer to sendTextMessageCloud
@@ -325,13 +320,9 @@ public class ComposeMessageHelper {
                     e1.printStackTrace();
                 }
 
-                //showing popup if live
-                if (isLive) {
-                    Utility.toastDone("Notification Sent");
-                }
-
+                SendMessage.notifyAdapter();
                 //just notify outbox - no new query or updating count (since an old message just got new status)
-                Outbox.refreshSelf();
+                Outbox.notifyAdapter();
                 return 0;
             }
             return -1;

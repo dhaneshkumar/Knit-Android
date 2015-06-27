@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import library.UtilString;
+import trumplabs.schoolapp.ComposeMessage;
 import trumplabs.schoolapp.ComposeMessageHelper;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
@@ -68,7 +69,7 @@ public class SendPendingMessages {
             if(jobRunning) {
                 if (pendingMessageQueue != null) {
                     pendingMessageQueue.add(msg);
-                    SendMessage.sendButtonClicked = false; //Since added to queue, hence a job is already running
+                    ComposeMessage.sendButtonClicked = false; //Since added to queue, hence a job is already running
                     Log.d(LOGTAG, "[GUI] addMessageToQueue() added to queue");
                 }
             }
@@ -100,7 +101,7 @@ public class SendPendingMessages {
             Log.d(LOGTAG, "sendPendingMessages : job started");
 
             jobRunning = true;
-            SendMessage.sendButtonClicked = false; //Since new job has now started
+            ComposeMessage.sendButtonClicked = false; //Since new job has now started
             notifyAllAdapters();
 
             ParseQuery parseQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);

@@ -97,11 +97,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
     public static LinearLayout picProgressBarLayout;
     public static ImageButton sendmsgbutton;
 
-    /* offline msg flags*/
-    public static boolean sendButtonClicked = false; //to show status 'sending' in msg items when background sender job is NOT running & is about to get start(i.e jobRunning flag not set)
-    //this is a quick hack because thread is spawned only when message has been pinned locally(after slight delay), however message is shown in the list immediately.
-    //So we need to show the status of msg as 'sending' even though jobRunning flag is not yet set
-    //It is cleared when either msg is added to queue or new job started
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -460,7 +456,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
             if(pending){//this message is not yet sent
                 seenCountArea.setVisibility(View.GONE);
                 retryButton.setVisibility(View.VISIBLE);
-                if(SendPendingMessages.isJobRunning() || sendButtonClicked){
+                if(SendPendingMessages.isJobRunning() || ComposeMessage.sendButtonClicked){
                     retryButton.setClickable(false);
                     retryButton.setText("Sending");
                     retryButton.setTextColor(getResources().getColor(R.color.grey_light));
@@ -924,7 +920,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         typedmsg.setText(""); //for reuse
 
         //so as to immediately show this msg as 'sending' in the list
-        sendButtonClicked = true;
+        ComposeMessage.sendButtonClicked = true;
 
         //Refresh the list
         myadapter.notifyDataSetChanged(); //immediately show message in the sent list
@@ -1040,7 +1036,7 @@ public class SendMessage extends MyActionBarActivity implements ChooserDialog.Co
         groupDetails.add(sentMsg);
         typedmsg.setText(""); //for reuse
         //Refresh the list
-        sendButtonClicked = true;
+        ComposeMessage.sendButtonClicked = true;
         myadapter.notifyDataSetChanged();
 
         sentMsg.pinInBackground(new SaveCallback() {
