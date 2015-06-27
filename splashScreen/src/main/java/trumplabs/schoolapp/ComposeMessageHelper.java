@@ -53,7 +53,6 @@ public class ComposeMessageHelper {
         this.groupCode = groupCode;
         typedmsg = (EditText) context.findViewById(R.id.typedmsg);
 
-
         user = ParseUser.getCurrentUser();
         userId = user.getUsername();
         sender = user.getString(Constants.NAME);

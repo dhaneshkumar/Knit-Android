@@ -331,8 +331,9 @@ public class Queries {
         Date oldTime = null;
 
         if (groupDetails != null && groupDetails.size() > 0) {
-            if (groupDetails.get(0).get("creationTime") != null)
-                oldTime = (Date) groupDetails.get(0).get("creationTime");
+            int lastItem = groupDetails.size()-1;
+            if (groupDetails.get(lastItem).get("creationTime") != null)
+                oldTime = (Date) groupDetails.get(lastItem).get("creationTime");
         } else
             groupDetails = new ArrayList<ParseObject>();
 
@@ -370,13 +371,8 @@ public class Queries {
 
         // appending extra objects to the end of list
 
-        for(int i=0; i<pendingMessages.size(); i++){
-            groupDetails.add(0, pendingMessages.get(i));
-        }
-
-        for (int i = 0; i < msgList1.size(); i++) {
-            groupDetails.add(0, msgList1.get(i));
-        }
+        groupDetails.addAll(pendingMessages);
+        groupDetails.addAll(msgList1);
 
         return groupDetails;
     }
