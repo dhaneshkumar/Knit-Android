@@ -25,6 +25,8 @@ import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Build;
+import android.print.PrintAttributes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -113,6 +115,13 @@ public class ShowcaseView extends RelativeLayout
                 .obtainStyledAttributes(attrs, R.styleable.ShowcaseView, R.attr.showcaseViewStyle,
                         R.style.ShowcaseView);
 
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
+        this.setLayoutParams(params);
+
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            this.setFitsSystemWindows(true); //for >= 14 (first time soft keys introduced
+        }
+
         // Set the default animation times
         fadeInMillis = getResources().getInteger(android.R.integer.config_mediumAnimTime);
         fadeOutMillis = getResources().getInteger(android.R.integer.config_mediumAnimTime);
@@ -137,12 +146,12 @@ public class ShowcaseView extends RelativeLayout
         setOnTouchListener(this);
 
         if (mEndButton.getParent() == null) {
-            int margin = (int) getResources().getDimension(R.dimen.button_margin);
+            /*int margin = (int) getResources().getDimension(R.dimen.button_margin);
             RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
             lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
             lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             lps.setMargins(margin, margin, margin, margin);
-            mEndButton.setLayoutParams(lps);
+            mEndButton.setLayoutParams(lps);*/
             mEndButton2.setText(android.R.string.ok);
             if (!hasCustomClickListener) {
                 mEndButton.setOnClickListener(hideOnClickListener);
@@ -151,11 +160,27 @@ public class ShowcaseView extends RelativeLayout
         }
     }
 
+    public void fixButton(){
+        //set margins properly
+        int rightMargin = (int) getResources().getDimension(R.dimen.button_margin_right);
+        int bottonMargin = (int) getResources().getDimension(R.dimen.button_margin_bottom);
+
+        RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
+        lps.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        lps.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        lps.bottomMargin = bottonMargin;
+        lps.rightMargin = rightMargin;
+
+        mEndButton.setLayoutParams(lps);
+        mEndButton.setTextSize(18);
+    }
+
     public void setPointer(int x, int y){
         setPointer(x, y, false);
     }
 
     public void setPointer(int x, int y, boolean above){
+        fixButton();
         pointer = (ImageView) LayoutInflater.from(activityContext).inflate(R.layout.pointer_arrow, null);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
 
@@ -180,6 +205,7 @@ public class ShowcaseView extends RelativeLayout
     public void flipPointer(){//for like/confuse
         pointer.setScaleX(-1); //horizontally
         pointer.setScaleY(-0.7f); //make little smaller and flipped since space crunching
+        //pointer.setVisibility(INVISIBLE);
     }
 
     public void setDescription(String text){
@@ -444,6 +470,11 @@ public class ShowcaseView extends RelativeLayout
 
     private static void insertShowcaseView(ShowcaseView showcaseView, Activity activity) {
         ((ViewGroup) activity.getWindow().getDecorView()).addView(showcaseView);
+
+        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            showcaseView.setFitsSystemWindows(true); //for >= 14 (first time soft keys introduced
+        }
+
         if (!showcaseView.hasShot()) {
             showcaseView.show();
         } else {

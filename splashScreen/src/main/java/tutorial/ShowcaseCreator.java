@@ -3,14 +3,13 @@ package tutorial;
 import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Display;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -19,7 +18,9 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.CreateClassDialog;
+import utility.Tools;
 
 /**
  * Created by ashish on 25/6/15.
@@ -38,11 +39,11 @@ public class ShowcaseCreator {
                 //.hideOnTouchOutside(); //now even the showcase area is outside
 
         //default next button(image) position at right edge center
-        RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        /*RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         builder.setButtonPosition(layoutParams);
-
+        */
         return builder;
     }
 
@@ -253,7 +254,13 @@ public class ShowcaseCreator {
 
                 boolean above = true; //pointer and text will be above, hence we need to calculate the x,y properly for pointer
                 Display mDisplay = activity.getWindowManager().getDefaultDisplay();
-                int windowHeight = mDisplay.getHeight();
+                int windowHeight = mDisplay.getHeight(); //usable area
+
+                //This is because for lollypop, getDecorView returns navigation bar also, hence factor it out
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    int navBarHeight = Tools.getNavigationBarSize(Application.getAppContext()).y;
+                    windowHeight += navBarHeight; //updated window height
+                }
 
                 double scalingFactor = 2.0/3;
                 int pointerXLeft = center2.x - (int) (likeView.getWidth() * scalingFactor);
@@ -286,7 +293,7 @@ public class ShowcaseCreator {
 
                 ViewTarget target2 = new ViewTarget(confuseView);
                 Point center2 = target2.getPoint();
-                center2 = new Point(center2.x + likeView.getWidth()/2, center2.y); //width of both like and confused view are same
+                center2 = new Point(center2.x + likeView.getWidth() / 2, center2.y); //width of both like and confused view are same
 
                 //Log.d("_SHOWCASE_", "jIconCenter x=" + centerWithOffset.x + ", y=" + centerWithOffset.y + ", w=" + targetView.getWidth());
                 builder.setTarget(new PointTarget(center2)); //main target
@@ -297,6 +304,13 @@ public class ShowcaseCreator {
                 boolean above = true; //pointer and text will be above, hence we need to calculate the x,y properly for pointer
                 Display mDisplay = activity.getWindowManager().getDefaultDisplay();
                 int windowHeight = mDisplay.getHeight();
+
+
+                //This is because for lollypop, getDecorView returns navigation bar also, hence factor it out
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                    int navBarHeight = Tools.getNavigationBarSize(Application.getAppContext()).y;
+                    windowHeight += navBarHeight; //updated window height
+                }
 
                 double scalingFactor = 2.0/3;
                 int pointerXLeft = center2.x - (int) (likeView.getWidth() * scalingFactor);
