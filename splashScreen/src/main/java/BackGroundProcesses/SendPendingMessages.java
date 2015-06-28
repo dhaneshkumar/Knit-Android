@@ -6,6 +6,7 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -52,23 +53,31 @@ public class SendPendingMessages {
         return jobRunning;
     }
 
-    //called when send button clicked in SendMessage page(GUI)
     public static void addMessageToQueue(ParseObject msg){
+        List<ParseObject> msgList = new ArrayList<>();
+        msgList.add(msg);
+        addMessageListToQueue(msgList);
+    }
+
+    //called when send button clicked in SendMessage page(GUI)
+    //order among these msgs in msgList doesn't matter as created at same time(multicast)
+    public static void addMessageListToQueue(List<ParseObject> msgList){
         Log.d(LOGTAG, "[GUI] addMessageToQueue() entered");
 
         //since job is queue won't be null, but still for safety check null
         synchronized (DATA_LOCK) {
             //add to toastMessageList
-            if(toastMessageList.size() == toastMessageLimit){
-                Log.d(LOGTAG, "[GUI] addMessageToQueue() removed old from toastMessageList");
-                toastMessageList.remove(0); //remove oldest one
+            Log.d(LOGTAG, "[GUI] addMessageToQueue() added " + msgList.size() + " to toastMessageList");
+            toastMessageList.addAll(msgList);
+
+            if(toastMessageList.size() > toastMessageLimit){
+                Log.d(LOGTAG, "[GUI] addMessageToQueue() removed old " + (toastMessageList.size() - toastMessageLimit) + " messages from toastMessageList");
+                toastMessageList.subList(0, toastMessageList.size()-toastMessageLimit).clear(); //keep only toastMessageLimit messages
             }
-            Log.d(LOGTAG, "[GUI] addMessageToQueue() added to toastMessageList");
-            toastMessageList.add(msg);
 
             if(jobRunning) {
                 if (pendingMessageQueue != null) {
-                    pendingMessageQueue.add(msg);
+                    pendingMessageQueue.addAll(msgList);
                     ComposeMessage.sendButtonClicked = false; //Since added to queue, hence a job is already running
                     Log.d(LOGTAG, "[GUI] addMessageToQueue() added to queue");
                 }
@@ -149,8 +158,11 @@ public class SendPendingMessages {
                 Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : picking next item in the queue");
             }
 
-            //now try sending this message
-            if(currentMsg != null){
+            // now try sending this message if its not null and status is pending to avoid duplicates
+            // due to race condition b/w 1) pinning (and adding to pending list) and 2) above query
+            // in case of multicast messaging
+            if(currentMsg != null && currentMsg.getBoolean("pending")){
+
                 int res = -1;
                 if (!UtilString.isBlank(currentMsg.getString("title")) && UtilString.isBlank(currentMsg.getString("attachment_name"))) {
                     //title non empty, attachment empty
@@ -208,8 +220,11 @@ public class SendPendingMessages {
                     continue;
                 }*/
             }
+            else{
+                Log.d(LOGTAG, "currentMsg is either null or duplicate(not pending)");
+            }
 
-            //pending msg queue is not empty, remove this currentMsg from queue
+            //pending msg queue is not empty, remove this currentMsg from queue, works even if currentMsg is null(which won't happen but still)
             pendingMessageQueue.remove(currentMsg);
         }
     }

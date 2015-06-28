@@ -85,7 +85,7 @@ public class ComposeMessageHelper {
     }
 
     private void sendTxtMsgtoSubscribers(final String typedtxt) {
-        List<ParseObject> messagesToSend = new ArrayList<>();
+        final List<ParseObject> messagesToSend = new ArrayList<>();
         for(List<String> cls : selectedClassList){
             final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
             sentMsg.put("Creator", sender);
@@ -100,20 +100,19 @@ public class ComposeMessageHelper {
             typedmsg.setText(""); //for reuse
 
             messagesToSend.add(sentMsg);
-
-            sentMsg.pinInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        SendPendingMessages.addMessageToQueue(sentMsg);
-                    } else {
-                        e.printStackTrace();
-                        Utility.toastDone("Sorry! Can't send your message");
-                    }
-                }
-            });
-
         }
+
+        ParseObject.pinAllInBackground(messagesToSend, new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    SendPendingMessages.addMessageListToQueue(messagesToSend);
+                } else {
+                    e.printStackTrace();
+                    Utility.toastDone("Sorry! Can't send your message");
+                }
+            }
+        });
 
         if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
             //just update Outbox msgs and notify. No need to worry about SendMessage page as from here
@@ -219,7 +218,7 @@ public class ComposeMessageHelper {
 
     // Send Image Pic
     private void sendPic(String filepath, String txtmsg){
-        List<ParseObject> messagesToSend = new ArrayList<>();
+        final List<ParseObject> messagesToSend = new ArrayList<>();
         for(List<String> cls : selectedClassList) {
             if (filepath == null) return;
 
@@ -243,19 +242,19 @@ public class ComposeMessageHelper {
             typedmsg.setText(""); //for reuse
 
             messagesToSend.add(sentMsg);
-
-            sentMsg.pinInBackground(new SaveCallback() {
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        SendPendingMessages.addMessageToQueue(sentMsg);
-                    } else {
-                        e.printStackTrace();
-                        Utility.toast("Unable to send message!");
-                    }
-                }
-            });
         }
+
+        ParseObject.pinAllInBackground(messagesToSend, new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if (e == null) {
+                    SendPendingMessages.addMessageListToQueue(messagesToSend);
+                } else {
+                    e.printStackTrace();
+                    Utility.toastDone("Sorry! Can't send your message");
+                }
+            }
+        });
 
         if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
 
