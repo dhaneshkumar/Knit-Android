@@ -60,13 +60,13 @@
                 android:text="5"
                 android:textStyle="bold"
                 android:textColor="@color/color_secondary"
-                android:textSize="16sp"
+                android:textSize="17sp"
                 />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Members"
-                android:layout_marginTop="-2dp"
+                android:layout_marginTop="-3dp"
                 android:textColor="@color/greyDark"
                 android:layout_alignLeft="@+id/memberCount"
                 android:layout_below="@+id/memberCount"

@@ -44,7 +44,6 @@ public class Config {
     public static final String FB_APP_ID = "689390944539813";
     public static int SUBSCRIBER_MIN_LIMIT = 1;
 
-
     //Following are used now to NOT SHOW Kio for old users
     public static final String defaultParentGroupCode = "TS29734"; // raven
     public static final String defaultTeacherGroupCode = "TS49518"; // raven

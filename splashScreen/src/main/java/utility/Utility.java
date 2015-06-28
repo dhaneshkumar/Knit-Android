@@ -535,7 +535,7 @@ public class Utility extends MyActionBarActivity {
         try {
             b = ThumbnailUtils.extractThumbnail(
                     BitmapFactory.decodeFile(getWorkingAppDir() + "/media/" + fname),
-                            (int) Math.round(imgframedimen), (int) Math.round(imgframedimen * 0.75));
+                            (int) Math.round(imgframedimen), (int) Math.round(imgframedimen));
         } catch (Exception e) {
             e.printStackTrace();
         }

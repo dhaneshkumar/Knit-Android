@@ -6,6 +6,7 @@
     android:paddingBottom="12dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
+    android:layout_centerVertical="true"
     android:id="@+id/root"
     android:background="@color/white"
     >
@@ -13,16 +14,16 @@
     <LinearLayout
         android:id="@+id/header"
         android:background="@drawable/circle"
-        android:layout_width="48dp"
+        android:layout_width="40dp"
         android:gravity="center"
         android:orientation="vertical"
         android:layout_marginRight="16dp"
-        android:layout_height="48dp">
+        android:layout_height="40dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/headerText"
-            android:textSize="24sp"
+            android:textSize="22sp"
             android:text="X"
             android:visibility="visible"
             android:layout_gravity="center"
@@ -44,10 +45,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Knit"
-        android:layout_centerVertical="true"
-        android:textSize="18sp"
+        android:textSize="16sp"
         android:singleLine="true"
-        android:textColor="@color/greyDark"
+        android:textColor="@color/black"
+        />
+    <TextView
+        android:id="@+id/memberCount"
+        android:layout_alignLeft="@+id/classname"
+        android:layout_below="@+id/classname"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="11 Members"
+        android:textSize="12sp"
+        android:singleLine="true"
+        android:layout_marginTop="-2dp"
+        android:textColor="#999999"
         />
 
 </RelativeLayout>

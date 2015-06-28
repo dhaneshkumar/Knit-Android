@@ -37,9 +37,6 @@ import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 import com.software.shell.fab.ActionButton;
 
@@ -56,7 +53,6 @@ import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
-import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
@@ -86,7 +82,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     private RelativeLayout action_menu;
     private List<List<String >> classList;
     private boolean isFloatingButtonCliked = false;
-    Typeface lighttypeFace;
+    private Typeface lighttypeFace;
+    private ActionButton actionButton;
 
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
@@ -253,6 +250,69 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             viewpager.setOffscreenPageLimit(1);
 
 
+
+        //Initializing compose button
+        actionButton = (ActionButton) findViewById(R.id.action_button);
+
+        // To set button color for normal state:
+        actionButton.setButtonColor(Color.parseColor("#039BE5"));
+
+        //#E53935 -  red(600)
+        // To set button color for pressed state:
+        actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
+
+        //Setting image in floating button
+        actionButton.setImageResource(R.drawable.ic_edit);
+
+        // To enable or disable Ripple Effect:
+        actionButton.setRippleEffectEnabled(true);
+
+
+
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(classList.size() == 0)
+                {
+                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                    startActivity(intent);
+                }
+                else if(classList.size() == 1)
+                {
+                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                    intent.putExtra("CLASS_CODE", classList.get(0).get(0));
+                    intent.putExtra("CLASS_NAME", classList.get(0).get(1));
+                    startActivity(intent);
+                }
+                else {
+
+                    action_menu.setVisibility(View.VISIBLE);
+                    action_menu_list.setVisibility(View.VISIBLE);
+
+                    if (isFloatingButtonCliked) {
+                        Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                        startActivity(intent);
+                        isFloatingButtonCliked = false;
+                        action_menu.setVisibility(View.GONE);
+                        action_menu_list.setVisibility(View.GONE);
+                    } else
+                        isFloatingButtonCliked = true;
+                }
+            }
+        });
+
+
+        action_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action_menu.setVisibility(View.GONE);
+                action_menu_list.setVisibility(View.GONE);
+                isFloatingButtonCliked = false;
+            }
+        });
+
+
         //setting tab click functionality
         tab1Icon.setOnClickListener(new OnClickListener() {
 
@@ -260,6 +320,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             public void onClick(View v) {
                 highLightTab1();
                 viewpager.setCurrentItem(0);
+                actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                actionButton.show();
             }
         });
         tab2Icon.setOnClickListener(new OnClickListener() {
@@ -268,6 +330,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             public void onClick(View v) {
                 highLightTab2();
                 viewpager.setCurrentItem(1);
+                actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                actionButton.show();
             }
         });
 
@@ -277,6 +341,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             public void onClick(View v) {
                 highLightTab3();
                 viewpager.setCurrentItem(2);
+
+                actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                actionButton.hide();
+
             }
         });
 
@@ -329,6 +397,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
                             outboxAT.execute();//it also sets the 'needLoading' flag false
                         }
+                        actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                        actionButton.show();
+
                     } else if (position == 1) {
 
                         params.width = screenwidth * 5 / 13;
@@ -338,6 +409,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         fragmentVisible = 1;
                         highLightTab2();
                         showButttonContainer(Classrooms.buttonContainer);
+
+                        if(positionOffset < 0.3) {
+                            actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                            actionButton.show();
+                        }else {
+                            actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                            actionButton.hide();
+                        }
 
                     } else {
                         params.width = screenwidth * 5 / 13;
@@ -349,6 +428,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             Messages.myadapter.notifyDataSetChanged(); //we're in gui now
                         }
                         hideButttonContainer(Classrooms.buttonContainer);
+
+                        actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                        actionButton.hide();
                     }
                 }
                 else {
@@ -372,6 +454,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         fragmentVisible = 1;
                         showButttonContainer(Classrooms.buttonContainer);
                     }
+
+
                 }
             }
 
@@ -477,66 +561,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
 
-        //Initializing compose button
-        final ActionButton actionButton = (ActionButton) findViewById(R.id.action_button);
-
-        // To set button color for normal state:
-        actionButton.setButtonColor(Color.parseColor("#039BE5"));
-
-        //#E53935 -  red(600)
-        // To set button color for pressed state:
-        actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
-
-        //Setting image in floating button
-        actionButton.setImageResource(R.drawable.ic_edit);
-
-        // To enable or disable Ripple Effect:
-        actionButton.setRippleEffectEnabled(true);
-
-
-
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(classList.size() == 0)
-                {
-                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                    startActivity(intent);
-                }
-                else if(classList.size() == 1)
-                {
-                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                    intent.putExtra("CLASS_CODE", classList.get(0).get(0));
-                    intent.putExtra("CLASS_NAME", classList.get(0).get(1));
-                    startActivity(intent);
-                }
-                else {
-
-                    action_menu.setVisibility(View.VISIBLE);
-                    action_menu_list.setVisibility(View.VISIBLE);
-
-                    if (isFloatingButtonCliked) {
-                        Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                        startActivity(intent);
-                        isFloatingButtonCliked = false;
-                        action_menu.setVisibility(View.GONE);
-                        action_menu_list.setVisibility(View.GONE);
-                    } else
-                        isFloatingButtonCliked = true;
-                }
-            }
-        });
-
-
-        action_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                action_menu.setVisibility(View.GONE);
-                action_menu_list.setVisibility(View.GONE);
-                isFloatingButtonCliked = false;
-            }
-        });
 
        /* action_menu_list.setOnClickListener(new View.OnClickListener() {
             @Override
