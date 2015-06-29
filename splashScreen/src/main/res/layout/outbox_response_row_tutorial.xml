@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/headLayout"
+    android:paddingLeft="8dp">
+
+<RelativeLayout android:background="@color/white"
+        android:id="@+id/outbox_response_row_tutorial"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="12dp"
+        android:paddingRight="8dp"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp">
+
+        <TextView
+            android:id="@+id/like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2"
+            android:textStyle="bold"
+            android:layout_gravity="center_vertical"
+            android:textColor="@color/grey_light"
+            android:textSize="14sp"
+            android:layout_centerVertical="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true" />
+
+        <ImageView
+            android:id="@+id/likeIcon"
+            android:layout_toRightOf="@+id/like"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginLeft="0dp"
+            android:src="@drawable/like_light_grey"/>
+
+        <TextView
+            android:id="@+id/confusion"
+            android:layout_toRightOf="@+id/likeIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="3"
+            android:layout_marginLeft="16dp"
+            android:textStyle="bold"
+            android:textColor="@color/grey_light"
+            android:layout_centerVertical="true"
+            android:textSize="14sp"
+            />
+
+        <ImageView
+            android:id="@+id/confusionIcon"
+            android:layout_width="24dp"
+            android:layout_toRightOf="@+id/confusion"
+            android:layout_height="24dp"
+            android:layout_marginLeft="-4dp"
+            android:layout_gravity="center"
+            android:src="@drawable/confuse_light_grey"/>
+    </RelativeLayout>
+    </LinearLayout>

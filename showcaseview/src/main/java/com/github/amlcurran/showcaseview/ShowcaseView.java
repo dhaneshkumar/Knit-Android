@@ -37,6 +37,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -160,6 +161,29 @@ public class ShowcaseView extends RelativeLayout
         }
     }
 
+    //add this row at center horizontal
+    public void addButtonRow(View buttonRow){
+        RelativeLayout.LayoutParams lps = (LayoutParams) generateDefaultLayoutParams();
+        lps.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+        lps.addRule(RelativeLayout.CENTER_VERTICAL);
+
+        buttonRow.setLayoutParams(lps);
+        addView(buttonRow);
+    }
+
+    public void setPointerAbove(View buttonRow){
+        fixButton();
+        pointer = (ImageView) LayoutInflater.from(activityContext).inflate(R.layout.pointer_arrow, null);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
+
+        params.addRule(RelativeLayout.ABOVE, buttonRow.getId());
+
+        params.addRule(RelativeLayout.ALIGN_RIGHT, buttonRow.getId());
+
+        pointer.setLayoutParams(params);
+        addView(pointer);
+    }
+
     public void fixButton(){
         //set margins properly
         int rightMargin = (int) getResources().getDimension(R.dimen.button_margin_right);
@@ -174,6 +198,7 @@ public class ShowcaseView extends RelativeLayout
         mEndButton.setLayoutParams(lps);
         mEndButton.setTextSize(18);
     }
+
 
     public void setPointer(int x, int y){
         setPointer(x, y, false);

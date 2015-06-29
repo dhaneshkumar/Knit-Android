@@ -561,7 +561,7 @@ public class Outbox extends Fragment {
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
                     mgr.setTutorialState(tutorialId, true);
-                    ShowcaseCreator.teacherHighlightResponseButtons(getActivity(), holder.likes, holder.confused);
+                    ShowcaseCreator.teacherHighlightResponseButtonsNew(getActivity(), holder.likes);
                 }
                 responseTutorialShown = true;
             }

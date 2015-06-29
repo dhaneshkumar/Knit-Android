@@ -108,10 +108,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         //Constants.IS_SIGNUP = true;
 
         /*SessionManager mgr = new SessionManager(Application.getAppContext());
-        String t1 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
-        String t2 = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
-        mgr.setTutorialState(t1, false);
-        mgr.setTutorialState(t2, false);*/
+        String p_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+        String t_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+        mgr.setTutorialState(p_flag, false);
+        mgr.setTutorialState(t_flag, false);*/
 
         //delete SentMessges
         /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);

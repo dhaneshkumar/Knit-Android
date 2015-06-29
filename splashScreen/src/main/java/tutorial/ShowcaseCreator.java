@@ -9,11 +9,15 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Display;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.github.amlcurran.showcaseview.targets.PointTarget;
+import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import joinclasses.JoinClassDialog;
@@ -257,12 +261,12 @@ public class ShowcaseCreator {
                 int windowHeight = mDisplay.getHeight(); //usable area
 
                 //This is because for lollypop, getDecorView returns navigation bar also, hence factor it out
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     int navBarHeight = Tools.getNavigationBarSize(Application.getAppContext()).y;
                     windowHeight += navBarHeight; //updated window height
                 }
 
-                double scalingFactor = 2.0/3;
+                double scalingFactor = 2.0 / 3;
                 int pointerXLeft = center2.x - (int) (likeView.getWidth() * scalingFactor);
                 int pointerYBelow = windowHeight - center2.y + likeView.getHeight();
                 Log.d("_TUTORIAL_", "window h=" + windowHeight + ", center x=" + center2.x + ", y=" + center2.y + " likeview h=" + likeView.getHeight() + ", pointerYBelow=" + pointerYBelow);
@@ -277,6 +281,27 @@ public class ShowcaseCreator {
         }, 100);
     }
 
+    public static void parentHighlightResponseButtonsNew(final Activity activity, final View likeView){
+        likeView.post(new Runnable() {
+            @Override
+            public void run() {
+                final LinearLayout buttonRow = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.messages_response_row_tutorial, null);
+
+                ShowcaseView.Builder builder = getDefaultBuilder(activity);
+                builder.setTarget(Target.NONE); //no target
+                ShowcaseView showcaseView1 = builder.getShowcaseView();
+
+                //center.y + likeView.getHeight()
+                showcaseView1.addButtonRow(buttonRow);
+                showcaseView1.setPointerAbove(buttonRow);
+                showcaseView1.flipPointer();
+                showcaseView1.setDescription("Use these two buttons to respond to messages. Use thumbs up to like and '?' to show you are confused", true);
+
+                builder.build();
+            }
+        });
+    }
+
     //in outbox(targets are the text containing the counts. So center showcase at the right end of these views
     // so that we are roughly at center of combined view(count textview + icon imageview)
     public static void teacherHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
@@ -289,7 +314,7 @@ public class ShowcaseCreator {
 
                 ViewTarget target = new ViewTarget(likeView);
                 Point center = target.getPoint();
-                center = new Point(center.x + likeView.getWidth()/2, center.y);
+                center = new Point(center.x + likeView.getWidth() / 2, center.y);
 
                 ViewTarget target2 = new ViewTarget(confuseView);
                 Point center2 = target2.getPoint();
@@ -307,12 +332,12 @@ public class ShowcaseCreator {
 
 
                 //This is because for lollypop, getDecorView returns navigation bar also, hence factor it out
-                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     int navBarHeight = Tools.getNavigationBarSize(Application.getAppContext()).y;
                     windowHeight += navBarHeight; //updated window height
                 }
 
-                double scalingFactor = 2.0/3;
+                double scalingFactor = 2.0 / 3;
                 int pointerXLeft = center2.x - (int) (likeView.getWidth() * scalingFactor);
                 int pointerYBelow = windowHeight - center2.y + likeView.getHeight();
                 Log.d("_TUTORIAL_", "window h=" + windowHeight + ", center x=" + center2.x + ", y=" + center2.y + " likeview h=" + likeView.getHeight() + ", pointerYBelow=" + pointerYBelow);
@@ -325,6 +350,27 @@ public class ShowcaseCreator {
                 builder.build();
             }
         }, 100);
+    }
+
+    public static void teacherHighlightResponseButtonsNew(final Activity activity, final View likeView){
+        likeView.post(new Runnable() {
+            @Override
+            public void run() {
+                final LinearLayout buttonRow = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.outbox_response_row_tutorial, null);
+
+                ShowcaseView.Builder builder = getDefaultBuilder(activity);
+                builder.setTarget(Target.NONE); //no target
+                ShowcaseView showcaseView1 = builder.getShowcaseView();
+
+                //center.y + likeView.getHeight()
+                showcaseView1.addButtonRow(buttonRow);
+                showcaseView1.setPointerAbove(buttonRow);
+                showcaseView1.flipPointer();
+                showcaseView1.setDescription("For each post, you can see how many parents/students like your it or are confused about it. They can respond using only two buttons - like or confuse", true);
+
+                builder.build();
+            }
+        });
     }
 
     //highlight target along with points on left and right(distance = target view width)
