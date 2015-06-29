@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -71,7 +72,7 @@ public class Outbox extends Fragment {
     private ImageView outbox_headup;
     private LinearLayout outbox_instructions;
     private TextView outbox_ok;
-
+    private Typeface typeface;
 
     //handle notification
     private static String action; //LIKE/CONFUSE
@@ -103,7 +104,7 @@ public class Outbox extends Fragment {
         outbox_headup = (ImageView) getActivity().findViewById(R.id.outbox_uphead);
         outbox_instructions = (LinearLayout) getActivity().findViewById(R.id.outbox_instruction);
         outbox_ok = (TextView) getActivity().findViewById(R.id.outbox_ok);
-
+        typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
 
         //handle receive notification action - LIKE/CONFUSE
         if(getActivity().getIntent() != null){
@@ -309,7 +310,6 @@ public class Outbox extends Fragment {
         setHasOptionsMenu(true);
     }
 
-
     /**
      * Holder class to hold all elements of an item
      */
@@ -407,6 +407,7 @@ public class Outbox extends Fragment {
             GradientDrawable gradientdrawable = (GradientDrawable) holder.classimage.getBackground();
             gradientdrawable.setColor(Color.parseColor(Utility.classColourCode(className.toUpperCase())));
             holder.classimage.setText(className.substring(0, 1).toUpperCase());    //setting front end of circular image
+            holder.classimage.setTypeface(typeface);
             /*
             Retrieving timestamp
              */

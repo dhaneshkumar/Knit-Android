@@ -138,10 +138,14 @@ public class ClassMsgFunctions {
                 Utility.toast("Successfully deleted your classroom");
 
                 Classrooms.createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+                MainActivity.setClassListOptions();
 
 
                 if(Classrooms.createdClassAdapter != null)
                     Classrooms.createdClassAdapter.notifyDataSetChanged();
+                if(MainActivity.floatOptionsAdapter != null)
+                    MainActivity.floatOptionsAdapter.notifyDataSetChanged();
+
                 //finishing the current activity
                 SendMessage.currentActivity.finish();
 

@@ -19,7 +19,6 @@
                 android:layout_height="wrap_content"
                 android:textColor="@color/grey"
                 android:text="To"
-                android:textStyle="bold"
                 android:padding="16dp"
                 android:textSize="18sp"
                 android:id="@+id/to"
@@ -35,7 +34,7 @@
                 android:layout_toLeftOf="@+id/done"
                 android:paddingTop="16dp"
                 android:hint="Select your classrooms"
-                android:textColor="@color/color_primary"
+                android:textColor="#016CA5"
                 android:layout_centerVertical="true"
                 android:paddingBottom="16dp"
                 />
@@ -119,7 +118,7 @@
                 android:id="@+id/attachedimg"
                 android:layout_width="112dp"
                 android:layout_height="112dp"
-                android:background="@color/lightbackgroundcolor">
+                android:background="@drawable/imageview_shadow">
 
             </ImageView>
 

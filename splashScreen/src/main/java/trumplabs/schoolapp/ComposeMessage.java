@@ -3,10 +3,13 @@ package trumplabs.schoolapp;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
@@ -28,6 +31,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.io.File;
@@ -37,6 +41,7 @@ import java.util.List;
 
 import trumplab.textslate.R;
 import utility.Config;
+import utility.Queries;
 import utility.Tools;
 import utility.Utility;
 
@@ -58,6 +63,7 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
     public static LinearLayout picProgressBarLayout;
     public static ImageView sendimgview;
     private Button removebutton;
+    private Typeface typeface;
 
     public static String source = Constants.ComposeSource.INSIDE;
                                 //i.e inside the particular class page
@@ -89,6 +95,7 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
         removebutton = (Button) findViewById(R.id.removebutton);
         GradientDrawable gradientdrawable = (GradientDrawable) removebutton.getBackground();
         gradientdrawable.setColor(getResources().getColor(R.color.color_secondary));
+        typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("New Message");
@@ -196,6 +203,18 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
 
         SelectClassAdapter selectClassAdapter = new SelectClassAdapter();
         classeslistview.setAdapter(selectClassAdapter);
+
+        //on click show full image
+        sendimgview.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent imgintent = new Intent();
+                imgintent.setAction(Intent.ACTION_VIEW);
+                imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
+                startActivity(imgintent);
+            }
+        });
+
 
         // remove the image ready to be sent
         removebutton.setOnClickListener(new View.OnClickListener() {
@@ -373,9 +392,20 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
             TextView className = (TextView) row.findViewById(R.id.classname);
             final ImageView headerImage = (ImageView) row.findViewById(R.id.headerImage);
             RelativeLayout rootLayout = (RelativeLayout) row.findViewById(R.id.root);
+            TextView memberCountTV = (TextView) row.findViewById(R.id.memberCount);
 
             final List<String> item = classList.get(position);
             className.setText(item.get(1));
+
+            try {
+                Queries memberQuery = new Queries();
+                int memberCount = memberQuery.getMemberCount(item.get(0));
+
+                memberCountTV.setText(memberCount+" Members");
+
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
 
             if(item.size()>2)
             {
@@ -388,6 +418,7 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                     headerText.setVisibility(View.VISIBLE);
                     headerImage.setVisibility(View.GONE);
                     headerText.setText(item.get(1).substring(0, 1).toUpperCase());    //setting front end of circular image
+                    headerText.setTypeface(typeface);
                 }
                 else
                 {
@@ -424,6 +455,7 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                             headerText.setVisibility(View.VISIBLE);
                             headerImage.setVisibility(View.GONE);
                             headerText.setText(item.get(1).substring(0, 1).toUpperCase());    //setting front end of circular image
+                            headerText.setTypeface(typeface);
                         }
                         else
                         {

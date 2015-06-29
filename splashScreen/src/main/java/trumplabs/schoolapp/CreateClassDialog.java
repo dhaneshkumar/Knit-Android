@@ -234,6 +234,7 @@ public class CreateClassDialog extends DialogFragment{
                 codeTV.setText(classCode);
 
                 Classrooms.createdGroups = user.getList(Constants.CREATED_GROUPS);
+                MainActivity.setClassListOptions();
 
                 if(Classrooms.createdGroups != null && Classrooms.createdGroups.size()> 0)
                 {
@@ -242,6 +243,9 @@ public class CreateClassDialog extends DialogFragment{
 
                 if(Classrooms.createdClassAdapter != null)
                     Classrooms.createdClassAdapter.notifyDataSetChanged();
+
+                if(MainActivity.floatOptionsAdapter != null)
+                    MainActivity.floatOptionsAdapter.notifyDataSetChanged();
 
 
                 // Setting layouts visibility

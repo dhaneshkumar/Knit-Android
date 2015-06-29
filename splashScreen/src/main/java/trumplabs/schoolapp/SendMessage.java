@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,7 +54,6 @@ import trumplab.textslate.R;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 /**
@@ -78,7 +78,7 @@ public class SendMessage extends MyActionBarActivity  {
     public static LinearLayout picProgressBarLayout;
     private TextView memberCountTV;
     private boolean isLoading = false;
-
+    private Typeface typeface;
 
 
     @Override
@@ -108,6 +108,7 @@ public class SendMessage extends MyActionBarActivity  {
         memberLayout = (RelativeLayout) findViewById(R.id.memberLayout);
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         memberCountTV = (TextView) findViewById(R.id.memberCount);
+        typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
 
         session = new SessionManager(Application.getAppContext());
 
@@ -162,9 +163,6 @@ public class SendMessage extends MyActionBarActivity  {
             @Override
             public void onClick(View v) {
 
-                //hide keyword before transition
-                Tools.hideKeyboard(SendMessage.this);
-
                 Intent intent = new Intent(SendMessage.this, Subscribers.class);
                 intent.putExtra("className", grpName);
                 intent.putExtra("classCode", groupCode);
@@ -177,8 +175,6 @@ public class SendMessage extends MyActionBarActivity  {
             @Override
             public void onClick(View v) {
 
-                //hide keyword before transition
-                Tools.hideKeyboard(SendMessage.this);
                 Intent intent = new Intent(SendMessage.this, Invite.class);
                 intent.putExtra("classCode", groupCode);
                 intent.putExtra("className", grpName);
@@ -320,7 +316,6 @@ public class SendMessage extends MyActionBarActivity  {
      * openchooser.show(fm, "Chooser Dialog"); break;
      */
             case android.R.id.home:
-                Tools.hideKeyboard(SendMessage.this);
                 onBackPressed();
                 break;
             case R.id.copyCode:
@@ -362,9 +357,6 @@ public class SendMessage extends MyActionBarActivity  {
                                     Utility.toast("No internet Connection! Can't delete your class");
                                     return;
                                 }
-
-                                //hide keyword before transition
-                                Tools.hideKeyboard(SendMessage.this);
 
                                 //showing progress bar
                                 contentLayout.setVisibility(View.GONE);
@@ -523,7 +515,7 @@ public class SendMessage extends MyActionBarActivity  {
             GradientDrawable gradientdrawable = (GradientDrawable) classimage.getBackground();
             gradientdrawable.setColor(Color.parseColor(Utility.classColourCode(className.toUpperCase())));
             classimage.setText(className.substring(0, 1).toUpperCase());    //setting front end of circular image
-
+            classimage.setTypeface(typeface);
 
 
             //ImageView tickview = (ImageView) row.findViewById(R.id.tickmark);

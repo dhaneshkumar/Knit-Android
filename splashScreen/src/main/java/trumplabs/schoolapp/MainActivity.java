@@ -33,7 +33,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
@@ -45,6 +44,9 @@ import com.software.shell.fab.ActionButton;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 import BackGroundProcesses.Refresher;
@@ -56,7 +58,6 @@ import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
-import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
@@ -84,9 +85,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static SessionManager sessionManager;
     private ListView action_menu_list;
     private RelativeLayout action_menu;
-    private List<List<String >> classList;
+    public static List<List<String >> classList;
+    public static FloatOptionsAdapter floatOptionsAdapter;
     private boolean isFloatingButtonCliked = false;
-    Typeface lighttypeFace;
+    private Typeface lighttypeFace;
+    private ActionButton actionButton;
+    private static ParseUser user;
 
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
@@ -152,7 +156,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
 
-        ParseUser user = ParseUser.getCurrentUser();
+        user = ParseUser.getCurrentUser();
 
         //check for current user loggedin or not
         if (user == null)
@@ -169,7 +173,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         action_menu = (RelativeLayout) findViewById(R.id.action_menu);
         action_menu_list = (ListView) findViewById(R.id.action_menu_list);
 
-        FloatOptionsAdapter floatOptionsAdapter = new FloatOptionsAdapter();
+        floatOptionsAdapter = new FloatOptionsAdapter();
         action_menu_list.setAdapter(floatOptionsAdapter);
 
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/RobotoCondensed-Regular.ttf");
@@ -178,10 +182,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         tab2Icon.setTypeface(typeFace);
         tab3Icon.setTypeface(typeFace);
 
-        classList = user.getList(Constants.CREATED_GROUPS);
-
-        if(classList == null)
-            classList = new ArrayList<>();
+        //setting list for float button options
+        setClassListOptions();
 
         /*
         Check for app re-installation. In case of reinstallation or delete data appOpeningCount set to zero.
@@ -253,6 +255,69 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             viewpager.setOffscreenPageLimit(1);
 
 
+
+        //Initializing compose button
+        actionButton = (ActionButton) findViewById(R.id.action_button);
+
+        // To set button color for normal state:
+        actionButton.setButtonColor(Color.parseColor("#039BE5"));
+
+        //#E53935 -  red(600)
+        // To set button color for pressed state:
+        actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
+
+        //Setting image in floating button
+        actionButton.setImageResource(R.drawable.ic_edit);
+
+        // To enable or disable Ripple Effect:
+        actionButton.setRippleEffectEnabled(true);
+
+
+
+        actionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if(classList.size() == 0)
+                {
+                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                    startActivity(intent);
+                }
+                else if(classList.size() == 1)
+                {
+                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                    intent.putExtra("CLASS_CODE", classList.get(0).get(0));
+                    intent.putExtra("CLASS_NAME", classList.get(0).get(1));
+                    startActivity(intent);
+                }
+                else {
+
+                    action_menu.setVisibility(View.VISIBLE);
+                    action_menu_list.setVisibility(View.VISIBLE);
+
+                    if (isFloatingButtonCliked) {
+                        Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                        startActivity(intent);
+                        isFloatingButtonCliked = false;
+                        action_menu.setVisibility(View.GONE);
+                        action_menu_list.setVisibility(View.GONE);
+                    } else
+                        isFloatingButtonCliked = true;
+                }
+            }
+        });
+
+
+        action_menu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                action_menu.setVisibility(View.GONE);
+                action_menu_list.setVisibility(View.GONE);
+                isFloatingButtonCliked = false;
+            }
+        });
+
+
         //setting tab click functionality
         tab1Icon.setOnClickListener(new OnClickListener() {
 
@@ -260,6 +325,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             public void onClick(View v) {
                 highLightTab1();
                 viewpager.setCurrentItem(0);
+                actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                actionButton.show();
             }
         });
         tab2Icon.setOnClickListener(new OnClickListener() {
@@ -268,6 +335,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             public void onClick(View v) {
                 highLightTab2();
                 viewpager.setCurrentItem(1);
+                actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                actionButton.show();
             }
         });
 
@@ -277,6 +346,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             public void onClick(View v) {
                 highLightTab3();
                 viewpager.setCurrentItem(2);
+
+                actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                actionButton.hide();
+
             }
         });
 
@@ -329,6 +402,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
                             outboxAT.execute();//it also sets the 'needLoading' flag false
                         }
+                        actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                        actionButton.show();
+
                     } else if (position == 1) {
 
                         params.width = screenwidth * 5 / 13;
@@ -338,6 +414,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         fragmentVisible = 1;
                         highLightTab2();
                         showButttonContainer(Classrooms.buttonContainer);
+
+                        if(positionOffset < 0.3) {
+                            actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                            actionButton.show();
+                        }else {
+                            actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                            actionButton.hide();
+                        }
 
                     } else {
                         params.width = screenwidth * 5 / 13;
@@ -349,6 +433,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             Messages.myadapter.notifyDataSetChanged(); //we're in gui now
                         }
                         hideButttonContainer(Classrooms.buttonContainer);
+
+                        actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                        actionButton.hide();
                     }
                 }
                 else {
@@ -372,6 +459,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         fragmentVisible = 1;
                         showButttonContainer(Classrooms.buttonContainer);
                     }
+
+
                 }
             }
 
@@ -477,66 +566,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
 
-        //Initializing compose button
-        final ActionButton actionButton = (ActionButton) findViewById(R.id.action_button);
-
-        // To set button color for normal state:
-        actionButton.setButtonColor(Color.parseColor("#039BE5"));
-
-        //#E53935 -  red(600)
-        // To set button color for pressed state:
-        actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
-
-        //Setting image in floating button
-        actionButton.setImageResource(R.drawable.ic_edit);
-
-        // To enable or disable Ripple Effect:
-        actionButton.setRippleEffectEnabled(true);
-
-
-
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(classList.size() == 0)
-                {
-                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                    startActivity(intent);
-                }
-                else if(classList.size() == 1)
-                {
-                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                    intent.putExtra("CLASS_CODE", classList.get(0).get(0));
-                    intent.putExtra("CLASS_NAME", classList.get(0).get(1));
-                    startActivity(intent);
-                }
-                else {
-
-                    action_menu.setVisibility(View.VISIBLE);
-                    action_menu_list.setVisibility(View.VISIBLE);
-
-                    if (isFloatingButtonCliked) {
-                        Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                        startActivity(intent);
-                        isFloatingButtonCliked = false;
-                        action_menu.setVisibility(View.GONE);
-                        action_menu_list.setVisibility(View.GONE);
-                    } else
-                        isFloatingButtonCliked = true;
-                }
-            }
-        });
-
-
-        action_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                action_menu.setVisibility(View.GONE);
-                action_menu_list.setVisibility(View.GONE);
-                isFloatingButtonCliked = false;
-            }
-        });
 
        /* action_menu_list.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -548,6 +577,95 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     }
 
+    /**
+     * create list of options to show on selecting action button
+     * @How : if size <=4 then shows all options
+     *          else, It picks up 4 least recently used classes (LRU)
+     *          Method to pick : take date of last message sent message from all classes and which class
+     *          dont't have any sent message, take their creation date, then sort them and display 4 options
+     */
+    public static void setClassListOptions()
+    {
+
+        classList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+
+        if(classList == null)
+            classList = new ArrayList<>();
+        else{
+
+            if(classList.size()>4)
+            {
+                List<List<String>> newList = new ArrayList<>();
+
+                List<Date> LRU_list = new ArrayList<>();
+
+                for(int i=0; i< classList.size(); i++)
+                {
+                    ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+                    query.fromLocalDatastore();
+                    query.orderByDescending("creationTime");
+                    query.whereEqualTo("userId", user.getUsername());
+                    query.whereEqualTo("code", classList.get(i).get(0));
+
+                    try {
+                        ParseObject obj = query.getFirst();
+
+                        if(obj != null){
+                            if(obj.getDate("creationTime") != null)
+                                LRU_list.add(obj.getDate("creationTime"));
+
+                        }
+
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+
+                        ParseQuery<ParseObject> query1 = ParseQuery.getQuery(Constants.CODE_GROUP);
+                        query1.fromLocalDatastore();
+                        query1.whereEqualTo("code", classList.get(i).get(0));
+                        ParseObject codeGroup = null;
+                        try {
+                            codeGroup = query1.getFirst();
+
+                            if(codeGroup != null)
+                            {
+                                if(codeGroup.getCreatedAt()!= null)
+                                    LRU_list.add(codeGroup.getCreatedAt());
+                            }
+                        } catch (ParseException e1) {
+                            e1.printStackTrace();
+                        }
+
+                    }
+                }
+
+                //making a new copy of lru_list
+                List<Date> lruCopy = new ArrayList<>();
+                lruCopy.addAll(LRU_list);
+
+                Collections.sort(LRU_list, new Comparator<Date>() {
+
+                @Override
+                public int compare(Date d1, Date d2) {
+                    return d2.compareTo(d1);
+                }
+            });
+
+                for(int i=0; LRU_list.size() >=4 && i<4;i++)
+                {
+                    for(int j=0; j<lruCopy.size(); j++)
+                    {
+                        if(LRU_list.get(i).compareTo(lruCopy.get(j)) == 0 ) {
+                            newList.add(0, classList.get(j));
+                        }
+                    }
+                }
+
+                classList = newList;
+            }
+        }
+
+
+    }
 
     @Override
     protected void onResume() {
@@ -786,17 +904,18 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
      */
     public void onBackPressed() {
 
-        if (backCount == 1) {
+        if(action_menu.getVisibility() == View.VISIBLE)
+        {
+            action_menu.setVisibility(View.GONE);
+            action_menu_list.setVisibility(View.GONE);
+            isFloatingButtonCliked = false;
+        }
+        else {
 
             Intent intent = new Intent(Intent.ACTION_MAIN);
             intent.addCategory(Intent.CATEGORY_HOME);
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
             startActivity(intent);
-        } else {
-            backCount++;
-
-            Toast.makeText(getApplicationContext(), "Press again to Exit", Toast.LENGTH_SHORT).show();
         }
     }
 
