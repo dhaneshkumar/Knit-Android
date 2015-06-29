@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="12dp"
-    android:paddingBottom="12dp"
+    android:layout_height="64dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
-    android:layout_centerVertical="true"
     android:id="@+id/root"
     android:background="@color/white"
     >
@@ -14,16 +11,17 @@
     <LinearLayout
         android:id="@+id/header"
         android:background="@drawable/circle"
-        android:layout_width="40dp"
+        android:layout_width="36dp"
         android:gravity="center"
+        android:layout_centerVertical="true"
         android:orientation="vertical"
         android:layout_marginRight="16dp"
-        android:layout_height="40dp">
+        android:layout_height="36dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/headerText"
-            android:textSize="22sp"
+            android:textSize="21sp"
             android:text="X"
             android:visibility="visible"
             android:layout_gravity="center"
@@ -38,10 +36,13 @@
             />
 
     </LinearLayout>
-
+<RelativeLayout
+    android:layout_width="match_parent"
+    android:layout_toRightOf="@+id/header"
+    android:layout_centerVertical="true"
+    android:layout_height="wrap_content">
     <TextView
         android:id="@+id/classname"
-        android:layout_toRightOf="@+id/header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Knit"
@@ -62,4 +63,5 @@
         android:textColor="#999999"
         />
 
+</RelativeLayout>
 </RelativeLayout>

@@ -23,11 +23,12 @@
             android:layout_height="wrap_content"
             android:paddingLeft="@dimen/msg_margin"
             android:paddingRight="@dimen/msg_margin"
-            android:layout_marginBottom="@dimen/msg_margin"
+            android:layout_marginBottom="8dp"
             android:layout_weight="1">
 
             <ImageView
                 android:id="@+id/image"
+                android:visibility="gone"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 android:layout_gravity="top|left"
@@ -51,7 +52,7 @@
                 android:textStyle="bold"
                 android:textSize="16sp" />
 
-            <TextView
+            <!--<TextView
                 android:id="@+id/startTime"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +61,7 @@
                 android:layout_marginTop="0dp"
                 android:text="1min ago"
                 android:textColor="#939597"
-                android:textSize="12sp" />
+                android:textSize="12sp" />-->
             <!-- android:textColor="@color/darkergrey"-->
 
 
@@ -74,6 +75,7 @@
                 android:gravity="bottom"
                 android:maxEms="10"
                 android:paddingBottom="2dp"
+                android:visibility="gone"
                 android:singleLine="true"
                 android:text=" by "
                 android:textColor="#939597"
@@ -88,6 +90,7 @@
                 android:ellipsize="end"
                 android:gravity="bottom"
                 android:maxEms="10"
+                android:visibility="gone"
                 android:layout_marginRight="20dp"
                 android:paddingBottom="2dp"
                 android:singleLine="true"
@@ -101,13 +104,13 @@
                 android:layout_alignParentRight="true"
                 android:paddingLeft="16dp"
                 android:paddingBottom="6dp"
+                android:visibility="gone"
                 android:layout_marginRight="-8dp"
-                android:paddingTop="2dp"
                 android:layout_height="wrap_content">
 
                 <ImageView
                     android:layout_width="20dp"
-                    android:layout_height="20dp"
+                    android:layout_height="18dp"
                     android:src="@drawable/ic_more_vert_grey" />
             </LinearLayout>
         </RelativeLayout>
@@ -236,6 +239,16 @@
                     android:src="@drawable/ic_action_help"></ImageView>
 
             </LinearLayout>
+
+            <TextView
+                android:id="@+id/startTime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1min ago"
+                android:gravity="right|bottom"
+                android:layout_gravity="right|bottom"
+                android:textColor="#939597"
+                android:textSize="12sp" />
 
         </LinearLayout>
     </LinearLayout>

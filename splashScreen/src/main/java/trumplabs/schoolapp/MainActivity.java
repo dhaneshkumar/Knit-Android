@@ -25,8 +25,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -395,7 +393,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         params.setMargins(positionOffsetPixels * 3 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
-                        hideButttonContainer(Classrooms.buttonContainer);
                         fragmentVisible = 0;
                         if(Outbox.needLoading){
                             Log.d(SendPendingMessages.LOGTAG, "(has joined class) lazy loading outbox");
@@ -413,7 +410,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                         fragmentVisible = 1;
                         highLightTab2();
-                        showButttonContainer(Classrooms.buttonContainer);
 
                         if(positionOffset < 0.3) {
                             actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
@@ -432,7 +428,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         if(Messages.myadapter != null){
                             Messages.myadapter.notifyDataSetChanged(); //we're in gui now
                         }
-                        hideButttonContainer(Classrooms.buttonContainer);
 
                         actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
                         actionButton.hide();
@@ -444,7 +439,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                         tabcolor.setLayoutParams(params);
                         highLightTab1();
-                        hideButttonContainer(Classrooms.buttonContainer);
                         fragmentVisible = 0;
 
                         if(Outbox.needLoading){
@@ -457,7 +451,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                         tabcolor.setLayoutParams(params);
                         highLightTab2();
                         fragmentVisible = 1;
-                        showButttonContainer(Classrooms.buttonContainer);
                     }
 
 
@@ -582,7 +575,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
      * @How : if size <=4 then shows all options
      *          else, It picks up 4 least recently used classes (LRU)
      *          Method to pick : take date of last message sent message from all classes and which class
-     *          dont't have any sent message, take their creation date, then sort them and display 4 options
+     *          don't have any sent message, take their creation date, then sort them and display 4 options
      */
     public static void setClassListOptions()
     {
@@ -953,36 +946,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         tab3Icon.setTextColor(getResources().getColor(R.color.light_button_color));
     }
 
-
-
-    private void showButttonContainer(LinearLayout buttonContainer)
-    {
-
-        if(buttonContainer == null)
-            return;
-
-        Animation bottomUp = AnimationUtils.loadAnimation(this,
-                R.anim.bottom_up);
-        buttonContainer.setAnimation(bottomUp);
-        bottomUp.setDuration(100);
-        bottomUp.start();
-        buttonContainer.setVisibility(View.VISIBLE);
-    }
-
-
-    private void hideButttonContainer(LinearLayout buttonContainer)
-    {
-
-        if(buttonContainer == null)
-            return;
-
-        Animation bottomUp = AnimationUtils.loadAnimation(this,
-                R.anim.bottom_down);
-        buttonContainer.setAnimation(bottomUp);
-        // bottomUp.setDuration(100);
-        bottomUp.start();
-        buttonContainer.setVisibility(View.GONE);
-    }
 
     class FloatOptionsAdapter extends BaseAdapter {
 

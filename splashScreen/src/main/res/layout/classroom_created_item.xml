@@ -1,56 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:paddingTop="12dp"
-    android:paddingBottom="12dp"
+    android:layout_height="64dp"
     android:paddingLeft="16dp"
     android:paddingRight="16dp"
     android:background="@color/white"
     >
 
     <TextView
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:id="@+id/headerText"
+        android:textSize="21sp"
+        android:text="X"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:textColor="@color/white"
+        android:background="@drawable/circle"
+        />
+
+    <TextView
         android:id="@+id/classname1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Knit"
+        android:layout_toRightOf="@+id/headerText"
         android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
         android:textSize="16sp"
         android:singleLine="true"
-        android:ems="10"
         android:textColor="@color/black"
         />
-
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:id="@+id/classmembers1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="24 members"
-            android:textColor="#999999"
-            android:textSize="12sp"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-        <TextView
-            android:id="@+id/classcode1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="KNI1234"
-            android:gravity="top|center_vertical"
-            android:textColor="#999999"
-            android:textSize="12sp"
-            android:layout_marginTop="4dp"
-            android:layout_below="@+id/classmembers1"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentEnd="true" />
-
-    </RelativeLayout>
-
 </RelativeLayout>
