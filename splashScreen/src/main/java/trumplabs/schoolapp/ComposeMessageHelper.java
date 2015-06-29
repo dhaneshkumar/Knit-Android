@@ -84,24 +84,7 @@ public class ComposeMessageHelper {
         }
     }
 
-    private void sendTxtMsgtoSubscribers(final String typedtxt) {
-        final List<ParseObject> messagesToSend = new ArrayList<>();
-        for(List<String> cls : selectedClassList){
-            final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
-            sentMsg.put("Creator", sender);
-            sentMsg.put("code", cls.get(0)); //code @ 0
-            sentMsg.put("title", typedtxt);
-            sentMsg.put("name", cls.get(1)); //name @ 1
-            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
-            sentMsg.put("senderId", userId);
-            sentMsg.put("userId", userId);
-            sentMsg.put("pending", true);
-
-            typedmsg.setText(""); //for reuse
-
-            messagesToSend.add(sentMsg);
-        }
-
+    private void pinAndNotify(final List<ParseObject> messagesToSend){
         ParseObject.pinAllInBackground(messagesToSend, new SaveCallback() {
             @Override
             public void done(ParseException e) {
@@ -161,6 +144,28 @@ public class ComposeMessageHelper {
         }
 
         ComposeMessage.sendButtonClicked = true; //Quick hack to compensate delayed(after pinning of msgs) spawning of pending msg thread
+    }
+
+
+    private void sendTxtMsgtoSubscribers(final String typedtxt) {
+        final List<ParseObject> messagesToSend = new ArrayList<>();
+        for(List<String> cls : selectedClassList){
+            final ParseObject sentMsg = new ParseObject(Constants.SENT_MESSAGES_TABLE);
+            sentMsg.put("Creator", sender);
+            sentMsg.put("code", cls.get(0)); //code @ 0
+            sentMsg.put("title", typedtxt);
+            sentMsg.put("name", cls.get(1)); //name @ 1
+            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+            sentMsg.put("senderId", userId);
+            sentMsg.put("userId", userId);
+            sentMsg.put("pending", true);
+
+            typedmsg.setText(""); //for reuse
+
+            messagesToSend.add(sentMsg);
+        }
+
+        pinAndNotify(messagesToSend);
     }
 
     /*always called in thread for background sending
@@ -244,40 +249,7 @@ public class ComposeMessageHelper {
             messagesToSend.add(sentMsg);
         }
 
-        ParseObject.pinAllInBackground(messagesToSend, new SaveCallback() {
-            @Override
-            public void done(ParseException e) {
-                if (e == null) {
-                    SendPendingMessages.addMessageListToQueue(messagesToSend);
-                } else {
-                    e.printStackTrace();
-                    Utility.toastDone("Sorry! Can't send your message");
-                }
-            }
-        });
-
-        if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
-
-            if(Outbox.groupDetails == null){
-                Outbox.groupDetails = new ArrayList<>();
-            }
-            for(ParseObject msg : messagesToSend){
-                Outbox.groupDetails.add(0, msg);
-            }
-
-            Outbox.refreshSelf();
-
-            Outbox.totalOutboxMessages += messagesToSend.size(); //totalOutboxMessages would have a proper value since source is MainActivity
-        }
-        else{
-            //add to SendMessage, update total count, notify its adapter
-            //set Outbox.needLoading flag true so that when we reach outbox on swiping from classrooms page, we're done
-        }
-
-        ComposeMessage.sendButtonClicked = true;
-
-        //TODO Notify and update "Outbox" page messages and count also
-        //Outbox.needLoading = true; //handle in MainActivity when tab is changed
+        pinAndNotify(messagesToSend);
     }
 
     //refer to sendTextMessageCloud
