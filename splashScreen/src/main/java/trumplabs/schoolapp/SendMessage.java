@@ -54,7 +54,6 @@ import trumplab.textslate.R;
 import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 /**
@@ -164,9 +163,6 @@ public class SendMessage extends MyActionBarActivity  {
             @Override
             public void onClick(View v) {
 
-                //hide keyword before transition
-                Tools.hideKeyboard(SendMessage.this);
-
                 Intent intent = new Intent(SendMessage.this, Subscribers.class);
                 intent.putExtra("className", grpName);
                 intent.putExtra("classCode", groupCode);
@@ -179,8 +175,6 @@ public class SendMessage extends MyActionBarActivity  {
             @Override
             public void onClick(View v) {
 
-                //hide keyword before transition
-                Tools.hideKeyboard(SendMessage.this);
                 Intent intent = new Intent(SendMessage.this, Invite.class);
                 intent.putExtra("classCode", groupCode);
                 intent.putExtra("className", grpName);
@@ -322,7 +316,6 @@ public class SendMessage extends MyActionBarActivity  {
      * openchooser.show(fm, "Chooser Dialog"); break;
      */
             case android.R.id.home:
-                Tools.hideKeyboard(SendMessage.this);
                 onBackPressed();
                 break;
             case R.id.copyCode:
@@ -364,9 +357,6 @@ public class SendMessage extends MyActionBarActivity  {
                                     Utility.toast("No internet Connection! Can't delete your class");
                                     return;
                                 }
-
-                                //hide keyword before transition
-                                Tools.hideKeyboard(SendMessage.this);
 
                                 //showing progress bar
                                 contentLayout.setVisibility(View.GONE);
