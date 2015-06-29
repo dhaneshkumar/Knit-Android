@@ -559,7 +559,7 @@ public class Outbox extends Fragment {
                 Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
-                if(!mgr.getTutorialState(tutorialId)) {
+                if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
                     mgr.setTutorialState(tutorialId, true);
                     ShowcaseCreator.teacherHighlightResponseButtons(getActivity(), holder.likes, holder.confused);
                 }

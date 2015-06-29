@@ -871,7 +871,7 @@ public class Messages extends Fragment {
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
                 Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId);
                 SessionManager mgr = new SessionManager(Application.getAppContext());
-                if(!mgr.getTutorialState(tutorialId)) {
+                if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
                     Log.d(ShowcaseCreator.LOGTAG, "(parent) creating response tutorial");
                     ShowcaseCreator.parentHighlightResponseButtons(getactivity, holder.likeButton, holder.confuseButton);
