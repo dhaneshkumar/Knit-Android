@@ -253,107 +253,100 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             viewpager.setOffscreenPageLimit(1);
 
 
-
         //Initializing compose button
         actionButton = (ActionButton) findViewById(R.id.action_button);
 
-        // To set button color for normal state:
-        actionButton.setButtonColor(Color.parseColor("#039BE5"));
+        if(role.equals(Constants.TEACHER)) {
 
-        //#E53935 -  red(600)
-        // To set button color for pressed state:
-        actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
+            // To set button color for normal state:
+            actionButton.setButtonColor(Color.parseColor("#039BE5"));
 
-        //Setting image in floating button
-        actionButton.setImageResource(R.drawable.ic_edit);
+            //#E53935 -  red(600)
+            // To set button color for pressed state:
+            actionButton.setButtonColorPressed(Color.parseColor("#01579B"));
 
-        // To enable or disable Ripple Effect:
-        actionButton.setRippleEffectEnabled(true);
+            //Setting image in floating button
+            actionButton.setImageResource(R.drawable.ic_edit);
+
+            // To enable or disable Ripple Effect:
+            actionButton.setRippleEffectEnabled(true);
 
 
+            actionButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-        actionButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if(classList.size() == 0)
-                {
-                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                    startActivity(intent);
-                }
-                else if(classList.size() == 1)
-                {
-                    Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
-                    intent.putExtra("CLASS_CODE", classList.get(0).get(0));
-                    intent.putExtra("CLASS_NAME", classList.get(0).get(1));
-                    startActivity(intent);
-                }
-                else {
-
-                    action_menu.setVisibility(View.VISIBLE);
-                    action_menu_list.setVisibility(View.VISIBLE);
-
-                    if (isFloatingButtonCliked) {
+                    if (classList.size() == 0) {
                         Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
                         startActivity(intent);
-                        isFloatingButtonCliked = false;
-                        action_menu.setVisibility(View.GONE);
-                        action_menu_list.setVisibility(View.GONE);
-                    } else
-                        isFloatingButtonCliked = true;
+                    } else if (classList.size() == 1) {
+                        Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                        intent.putExtra("CLASS_CODE", classList.get(0).get(0));
+                        intent.putExtra("CLASS_NAME", classList.get(0).get(1));
+                        startActivity(intent);
+                    } else {
+
+                        action_menu.setVisibility(View.VISIBLE);
+                        action_menu_list.setVisibility(View.VISIBLE);
+
+                        if (isFloatingButtonCliked) {
+                            Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                            startActivity(intent);
+                            isFloatingButtonCliked = false;
+                            action_menu.setVisibility(View.GONE);
+                            action_menu_list.setVisibility(View.GONE);
+                        } else
+                            isFloatingButtonCliked = true;
+                    }
                 }
-            }
-        });
+            });
 
 
-        action_menu.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                action_menu.setVisibility(View.GONE);
-                action_menu_list.setVisibility(View.GONE);
-                isFloatingButtonCliked = false;
-            }
-        });
+            action_menu.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    action_menu.setVisibility(View.GONE);
+                    action_menu_list.setVisibility(View.GONE);
+                    isFloatingButtonCliked = false;
+                }
+            });
 
 
-        //setting tab click functionality
-        tab1Icon.setOnClickListener(new OnClickListener() {
+            //setting tab click functionality
+            tab1Icon.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                highLightTab1();
-                viewpager.setCurrentItem(0);
-                actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
-                actionButton.show();
-            }
-        });
-        tab2Icon.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    highLightTab1();
+                    viewpager.setCurrentItem(0);
+                    actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                    actionButton.show();
+                }
+            });
+            tab2Icon.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                highLightTab2();
-                viewpager.setCurrentItem(1);
-                actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
-                actionButton.show();
-            }
-        });
+                @Override
+                public void onClick(View v) {
+                    highLightTab2();
+                    viewpager.setCurrentItem(1);
+                    actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                    actionButton.show();
+                }
+            });
 
-        tab3Icon.setOnClickListener(new OnClickListener() {
+            tab3Icon.setOnClickListener(new OnClickListener() {
 
-            @Override
-            public void onClick(View v) {
-                highLightTab3();
-                viewpager.setCurrentItem(2);
+                @Override
+                public void onClick(View v) {
+                    highLightTab3();
+                    viewpager.setCurrentItem(2);
 
-                actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
-                actionButton.hide();
+                    actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                    actionButton.hide();
 
-            }
-        });
+                }
+            });
 
-
-        //gui setup according to ROLE
-        if (role.equals("teacher")) {
 
             if(sessionManager.getHasUserJoinedClass()) {
                 tab3Icon.setVisibility(View.VISIBLE);
@@ -367,101 +360,103 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 0, LinearLayout.LayoutParams.WRAP_CONTENT, 5);
                 tab1Icon.setLayoutParams(layoutParams);
             }
-        } else {
-            LinearLayout parentLayout = (LinearLayout) findViewById(R.id.tabviewer);
-            parentLayout.setVisibility(View.GONE);
-        }
 
-        //swipe feature implementation
-        viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageSelected(int arg0) {
-                supportInvalidateOptionsMenu();
-            }
 
-            @Override
-            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            //swipe feature implementation
+            viewpager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+                @Override
+                public void onPageSelected(int arg0) {
+                    supportInvalidateOptionsMenu();
+                }
+
+                @Override
+                public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
 
                 /*
                 scrolling from one tab to other
                  */
-                if(sessionManager.getHasUserJoinedClass()) {
+                    if(sessionManager.getHasUserJoinedClass()) {
 
-                    if (position == 0) {
-                        params.width = screenwidth * 5 / 13;
+                        if (position == 0) {
+                            params.width = screenwidth * 5 / 13;
 
-                        params.setMargins(positionOffsetPixels * 3 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
-                        tabcolor.setLayoutParams(params);
-                        highLightTab1();
-                        fragmentVisible = 0;
-                        if(Outbox.needLoading){
-                            Log.d(SendPendingMessages.LOGTAG, "(has joined class) lazy loading outbox");
-                            Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                            outboxAT.execute();//it also sets the 'needLoading' flag false
-                        }
-                        actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
-                        actionButton.show();
-
-                    } else if (position == 1) {
-
-                        params.width = screenwidth * 5 / 13;
-                        params.setMargins((screenwidth * 3 / 13) + (positionOffsetPixels * 5 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
-                        tabcolor.setLayoutParams(params);
-
-                        fragmentVisible = 1;
-                        highLightTab2();
-
-                        if(positionOffset < 0.3) {
+                            params.setMargins(positionOffsetPixels * 3 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
+                            tabcolor.setLayoutParams(params);
+                            highLightTab1();
+                            fragmentVisible = 0;
+                            if(Outbox.needLoading){
+                                Log.d(SendPendingMessages.LOGTAG, "(has joined class) lazy loading outbox");
+                                Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
+                                outboxAT.execute();//it also sets the 'needLoading' flag false
+                            }
                             actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
                             actionButton.show();
-                        }else {
+
+                        } else if (position == 1) {
+
+                            params.width = screenwidth * 5 / 13;
+                            params.setMargins((screenwidth * 3 / 13) + (positionOffsetPixels * 5 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                            tabcolor.setLayoutParams(params);
+
+                            fragmentVisible = 1;
+                            highLightTab2();
+
+                            if(positionOffset < 0.3) {
+                                actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
+                                actionButton.show();
+                            }else {
+                                actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
+                                actionButton.hide();
+                            }
+
+                        } else {
+                            params.width = screenwidth * 5 / 13;
+                            params.setMargins((8 * screenwidth / 13), 0, 0, 0);
+                            tabcolor.setLayoutParams(params);
+                            highLightTab3();
+                            fragmentVisible = 2;
+                            if(Messages.myadapter != null){
+                                Messages.myadapter.notifyDataSetChanged(); //we're in gui now
+                            }
+
                             actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
                             actionButton.hide();
                         }
+                    }
+                    else {
+                        params.width = screenwidth  / 2;
+                        if (position == 0) {
+                            params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
+                            tabcolor.setLayoutParams(params);
+                            highLightTab1();
+                            fragmentVisible = 0;
 
-                    } else {
-                        params.width = screenwidth * 5 / 13;
-                        params.setMargins((8 * screenwidth / 13), 0, 0, 0);
-                        tabcolor.setLayoutParams(params);
-                        highLightTab3();
-                        fragmentVisible = 2;
-                        if(Messages.myadapter != null){
-                            Messages.myadapter.notifyDataSetChanged(); //we're in gui now
+                            if(Outbox.needLoading){
+                                Log.d(SendPendingMessages.LOGTAG, "(no joined class) lazy loading outbox");
+                                Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
+                                outboxAT.execute();//it also sets the 'needLoading' flag false
+                            }
+                        } else {
+                            params.setMargins((screenwidth /2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                            tabcolor.setLayoutParams(params);
+                            highLightTab2();
+                            fragmentVisible = 1;
                         }
 
-                        actionButton.setHideAnimation(ActionButton.Animations.JUMP_TO_DOWN);
-                        actionButton.hide();
+
                     }
                 }
-                else {
-                    params.width = screenwidth  / 2;
-                    if (position == 0) {
-                        params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
-                        tabcolor.setLayoutParams(params);
-                        highLightTab1();
-                        fragmentVisible = 0;
 
-                        if(Outbox.needLoading){
-                            Log.d(SendPendingMessages.LOGTAG, "(no joined class) lazy loading outbox");
-                            Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                            outboxAT.execute();//it also sets the 'needLoading' flag false
-                        }
-                    } else {
-                        params.setMargins((screenwidth /2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
-                        tabcolor.setLayoutParams(params);
-                        highLightTab2();
-                        fragmentVisible = 1;
-                    }
-
+                @Override
+                public void onPageScrollStateChanged(int arg0) {
 
                 }
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int arg0) {
-
-            }
-        });
+            });
+        } else {
+            LinearLayout parentLayout = (LinearLayout) findViewById(R.id.tabviewer);
+            parentLayout.setVisibility(View.GONE);
+            actionButton.setVisibility(View.GONE);
+        }
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             int currentItem = getIntent().getExtras().getInt("VIEWPAGERINDEX", -1);
@@ -637,11 +632,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                 Collections.sort(LRU_list, new Comparator<Date>() {
 
-                @Override
-                public int compare(Date d1, Date d2) {
-                    return d2.compareTo(d1);
-                }
-            });
+                    @Override
+                    public int compare(Date d1, Date d2) {
+                        return d2.compareTo(d1);
+                    }
+                });
 
                 for(int i=0; LRU_list.size() >=4 && i<4;i++)
                 {

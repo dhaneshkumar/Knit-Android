@@ -5,6 +5,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import baseclasses.MyActionBarActivity;
@@ -27,11 +29,13 @@ public class JoinClassesContainer extends MyActionBarActivity  {
   }
 
   @Override
-  protected void onResume() {
-    super.onResume();
+  public boolean onCreateOptionsMenu(Menu menu) {
 
+      MenuInflater inflater = getMenuInflater();
+      inflater.inflate(R.menu.mainactivity_for_parents, menu);
+      super.onCreateOptionsMenu(menu);
+    return true;
   }
-
   
   @Override
   public boolean onOptionsItemSelected(MenuItem item) {
@@ -39,6 +43,13 @@ public class JoinClassesContainer extends MyActionBarActivity  {
       case android.R.id.home:
         onBackPressed();
         break;
+
+        case R.id.joinclass:
+            //not used here. set in onCreateOptionsMenu
+            FragmentManager fm1 = getSupportFragmentManager();
+            JoinClassDialog joinClassDialog = new JoinClassDialog();
+            joinClassDialog.show(fm1, "Join Class");
+            break;
 
       default:
         break;
@@ -55,7 +66,7 @@ public class JoinClassesContainer extends MyActionBarActivity  {
     @Override
     public Fragment getItem(int arg0) {
       Fragment fragment = null;
-      supportInvalidateOptionsMenu();
+      //supportInvalidateOptionsMenu();
       switch (arg0) {
         case 0:
           fragment = new Classrooms();

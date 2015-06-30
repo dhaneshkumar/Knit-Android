@@ -56,7 +56,6 @@ import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
 
-
 /**
  * Class for Inbox's functions & activity
  */
@@ -420,7 +419,6 @@ public class Messages extends Fragment {
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView groupName;
-        TextView sender;
         TextView startTime;
         TextView msgslist;
         FrameLayout imgframelayout;
@@ -433,7 +431,6 @@ public class Messages extends Fragment {
         TextView confused;
         ImageView likeIcon;
         ImageView confusingIcon;
-        ImageView senderImg;
         LinearLayout copyLayout;
         LinearLayout root;
         LinearLayout head;
@@ -442,7 +439,6 @@ public class Messages extends Fragment {
             super(row);
 
             groupName = (TextView) row.findViewById(R.id.groupName);
-            sender = (TextView) row.findViewById(R.id.sender);
             startTime = (TextView) row.findViewById(R.id.startTime);
             msgslist = (TextView) row.findViewById(R.id.msgs);
             imgframelayout = (FrameLayout) row.findViewById(R.id.imagefrmlayout);
@@ -455,7 +451,6 @@ public class Messages extends Fragment {
             confused = (TextView) row.findViewById(R.id.confusion);
             likeIcon = (ImageView) row.findViewById(R.id.likeIcon);
             confusingIcon = (ImageView) row.findViewById(R.id.confusionIcon);
-            senderImg = (ImageView) row.findViewById(R.id.image);
             copyLayout = (LinearLayout) row.findViewById(R.id.copyMessage);
             root = (LinearLayout) row.findViewById(R.id.rootLayout);
             head = (LinearLayout) row.findViewById(R.id.headLayout);
@@ -688,20 +683,6 @@ public class Messages extends Fragment {
             if(!UtilString.isBlank(msgObject.getString("name")))
                  Str = msgObject.getString("name").toUpperCase();
             holder.groupName.setText(Str);
-
-            Str = msgObject.getString("Creator");
-            holder.sender.setText(Str);
-
-            if (senderThumbnailFile.exists())
-
-            {
-                // image file present locally
-                loadBitmap(senderThumbnailFile.getAbsolutePath(), holder.senderImg);
-            } else
-            {
-                holder.senderImg.setImageResource(R.drawable.dp_common_thumbnail);
-            }
-
 
             try
             {
