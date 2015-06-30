@@ -554,15 +554,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
 
-
-       /* action_menu_list.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                action_menu.setVisibility(View.VISIBLE);
-                action_menu_list.setVisibility(View.VISIBLE);
-            }
-        });*/
-
     }
 
     /**

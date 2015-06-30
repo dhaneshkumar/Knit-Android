@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:background="@drawable/messages_item_background"
+    android:elevation="2dp"
+    android:layout_margin="8dp"
+    android:id="@+id/rootLayout"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" >
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:id="@+id/headLayout"
+        android:background="@drawable/outbox_item_shadow"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp"
+        >
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:paddingLeft="@dimen/msg_margin"
+            android:layout_marginBottom="@dimen/msg_margin"
+            android:paddingRight="@dimen/msg_margin"
+            >
+            <TextView
+                android:visibility="visible"
+                android:id="@+id/classimage1"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="top|left"
+                android:background="@drawable/circle"
+                android:text="X"
+                android:layout_marginRight="16dp"
+                android:textSize="21sp"
+                android:gravity="center"
+                android:textColor="@color/white"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toRightOf="@+id/classimage1"
+                android:layout_toEndOf="@+id/classimage1"
+                android:background="@color/white"
+                android:id="@+id/relativeLayout">
+
+                <TextView
+                    android:id="@+id/classname1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="English"
+                    android:gravity="center"
+                    android:textStyle="bold"
+                    android:textColor="#363636"
+                    android:textSize="16sp"
+                    android:ellipsize="end"
+                    android:maxEms="10"
+                    android:singleLine="true"
+
+                    />
+
+                <TextView
+                    android:id="@+id/cctimestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="just now"
+                    android:textColor="@color/grey_light"
+                    android:textSize="12sp"
+                    android:layout_below="@+id/classname1"
+                    android:layout_alignLeft="@+id/classname1"
+                    android:layout_alignStart="@+id/classname1" />
+            </RelativeLayout>
+
+
+
+        </RelativeLayout>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            >
+
+            <TextView
+                android:id="@+id/ccmsgtext"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingLeft="@dimen/msg_margin"
+                android:paddingRight="@dimen/msg_margin"
+                android:layout_marginBottom="6dp"
+                android:text="Make sure that your child starts reading poems everyday."
+                android:textColor="#444444"
+                android:textSize="15sp" />
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    >
+                    <ImageView
+                        android:id="@+id/ccimgmsg"
+                        android:visibility="gone"
+                        android:layout_marginBottom="@dimen/msg_margin_bottom"
+                        android:layout_marginTop="@dimen/msg_margin_bottom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:scaleType="fitXY"
+                        />
+
+                </LinearLayout>
+                <ProgressBar
+                    android:id="@+id/msgprogressbar"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
+            </FrameLayout>
+
+
+
+            <RelativeLayout
+                android:id="@+id/likeButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/msg_margin"
+                android:layout_marginRight="@dimen/msg_margin"
+                android:layout_marginTop="@dimen/msg_margin_bottom">
+
+                <TextView
+                    android:id="@+id/like"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="13"
+                    android:textStyle="bold"
+                    android:layout_gravity="center_vertical"
+                    android:textColor="@color/grey_light"
+                    android:textSize="14sp"
+                    android:layout_centerVertical="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentStart="true" />
+
+                <ImageView
+                    android:id="@+id/likeIcon"
+                    android:layout_toRightOf="@+id/like"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="0dp"
+                    android:src="@drawable/like_light_grey"/>
+
+                <TextView
+                    android:id="@+id/confusion"
+                    android:layout_toRightOf="@+id/likeIcon"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="24"
+                    android:layout_marginLeft="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/grey_light"
+                    android:layout_centerVertical="true"
+                    android:textSize="14sp"
+                    />
+
+                <ImageView
+                    android:id="@+id/confusionIcon"
+                    android:layout_width="24dp"
+                    android:layout_toRightOf="@+id/confusion"
+                    android:layout_height="24dp"
+                    android:layout_marginLeft="-4dp"
+                    android:layout_gravity="center"
+                    android:src="@drawable/confuse_light_grey"/>
+
+                <TextView
+                    android:id="@+id/seen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="seen by 29"
+                    android:textColor="@color/grey_light"
+                    android:textSize="12sp"
+                    android:gravity="right"
+                    android:visibility="gone"
+                    android:layout_alignBottom="@+id/confusion"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+                <TextView
+                    android:id="@+id/retry"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:visibility="visible"
+                    android:paddingLeft="6dp"
+                    android:paddingRight="6dp"
+                    android:clickable="false"
+                    android:text=" Retry "
+                    android:textColor="@color/buttoncolor"
+                    android:textSize="12sp"
+                    android:background="@drawable/button_color_boundry"
+                    android:textAllCaps="false"
+                    android:layout_alignBottom="@+id/confusion"
+                    android:typeface="monospace"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignParentEnd="true" />
+
+
+            </RelativeLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
+    </LinearLayout>

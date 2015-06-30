@@ -11,6 +11,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.util.Log;
@@ -414,7 +415,7 @@ public class SendMessage extends MyActionBarActivity  {
             View row = convertView;
             if (row == null) {
                 LayoutInflater layoutinflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                row = layoutinflater.inflate(R.layout.ccmsging_msgview, parent, false);
+                row = layoutinflater.inflate(R.layout.created_class_messages_item, parent, false);
             } else {
             }
 
@@ -454,6 +455,15 @@ public class SendMessage extends MyActionBarActivity  {
             TextView confusedCountArea = (TextView) row.findViewById(R.id.confusion);
             TextView seenCountArea = (TextView) row.findViewById(R.id.seen);
             TextView retryButton = (TextView) row.findViewById(R.id.retry);
+            LinearLayout root = (LinearLayout) row.findViewById(R.id.rootLayout);
+            LinearLayout head = (LinearLayout) row.findViewById(R.id.headLayout);
+
+            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
+                root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
+                head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
+            }
+
 
             if(pending){//this message is not yet sent
                 seenCountArea.setVisibility(View.GONE);

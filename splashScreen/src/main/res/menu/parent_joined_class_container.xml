@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app12="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/joinclass"
+        android:id="@+id/joinclass12"
         android:icon="@drawable/ic_action_import"
         android:title="Join a Class"
-        app:showAsAction="always"/>
+        app12:showAsAction="always"/>
 </menu>

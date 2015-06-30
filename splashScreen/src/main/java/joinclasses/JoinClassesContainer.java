@@ -32,7 +32,7 @@ public class JoinClassesContainer extends MyActionBarActivity  {
   public boolean onCreateOptionsMenu(Menu menu) {
 
       MenuInflater inflater = getMenuInflater();
-      inflater.inflate(R.menu.mainactivity_for_parents, menu);
+      inflater.inflate(R.menu.parent_joined_class_container, menu);
       super.onCreateOptionsMenu(menu);
     return true;
   }
@@ -44,7 +44,7 @@ public class JoinClassesContainer extends MyActionBarActivity  {
         onBackPressed();
         break;
 
-        case R.id.joinclass:
+        case R.id.joinclass12:
             //not used here. set in onCreateOptionsMenu
             FragmentManager fm1 = getSupportFragmentManager();
             JoinClassDialog joinClassDialog = new JoinClassDialog();
@@ -66,7 +66,7 @@ public class JoinClassesContainer extends MyActionBarActivity  {
     @Override
     public Fragment getItem(int arg0) {
       Fragment fragment = null;
-      //supportInvalidateOptionsMenu();
+      supportInvalidateOptionsMenu();
       switch (arg0) {
         case 0:
           fragment = new Classrooms();

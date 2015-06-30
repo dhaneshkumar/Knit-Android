@@ -187,7 +187,7 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                        classeslistview.setVisibility(View.VISIBLE);
                        selectedClassTV.setVisibility(View.VISIBLE);
                        classTextView.setVisibility(View.GONE);
-                       doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_tick));
+                       doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.done));
                    }
                     else {
                        classTextView.setText("Sorry! No Created Classrooms");

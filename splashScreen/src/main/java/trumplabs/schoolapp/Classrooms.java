@@ -38,7 +38,6 @@ import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
-import utility.Queries;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -57,7 +56,6 @@ public class Classrooms extends Fragment  {
     public static BaseAdapter createdClassAdapter;
     public static BaseAdapter joinedClassAdapter;
     public static int members;
-    private Queries query;
     Typeface lightTypeFace;
     public static TextView createdClassTV;
     private TextView joinedClassTV;
@@ -82,7 +80,6 @@ public class Classrooms extends Fragment  {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        query = new Queries();
         getactivity = getActivity();
         createdClassListView = (ExpandableListView) getactivity.findViewById(R.id.createdclasseslistview);
         joinedClassListView = (ExpandableListView) getactivity.findViewById(R.id.joinedclasseslistview);
