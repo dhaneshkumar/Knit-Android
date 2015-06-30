@@ -201,6 +201,9 @@ public class Messages extends Fragment {
         //fetch local messages in background
         query = new Queries();
 
+        //initialize msgs as it is static and can be persistent from previous user who logged out
+        msgs = new ArrayList<>();
+
         /*
         If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
          */
@@ -219,7 +222,7 @@ public class Messages extends Fragment {
             }
 
             if (msgs == null)
-                msgs = new ArrayList<ParseObject>();
+                msgs = new ArrayList<>();
 
             if (msgs.size() == 0)
                 inemptylayout.setVisibility(View.VISIBLE);

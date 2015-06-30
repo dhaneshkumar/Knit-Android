@@ -117,6 +117,9 @@ public class Outbox extends Fragment {
             }
         }
 
+        //initialize msgs as it is static and can be persistent from previous user who logged out
+        groupDetails = new ArrayList<>();
+
         //fetching locally stored outbox messages
         GetLocalOutboxMsgInBackground getLocalOutboxMsg = new GetLocalOutboxMsgInBackground();
         getLocalOutboxMsg.execute();
@@ -556,7 +559,7 @@ public class Outbox extends Fragment {
             }
 
             //if a) first msg, b) is a teacher & c) already not shown
-            if(position == 0 && !responseTutorialShown && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
+            if(position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());

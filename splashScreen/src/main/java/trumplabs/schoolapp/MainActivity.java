@@ -242,7 +242,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             e.printStackTrace();
         }
 
-        FragmentManager fragmentmanager = getSupportFragmentManager();
+        final FragmentManager fragmentmanager = getSupportFragmentManager();
 
         myAdapter = new MyAdapter(fragmentmanager);
         viewpager.setAdapter(myAdapter);
@@ -370,13 +370,17 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 @Override
                 public void onPageSelected(int arg0) {
                     supportInvalidateOptionsMenu();
-                    /*if(arg0 == 0){//first fragment
-                        if(Outbox.needLoading){
-                            Log.d(SendPendingMessages.LOGTAG, "(has joined class) lazy loading outbox");
-                            Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                            outboxAT.execute();//it also sets the 'needLoading' flag false
-                        }
-                    }*/
+                    fragmentVisible = arg0;
+
+                    Log.d("__TEMP__", "onPageSelected " + fragmentVisible);
+                    if(fragmentVisible == 0 && !Outbox.responseTutorialShown && Outbox.myadapter != null){
+                        Log.d("__TEMP__", "Outbox notify");
+                        Outbox.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
+                    }
+                    if(fragmentVisible == 2 && !Messages.responseTutorialShown && Messages.myadapter != null){
+                        Log.d("__TEMP__", "Messages notify");
+                        Messages.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
+                    }
                 }
 
                 @Override
@@ -393,7 +397,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins(positionOffsetPixels * 3 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
                             highLightTab1();
-                            fragmentVisible = 0;
                             actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
                             actionButton.show();
 
@@ -403,7 +406,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins((screenwidth * 3 / 13) + (positionOffsetPixels * 5 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
 
-                            fragmentVisible = 1;
                             highLightTab2();
 
                             if(positionOffset < 0.3) {
@@ -419,7 +421,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins((8 * screenwidth / 13), 0, 0, 0);
                             tabcolor.setLayoutParams(params);
                             highLightTab3();
-                            fragmentVisible = 2;
                             if(Messages.myadapter != null){
                                 Messages.myadapter.notifyDataSetChanged(); //we're in gui now
                             }
@@ -434,12 +435,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
                             highLightTab1();
-                            fragmentVisible = 0;
                         } else {
-                            params.setMargins((screenwidth /2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                            params.setMargins((screenwidth / 2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
                             highLightTab2();
-                            fragmentVisible = 1;
                         }
 
                     }
