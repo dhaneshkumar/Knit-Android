@@ -97,7 +97,7 @@ public class ComposeMessageHelper {
             }
         });
 
-        if(ComposeMessage.source.equals(Constants.ComposeSource.OUTSIDE)){
+        if(true){//do it always as there is a delay in executing asynctask which queries and updates Outbox messages
             //just update Outbox msgs and notify. No need to worry about SendMessage page as from here
             // we will return to OUTSIDE and when we go to SendMessage page its onCreate will be called
             // By that time, new msgs would have been pinned and will appear when queried
@@ -117,12 +117,14 @@ public class ComposeMessageHelper {
             Log.d(ComposeMessage.LOGTAG, "source outside - added to Outbox.groupdetails #=" + messagesToSend.size() +
                     " total outbox count=" + Outbox.totalOutboxMessages + ", #visible outbox msgs=" + Outbox.groupDetails.size());
         }
-        else{//source is INSIDE i.e
+
+        if(ComposeMessage.source.equals(Constants.ComposeSource.INSIDE)){
+            //source is INSIDE i.e
             //From here will return to SendMessage of the class
             //add to SendMessage, update total count, notify its adapter
-            //set Outbox.needLoading flag true so that when we reach outbox on swiping from classrooms page, we're done
+            //No need to worry about Outbox page as it has already been updated and notified in above code fragment
 
-            Outbox.needLoading = true;
+            //Outbox.needLoading = true;
 
             if(SendMessage.groupDetails == null){
                 SendMessage.groupDetails = new ArrayList<>();
@@ -175,6 +177,11 @@ public class ComposeMessageHelper {
         -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
     */
     public static int sendTextMessageCloud(final ParseObject msg, final boolean isLive){
+        if(!Utility.isInternetExistWithoutPopup()){
+            Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
+            return 100; //not connected to internet
+        }
+
         //if live, then only show "sent" toast
         //sending message using parse cloud function
         HashMap<String, String> params = new HashMap<String, String>();
@@ -254,6 +261,11 @@ public class ComposeMessageHelper {
 
     //refer to sendTextMessageCloud
     public static int sendPicMessageCloud(final ParseObject msg, final boolean isLive) {
+        if(!Utility.isInternetExistWithoutPopup()){
+            Log.d(SendPendingMessages.LOGTAG, "send pic cloud : saving cloud call when offline");
+            return 100; //not connected to internet
+        }
+
         //don't have attachement, objectid
         //update creationTime, pending
         String imageName = null;

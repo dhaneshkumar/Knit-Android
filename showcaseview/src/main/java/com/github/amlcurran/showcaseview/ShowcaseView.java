@@ -53,6 +53,7 @@ import static com.github.amlcurran.showcaseview.AnimationFactory.AnimationStartL
  */
 public class ShowcaseView extends RelativeLayout
         implements View.OnTouchListener, ShowcaseViewApi {
+    public static boolean isVisible = false; //set to true in constructor, set to false on hide()
     private Context activityContext;
 
     private static final int HOLO_BLUE = Color.parseColor("#33B5E5");
@@ -201,25 +202,35 @@ public class ShowcaseView extends RelativeLayout
 
 
     public void setPointer(int x, int y){
-        setPointer(x, y, false);
+        setPointer(x, y, 0);
     }
 
-    public void setPointer(int x, int y, boolean above){
+    //extra 0 : default pointer
+    //      1 : teacher options
+    //      2 : parent options
+    public void setPointer(int x, int y, int extra){
         fixButton();
         pointer = (ImageView) LayoutInflater.from(activityContext).inflate(R.layout.pointer_arrow, null);
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
 
-        params.addRule(ALIGN_PARENT_LEFT);
-        params.leftMargin = x; //Your X coordinate
+        if(extra == 1){
+            pointer.setImageResource(R.drawable.options_teacher);
+            params.addRule(ALIGN_PARENT_RIGHT);
+            params.rightMargin = x; //Your X coordinate
+        }
+        else if(extra == 2){
+            pointer.setImageResource(R.drawable.options_parent);
+            params.addRule(ALIGN_PARENT_RIGHT);
+            params.rightMargin = x; //Your X coordinate
+        }
+        else {//default
+            pointer.setImageResource(R.drawable.pointer);
+            params.addRule(ALIGN_PARENT_LEFT);
+            params.leftMargin = x; //Your X coordinate
+        }
 
-        if(above){
-            params.addRule(ALIGN_PARENT_BOTTOM);
-            params.bottomMargin = y; //Your Y coordinate in case of measured from bottom edge of screen
-        }
-        else{
-            params.addRule(ALIGN_PARENT_TOP);
-            params.topMargin = y; //Your Y coordinate default
-        }
+        params.addRule(ALIGN_PARENT_TOP);
+        params.topMargin = y; //Your Y coordinate default
 
         pointer.setLayoutParams(params);
         addView(pointer);
@@ -434,6 +445,9 @@ public class ShowcaseView extends RelativeLayout
 
     @Override
     public void hide() {
+        isVisible = false;
+        Log.d("_SHOWCASE_", "isVisible set to "+ isVisible);
+
         clearBitmap();
         // If the type is set to one-shot, store that it has shot
         shotStateStore.storeShot();

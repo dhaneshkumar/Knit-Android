@@ -26,6 +26,8 @@ public class InviteTasks {
         query.whereEqualTo(Constants.PENDING, true);
         query.whereEqualTo(Constants.TYPE, inviteType);
         query.whereEqualTo(Constants.MODE, inviteMode);
+        query.whereEqualTo(Constants.USER_ID, ParseUser.getCurrentUser().getUsername());
+
         if(inviteType == Constants.INVITATION_T2P) {
             query.whereEqualTo(Constants.CLASS_CODE, classCode);
         }
@@ -137,6 +139,9 @@ public class InviteTasks {
                     }
                 }
             }
+        }
+        else{
+            return; //won't happen
         }
 
         //Now we have all the 3 variables that can vary

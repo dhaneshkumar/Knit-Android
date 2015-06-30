@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.parse.ParsePushBroadcastReceiver;
+import com.parse.ParseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,6 +23,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
 
     @Override
     public void onPushReceive(Context context, Intent intent) {
+        if(ParseUser.getCurrentUser() == null) return;
 
         //retrieving json data on push receive
         Bundle extras = intent.getExtras();

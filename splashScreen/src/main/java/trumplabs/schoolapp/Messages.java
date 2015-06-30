@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -848,7 +849,7 @@ public class Messages extends Fragment {
             Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
                     + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
 
-            if(position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2)){
+            if(position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
                 Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId);
                 SessionManager mgr = new SessionManager(Application.getAppContext());

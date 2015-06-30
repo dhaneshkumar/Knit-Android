@@ -26,6 +26,7 @@ import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -57,11 +58,13 @@ public class InviteVia extends MyActionBarActivity {
     private ListView contactListview;
     private BaseAdapter contactAdapter;
     private List<Contact> initialContactList;
-
+    private String username;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts_list_view);
+
+        username = ParseUser.getCurrentUser().getUsername();
 
         contactListview = (ListView) findViewById(R.id.contact_list);
 
@@ -153,6 +156,7 @@ public class InviteVia extends MyActionBarActivity {
         invitationQuery.fromLocalDatastore();
         invitationQuery.whereEqualTo(Constants.TYPE, inviteType);
         invitationQuery.whereEqualTo(Constants.MODE, inviteMode);
+        invitationQuery.whereEqualTo(Constants.USER_ID, ParseUser.getCurrentUser().getUsername());
 
         if(inviteType == Constants.INVITATION_T2P){
             invitationQuery.whereEqualTo(Constants.CLASS_CODE, classCode);
@@ -407,6 +411,7 @@ public class InviteVia extends MyActionBarActivity {
                     resend.setVisibility(View.VISIBLE);
                     if(contact.invitation == null){
                         ParseObject invitation = new ParseObject(Constants.INVITATION);
+                        invitation.put(Constants.USER_ID, username);
                         invitation.put(Constants.RECEIVER, contact.number);
                         invitation.put(Constants.RECEIVER_NAME, contact.name);
                         invitation.put(Constants.TYPE, inviteType);
