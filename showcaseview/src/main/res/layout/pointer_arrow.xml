@@ -20,4 +20,5 @@
     android:layout_height="wrap_content"
     android:adjustViewBounds="true"
     android:src="@drawable/pointer"
+    android:paddingBottom="15dp"
     android:id="@+id/pointer" />

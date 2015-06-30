@@ -224,6 +224,7 @@ public class ShowcaseView extends RelativeLayout
             params.rightMargin = x; //Your X coordinate
         }
         else {//default
+            pointer.setPadding(0, 0, 0, 0); //zero padding
             pointer.setImageResource(R.drawable.pointer);
             params.addRule(ALIGN_PARENT_LEFT);
             params.leftMargin = x; //Your X coordinate

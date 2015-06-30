@@ -3,16 +3,12 @@ package tutorial;
 import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -22,9 +18,7 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.CreateClassDialog;
-import utility.Tools;
 
 /**
  * Created by ashish on 25/6/15.
@@ -410,7 +404,7 @@ public class ShowcaseCreator {
                 showcaseView1.addButtonRow(buttonRow);
                 showcaseView1.setPointerAbove(buttonRow);
                 showcaseView1.flipPointer();
-                showcaseView1.setDescription("For each post, you can see how many parents/students like your it or are confused about it. They can respond using only two buttons - like or confuse", true);
+                showcaseView1.setDescription("For each post, you can see how many parents/students like it or are confused about it. They can respond using only two buttons - like or confuse", true);
 
                 builder.build();
             }
