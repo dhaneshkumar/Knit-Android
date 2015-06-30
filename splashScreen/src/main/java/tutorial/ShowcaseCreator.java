@@ -3,16 +3,12 @@ package tutorial;
 import android.app.Activity;
 import android.graphics.Point;
 import android.graphics.Typeface;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 
 import com.github.amlcurran.showcaseview.OnShowcaseEventListener;
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -22,9 +18,7 @@ import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
 import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.CreateClassDialog;
-import utility.Tools;
 
 /**
  * Created by ashish on 25/6/15.
@@ -54,6 +48,8 @@ public class ShowcaseCreator {
     //using ViewTarget
     public static void teacherHighlightCreate(final Activity activity, final View targetView, final View targetView2){
         //post on target i.e when target is ready and hence its position and size are set
+
+        ShowcaseView.isVisible = true;
 
         targetView.postDelayed(new Runnable() {
             @Override
@@ -96,6 +92,8 @@ public class ShowcaseCreator {
 
     //using PointTarget
     public static void teacherHighlightJoin(final Activity activity, final View targetView){
+        ShowcaseView.isVisible = true;
+
         //post on target i.e when target is ready and hence its position and size are set
         targetView.postDelayed(new Runnable() {
             @Override
@@ -152,6 +150,8 @@ public class ShowcaseCreator {
     //Parent signup
     //using ViewTarget
     public static void parentHighlightJoin(final Activity activity, final View targetView, final View targetView2){
+        ShowcaseView.isVisible = true;
+
 
         targetView.postDelayed(new Runnable() {
             @Override
@@ -192,6 +192,8 @@ public class ShowcaseCreator {
 
     //using PointTarget
     public static void parentHighlightJoinedClasses(final Activity activity, final View targetView){
+        ShowcaseView.isVisible = true;
+
         targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -202,7 +204,7 @@ public class ShowcaseCreator {
                             @Override
                             public void onShowcaseViewHide(ShowcaseView showcaseView) {
                                 //show join class dialog
-                                if(activity != null){
+                                if (activity != null) {
                                     FragmentManager fm = ((FragmentActivity) (activity)).getSupportFragmentManager(); //MyActionBarActivity (our base class) is FragmentActivity derivative
                                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                                     joinClassDialog.show(fm, "Join Class");
@@ -226,7 +228,7 @@ public class ShowcaseCreator {
 
                 ShowcaseView showcaseView1 = builder.getShowcaseView();
 
-                double scalingFactor = 2.0/3;
+                double scalingFactor = 2.0 / 3;
                 showcaseView1.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor), center.y + targetView.getHeight());
                 showcaseView1.setDescription("Click here to see your joined classes");
 
@@ -235,7 +237,39 @@ public class ShowcaseCreator {
         }, 100);
     }
 
-    //using PointTarget
+    //Parent options
+    //view is the joined_classes(parent) or join class (teacher) - options ... is one block away
+    public static void highlightOptions(final Activity activity, final View targetView, final boolean isParent){
+        ShowcaseView.isVisible = true;
+
+
+        targetView.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                ShowcaseView.Builder builder = getDefaultBuilder(activity);
+                builder.setScaleMultipler(0.25f);
+
+                ViewTarget target = new ViewTarget(targetView);
+                Point center = target.getPoint(); //joined class action item
+
+                center = new Point(center.x + targetView.getWidth(), center.y); //options menu action item
+                builder.setTarget(new PointTarget(center));
+
+                final ShowcaseView showcaseView = builder.getShowcaseView();
+                if(isParent) {
+                    showcaseView.setPointer(targetView.getWidth() / 4, center.y + targetView.getHeight(), 2);
+                    showcaseView.setDescription("Click on the highlighted menu to access other options : edit your profile, give feedback or spread the word");
+                }
+                else {
+                    showcaseView.setPointer(targetView.getWidth() / 4, center.y + targetView.getHeight(), 1);
+                    showcaseView.setDescription("Click on the highlighted menu to access other options : edit your profile, give feedback or spread the word");
+                }
+
+                builder.build();
+            }
+        }, 100);
+    }
+    /*//using PointTarget
     public static void parentHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
         likeView.postDelayed(new Runnable() {
             @Override
@@ -280,8 +314,10 @@ public class ShowcaseCreator {
             }
         }, 100);
     }
-
+*/
     public static void parentHighlightResponseButtonsNew(final Activity activity, final View likeView){
+        ShowcaseView.isVisible = true;
+
         likeView.post(new Runnable() {
             @Override
             public void run() {
@@ -304,7 +340,7 @@ public class ShowcaseCreator {
 
     //in outbox(targets are the text containing the counts. So center showcase at the right end of these views
     // so that we are roughly at center of combined view(count textview + icon imageview)
-    public static void teacherHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
+    /*public static void teacherHighlightResponseButtons(final Activity activity, final View likeView, final View confuseView){
         likeView.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -351,8 +387,10 @@ public class ShowcaseCreator {
             }
         }, 100);
     }
-
+*/
     public static void teacherHighlightResponseButtonsNew(final Activity activity, final View likeView){
+        ShowcaseView.isVisible = true;
+
         likeView.post(new Runnable() {
             @Override
             public void run() {
@@ -366,7 +404,7 @@ public class ShowcaseCreator {
                 showcaseView1.addButtonRow(buttonRow);
                 showcaseView1.setPointerAbove(buttonRow);
                 showcaseView1.flipPointer();
-                showcaseView1.setDescription("For each post, you can see how many parents/students like your it or are confused about it. They can respond using only two buttons - like or confuse", true);
+                showcaseView1.setDescription("For each post, you can see how many parents/students like it or are confused about it. They can respond using only two buttons - like or confuse", true);
 
                 builder.build();
             }

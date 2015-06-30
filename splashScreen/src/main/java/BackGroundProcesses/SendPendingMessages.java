@@ -133,6 +133,7 @@ public class SendPendingMessages {
         }
 
         boolean abort = false; //if network error occurred in one of the attempts
+        boolean errorToastShown = false; //show only once
 
         while (true) {
             ParseObject currentMsg = null;
@@ -193,6 +194,18 @@ public class SendPendingMessages {
 
                 if(result == 100 && isLive){
                     showToast = true; //if network error and latest request was gui(send/retry) then show toast of "internet connection"
+                }
+
+                //show error toast only once
+                if(result != 0 && showToast){
+                    if(errorToastShown){
+                        Log.d(LOGTAG, "error already shown, avoiding");
+                        showToast = false;
+                    }
+                    else{
+                        Log.d(LOGTAG, "showing error first and last time");
+                        errorToastShown = true;
+                    }
                 }
 
                 //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null if the app is running

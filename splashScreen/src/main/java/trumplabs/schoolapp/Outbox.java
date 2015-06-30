@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -78,7 +79,7 @@ public class Outbox extends Fragment {
     private static String action; //LIKE/CONFUSE
     private static String id; //msg object id
 
-    public static boolean needLoading = false; //whether needs new query to fetch newer messages from localstore(offline support)
+    //public static boolean needLoading = false; //whether needs new query to fetch newer messages from localstore(offline support)
 
     public static boolean responseTutorialShown = false; //show in shared prefs
 
@@ -115,6 +116,9 @@ public class Outbox extends Fragment {
                 getActivity().getIntent().removeExtra("action"); //we must handle it one time only
             }
         }
+
+        //initialize msgs as it is static and can be persistent from previous user who logged out
+        groupDetails = new ArrayList<>();
 
         //fetching locally stored outbox messages
         GetLocalOutboxMsgInBackground getLocalOutboxMsg = new GetLocalOutboxMsgInBackground();
@@ -555,7 +559,7 @@ public class Outbox extends Fragment {
             }
 
             //if a) first msg, b) is a teacher & c) already not shown
-            if(position == 0 && !responseTutorialShown && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER)){
+            if(position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
@@ -711,7 +715,7 @@ public class Outbox extends Fragment {
 
             @Override
             protected Void doInBackground(Void... params) {
-                Outbox.needLoading = false; //clear needLoading flag so that not called twice when Outbox is loaded along with MainActivty and also this flag is set on viewpager change
+                //Outbox.needLoading = false; //clear needLoading flag so that not called twice when Outbox is loaded along with MainActivty and also this flag is set on viewpager change
 
                 //retrieving lcoally stored outbox messges
                 msgs = Queries.getLocalOutbox();

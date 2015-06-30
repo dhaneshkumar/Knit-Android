@@ -34,6 +34,7 @@ import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -93,8 +94,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     //flag telling whether alarm for event checker has been triggered or not
     static boolean isEventCheckerAlarmTriggered = false;
 
-    public static boolean isTeacherCreateShowcaseShown = false;
-    public static boolean isParentJoinShowcaseShown = false;
+    public static boolean signUpShowcaseShown = false;
+    public static boolean optionsShowcaseShown = false;
 
     public static int fragmentVisible = 0; //which fragment is visible, changed in viewpager's PageChangeListener
 
@@ -108,8 +109,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         /*SessionManager mgr = new SessionManager(Application.getAppContext());
         String p_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
         String t_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+        String o_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
         mgr.setTutorialState(p_flag, false);
-        mgr.setTutorialState(t_flag, false);*/
+        mgr.setTutorialState(t_flag, false);
+        mgr.setTutorialState(o_flag, false);*/
 
         //delete SentMessges
         /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
@@ -239,7 +242,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             e.printStackTrace();
         }
 
-        FragmentManager fragmentmanager = getSupportFragmentManager();
+        final FragmentManager fragmentmanager = getSupportFragmentManager();
 
         myAdapter = new MyAdapter(fragmentmanager);
         viewpager.setAdapter(myAdapter);
@@ -367,6 +370,17 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 @Override
                 public void onPageSelected(int arg0) {
                     supportInvalidateOptionsMenu();
+                    fragmentVisible = arg0;
+
+                    Log.d("__TEMP__", "onPageSelected " + fragmentVisible);
+                    if(fragmentVisible == 0 && !Outbox.responseTutorialShown && Outbox.myadapter != null){
+                        Log.d("__TEMP__", "Outbox notify");
+                        Outbox.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
+                    }
+                    if(fragmentVisible == 2 && !Messages.responseTutorialShown && Messages.myadapter != null){
+                        Log.d("__TEMP__", "Messages notify");
+                        Messages.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
+                    }
                 }
 
                 @Override
@@ -383,12 +397,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins(positionOffsetPixels * 3 / 13, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
                             highLightTab1();
-                            fragmentVisible = 0;
-                            if(Outbox.needLoading){
-                                Log.d(SendPendingMessages.LOGTAG, "(has joined class) lazy loading outbox");
-                                Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                                outboxAT.execute();//it also sets the 'needLoading' flag false
-                            }
                             actionButton.setShowAnimation(ActionButton.Animations.JUMP_FROM_DOWN);
                             actionButton.show();
 
@@ -398,7 +406,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins((screenwidth * 3 / 13) + (positionOffsetPixels * 5 / 13), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
 
-                            fragmentVisible = 1;
                             highLightTab2();
 
                             if(positionOffset < 0.3) {
@@ -414,7 +421,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins((8 * screenwidth / 13), 0, 0, 0);
                             tabcolor.setLayoutParams(params);
                             highLightTab3();
-                            fragmentVisible = 2;
                             if(Messages.myadapter != null){
                                 Messages.myadapter.notifyDataSetChanged(); //we're in gui now
                             }
@@ -429,20 +435,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             params.setMargins(positionOffsetPixels / 2, 0, 0, 0);  // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
                             highLightTab1();
-                            fragmentVisible = 0;
-
-                            if(Outbox.needLoading){
-                                Log.d(SendPendingMessages.LOGTAG, "(no joined class) lazy loading outbox");
-                                Outbox.GetLocalOutboxMsgInBackground outboxAT = new Outbox.GetLocalOutboxMsgInBackground();
-                                outboxAT.execute();//it also sets the 'needLoading' flag false
-                            }
                         } else {
-                            params.setMargins((screenwidth /2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
+                            params.setMargins((screenwidth / 2), 0, 0, 0); // added " positionOffsetPixels/3" for smooth transition
                             tabcolor.setLayoutParams(params);
                             highLightTab2();
-                            fragmentVisible = 1;
                         }
-
 
                     }
                 }
@@ -711,12 +708,22 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            //Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + isTeacherCreateShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
+            //Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
 
-            if(!MainActivity.isTeacherCreateShowcaseShown && Constants.IS_SIGNUP) {
-                MainActivity.isTeacherCreateShowcaseShown = true;
+            if(!MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
+                MainActivity.signUpShowcaseShown = true;
                 Log.d(ShowcaseCreator.LOGTAG, "teacher create: creating showcase");
                 ShowcaseCreator.teacherHighlightCreate(this, createClassActionView, joinClassActionView); //show now
+            }
+
+            if(!MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
+                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
+                SessionManager mgr = new SessionManager(Application.getAppContext());
+                if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
+                    mgr.setTutorialState(tutorialId, true);
+                    ShowcaseCreator.highlightOptions(this, joinClassActionView, false);
+                }
+                MainActivity.optionsShowcaseShown = true;
             }
         }
         else{
@@ -748,11 +755,21 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            Log.d(ShowcaseCreator.LOGTAG, "parent join: flag=" + isParentJoinShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
-            if(!MainActivity.isParentJoinShowcaseShown && Constants.IS_SIGNUP) {
-                MainActivity.isParentJoinShowcaseShown = true;
+            Log.d(ShowcaseCreator.LOGTAG, "parent join: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
+            if(!MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
+                MainActivity.signUpShowcaseShown = true;
                 Log.d(ShowcaseCreator.LOGTAG, "parent join:  creataing the showcase");
                 ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now
+            }
+
+            if(!MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
+                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
+                SessionManager mgr = new SessionManager(Application.getAppContext());
+                if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
+                    mgr.setTutorialState(tutorialId, true);
+                    ShowcaseCreator.highlightOptions(this, joinedClassesActionView, true);
+                }
+                MainActivity.optionsShowcaseShown = true;
             }
         }
 

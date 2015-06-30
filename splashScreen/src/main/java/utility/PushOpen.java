@@ -28,10 +28,18 @@ public class PushOpen extends MyActionBarActivity {
     String type;
     String action;
 
+    final private static int OUTBOX_PAGE_INDEX = 0;
+    final private static int CLASSROOMS_PAGE_INDEX = 1;
+    final private static int INBOX_PAGE_INDEX = 2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if(ParseUser.getCurrentUser() == null){
+            finish();
+            return;
+        }
 
         onNewIntent(getIntent());
 
@@ -83,14 +91,14 @@ public class PushOpen extends MyActionBarActivity {
                 i = new Intent(this, MainActivity.class);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
-                    i.putExtra("VIEWPAGERINDEX", 0);
+                    i.putExtra("VIEWPAGERINDEX", CLASSROOMS_PAGE_INDEX);
                 i.putExtra("pushOpen", true);
             }
             else if(action.equals(Constants.Actions.OUTBOX_ACTION)){
                 i = new Intent(this, MainActivity.class);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
-                    i.putExtra("VIEWPAGERINDEX", 1);
+                    i.putExtra("VIEWPAGERINDEX", OUTBOX_PAGE_INDEX);
                 i.putExtra("pushOpen", true);
             }
             else if(action.equals(Constants.Actions.CREATE_CLASS_ACTION)){
@@ -98,7 +106,7 @@ public class PushOpen extends MyActionBarActivity {
                 i = new Intent(this, MainActivity.class);
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
-                    i.putExtra("VIEWPAGERINDEX", 0);
+                    i.putExtra("VIEWPAGERINDEX", CLASSROOMS_PAGE_INDEX);
                 i.putExtra("flag", "CREATE_CLASS");
                 i.putExtra("pushOpen", true);
             }
@@ -108,7 +116,7 @@ public class PushOpen extends MyActionBarActivity {
 
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null && user.getString("role").equals(Constants.TEACHER))
-                    i.putExtra("VIEWPAGERINDEX", 1);
+                    i.putExtra("VIEWPAGERINDEX", OUTBOX_PAGE_INDEX);
 
                 i.putExtra("action", action);
                 i.putExtra("id", id);
@@ -127,7 +135,7 @@ public class PushOpen extends MyActionBarActivity {
             i = new Intent(this, MainActivity.class);
             ParseUser user = ParseUser.getCurrentUser();
             if (user != null && user.getString("role").equals(Constants.TEACHER))
-                i.putExtra("VIEWPAGERINDEX", 2);
+                i.putExtra("VIEWPAGERINDEX", INBOX_PAGE_INDEX);
             i.putExtra("pushOpen", true);
         }
 

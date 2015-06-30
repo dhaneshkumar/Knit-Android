@@ -123,6 +123,7 @@ public class Constants {
       //<username> + <key> becomes the key for shared preferences
       public static final String PARENT_RESPONSE = "_parent_response_tutorial";
       public static final String TEACHER_RESPONSE = "_teacher_response_tutorial";
+      public static final String OPTIONS = "_options_tutorial";
     }
 
     public static class ComposeSource{

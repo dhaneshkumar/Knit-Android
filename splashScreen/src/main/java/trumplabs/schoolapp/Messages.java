@@ -31,6 +31,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
@@ -200,6 +201,9 @@ public class Messages extends Fragment {
         //fetch local messages in background
         query = new Queries();
 
+        //initialize msgs as it is static and can be persistent from previous user who logged out
+        msgs = new ArrayList<>();
+
         /*
         If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
          */
@@ -218,7 +222,7 @@ public class Messages extends Fragment {
             }
 
             if (msgs == null)
-                msgs = new ArrayList<ParseObject>();
+                msgs = new ArrayList<>();
 
             if (msgs.size() == 0)
                 inemptylayout.setVisibility(View.VISIBLE);
@@ -848,7 +852,7 @@ public class Messages extends Fragment {
             Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
                     + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
 
-            if(position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2)){
+            if(position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
                 Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId);
                 SessionManager mgr = new SessionManager(Application.getAppContext());

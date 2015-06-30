@@ -463,8 +463,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             //reset all tutorial flags just in case another user signs up using the same mobile(without re-opening app)
             //this case is quite rate but still to be on the safe side
-            MainActivity.isTeacherCreateShowcaseShown = false;
-            MainActivity.isParentJoinShowcaseShown = false;
+            MainActivity.signUpShowcaseShown = false;
+            MainActivity.optionsShowcaseShown = false;
             Messages.responseTutorialShown = false;
             Outbox.responseTutorialShown = false;
 
