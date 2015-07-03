@@ -8,26 +8,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
-import android.graphics.drawable.BitmapDrawable;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
-import android.util.TypedValue;
 import android.view.Display;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
-import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +44,6 @@ import library.UtilString;
 import loginpages.Signup;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
-import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.MainActivity;
 
@@ -71,6 +62,7 @@ public class Utility extends MyActionBarActivity {
         not to put old objectId into "id" field as that objectId row might have been deleted on
         cloud server.
      */
+
     public static void setNewIdFlagInstallation(){
         ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
 
@@ -188,7 +180,6 @@ public class Utility extends MyActionBarActivity {
             SessionManager session = new SessionManager(_context);
             session.reSetAppOpeningCount();
             session.reSetSignUpAccount();
-            session.reSetActionBarHeight();
         }
 
         //call from UI thread only
@@ -243,18 +234,17 @@ public class Utility extends MyActionBarActivity {
     }
 
 
+
     public static void toast(String str) {
         LinearLayout layout = new LinearLayout(Application.getAppContext());
         layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        layout.setBackgroundResource(R.drawable.round_corner_red_color);
-
+        layout.setBackgroundColor(Color.parseColor("#FBB51E"));
 
         WindowManager wm =
                 (WindowManager) Application.getAppContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
         // finding width of screen
-
         int currentapiVersion = android.os.Build.VERSION.SDK_INT;
         int width;
         int height;
@@ -268,15 +258,12 @@ public class Utility extends MyActionBarActivity {
             height = display.getHeight();
         }
 
-
-
-
         TextView tv = new TextView(Application.getAppContext());
         // set the TextView properties like color, size etc
         tv.setTextColor(Color.WHITE);
-        tv.setTextSize(16);
+        tv.setTextSize(17);
         tv.setPadding(50, 20, 50, 20);
-
+        tv.setLayoutParams(new LayoutParams(width, height/8));
         tv.setGravity(Gravity.CENTER);
 
         // set the text you want to show in Toast
@@ -284,123 +271,9 @@ public class Utility extends MyActionBarActivity {
         layout.addView(tv);
 
         Toast toast = new Toast(Application.getAppContext()); // context is object of Context write
-        // "this" if you are an Activity
         // Set The layout as Toast View
         toast.setView(layout);
-
-        // Position you toast here toast position is 50 dp from bottom you can give any integral value
-        toast.setGravity(Gravity.TOP, 0, height / 3);
-        toast.show();
-    }
-
-
-
-    public static void toastDone(String str) {
-        LinearLayout layout = new LinearLayout(Application.getAppContext());
-        layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        layout.setBackgroundResource(R.drawable.round_corner_red_color);
-
-
-        WindowManager wm =
-                (WindowManager) Application.getAppContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-
-        // finding width of screen
-
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        int width;
-        int height;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            Point size = new Point();
-            display.getSize(size);
-            width = size.x;
-            height = size.y;
-        } else {
-            width = display.getWidth();
-            height = display.getHeight();
-        }
-
-        ImageView img = new ImageView(Application.getAppContext());
-
-
-        int sdk = android.os.Build.VERSION.SDK_INT;
-        if(sdk < android.os.Build.VERSION_CODES.JELLY_BEAN) {
-            img.setBackgroundDrawable( Application.getAppContext().getResources().getDrawable(R.drawable.done) );
-        } else {
-            img.setBackground( Application.getAppContext().getResources().getDrawable(R.drawable.done));
-        }
-
-        layout.addView(img);
-        layout.setGravity(Gravity.CENTER);
-        layout.setPadding(16,6,4,6);
-
-
-        TextView tv = new TextView(Application.getAppContext());
-        // set the TextView properties like color, size etc
-        tv.setTextColor(Color.WHITE);
-        tv.setTextSize(16);
-        tv.setPadding(16, 20, 30, 20);
-
-        tv.setGravity(Gravity.CENTER);
-
-        // set the text you want to show in Toast
-        tv.setText(str);
-        layout.addView(tv);
-
-        Toast toast = new Toast(Application.getAppContext()); // context is object of Context write
-        // "this" if you are an Activity
-        // Set The layout as Toast View
-        toast.setView(layout);
-
-        // Position you toast here toast position is 50 dp from bottom you can give any integral value
-        toast.setGravity(Gravity.TOP, 0, height / 3);
-        toast.show();
-    }
-
-    public static void toastLong(String str) {
-        LinearLayout layout = new LinearLayout(Application.getAppContext());
-        layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
-        layout.setBackgroundResource(R.drawable.round_corner_red_color);
-
-
-        WindowManager wm =
-                (WindowManager) Application.getAppContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-
-        // finding width of screen
-
-        int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-        int width;
-        int height;
-        if (currentapiVersion >= android.os.Build.VERSION_CODES.HONEYCOMB) {
-            Point size = new Point();
-            display.getSize(size);
-            width = size.x;
-            height = size.y;
-        } else {
-            width = display.getWidth();
-            height = display.getHeight();
-        }
-
-        TextView tv = new TextView(Application.getAppContext());
-        // set the TextView properties like color, size etc
-        tv.setTextColor(Color.WHITE);
-        tv.setTextSize(16);
-        tv.setPadding(50, 20, 50, 20);
-
-        tv.setGravity(Gravity.CENTER);
-
-        // set the text you want to show in Toast
-        tv.setText(str);
-        layout.addView(tv);
-
-        Toast toast = new Toast(Application.getAppContext()); // context is object of Context write
-        // "this" if you are an Activity
-        // Set The layout as Toast View
-        toast.setView(layout);
-        toast.setDuration(Toast.LENGTH_LONG);
-        // Position you toast here toast position is 50 dp from bottom you can give any integral value
-        toast.setGravity(Gravity.TOP, 0, height / 3);
+        toast.setGravity(Gravity.TOP,0,0);
         toast.show();
     }
 
@@ -423,7 +296,7 @@ public class Utility extends MyActionBarActivity {
                 clipboard.setText(content);
             }
 
-            Utility.toastDone(label.trim() + " copied");
+            Utility.toast(label.trim() + " copied");
         }
     }
 
@@ -468,7 +341,6 @@ public class Utility extends MyActionBarActivity {
 
     /**
      * Checks for internet connection but doesn't show any popup
-     * @param activity
      * @return
      */
     public static final boolean isInternetExistWithoutPopup() {
@@ -487,7 +359,7 @@ public class Utility extends MyActionBarActivity {
 
 
 
-    public static boolean isInternetExist(Activity activity) {
+    public static boolean isInternetExist() {
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
@@ -499,7 +371,7 @@ public class Utility extends MyActionBarActivity {
         } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
                 || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
 
-            showPopup(activity);
+            toast("No Internet Connection");
             return false;
         }
 
@@ -559,7 +431,6 @@ public class Utility extends MyActionBarActivity {
             if (!directory.exists()) {
                 if (directory.mkdir()) {
                 }
-
             }
 
             File mediafolder =
@@ -646,102 +517,6 @@ public class Utility extends MyActionBarActivity {
                 }
             }
         });
-    }
-
-    // The method that displays the popup.
-    public static void showPopup(Activity context) {
-        if(context != null && context.isFinishing()){
-            Log.d("DEBUG_FIX", "showPopup : activity is finishing");
-            return;
-        }
-
-        LayoutInflater layoutInflater = (LayoutInflater) context
-                .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View layout = layoutInflater.inflate(R.layout.no_internet_connection, null);
-        final TextView tv1 = (TextView) layout.findViewById(R.id.noInternet);
-
-
-        // Creating the PopupWindow
-        final PopupWindow popup = new PopupWindow(context);
-        popup.setContentView(layout);
-
-        /*
-        Getting screen width in pixels
-         */
-        int measuredWidth = 0;
-        int measuredHeight = 0;
-        WindowManager w = context.getWindowManager();
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            Point size = new Point();
-            w.getDefaultDisplay().getSize(size);
-            measuredWidth = size.x;
-            measuredHeight = size.y;
-        } else {
-            Display d = w.getDefaultDisplay();
-            measuredWidth = d.getWidth();
-            measuredHeight = d.getHeight();
-        }
-
-        popup.setWidth(measuredWidth);
-        popup.setHeight(100);
-       // popup.setFocusable(true);
-
-        // Clear the default translucent background
-        popup.setBackgroundDrawable(new BitmapDrawable());
-
-
-        //finding statusbar height
-        int statusBarHeight = 0;
-        int resourceId = context.getResources().getIdentifier("status_bar_height", "dimen", "android");
-        if (resourceId > 0) {
-            statusBarHeight = context.getResources().getDimensionPixelSize(resourceId);
-        }
-
-
-
-
-        //finding action bar height
-        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
-        int actionBarHeight = sessionManager.getActionBarHeight();
-        if (actionBarHeight == 0) {
-            final TypedValue tv = new TypedValue();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                if (context.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
-                    actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data, context.getResources().getDisplayMetrics());
-            }
-            else if (context.getTheme().resolveAttribute( android.support.v7.appcompat.R.attr.actionBarSize, tv, true))
-            {
-                actionBarHeight = TypedValue.complexToDimensionPixelSize( tv.data,context.getResources().getDisplayMetrics());
-            }
-        }
-
-
-        //  Log.d("ACTION", "StatusBar Height= " + statusBarHeight + " , TitleBar Height = " + titleBarHeight);
-        Log.d("ACTION","action bar height : " + actionBarHeight);
-
-        Point p = new Point();
-        p.x = 0;
-        p.y = statusBarHeight + actionBarHeight;
-
-        // Displaying the popup at the specified location, + offsets.
-        popup.showAtLocation(layout, Gravity.NO_GRAVITY, p.x , p.y);
-
-        //Auto hide popup after 5 seconds.
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                //Do something here
-                try{
-                    if(popup != null && popup.isShowing()) {
-                        popup.dismiss();
-                    }
-                } catch (IllegalArgumentException e){
-                    e.printStackTrace();
-                } catch (Exception e){
-                }
-            }
-        }, 3000);
     }
 
     /*

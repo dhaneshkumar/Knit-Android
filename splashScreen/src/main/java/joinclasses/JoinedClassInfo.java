@@ -189,7 +189,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
 
                             newAssignedName = UtilString.changeFirstToCaps(newAssignedName);
 
-                            if(Utility.isInternetExist(JoinedClassInfo.this)) {
+                            if(Utility.isInternetExist()) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
@@ -199,10 +199,6 @@ public class JoinedClassInfo extends MyActionBarActivity {
                                 progressBarLayout.setVisibility(View.VISIBLE);
                                 classInfoLayout.setVisibility(View.GONE);
                             }
-                            else{
-                                Utility.toast("Check you internet connection !");
-                            }
-                            Log.d("DEBUG_JOINED_CLASS_INFO", "FAIL : Updating child name. Something wrong happened");
                         }
                     }
                 });
@@ -386,7 +382,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
 
-                Utility.toastDone("Successfully updated student name.");
+                Utility.toast("Successfully updated student name.");
             }
             else{
                 Utility.toast("Oops ! Failed to update student name.");

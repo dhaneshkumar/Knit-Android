@@ -12,7 +12,6 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -60,13 +59,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         if(getIntent() != null && getIntent().getExtras() != null) {
             resetFields();
             role = getIntent().getExtras().getString("role");
+
+            //Utility.toast(role);
         }
         else{//on press back from next activity. Use previous values to show
             displayNameET.setText(displayName);
             phoneNumberET.setText(phoneNumber);
         }
-
-        ArrayAdapter adapter = ArrayAdapter.createFromResource(this, R.array.title, R.layout.spinner_item);
 
         buildGoogleApiClient();
     }
@@ -75,12 +74,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         displayName = "";
         phoneNumber = "";
     }
-
-    /*public void onBackPressed() {
-        Intent intent = new Intent(getBaseContext(), Signup.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-        startActivity(intent);
-    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -113,7 +106,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             Utility.toast("Incorrect Display Name");
         else if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
             Utility.toast("Incorrect Mobile Number");
-        else if(Utility.isInternetExist(this)) {
+        else if(Utility.isInternetExist()) {
             //Changing first letter to caps
             displayName = UtilString.changeFirstToCaps(displayName);
 
@@ -160,9 +153,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             });
 
         }
-        else{
-            Utility.toast("Check your Internet connection");
-        }
+        
     }
 
     /*********** Location Detection methods ****************/
@@ -247,7 +238,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     SmsListener.unRegister();
                     String toastMsg = "Invalid Number";
                     String errorMsg = "Please enter a valid mobile number.";
-                    Utility.toastLong(toastMsg);
+                    Utility.toast(toastMsg);
                     //show error and hide timer as sms was not sent successfully
                     PhoneSignUpVerfication.showError(errorMsg, true);
 
@@ -265,11 +256,19 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     errorMsg = "Unable to establish connection. Please try again";
                 }
 
-                Utility.toastLong(toastMsg);
+                Utility.toast(toastMsg);
                 //show error and hide timer as sms was not sent successfully
                 PhoneSignUpVerfication.showError(errorMsg, true);
                 PhoneSignUpVerfication.showResendAction();
             }
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        Intent intent = new Intent(PhoneSignUpName.this, Signup.class);
+        startActivity(intent);
     }
 }

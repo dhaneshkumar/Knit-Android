@@ -1,6 +1,6 @@
 package tutorial;
 
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import loginpages.PhoneSignUpName;
 import trumplab.textslate.R;
 
 /**
@@ -28,14 +29,10 @@ public class OneWay extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         //setting light font
-        TextView heading = (TextView) getActivity().findViewById(R.id.heading_oneway);
-        Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
-        heading.setTypeface(typeFace);
+        TextView one_way_skip = (TextView) getActivity().findViewById(R.id.one_way_skip);
+        LinearLayout one_way_next = (LinearLayout) getActivity().findViewById(R.id.one_way_next);
 
-
-        LinearLayout next = (LinearLayout) getActivity().findViewById(R.id.one_way_next);
-
-        next.setOnClickListener(new View.OnClickListener() {
+        one_way_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
@@ -44,6 +41,18 @@ public class OneWay extends Fragment {
                     TeacherTutorial.myAdapter = new TeacherTutorial.MyAdapter(fragmentmanager);
                 TeacherTutorial.viewpager.setAdapter(TeacherTutorial.myAdapter);
                 TeacherTutorial.viewpager.setCurrentItem(1);
+            }
+        });
+
+        one_way_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String role = getActivity().getIntent().getExtras().getString("role");
+
+                Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
+                intent.putExtra("role", role);
+                startActivity(intent);
             }
         });
 

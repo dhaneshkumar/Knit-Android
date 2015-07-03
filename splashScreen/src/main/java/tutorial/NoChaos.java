@@ -1,6 +1,6 @@
 package tutorial;
 
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import loginpages.PhoneSignUpName;
 import trumplab.textslate.R;
 
 /**
@@ -27,29 +28,27 @@ public class NoChaos extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //setting light font
-        TextView heading = (TextView) getActivity().findViewById(R.id.heading_no_chaos);
-        Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
-        heading.setTypeface(typeFace);
+        TextView no_chaos_skip = (TextView) getActivity().findViewById(R.id.no_chaos_skip);
+        LinearLayout no_chaos_next = (LinearLayout) getActivity().findViewById(R.id.no_chaos_next);
 
+        final String role = getActivity().getIntent().getExtras().getString("role");
 
-        LinearLayout back = (LinearLayout) getActivity().findViewById(R.id.no_chaos_back);
-        LinearLayout next = (LinearLayout) getActivity().findViewById(R.id.no_chaos_next);
-
-        back.setOnClickListener(new View.OnClickListener() {
+        no_chaos_skip.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                ParentTutorial.viewpager.setAdapter(new ParentTutorial.MyAdapter(fragmentmanager));
-                ParentTutorial.viewpager.setCurrentItem(0);
+                Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
+                intent.putExtra("role", role);
+                startActivity(intent);
             }
         });
 
-        next.setOnClickListener(new View.OnClickListener() {
+        no_chaos_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                ParentTutorial.viewpager.setAdapter(new ParentTutorial.MyAdapter(fragmentmanager));
+                if (ParentTutorial.myAdapter == null)
+                    ParentTutorial.myAdapter = new ParentTutorial.MyAdapter(fragmentmanager);
+                ParentTutorial.viewpager.setAdapter(ParentTutorial.myAdapter);
                 ParentTutorial.viewpager.setCurrentItem(2);
             }
         });

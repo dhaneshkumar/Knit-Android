@@ -4,9 +4,7 @@ import android.util.Log;
 
 import com.parse.ParseUser;
 
-import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 
 /**
  * It updates subscribers list of all classes of a user.
@@ -23,47 +21,10 @@ public class UpdateAllClassSubscribers  {
                         MemberList memberList = new MemberList();
                         memberList.doInBackgroundCore();
 
-                if(MainActivity.mHeaderProgressBar!=null){
-                    MainActivity.mHeaderProgressBar.post(new Runnable() {
-                        @Override
-                        public void run() {
-                                Classrooms.createdClassAdapter.notifyDataSetChanged();
-                        }
-                    });
-                }
-
                 Log.d("SUBSCRIBER", "updating subscriber in a thread");
             }
         }
     }
-
-
-
-    /* @Override
-        protected Void doInBackground(Void... params) {
-
-            ParseUser user = ParseUser.getCurrentUser();
-            if(user != null)
-            {
-                if(user.getString("role").equals(Constants.TEACHER))
-                {
-                    List<List<String>> createdClassroom = user.getList(Constants.CREATED_GROUPS);
-                    if(createdClassroom != null)
-                    {
-                        for(int i=0; i<createdClassroom.size();i++)
-                        {
-                            MemberList memberList = new MemberList(createdClassroom.get(i).get(0));
-                            memberList.execute();
-
-                            Log.d("SUBSCRIBER_UPDATE", createdClassroom.get(i).get(0));
-                        }
-                    }
-                }
-            }
-
-            return null;
-        }*/
-
 
     public static void update(){
         Runnable r = new Runnable() {

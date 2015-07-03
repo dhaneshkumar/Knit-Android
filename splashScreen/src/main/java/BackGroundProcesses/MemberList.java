@@ -14,9 +14,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MemberDetails;
+import trumplabs.schoolapp.SendMessage;
 import trumplabs.schoolapp.Subscribers;
 import utility.Queries;
 
@@ -94,7 +94,6 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
             e.printStackTrace();
         }
 
-
         //calling parse cloud functions to fetch new member updates
         HashMap<String, Object> param = new HashMap<String, Object>();
 
@@ -170,10 +169,6 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
 
         if (Subscribers.myadapter != null)
             Subscribers.myadapter.notifyDataSetChanged();
-
-        if (Classrooms.createdClassAdapter != null)
-            Classrooms.createdClassAdapter.notifyDataSetChanged();
-
     }
 
     @Override
@@ -200,6 +195,9 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
 
             if(Subscribers.subscriberTV != null)
                 Subscribers.subscriberTV.setText(memberCount + " subscribers");
+
+            if(SendMessage.memberCountTV != null)
+                SendMessage.memberCountTV.setText(memberCount + "");
         }
 
         onPostExecuteCore();

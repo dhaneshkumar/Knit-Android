@@ -1,6 +1,6 @@
 package tutorial;
 
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import loginpages.PhoneSignUpName;
 import trumplab.textslate.R;
 
 /**
@@ -28,26 +29,11 @@ public class Secure extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         //setting light font
-        TextView heading = (TextView) getActivity().findViewById(R.id.heading_secure);
-        Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
-        heading.setTypeface(typeFace);
+        TextView secure_skip = (TextView) getActivity().findViewById(R.id.secure_skip);
+        LinearLayout secure_next = (LinearLayout) getActivity().findViewById(R.id.secure_next);
 
 
-        LinearLayout back = (LinearLayout) getActivity().findViewById(R.id.secure_back);
-        LinearLayout next = (LinearLayout) getActivity().findViewById(R.id.secure_next);
-
-        back.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                if(TeacherTutorial.myAdapter == null)
-                    TeacherTutorial.myAdapter = new TeacherTutorial.MyAdapter(fragmentmanager);
-                TeacherTutorial.viewpager.setAdapter(TeacherTutorial.myAdapter);
-                TeacherTutorial.viewpager.setCurrentItem(0);
-            }
-        });
-
-        next.setOnClickListener(new View.OnClickListener() {
+        secure_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
@@ -55,6 +41,18 @@ public class Secure extends Fragment {
                     TeacherTutorial.myAdapter = new TeacherTutorial.MyAdapter(fragmentmanager);
                 TeacherTutorial.viewpager.setAdapter(TeacherTutorial.myAdapter);
                 TeacherTutorial.viewpager.setCurrentItem(2);
+            }
+        });
+
+        secure_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String role = getActivity().getIntent().getExtras().getString("role");
+
+                Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
+                intent.putExtra("role", role);
+                startActivity(intent);
             }
         });
 

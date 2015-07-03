@@ -1,22 +1,14 @@
 package tutorial;
 
 import android.content.Intent;
-import android.graphics.Typeface;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
-
-import java.util.List;
 
 import loginpages.PhoneSignUpName;
 import trumplab.textslate.R;
@@ -29,7 +21,7 @@ import trumplabs.schoolapp.Constants;
  */
 public class Free extends Fragment {
     LinearLayout progressLayout;
-    LinearLayout loginlayout;
+    RelativeLayout loginlayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -41,100 +33,34 @@ public class Free extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        TextView signup = (TextView) getActivity().findViewById(R.id.signup);
-        progressLayout = (LinearLayout) getActivity().findViewById(R.id.progresslayout);
-        loginlayout = (LinearLayout) getActivity().findViewById(R.id.loginlayout);
-
+        TextView free_done = (TextView) getActivity().findViewById(R.id.free_done);
+        TextView free_skip = (TextView) getActivity().findViewById(R.id.free_skip);
         final String role = getActivity().getIntent().getExtras().getString("role");
+        TextView free_details = (TextView) getActivity().findViewById(R.id.free_details);
 
-        //setting light font
-        TextView heading = (TextView) getActivity().findViewById(R.id.heading_free);
-        Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
-        heading.setTypeface(typeFace);
-
-
-        LinearLayout back = (LinearLayout) getActivity().findViewById(R.id.free_back);
-
-        if(role.equals(Constants.TEACHER)) {
-            back.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                    if(TeacherTutorial.myAdapter == null)
-                        TeacherTutorial.myAdapter = new TeacherTutorial.MyAdapter(fragmentmanager);
-                    TeacherTutorial.viewpager.setAdapter(TeacherTutorial.myAdapter);
-                    TeacherTutorial.viewpager.setCurrentItem(2);
-                }
-            });
-        }
-        else
-        {
-            back.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                    ParentTutorial.viewpager.setAdapter(new ParentTutorial.MyAdapter(fragmentmanager));
-                    ParentTutorial.viewpager.setCurrentItem(2);
-                }
-            });
-        }
+        if(!role.equals(Constants.TEACHER))
+            free_details.setText("Knit is absolutely free.");
 
 
-
-
-
-        //sign up button clicked..
-        signup.setOnClickListener(new View.OnClickListener() {
+        free_done.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                if(role.equals(Constants.TEACHER))
-                {
-
-                    Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
-                    intent.putExtra("role", Constants.TEACHER);
-                    startActivity(intent);
-
-                  /*  loginlayout.setVisibility(View.GONE);
-                    progressLayout.setVisibility(View.VISIBLE);
-
-                    GetSchools getSchools = new GetSchools();
-                    getSchools.execute();*/
-                }
-
+                Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
+                intent.putExtra("role", role);
+                startActivity(intent);
             }
         });
 
-    }
+        free_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-
-
-    /**
-     * Retrieve school list from server
-     */
-    private class GetSchools extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            ParseQuery<ParseObject> query = ParseQuery.getQuery("SCHOOLS");
-            query.orderByAscending("school_name");
-            try {
-                List<ParseObject> schoolList = query.find();
-                if (schoolList != null)
-                    ParseObject.pinAll(schoolList);
-            } catch (ParseException e) {
+                    Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
+                    intent.putExtra("role", role);
+                    startActivity(intent);
             }
-            return null;
-        }
+        });
 
-        @Override
-        protected void onPostExecute(Void result) {
-
-            if(getActivity() != null) {
-              /*  Intent intent = new Intent(getActivity(), Signup1Class.class);
-                intent.putExtra("role", Constants.TEACHER);
-                startActivity(intent);*/
-            }
-
-        }
     }
 }

@@ -8,14 +8,13 @@ import android.support.v4.view.ViewPager;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Constants;
 
 /**
  * Created by Dhanesh on 1/17/2015.
  */
 public class ParentTutorial extends MyActionBarActivity{
     public static ViewPager viewpager;
-    static String role;
+    public static MyAdapter myAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,10 +25,9 @@ public class ParentTutorial extends MyActionBarActivity{
         viewpager = (ViewPager) findViewById(R.id.pager);
 
         getSupportActionBar().hide();
-        viewpager.setAdapter(new MyAdapter(getSupportFragmentManager()));
+        myAdapter = new MyAdapter(getSupportFragmentManager());
+        viewpager.setAdapter(myAdapter);
         viewpager.setOffscreenPageLimit(3);
-
-        role = getIntent().getExtras().getString(Constants.ROLE);
     }
 
 
@@ -50,11 +48,7 @@ public class ParentTutorial extends MyActionBarActivity{
                     fragment = new NoChaos();
                     break;
                 case 2:
-
-                    if(role.equals(Constants.PARENT))
-                        fragment = new NM();
-                    else
-                        fragment = new SNM();
+                    fragment = new PNM();
                     break;
                 case 3:
                     fragment = new Free();

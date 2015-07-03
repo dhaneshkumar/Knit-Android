@@ -148,7 +148,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10) {
             Utility.toast("Incorrect Mobile Number");
         }
-        else if(Utility.isInternetExist(this)) {
+        else if(Utility.isInternetExist()) {
             /*pdialog = new ProgressDialog(this);
             pdialog.setCancelable(false);
             pdialog.setMessage("Please Wait...");
@@ -169,8 +169,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             ParseAnalytics.trackEvent("Login", dimensions);
 
         }
-        else {
-            Utility.toast("Check your Internet connection");
-        }
+        
     }
 }

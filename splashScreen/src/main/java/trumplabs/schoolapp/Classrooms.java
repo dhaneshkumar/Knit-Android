@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
@@ -29,17 +28,12 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
-import BackGroundProcesses.CreatedClassRooms;
-import BackGroundProcesses.JoinedClassRooms;
 import joinclasses.JoinClassDialog;
-import joinclasses.JoinClassesContainer;
 import joinclasses.JoinedClassInfo;
 import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
-import utility.SessionManager;
-import utility.Tools;
 import utility.Utility;
 
 
@@ -154,14 +148,6 @@ public class Classrooms extends Fragment  {
 
                     //showing dialog to join class
 
-                    //setting action bar height locally
-                    final SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                    int actionBarHeight = sessionManager.getActionBarHeight();
-
-                    if(actionBarHeight == 0) {
-                        //setting action bar height for first time
-                        sessionManager.setActionBarHeight(((JoinClassesContainer) getActivity()).getSupportActionBar().getHeight());
-                    }
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                     joinClassDialog.show(fm, "Join Class");
@@ -178,13 +164,6 @@ public class Classrooms extends Fragment  {
                 public void onClick(View v) {
 
                     //showing dialog to create class
-
-                    //setting action bar height locally
-                    final SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                    int actionBarHeight = sessionManager.getActionBarHeight();
-
-                    if(actionBarHeight == 0)
-                        sessionManager.setActionBarHeight(((MainActivity) getActivity()).getSupportActionBar().getHeight());
 
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     CreateClassDialog createClassDialog = new CreateClassDialog();
@@ -277,7 +256,7 @@ public class Classrooms extends Fragment  {
         }
         return groups;
     }
-
+/*
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -305,7 +284,7 @@ public class Classrooms extends Fragment  {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

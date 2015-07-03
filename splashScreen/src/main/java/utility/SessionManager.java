@@ -221,25 +221,6 @@ public class SessionManager {
         return null;
     }
 
-    /***************************************************************************************/
-
-    /*
-    * Maintaining action bar height
-    */
-    public void setActionBarHeight(int height) {
-
-        editor.putInt(ACTIONBAR_HEIGHT, height);
-        editor.commit();
-    }
-
-    public void reSetActionBarHeight() {
-        editor.putInt(ACTIONBAR_HEIGHT, 0);
-        editor.commit();
-    }
-    public int getActionBarHeight() {
-        int version = pref.getInt(ACTIONBAR_HEIGHT, 0);
-        return version;
-    }
 
     /******************************************************************************************/
 

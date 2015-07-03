@@ -236,7 +236,7 @@ public class Subscribers extends MyActionBarActivity {
     }
 
     void refresh(){
-        if(Utility.isInternetExist(this)) {
+        if(Utility.isInternetExist()) {
 
             //showing progress bar
             if (mHeaderProgressBar != null) {
@@ -340,7 +340,7 @@ public class Subscribers extends MyActionBarActivity {
                     alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int whichButton) {
 
-                            if(Utility.isInternetExist(Subscribers.this)) {
+                            if(Utility.isInternetExist()) {
                                     RemoveChild removeChild = new RemoveChild(memberDetails.get(position), name);
                                     removeChild.execute();
 
@@ -520,10 +520,6 @@ public class Subscribers extends MyActionBarActivity {
                 memberDetails.remove(member);
                 myadapter.notifyDataSetChanged();
 
-                if(Classrooms.createdClassAdapter != null)
-                    Classrooms.createdClassAdapter.notifyDataSetChanged();
-
-
                 //updating member count display view
                 int memberCount = 0;
 
@@ -539,6 +535,9 @@ public class Subscribers extends MyActionBarActivity {
                     emptyTV.setVisibility(View.GONE);
 
                 subscriberTV.setText(memberCount + " subscribers");
+
+                if(SendMessage.memberCountTV != null)
+                    SendMessage.memberCountTV.setText(memberCount +"");
 
 
                 Utility.toast(memberName +" successfully removed from your classroom.");

@@ -110,7 +110,7 @@ public class CreateClassDialog extends DialogFragment{
 
 
                     //calling creteGroup class to create new class in background
-                    if(Utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist()) {
                         createGroup jg = new createGroup();
                         jg.execute();
 
@@ -127,8 +127,6 @@ public class CreateClassDialog extends DialogFragment{
 
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);
-                    } else {
-                        Utility.toast("Check your Internet connection");
                     }
                 }
                 else

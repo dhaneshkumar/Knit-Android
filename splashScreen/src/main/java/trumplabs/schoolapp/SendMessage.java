@@ -46,7 +46,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import BackGroundProcesses.MemberList;
 import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
@@ -77,7 +76,7 @@ public class SendMessage extends MyActionBarActivity  {
     private RelativeLayout inviteLayout;
     private RelativeLayout memberLayout;
     public static LinearLayout picProgressBarLayout;
-    private TextView memberCountTV;
+    public static TextView memberCountTV;
     private boolean isLoading = false;
     private Typeface typeface;
 
@@ -189,14 +188,7 @@ public class SendMessage extends MyActionBarActivity  {
         try {
             Queries memberQuery = new Queries();
             int memberCount = memberQuery.getMemberCount(groupCode);
-
             memberCountTV.setText(memberCount+"");
-
-            if(memberCount == 0 )
-            {
-                MemberList memberList = new MemberList(groupCode);
-                memberList.execute();
-            }
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -354,8 +346,7 @@ public class SendMessage extends MyActionBarActivity  {
                         .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int id) {
 
-                                if(! Utility.isInternetExist(SendMessage.this)) {
-                                    Utility.toast("No internet Connection! Can't delete your class");
+                                if(! Utility.isInternetExist()) {
                                     return;
                                 }
 

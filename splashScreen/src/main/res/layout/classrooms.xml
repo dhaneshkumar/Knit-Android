@@ -82,15 +82,14 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="8dp" />
 
             <TextView
                 android:id="@+id/createdClassTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Created Classes"
+                android:paddingTop="14dp"
+                android:paddingBottom="2dp"
                 android:textColor="@color/profile_title"
                 android:textSize="16sp"
                 />
@@ -109,7 +108,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Joined Classes"
-                android:layout_marginTop="8dp"
+                android:paddingTop="14dp"
+                android:paddingBottom="2dp"
                 android:textColor="@color/profile_title"
                 android:textSize="16sp"
                 />
@@ -122,11 +122,8 @@
                 android:divider="@color/lightbackgroundcolor"
                 android:dividerHeight="1dp"
                 />
-
-
         </LinearLayout>
     </ScrollView>
-
 
     <LinearLayout
         android:id="@+id/classroom_blank"

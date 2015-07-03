@@ -1,172 +1,102 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-
+    android:background="#AB47BC">
     <LinearLayout
-        android:id="@+id/progresslayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:orientation="vertical"
         android:gravity="center"
-        android:visibility="gone"
-        android:orientation="vertical">
-
-        <ProgressBar
-            android:id="@+id/progressBar1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:id="@+id/logText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Loading...."
-            android:textColor="@color/black"
-            android:textSize="18sp" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/loginlayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
-
+        android:layout_height="match_parent">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3"
-            android:orientation="vertical"
-            android:gravity="center">
-
-            <!-- Adding two extra text views for maintaining same aspect ratio-->
-            <TextView
+            android:layout_weight="6"
+            android:gravity="center"
+            >
+            <ImageView
                 android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:textSize="32sp"
-                android:textColor="@color/black"
-                android:text="" />
-
-            <TextView
-                android:id="@+id/heading_free"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="2"
-                android:textSize="32sp"
-                android:gravity="center"
-                android:textColor="@color/black"
-                android:text="Free" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_weight="1"
-                android:textSize="32sp"
-                android:textColor="@color/black"
-                android:text="" />
+                android:layout_height="wrap_content"
+                android:background="@drawable/tut_free"/>
         </LinearLayout>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="4"
             android:orientation="vertical"
-            android:gravity="center">
-
-            <ImageView
-                android:layout_width="192dp"
-                android:layout_height="192dp"
-                android:background="@drawable/free" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center">
-
-            <LinearLayout
-                android:id="@+id/free_back"
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:gravity="center_horizontal"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/back" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:layout_width="@dimen/dots_width"
-                    android:layout_height="@dimen/dots_height"
-                    android:background="@drawable/dots4" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_weight="1"
-                android:paddingTop="4dp"
-
-                android:paddingBottom="4dp"
-                android:gravity="center_horizontal"
-                android:layout_height="wrap_content">
-                <ImageView
-                    android:layout_width="wrap_content"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/next" />
-
-            </LinearLayout>
-        </LinearLayout>
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@color/buttoncolor"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:layout_weight="2">
+            android:paddingLeft="32dp"
+            android:paddingRight="16dp"
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Free"
+                android:textSize="24dp"
+                android:textColor="@color/white"
+                />
 
             <TextView
-                android:layout_width="0dp"
+                android:id="@+id/free_details"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Knit is totally free! \n Happy Connecting."
+                android:layout_marginTop="16dp"
+                android:text="Knit is free. Not only that, you can also send bulk SMS to parents without smartphones absolutely FREE."
                 android:textColor="@color/white"
-                android:textSize="19sp"
-                android:layout_weight="2"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
-                android:gravity="center" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <TextView
-                    android:id="@+id/signup"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Sign Up"
-                    android:background="@drawable/signup_bakcground"
-                    android:padding="8dp"
-                    android:textColor="@color/white"
-                    android:textSize="20sp" />
-            </LinearLayout>
-
-
+                android:textSize="16sp"
+                />
         </LinearLayout>
-
     </LinearLayout>
-</LinearLayout>
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#AE6DB9"
+        android:layout_above="@+id/footer"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:id="@+id/footer"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="SKIP"
+            android:id="@+id/free_skip"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tut_next4"
+                />
+        </LinearLayout>
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="DONE"
+            android:id="@+id/free_done"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            />
+    </LinearLayout>
+
+
+</RelativeLayout>

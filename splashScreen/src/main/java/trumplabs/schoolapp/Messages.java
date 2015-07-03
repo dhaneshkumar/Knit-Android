@@ -297,7 +297,7 @@ public class Messages extends Fragment {
                 // mHeaderProgressBar.setVisibility(View.GONE);
 
 
-                if(Utility.isInternetExist(getActivity())) {                   Utility.ls(" inbox has to sstart ... ");
+                if(Utility.isInternetExist()) {                   Utility.ls(" inbox has to sstart ... ");
                     Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
 
                     Inbox newInboxMsg = new Inbox(msgs);
@@ -375,7 +375,7 @@ public class Messages extends Fragment {
             listv.post(new Runnable() {
                 @Override
                 public void run() {
-                    Utility.isInternetExist(getActivity());
+                    Utility.isInternetExist();
                 }
             });
         }
@@ -784,7 +784,7 @@ public class Messages extends Fragment {
                     loadBitmap(thumbnailFile.getAbsolutePath(), holder.imgmsgview);
 
                 } else {
-                    if(Utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist()) {
                         // Have to download image from server
                         ParseFile imagefile = (ParseFile) msgObject.get("attachment");
                         holder.uploadprogressbar.setVisibility(View.VISIBLE);
@@ -866,12 +866,12 @@ public class Messages extends Fragment {
         }
     }
 
-    @Override
+   /* @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.refresh:
 
-                if(Utility.isInternetExist(getActivity())) {
+                if(Utility.isInternetExist()) {
                     Utility.ls(" option selected  ... ");
 
                     if (mPullToRefreshLayout != null) {
@@ -894,7 +894,7 @@ public class Messages extends Fragment {
                 break;
         }
         return super.onOptionsItemSelected(item);
-    }
+    }*/
 
     /********** showcase ***********/
 

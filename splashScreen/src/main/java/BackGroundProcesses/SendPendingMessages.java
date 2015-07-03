@@ -215,14 +215,14 @@ public class SendPendingMessages {
                             @Override
                             public void run() {
                                 if(result == 0){
-                                    Utility.toastDone("Notification Sent");
+                                    Utility.toast("Notification Sent");
                                 }
-                                else if(result == 100){//aborting
+                               /* else if(result == 100){//aborting
                                     Utility.toast("Sending failed ! Check your internet connection !");
                                 }
                                 else{
                                     Utility.toast("Unable to send message! We will send it later");
-                                }
+                                }*/
                             }
                         });
                     }

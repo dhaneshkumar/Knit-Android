@@ -203,15 +203,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             }
         }
 
-        //before showing no internet popup make sure view is created
-        if(profileLayout != null) {
-            profileLayout.post(new Runnable() {
-                @Override
-                public void run() {
-                    Utility.isInternetExist(ProfilePage.this);
-                }
-            });
-        }
+    
       //  FacebookSdk.sdkInitialize(getApplicationContext());
     }
 
@@ -345,7 +337,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                         if (!UtilString.isBlank(value)) {
 
-                            if (Utility.isInternetExist(ProfilePage.this)) {
+                            if (Utility.isInternetExist()) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(nameInput.getWindowToken(), 0);
@@ -358,7 +350,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                         public void done(ParseException e) {
                                             if (e == null) {
                                                 name_textView.setText(value);
-                                                Utility.toastDone("Name updated !");
+                                                Utility.toast("Name updated !");
                                             } else {
                                                 e.printStackTrace();
                                                 Utility.toast("Name update failed !");
@@ -412,7 +404,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                         if (!UtilString.isBlank(value)) {
 
-                            if(Utility.isInternetExist(ProfilePage.this)) {
+                            if(Utility.isInternetExist()) {
                                 InputMethodManager imm =
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
@@ -452,7 +444,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
        * sign out
        */
             case R.id.signOut:
-                if(Utility.isInternetExist(ProfilePage.this)) {
+                if(Utility.isInternetExist()) {
 
                     {
                         Utility.logoutProfilePage();
@@ -468,7 +460,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 Uri uri = Uri.parse("market://details?id=" + getPackageName());
                 Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
 
-                if(Utility.isInternetExist(ProfilePage.this)) {
+                if(Utility.isInternetExist()) {
 
                     try {
                         startActivity(myAppLinkToMarket);
@@ -507,7 +499,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 @Override
                 public void done(ParseException e) {
                     if (e == null) {
-                        Utility.toastDone("Profile Pic Updated!!");
+                        Utility.toast("Profile Pic Updated!!");
 
 
                         ParseUser.getCurrentUser().put("pid", file);

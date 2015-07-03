@@ -133,7 +133,7 @@ public class LoginPage extends MyActionBarActivity {
     FragmentManager fm = getSupportFragmentManager();
     switch (item.getItemId()) {
       case R.id.forgotpassword:
-          if(Utility.isInternetExist(LoginPage.this)) {
+          if(Utility.isInternetExist()) {
           ForgotPassword forgotpassdialog = new ForgotPassword();
           forgotpassdialog.show(fm, "Forgot Password?");
         }

@@ -14,10 +14,6 @@
         app:actionViewClass="android.widget.ImageView"
         android:title="JOIN"/>
 
-    <item android:id="@+id/refresh"
-       app:showAsAction="never"
-        android:title="Refresh"/>
-
     <item
         android:id="@+id/feedback"
         android:title="Feedback"

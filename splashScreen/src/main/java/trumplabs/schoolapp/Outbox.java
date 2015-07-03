@@ -20,7 +20,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -191,7 +190,7 @@ public class Outbox extends Fragment {
 
                 // mHeaderProgressBar.setVisibility(View.GONE);
 
-                if (Utility.isInternetExist(getActivity())) {
+                if (Utility.isInternetExist()) {
 
                     //code to refresh outbox
                     refreshCountInBackground();
@@ -288,7 +287,7 @@ public class Outbox extends Fragment {
             outboxListv.post(new Runnable() {
                 @Override
                 public void run() {
-                    Utility.isInternetExist(getActivity());
+                    Utility.isInternetExist();
                 }
             });
         }
@@ -590,14 +589,14 @@ public class Outbox extends Fragment {
     }
 
 
-        @Override
+       /* @Override
         public boolean onOptionsItemSelected(MenuItem item) {
             switch (item.getItemId()) {
 
                 //on refresh option selected from options menu
                 case R.id.refresh:
 
-                    if (Utility.isInternetExist(getActivity())) {
+                    if (Utility.isInternetExist()) {
 
                         if (outboxRefreshLayout != null) {
                             runSwipeRefreshLayout(outboxRefreshLayout, 10);
@@ -614,7 +613,7 @@ public class Outbox extends Fragment {
                     break;
             }
             return super.onOptionsItemSelected(item);
-        }
+        }*/
 
 
         //Refresh the layout. For e.g if outbox messages have changed

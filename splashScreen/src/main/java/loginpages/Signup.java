@@ -8,10 +8,9 @@ import android.widget.TextView;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
+import tutorial.ParentTutorial;
 import tutorial.TeacherTutorial;
-import utility.SessionManager;
 
 /**
  * Created by Dhanesh on 1/12/2015.
@@ -53,7 +52,7 @@ public class Signup extends MyActionBarActivity {
         parent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Signup.this, PhoneSignUpName.class);
+                Intent intent = new Intent(Signup.this, ParentTutorial.class);
                 intent.putExtra("role", Constants.PARENT);
                 startActivity(intent);
             }
@@ -62,7 +61,7 @@ public class Signup extends MyActionBarActivity {
         student.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Signup.this, PhoneSignUpName.class);
+                Intent intent = new Intent(Signup.this, ParentTutorial.class);
                 intent.putExtra("role", Constants.STUDENT);
                 startActivity(intent);
             }
@@ -77,14 +76,6 @@ public class Signup extends MyActionBarActivity {
                 Intent intent = new Intent(Signup.this, TeacherTutorial.class);
                 intent.putExtra("role", Constants.TEACHER);
                 startActivity(intent);
-
-               /* backCount = 0;
-                loginlayout.setVisibility(View.GONE);
-                progressLayout.setVisibility(View.VISIBLE);
-
-                //loading school list in background
-                GetSchools getSchools = new GetSchools();
-                getSchools.execute();*/
             }
         });
 
@@ -98,29 +89,6 @@ public class Signup extends MyActionBarActivity {
             }
         });
 
-
-
-        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
-        int actionBarHeight = sessionManager.getActionBarHeight();
-
-        if(actionBarHeight == 0) {
-            //Storing action bar height locally
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
-                            sleep(1000);
-                            sessionManager.setActionBarHeight(getSupportActionBar().getHeight());
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-
-            thread.start();
-        }
     }
 
 

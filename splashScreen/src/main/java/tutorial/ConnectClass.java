@@ -1,6 +1,6 @@
 package tutorial;
 
-import android.graphics.Typeface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import loginpages.PhoneSignUpName;
 import trumplab.textslate.R;
 
 /**
@@ -27,20 +28,31 @@ public class ConnectClass extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        //setting light font
-        TextView heading = (TextView) getActivity().findViewById(R.id.heading_connect);
-        Typeface typeFace = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
-        heading.setTypeface(typeFace);
+        TextView connect_skip = (TextView) getActivity().findViewById(R.id.connect_skip);
 
 
-        LinearLayout next = (LinearLayout) getActivity().findViewById(R.id.connect_next);
+        LinearLayout connect_next = (LinearLayout) getActivity().findViewById(R.id.connect_next);
 
-        next.setOnClickListener(new View.OnClickListener() {
+        connect_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                ParentTutorial.viewpager.setAdapter(new ParentTutorial.MyAdapter(fragmentmanager));
+                if (ParentTutorial.myAdapter == null)
+                    ParentTutorial.myAdapter = new ParentTutorial.MyAdapter(fragmentmanager);
+                ParentTutorial.viewpager.setAdapter(ParentTutorial.myAdapter);
                 ParentTutorial.viewpager.setCurrentItem(1);
+            }
+        });
+
+
+        connect_skip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String role = getActivity().getIntent().getExtras().getString("role");
+
+                Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
+                intent.putExtra("role", role);
+                startActivity(intent);
             }
         });
     }

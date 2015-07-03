@@ -60,11 +60,6 @@ public class ComposeMessageHelper {
         Log.d(ComposeMessage.LOGTAG, "helper : sendFunction()");
         typedtxt = typedmsg.getText().toString().trim();  //message to send
 
-        //check internet connection - NOT REQUIRED - as offline messaging support
-
-                /*if(!Utility.isInternetExist(SendMessage.this)) {
-                    return;
-                }*/
         if (!UtilString.isBlank(typedtxt) && ComposeMessage.sendimgpreview.getVisibility() == View.GONE) {
 
             // when its not an image message******************
@@ -92,7 +87,7 @@ public class ComposeMessageHelper {
                     SendPendingMessages.addMessageListToQueue(messagesToSend);
                 } else {
                     e.printStackTrace();
-                    Utility.toastDone("Sorry! Can't send your message");
+                    Utility.toast("Sorry! Can't send your message");
                 }
             }
         });

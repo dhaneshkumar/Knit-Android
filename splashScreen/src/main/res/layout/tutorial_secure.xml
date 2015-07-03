@@ -1,121 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
-
+    android:background="#FFC107">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="3"
         android:orientation="vertical"
-        android:gravity="center">
-        <!-- Adding two extra text views for maintaining same aspect ratio-->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:textSize="32sp"
-            android:textColor="@color/black"
-            android:text="" />
-
-        <TextView
-            android:id="@+id/heading_secure"
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="2"
-            android:textSize="32sp"
-            android:gravity="center"
-            android:textColor="@color/black"
-            android:text="Secure" />
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:textSize="32sp"
-            android:textColor="@color/black"
-            android:text="" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="4"
-        android:orientation="vertical"
-        android:gravity="center">
-
-        <ImageView
-            android:layout_width="192dp"
-            android:layout_height="192dp"
-            android:background="@drawable/secure" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:orientation="horizontal"
-        android:gravity="center">
-
-        <LinearLayout
-            android:id="@+id/secure_back"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/back" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="@dimen/dots_width"
-                android:layout_height="@dimen/dots_height"
-                android:background="@drawable/dots2" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/secure_next"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:paddingTop="4dp"
-            android:paddingBottom="4dp"
-            android:gravity="center_horizontal"
-            android:layout_height="wrap_content">
-            <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@drawable/next" />
-
-        </LinearLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:background="@color/buttoncolor"
         android:gravity="center"
-        android:layout_weight="2">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Personal information\n is never shared with parents or students.\n Knit is safe."
-            android:textColor="@color/white"
-            android:textSize="19sp"
-            android:paddingLeft="16dp"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="6"
+            android:gravity="center"
+            >
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tut_secure"/>
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="4"
+            android:orientation="vertical"
+            android:paddingLeft="32dp"
             android:paddingRight="16dp"
-            android:gravity="center" />
+            >
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Secure"
+                android:textSize="24dp"
+                android:textColor="@color/white"
+                />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Personal information is never shared with parents or students. Knit is safe."
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                />
+        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#FCDA75"
+        android:layout_above="@+id/footer"
+        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_alignParentBottom="true"
+        android:gravity="center"
+        android:id="@+id/footer"
+        android:layout_height="wrap_content">
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="SKIP"
+            android:id="@+id/secure_skip"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:paddingTop="16dp"
+            android:paddingBottom="16dp"
+            />
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="2"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/tut_next2"
+                />
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:id="@+id/secure_next"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/ic_chevron_right_white"
+                />
+        </LinearLayout>
+    </LinearLayout>
+
+
+</RelativeLayout>

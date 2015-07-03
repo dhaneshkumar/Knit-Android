@@ -122,7 +122,7 @@ public class JoinClassDialog extends DialogFragment {
             if(role.equals(Constants.STUDENT)) {
 
                 //checking for internet connection
-                if(Utility.isInternetExist(getActivity())) {
+                if(Utility.isInternetExist()) {
 
                     //calling background function to join clas
                     AddChild_Background rcb = new AddChild_Background();
@@ -190,7 +190,7 @@ public class JoinClassDialog extends DialogFragment {
                     }
 
                     //checking for internet connection
-                    if(Utility.isInternetExist(getActivity())) {
+                    if(Utility.isInternetExist()) {
 
                         //calling background function to join clas
                         AddChild_Background rcb = new AddChild_Background();
@@ -200,9 +200,6 @@ public class JoinClassDialog extends DialogFragment {
                         progressLayout.setVisibility(View.VISIBLE);
                         contentLayout.setVisibility(View.GONE);
 
-                    }
-                    else {
-                        Utility.toast("Check your Internet connection");
                     }
                 }
                 else if(UtilString.isBlank(codeET.getText().toString())) {
@@ -334,7 +331,7 @@ public class JoinClassDialog extends DialogFragment {
 
             if (result) {
                 if(getActivity()!=null)
-                    Utility.toastDone("ClassRoom Joined");
+                    Utility.toast("ClassRoom Joined");
 
                 //Refreshing joined class adapter
                 Classrooms.joinedGroups = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);

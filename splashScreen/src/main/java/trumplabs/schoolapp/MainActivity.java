@@ -49,7 +49,6 @@ import java.util.Date;
 import java.util.List;
 
 import BackGroundProcesses.Refresher;
-import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import additionals.RateAppDialog;
 import additionals.SpreadWordDialog;
@@ -466,32 +465,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             AlarmTrigger.triggerEventCheckerAlarm(Application.getAppContext());
             isEventCheckerAlarmTriggered = true;
         }
-/*************+++++++++++++++++++++++++++++++++++++++++++++++============================================*/
-        /**
-         * setting action bar height to display no internet connection bar
-         */
-        int actionBarHeight = sessionManager.getActionBarHeight();
-
-        if(actionBarHeight == 0) {
-            //Storing action bar height locally
-            Thread thread = new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        while (true) {
-                            sleep(1000);
-                            sessionManager.setActionBarHeight(getSupportActionBar().getHeight());
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            };
-
-            thread.start();
-        }
-
-        /*******************************************************************************************************/
 
         //show recommend app dialog
         if(appOpeningCount == 6 || appOpeningCount == 21) {
@@ -810,13 +783,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 Intent intent = new Intent(getBaseContext(), Invite.class);
                 intent.putExtra("inviteType", Constants.INVITATION_SPREAD);
                 startActivity(intent);
-
-                /*Intent i=new Intent(android.content.Intent.ACTION_SEND);
-                i.setType("text/plain");
-                i.putExtra(android.content.Intent.EXTRA_SUBJECT,"Knit");
-                i.putExtra(android.content.Intent.EXTRA_TEXT, Constants.spreadWordContent);
-                startActivity(Intent.createChooser(i,"Share via"));*/
-
                 break;
 
             case R.id.feedback:

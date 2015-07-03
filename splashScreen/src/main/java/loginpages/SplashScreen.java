@@ -59,7 +59,7 @@ public class SplashScreen extends MyActionBarActivity {
 
         if(freshUser != null) {
             Utility.updateCurrentTimeInBackground(freshUser);
-            freshUser.fetchIfNeededInBackground();
+            freshUser.fetchInBackground();
         }
 
     /*
