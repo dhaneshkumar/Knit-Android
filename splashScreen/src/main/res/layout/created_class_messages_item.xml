@@ -76,6 +76,19 @@
                     android:text="just now"
                     android:textColor="@color/grey_light"
                     android:textSize="12sp"
+                    android:visibility="gone"
+                    android:layout_below="@+id/classname1"
+                    android:layout_alignLeft="@+id/classname1"
+                    android:layout_alignStart="@+id/classname1" />
+
+                <ImageView
+                    android:id="@+id/pendingClock"
+                    android:src="@drawable/clock"
+                    android:adjustViewBounds="true"
+                    android:visibility="visible"
+                    android:scaleType="centerInside"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_below="@+id/classname1"
                     android:layout_alignLeft="@+id/classname1"
                     android:layout_alignStart="@+id/classname1" />

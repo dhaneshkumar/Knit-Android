@@ -9,6 +9,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -435,6 +437,9 @@ public class SendMessage extends MyActionBarActivity  {
                 imagepath = "";
 
             // initialize all the view components
+            final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
+            final ImageView pendingClockIcon = (ImageView) row.findViewById(R.id.pendingClock);
+
             final ImageView imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
             final ProgressBar uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
             TextView msgtxtcontent = (TextView) row.findViewById(R.id.ccmsgtext);
@@ -455,8 +460,23 @@ public class SendMessage extends MyActionBarActivity  {
                 head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
             }
 
-
             if(pending){//this message is not yet sent
+                timestampview.setVisibility(View.GONE);
+                pendingClockIcon.setVisibility(View.VISIBLE);
+
+                //resize the clock icon properly
+                Drawable drawing = pendingClockIcon.getDrawable();
+                Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
+                int w = (int) (bitmap.getWidth() * 0.4);
+                int h = (int) (bitmap.getHeight() * 0.4);
+                Log.d("__TEMP__", "w=" + w + ",h=" + h);
+
+                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pendingClockIcon.getLayoutParams();
+                params.width = w;
+                params.height = h;
+                pendingClockIcon.setLayoutParams(params);
+
+                //do other stuff
                 seenCountArea.setVisibility(View.GONE);
                 retryButton.setVisibility(View.VISIBLE);
                 if(SendPendingMessages.isJobRunning() || ComposeMessage.sendButtonClicked){
@@ -480,6 +500,9 @@ public class SendMessage extends MyActionBarActivity  {
                 }
             }
             else{
+                timestampview.setVisibility(View.VISIBLE);
+                pendingClockIcon.setVisibility(View.GONE);
+
                 seenCountArea.setVisibility(View.VISIBLE);
                 retryButton.setVisibility(View.GONE);
             }
@@ -520,7 +543,6 @@ public class SendMessage extends MyActionBarActivity  {
 
 
             //ImageView tickview = (ImageView) row.findViewById(R.id.tickmark);
-            final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
             row.setVisibility(View.VISIBLE);
 
 

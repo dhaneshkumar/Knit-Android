@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,6 +26,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -291,6 +294,7 @@ public class Outbox extends Fragment {
      */
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView timestampmsg;
+        ImageView pendingClockIcon;
         TextView classimage;
         ImageView imgmsgview;
         ProgressBar uploadprogressbar;
@@ -310,6 +314,7 @@ public class Outbox extends Fragment {
             classname = (TextView) row.findViewById(R.id.classname1);
             classimage = (TextView) row.findViewById(R.id.classimage1);
             timestampmsg = (TextView) row.findViewById(R.id.cctimestamp);
+            pendingClockIcon = (ImageView) row.findViewById(R.id.pendingClock);
             imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
             uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
             msgtxtcontent = (TextView) row.findViewById(R.id.ccmsgtext);
@@ -319,6 +324,17 @@ public class Outbox extends Fragment {
             root = (LinearLayout) row.findViewById(R.id.rootLayout);
             head = (LinearLayout) row.findViewById(R.id.headLayout);
             retryButton = (TextView) row.findViewById(R.id.retry);
+
+            Drawable drawing = pendingClockIcon.getDrawable();
+            Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
+            int w = (int) (bitmap.getWidth() * 0.4);
+            int h = (int) (bitmap.getHeight() * 0.4);
+            Log.d("__TEMP__", "w=" + w + ",h=" + h);
+
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pendingClockIcon.getLayoutParams();
+            params.width = w;
+            params.height = h;
+            pendingClockIcon.setLayoutParams(params);
         }
     }
 
@@ -409,11 +425,15 @@ public class Outbox extends Fragment {
 
             boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
             if (pending) {
-                timestampmsg = "pending..";
+                holder.timestampmsg.setVisibility(View.GONE);
+                holder.pendingClockIcon.setVisibility(View.VISIBLE);
+            }
+            else{
+                holder.timestampmsg.setVisibility(View.VISIBLE);
+                holder.pendingClockIcon.setVisibility(View.GONE);
+                holder.timestampmsg.setText(timestampmsg);
             }
 
-            //setting timestamp in view
-            holder.timestampmsg.setText(timestampmsg);
 
             //retry button handle
             if (pending) {//this message is not yet sent
