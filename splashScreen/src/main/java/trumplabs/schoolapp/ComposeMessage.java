@@ -21,6 +21,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -136,6 +137,13 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
             if(getIntent().getExtras().getString(Constants.ComposeSource.KEY) != null){
                 source = getIntent().getExtras().getString(Constants.ComposeSource.KEY);
             }
+
+            selectedClassTV.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                @Override
+                public void onGlobalLayout() {
+                    selectedClassTV.loadUrl("javascript:replace( '" + selectedClasses + "')");
+                }
+            });
         }
 
         classTextView.setText(displayText(selectedClassNames));

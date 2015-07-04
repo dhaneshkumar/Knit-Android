@@ -191,7 +191,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:textSize="13sp"
-            android:text="This is a unique code generated for every class and is to be used by parents and students to subscribe to your classroom.\nLet them know about your class."
+            android:text="This is a unique code generated for every classroom. You can send this code to parents or students to subscribe to your class."
             />
 
         <TextView
@@ -209,7 +209,7 @@
             android:gravity="center"
             android:padding="12dp"
             android:background="@color/buttoncolor"
-            android:text="See How!"
+            android:text="Invite Parents &amp; Students"
             android:textColor="@color/white"
             android:textSize="16sp"
             />
