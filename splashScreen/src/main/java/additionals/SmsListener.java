@@ -21,9 +21,8 @@ public class SmsListener extends BroadcastReceiver {
 
     static SmsListener listener = new SmsListener();
 
-    String startMsgContent = "Your requested verification code is";
-    String senderCore1 = "TXTSLT";
-    String senderCore2 = "myKNIT";
+    String endMsgContent = "is your Knit verification Code"; //genCode2
+    String senderCore = "myKnit"; //genCode2
 
     @Override
     public void onReceive(Context context, Intent intent) {
@@ -40,7 +39,11 @@ public class SmsListener extends BroadcastReceiver {
                         msgs[i] = SmsMessage.createFromPdu((byte[])pdus[i]);
                         msgFrom = msgs[i].getOriginatingAddress();
                         String msgBody = msgs[i].getMessageBody();
-                        if((msgFrom.contains(senderCore1) || msgFrom.contains(senderCore2)) && msgBody.startsWith(startMsgContent)){
+                        if(msgFrom == null || msgBody == null){
+                            continue; //go to next message
+                        }
+
+                        if(msgFrom.toLowerCase().contains(senderCore.toLowerCase()) && msgBody.toLowerCase().contains(endMsgContent.toLowerCase())){
                             Log.d("DEBUG_SMS_LISTENER", "FOUND : msgBody " + msgBody + " msgFrom " + msgFrom);
                             isListeningOn = false;
                             final String code = extractCode(msgBody);
@@ -71,10 +74,7 @@ public class SmsListener extends BroadcastReceiver {
     static String extractCode(String msgBody){
         //msg is of following type "Your requested verification code is 3822"
         String tokens[] = msgBody.split(" ");
-        if(tokens.length != 6){
-            return null;
-        }
-        return tokens[5]; //the code
+        return tokens[0]; //the code
     }
 
     public static void register(){
