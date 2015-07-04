@@ -214,7 +214,7 @@ public class ShowcaseView extends RelativeLayout
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
 
         if(extra == 1){
-            pointer.setImageResource(R.drawable.options_teacher);
+            pointer.setImageResource(R.drawable.options_parent);
             params.addRule(ALIGN_PARENT_RIGHT);
             params.rightMargin = x; //Your X coordinate
         }
