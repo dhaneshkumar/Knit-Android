@@ -29,8 +29,6 @@ public class ConnectClass extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         TextView connect_skip = (TextView) getActivity().findViewById(R.id.connect_skip);
-
-
         LinearLayout connect_next = (LinearLayout) getActivity().findViewById(R.id.connect_next);
 
         connect_next.setOnClickListener(new View.OnClickListener() {
