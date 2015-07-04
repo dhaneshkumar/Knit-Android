@@ -53,13 +53,10 @@ public class Classrooms extends Fragment  {
     Typeface lightTypeFace;
     public static TextView createdClassTV;
     private TextView joinedClassTV;
-    private ImageView classroom_headup;
-    private LinearLayout classroom_instruction;
-    private TextView classroom_ok;
-    private TextView cardContent;
     private LinearLayout blank_classroom;
     private Typeface typeface;
     private boolean isTeacher;
+    private ImageView classroom_empty_background;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -79,14 +76,9 @@ public class Classrooms extends Fragment  {
         joinedClassListView = (ExpandableListView) getactivity.findViewById(R.id.joinedclasseslistview);
         createdClassTV = (TextView) getActivity().findViewById(R.id.createdClassTextView);
         joinedClassTV = (TextView) getActivity().findViewById(R.id.joinedClassTextView);
-        classroom_headup = (ImageView) getActivity().findViewById(R.id.classroom_uphead);
-        classroom_instruction = (LinearLayout) getActivity().findViewById(R.id.classroom_instruction);
-        classroom_ok = (TextView) getActivity().findViewById(R.id.classroom_ok);
-        cardContent = (TextView) getActivity().findViewById(R.id.card_content);
         blank_classroom = (LinearLayout) getActivity().findViewById(R.id.classroom_blank);
-        TextView createClassLink = (TextView) getActivity().findViewById(R.id.createClassLink);
-        TextView classRoomtitle = (TextView) getActivity().findViewById(R.id.classroom_detail);
         typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
+        classroom_empty_background  = (ImageView) getActivity().findViewById(R.id.classroom_empty_background);
 
         //Setting condensed font
         Typeface typeFace = Typeface.createFromAsset(getactivity.getAssets(), "fonts/roboto-condensed.bold.ttf");
@@ -95,14 +87,6 @@ public class Classrooms extends Fragment  {
 
 
         isTeacher = ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER);
-        if(isTeacher)
-        {
-            cardContent.setText("Here you will see your created and joined classrooms. You can also join and create new classrooms.");
-        }
-        else
-        {
-            cardContent.setText("Here you will see your joined classrooms. You can also join new classrooms.");
-        }
 
         //signup check
         if(isTeacher && getActivity().getIntent() != null)
@@ -135,19 +119,17 @@ public class Classrooms extends Fragment  {
 
         //show create class option only for teachers
         if(!isTeacher) {
+
             createdClassTV.setVisibility(View.GONE);
             createdClassListView.setVisibility(View.GONE);
+            classroom_empty_background.setVisibility(View.VISIBLE);
+            classroom_empty_background.setBackgroundDrawable(getResources().getDrawable(R.drawable.empty_join_classroom_bg));
 
-            classRoomtitle.setText("You have not Joined any class.");
-            createClassLink.setText("Join first class");
-
-
-            blank_classroom.setOnClickListener(new OnClickListener() {
+            classroom_empty_background.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
                     //showing dialog to join class
-
                     FragmentManager fm = getActivity().getSupportFragmentManager();
                     JoinClassDialog joinClassDialog = new JoinClassDialog();
                     joinClassDialog.show(fm, "Join Class");
@@ -156,10 +138,8 @@ public class Classrooms extends Fragment  {
 
         }
         else {
-            classRoomtitle.setText("You have not created any class.");
-            createClassLink.setText("Create first class");
-
-            blank_classroom.setOnClickListener(new OnClickListener() {
+            classroom_empty_background.setBackgroundDrawable(getResources().getDrawable(R.drawable.empty_classroom_bg));
+            classroom_empty_background.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
@@ -198,41 +178,6 @@ public class Classrooms extends Fragment  {
 
         initialiseListViewMethods();
 
-
-        if(Constants.signup_classrooms)
-        {
-            classroom_instruction.setVisibility(View.VISIBLE);
-            classroom_headup.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            classroom_instruction.setVisibility(View.GONE);
-            classroom_headup.setVisibility(View.GONE);
-        }
-
-        classroom_ok.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                if (Constants.signup_outbox) {
-                    if (isTeacher) {
-                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                        MainActivity.viewpager.setCurrentItem(1);
-                    }
-                } else if (Constants.signup_inbox) {
-                    if (isTeacher) {
-                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                        MainActivity.viewpager.setCurrentItem(2);
-                    }
-                }
-
-                classroom_instruction.setVisibility(View.GONE);
-                classroom_headup.setVisibility(View.GONE);
-                Constants.signup_classrooms = false;
-            }
-        });
     }
 
     /********** showcase ***********/

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -72,14 +71,12 @@ public class Messages extends Fragment {
     private LinearLayout inemptylayout;
     private Queries query  ;
     private LruCache<String, Bitmap> mMemoryCache;
-    private Typeface typeFace;
     String userId;
     public static int totalInboxMessages; //total pinned messages in inbox
     LinearLayout mainLayout;
     boolean refreshServerMessage;
-    private ImageView inbox_headup;
-    private LinearLayout inbox_instructions;
-    private TextView inbox_ok;
+    private ImageView inbox_messages_bg;
+    private ProgressBar inbox_messages_pb;
 
     public static boolean responseTutorialShown = false;
 
@@ -101,9 +98,8 @@ public class Messages extends Fragment {
         listv = (RecyclerView) getActivity().findViewById(R.id.msg_list);
         inemptylayout = (LinearLayout) getActivity().findViewById(R.id.inemptymsg);
         mainLayout = (LinearLayout)  getActivity().findViewById(R.id.msgCntLayout);
-        inbox_headup = (ImageView) getActivity().findViewById(R.id.inbox_uphead);
-        inbox_instructions = (LinearLayout) getActivity().findViewById(R.id.inbox_instruction);
-        inbox_ok = (TextView) getActivity().findViewById(R.id.inbox_ok);
+        inbox_messages_bg= (ImageView) getActivity().findViewById(R.id.inbox_messages_bg);
+        inbox_messages_pb = (ProgressBar) getActivity().findViewById(R.id.inbox_messages_pb);
 
       /*
       Check for push open
@@ -146,7 +142,7 @@ public class Messages extends Fragment {
         }
 
 
-        getActivity().findViewById(R.id.inemptylink).setOnClickListener(new OnClickListener() {
+        getActivity().findViewById(R.id.inbox_messages_bg).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
                 FragmentManager fm = getActivity().getSupportFragmentManager();
@@ -155,9 +151,6 @@ public class Messages extends Fragment {
             }
         });
 
-
-        typeFace =
-                Typeface.createFromAsset(getActivity().getAssets(), "fonts/RobotoCondensed-Bold.ttf");
 
     /*
      * Setting up LRU Cache for images
@@ -215,6 +208,9 @@ public class Messages extends Fragment {
         }
         else
         {
+            inbox_messages_pb.setVisibility(View.GONE);
+            inbox_messages_bg.setVisibility(View.VISIBLE);
+
             try {
                 msgs = query.getLocalInboxMsgs();
                 updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
@@ -262,8 +258,8 @@ public class Messages extends Fragment {
                 int totalItemCount = mLayoutManager.getItemCount();
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
-                if(visibleItemCount + pastVisibleItems >= totalItemCount-2){
-                    if(totalItemCount >= totalInboxMessages){
+                if (visibleItemCount + pastVisibleItems >= totalItemCount - 2) {
+                    if (totalItemCount >= totalInboxMessages) {
                         Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
@@ -297,7 +293,8 @@ public class Messages extends Fragment {
                 // mHeaderProgressBar.setVisibility(View.GONE);
 
 
-                if(Utility.isInternetExist()) {                   Utility.ls(" inbox has to sstart ... ");
+                if (Utility.isInternetExist()) {
+                    Utility.ls(" inbox has to sstart ... ");
                     Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
 
                     Inbox newInboxMsg = new Inbox(msgs);
@@ -328,45 +325,6 @@ public class Messages extends Fragment {
 
                 // stop refreshing bar after some certain interval
 
-            }
-        });
-
-
-        if(Constants.signup_inbox)
-        {
-            inbox_instructions.setVisibility(View.VISIBLE);
-            inbox_headup.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            inbox_instructions.setVisibility(View.GONE);
-            inbox_headup.setVisibility(View.GONE);
-        }
-
-        inbox_ok.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-
-                if(Constants.signup_classrooms)
-                {
-                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
-                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                        MainActivity.viewpager.setCurrentItem(0);
-                    }
-                }
-                else if(Constants.signup_outbox) {
-                    if(ParseUser.getCurrentUser().getString("role").equals("teacher")) {
-                        FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                        MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                        MainActivity.viewpager.setCurrentItem(1);
-                    }
-                }
-
-                inbox_headup.setVisibility(View.GONE);
-                inbox_instructions.setVisibility(View.GONE);
-                Constants.signup_inbox = false;
             }
         });
 
@@ -1037,10 +995,16 @@ public class Messages extends Fragment {
 
             Messages.myadapter.notifyDataSetChanged();
 
-            if (msgs.size() == 0)
+            if (msgs.size() == 0) {
                 inemptylayout.setVisibility(View.VISIBLE);
-            else
+                inbox_messages_pb.setVisibility(View.GONE);
+                inbox_messages_bg.setVisibility(View.VISIBLE);
+            }
+            else {
                 inemptylayout.setVisibility(View.GONE);
+                inbox_messages_pb.setVisibility(View.VISIBLE);
+                inbox_messages_bg.setVisibility(View.GONE);
+            }
 
 
             if(refreshServerMessage)

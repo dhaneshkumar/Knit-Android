@@ -1,118 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@color/lightbackgroundcolor"
+    android:gravity="center_horizontal"
+    android:orientation="vertical">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+
+    <LinearLayout
+        android:id="@+id/outboxmsg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/lightbackgroundcolor"
-        android:gravity="center_horizontal"
-        android:orientation="vertical">
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="visible" >
 
-        <ImageView
-            android:id="@+id/outbox_uphead"
+        <ProgressBar
+            android:id="@+id/sent_messages_pb"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/white"
-            android:visibility="gone"
-            android:layout_gravity="center"
-            />
-
-        <LinearLayout
-            android:id="@+id/outbox_instruction"
-            android:orientation="vertical"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:layout_marginBottom="16dp"
-            android:background="#E5E5E5"
-            android:paddingBottom="1dp"
-            android:paddingLeft="1dp"
-            android:visibility="gone"
-            android:layout_marginTop="-4dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@color/white"
-                android:paddingTop="16dp"
-                android:paddingLeft="16dp"
-                android:paddingRight="8dp"
-                android:paddingBottom="8dp"
-                android:orientation="vertical"
-                >
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/outbox_instrunctions"
-                    android:textColor="@color/black"
-                    android:layout_marginBottom="8dp"
-                    android:textSize="16sp"
-                    />
-
-
-                <TextView
-                    android:id="@+id/outbox_ok"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Okay, got it."
-                    android:layout_gravity="right"
-                    android:paddingTop="6dp"
-                    android:paddingBottom="6dp"
-                    android:textSize="14sp"
-                    android:paddingLeft="12dp"
-                    android:paddingRight="12dp"
-                    android:textColor="@color/white"
-                    android:background="@color/buttoncolor"
-                    />
-
-            </LinearLayout>
-        </LinearLayout>
-        <android.support.v4.widget.SwipeRefreshLayout
-            xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/ptr_outbox"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1" >
-
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/outboxlistview"
-                android:scrollbars="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent" />
-        </android.support.v4.widget.SwipeRefreshLayout>
-
-        <LinearLayout
-            android:id="@+id/outboxmsg"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content" />
+        <ImageView
+            android:id="@+id/sent_messages_bg"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
             android:layout_marginTop="-50dp"
-            android:layout_weight="1"
-            android:gravity="top|center_horizontal"
-            android:orientation="vertical"
-            android:visibility="visible" >
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="No sent messages to show"
-                android:textColor="@color/darkergrey"
-                android:textSize="18sp" />
-
-            <TextView
-                android:id="@+id/outboxlink"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="32dp"
-                android:text="Go to Classrooms"
-                android:textColor="@color/buttoncolor"
-                android:textSize="18sp"
-                android:textStyle="italic|bold" />
-        </LinearLayout>
-
+            android:visibility="gone"
+            android:background="@drawable/empty_sent_message"
+            />
     </LinearLayout>
-</RelativeLayout>
+
+    <android.support.v4.widget.SwipeRefreshLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/ptr_outbox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        >
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/outboxlistview"
+            android:scrollbars="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </android.support.v4.widget.SwipeRefreshLayout>
+
+
+
+</LinearLayout>

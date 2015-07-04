@@ -14,7 +14,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -69,10 +68,9 @@ public class Outbox extends Fragment {
     private static SwipeRefreshLayout outboxRefreshLayout;
     public static LinearLayout outboxLayout;
     public static int totalOutboxMessages = 15; //total pinned outbox messages(across all classes)
-    private ImageView outbox_headup;
-    private LinearLayout outbox_instructions;
-    private TextView outbox_ok;
     private Typeface typeface;
+    private static ImageView emptyBackground;
+    private static ProgressBar loadingBar;
 
     //handle notification
     private static String action; //LIKE/CONFUSE
@@ -101,10 +99,9 @@ public class Outbox extends Fragment {
         outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_outbox);
         outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
         outboxLayout = (LinearLayout) getActivity().findViewById(R.id.outboxmsg);
-        outbox_headup = (ImageView) getActivity().findViewById(R.id.outbox_uphead);
-        outbox_instructions = (LinearLayout) getActivity().findViewById(R.id.outbox_instruction);
-        outbox_ok = (TextView) getActivity().findViewById(R.id.outbox_ok);
         typeface = Typeface.createFromAsset(getActivity().getAssets(), "fonts/Roboto-Light.ttf");
+        loadingBar = (ProgressBar) getActivity().findViewById(R.id.sent_messages_pb);
+        emptyBackground = (ImageView) getActivity().findViewById(R.id.sent_messages_bg);
 
         //handle receive notification action - LIKE/CONFUSE
         if(getActivity().getIntent() != null){
@@ -133,12 +130,11 @@ public class Outbox extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
 
-        getActivity().findViewById(R.id.outboxlink).setOnClickListener(new View.OnClickListener() {
+        emptyBackground.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                MainActivity.viewpager.setCurrentItem(0);
+                Intent intent = new Intent(getActivity(), ComposeMessage.class);
+                startActivity(intent);
             }
         });
 
@@ -155,9 +151,9 @@ public class Outbox extends Fragment {
                 int totalItemCount = mLayoutManager.getItemCount();
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
-                if(visibleItemCount + pastVisibleItems >= totalItemCount-1){
+                if (visibleItemCount + pastVisibleItems >= totalItemCount - 1) {
                     //Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
-                    if(totalItemCount >= totalOutboxMessages){
+                    if (totalItemCount >= totalOutboxMessages) {
                         Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
@@ -219,42 +215,6 @@ public class Outbox extends Fragment {
                     h.sendMessageDelayed(new Message(), 2000);
                 }
 
-            }
-        });
-
-
-
-        if(Constants.signup_outbox)
-        {
-            outbox_headup.setVisibility(View.VISIBLE);
-            outbox_instructions.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-            outbox_headup.setVisibility(View.GONE);
-            outbox_instructions.setVisibility(View.GONE);
-        }
-
-        outbox_ok.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (Constants.signup_inbox) {
-                    if (ParseUser.getCurrentUser().getString("role").equals("teacher")) {
-
-                        if (Constants.signup_inbox) {
-                            FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                            MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                            MainActivity.viewpager.setCurrentItem(2);
-                        } else if (Constants.signup_classrooms) {
-                            FragmentManager fragmentmanager = getActivity().getSupportFragmentManager();
-                            MainActivity.viewpager.setAdapter(new MainActivity.MyAdapter(fragmentmanager));
-                            MainActivity.viewpager.setCurrentItem(0);
-                        }
-                    }
-                }
-                outbox_instructions.setVisibility(View.GONE);
-                outbox_headup.setVisibility(View.GONE);
-                Constants.signup_outbox = false;
             }
         });
 
@@ -735,11 +695,17 @@ public class Outbox extends Fragment {
                     Outbox.myadapter.notifyDataSetChanged();
                 }
 
-                if (outboxLayout != null) {
-                    if (groupDetails.size() == 0)
+                if (outboxLayout != null && emptyBackground != null && loadingBar != null) {
+                    if (groupDetails.size() == 0){
                         outboxLayout.setVisibility(View.VISIBLE);
-                    else
+                        emptyBackground.setVisibility(View.VISIBLE);
+                        loadingBar.setVisibility(View.GONE);
+                    }
+                    else {
                         outboxLayout.setVisibility(View.GONE);
+                        emptyBackground.setVisibility(View.GONE);
+                        loadingBar.setVisibility(View.VISIBLE);
+                    }
                 }
                 super.onPostExecute(aVoid);
 
