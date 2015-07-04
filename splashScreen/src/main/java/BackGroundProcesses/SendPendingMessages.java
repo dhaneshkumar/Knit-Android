@@ -132,8 +132,8 @@ public class SendPendingMessages {
             Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : end");
         }
 
-        boolean abort = false; //if network error occurred in one of the attempts
-        boolean errorToastShown = false; //show only once
+        //boolean abort = false; //if network error occurred in one of the attempts
+        //boolean errorToastShown = false; //show only once
 
         while (true) {
             ParseObject currentMsg = null;
@@ -147,14 +147,14 @@ public class SendPendingMessages {
                     Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : queue empty, exiting : ");
                     return;
                 }
-                if(abort){
+                /*if(abort){
                     jobRunning = false;
                     isLive = false;
                     //notify SendMessage adapter so that retry button may be shown/hidden
                     notifyAllAdapters();
                     Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : abort signal(network error), exiting");
                     return;
-                }
+                }*/
                 currentMsg = pendingMessageQueue.get(0);
                 Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : picking next item in the queue");
             }
@@ -192,7 +192,7 @@ public class SendPendingMessages {
 
                 Log.d(LOGTAG, "result=" + result + " isLive=" + isLive);
 
-                if(result == 100 && isLive){
+                /*if(result == 100 && isLive){
                     showToast = true; //if network error and latest request was gui(send/retry) then show toast of "internet connection"
                 }
 
@@ -206,7 +206,7 @@ public class SendPendingMessages {
                         Log.d(LOGTAG, "showing error first and last time");
                         errorToastShown = true;
                     }
-                }
+                }*/
 
                 //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null if the app is running
                 if(showToast) {
