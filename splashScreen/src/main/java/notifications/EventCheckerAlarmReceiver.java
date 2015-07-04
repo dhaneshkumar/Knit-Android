@@ -305,7 +305,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 extras.putString("grpCode", groupCode);
                 extras.putString("grpName", className);
 
-                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION);
+                NotificationGenerator.generateNotification(alarmContext, teacherNoMsgContent + className + ". Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION, extras);
                 //generateLocalMessage(teacherNoMsgContent + className, Constants.DEFAULT_NAME);
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);

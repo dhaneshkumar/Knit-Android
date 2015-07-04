@@ -110,6 +110,19 @@ public class Outbox extends Fragment {
                 action = bundle.getString("action");
                 id = bundle.getString("id");
                 getActivity().getIntent().removeExtra("action"); //we must handle it one time only
+
+                //Log.d("DEBUG_PUSH_OPEN", "action=" + action);
+                //check if send message action
+                if(!UtilString.isBlank(action) && action.equals(Constants.Actions.SEND_MESSAGE_ACTION)){
+                    String classCode = bundle.getString("classCode");
+                    String className = bundle.getString("className");
+                    if(!UtilString.isBlank(classCode) && !UtilString.isBlank(className)){
+                        Intent intent = new Intent(getActivity(), ComposeMessage.class);
+                        intent.putExtra("CLASS_CODE", classCode);
+                        intent.putExtra("CLASS_NAME", className);
+                        startActivity(intent);
+                    }
+                }
             }
         }
 
@@ -518,7 +531,7 @@ public class Outbox extends Fragment {
             }
 
             //if a) first msg, b) is a teacher & c) already not shown
-            if(position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
+            if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());

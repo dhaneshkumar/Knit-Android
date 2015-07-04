@@ -74,13 +74,14 @@ public class PushOpen extends MyActionBarActivity {
                     i = new Intent(this, MainActivity.class); //go to main activity
             }
             else if(action.equals(Constants.Actions.SEND_MESSAGE_ACTION)){
-                i = new Intent(this, SendMessage.class);
+                i = new Intent(this, MainActivity.class);
 
                 String classCode = getIntent().getExtras().getString("classCode");
                 String className = getIntent().getExtras().getString("className");
 
                 if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
                     Log.d("DEBUG_PUSH_OPEN", "send message action " + classCode + " " + className);
+                    i.putExtra("action", action);
                     i.putExtra("classCode", classCode);
                     i.putExtra("className", className);
                 }
