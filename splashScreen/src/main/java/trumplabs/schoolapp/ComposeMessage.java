@@ -24,7 +24,6 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -62,7 +61,7 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
     public static LinearLayout sendimgpreview;
     public static LinearLayout picProgressBarLayout;
     public static ImageView sendimgview;
-    private Button removebutton;
+    private ImageView removebutton;
     private Typeface typeface;
 
     public static String source = Constants.ComposeSource.INSIDE;
@@ -92,9 +91,7 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
         sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         sendimgview = (ImageView) findViewById(R.id.attachedimg);
-        removebutton = (Button) findViewById(R.id.removebutton);
-        GradientDrawable gradientdrawable = (GradientDrawable) removebutton.getBackground();
-        gradientdrawable.setColor(getResources().getColor(R.color.color_secondary));
+        removebutton = (ImageView) findViewById(R.id.removebutton);
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -183,7 +180,8 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                        classeslistview.setVisibility(View.VISIBLE);
                        selectedClassTV.setVisibility(View.VISIBLE);
                        classTextView.setVisibility(View.GONE);
-                       doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.done));
+                       doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_tick));
+
                    }
                     else {
                        classTextView.setText("Sorry! No Created Classrooms");

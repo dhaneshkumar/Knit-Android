@@ -24,6 +24,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
@@ -71,6 +72,7 @@ public class Outbox extends Fragment {
     private Typeface typeface;
     private static ImageView emptyBackground;
     private static ProgressBar loadingBar;
+    private static int selectedMsgIndex = -1;
 
     //handle notification
     private static String action; //LIKE/CONFUSE
@@ -286,9 +288,10 @@ public class Outbox extends Fragment {
         TextView likes;
         TextView confused;
         TextView seen;
-        LinearLayout root;
+        RelativeLayout root;
         LinearLayout head;
         TextView retryButton;
+        LinearLayout selectedLayout;
 
         //constructor
         public ViewHolder(View row) {
@@ -303,9 +306,10 @@ public class Outbox extends Fragment {
             likes = (TextView) row.findViewById(R.id.like);
             confused = (TextView) row.findViewById(R.id.confusion);
             seen = (TextView) row.findViewById(R.id.seen);
-            root = (LinearLayout) row.findViewById(R.id.rootLayout);
+            root = (RelativeLayout) row.findViewById(R.id.rootLayout);
             head = (LinearLayout) row.findViewById(R.id.headLayout);
             retryButton = (TextView) row.findViewById(R.id.retry);
+            selectedLayout =(LinearLayout) row.findViewById(R.id.selectedLayout);
         }
     }
 
@@ -347,13 +351,35 @@ public class Outbox extends Fragment {
                 //previous version support < in the version from now onwards storing class name also>
                 String groupCode = groupdetails1.getString("code");
 
-
                 //Retrieving from shared preferences to access fast
                 className = session.getClassName(groupCode);
                 holder.classname.setText(className);
 
 
             }
+
+            if (position == 2) {
+                holder.head.setBackground(getResources().getDrawable(R.drawable.outbox_item_selected));
+            } else
+                holder.head.setBackground(getResources().getDrawable(R.drawable.outbox_item_shadow));
+
+
+    /*        if(selectedMsgIndex != -1 ) {
+                if (position == selectedMsgIndex) {
+                    holder.root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+                        @Override
+                        public void onGlobalLayout() {
+                            int height = holder.root.getHeight();
+                            holder.selectedLayout.setVisibility(View.VISIBLE);
+                            holder.selectedLayout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, height));
+                            selectedMsgIndex = -1;
+                        }
+                    });
+                } else
+                    holder.selectedLayout.setVisibility(View.GONE);
+            }
+            else
+                holder.selectedLayout.setVisibility(View.GONE);*/
 
             int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
             int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
@@ -744,6 +770,9 @@ public class Outbox extends Fragment {
                 if (Outbox.outboxListv.getAdapter() == null) return;
                 if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
                     Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
+
+                    selectedMsgIndex = msgIndex;
+                    Outbox.myadapter.notifyDataSetChanged();
                     Outbox.outboxListv.smoothScrollToPosition(msgIndex);
                     action = null;
                     id = null; //do not repeat
