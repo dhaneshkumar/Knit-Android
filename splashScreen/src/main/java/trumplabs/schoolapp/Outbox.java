@@ -307,7 +307,6 @@ public class Outbox extends Fragment {
         RelativeLayout root;
         LinearLayout head;
         TextView retryButton;
-        LinearLayout selectedLayout;
 
         //constructor
         public ViewHolder(View row) {
@@ -337,7 +336,6 @@ public class Outbox extends Fragment {
             params.width = w;
             params.height = h;
             pendingClockIcon.setLayoutParams(params);
-            selectedLayout =(LinearLayout) row.findViewById(R.id.selectedLayout);
         }
     }
 
@@ -357,7 +355,7 @@ public class Outbox extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
             ParseObject groupdetails1 = groupDetails.get(position);
 
             if (groupdetails1 == null) return;
@@ -386,28 +384,6 @@ public class Outbox extends Fragment {
 
             }
 
-            if (position == 2) {
-                holder.head.setBackground(getResources().getDrawable(R.drawable.outbox_item_selected));
-            } else
-                holder.head.setBackground(getResources().getDrawable(R.drawable.outbox_item_shadow));
-
-
-    /*        if(selectedMsgIndex != -1 ) {
-                if (position == selectedMsgIndex) {
-                    holder.root.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-                        @Override
-                        public void onGlobalLayout() {
-                            int height = holder.root.getHeight();
-                            holder.selectedLayout.setVisibility(View.VISIBLE);
-                            holder.selectedLayout.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, height));
-                            selectedMsgIndex = -1;
-                        }
-                    });
-                } else
-                    holder.selectedLayout.setVisibility(View.GONE);
-            }
-            else
-                holder.selectedLayout.setVisibility(View.GONE);*/
 
             int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
             int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
@@ -442,10 +418,54 @@ public class Outbox extends Fragment {
 
             //setting cardview for higher api using elevation
 
-            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
-                holder.root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
-                holder.head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
+
+                if (selectedMsgIndex != -1) {
+
+                if (position == selectedMsgIndex) {
+                    holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline_selected));
+
+                    holder.root.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            selectedMsgIndex = -1;
+                            holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline));
+                        }
+                    });
+                } else
+                    holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline));
+
+
+            }
+        }
+            else {
+                if (selectedMsgIndex != -1) {
+                    if (position == selectedMsgIndex) {
+                        holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_selected));
+
+                        holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                selectedMsgIndex = -1;
+                                holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
+                                holder.head.setPadding(0, 16, 0, 16);
+                            }
+                        });
+
+                    } else {
+                        holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
+
+                       /* holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
+                            }
+                        });*/
+                    }
+
+                    holder.head.setPadding(0, 16, 0, 16);
+                }
             }
 
             boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
@@ -460,13 +480,16 @@ public class Outbox extends Fragment {
             }
 
 
+
+
+
             //retry button handle
             if (pending) {//this message is not yet sent
                 holder.seen.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.VISIBLE);
                 if (SendPendingMessages.isJobRunning() || ComposeMessage.sendButtonClicked) {
                     holder.retryButton.setClickable(false);
-                    holder.retryButton.setText("Sending");
+                    holder.retryButton.setText("sending..");
                     holder.retryButton.setTextColor(getResources().getColor(R.color.grey_light));
                 } else {
                     holder.retryButton.setClickable(true);
