@@ -57,6 +57,7 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import notifications.AlarmTrigger;
+import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
@@ -523,8 +524,18 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-
+        /*
+        //testing local notification flow
+        if(!gen){
+            gen = true;
+            Bundle extras = new Bundle();
+            extras.putString("grpCode", "UNI4516");
+            extras.putString("grpName", "CHILL");
+            NotificationGenerator.generateNotification(this, "Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION, extras);
+        }*/
     }
+
+    //static boolean gen = false;
 
     /**
      * create list of options to show on selecting action button
@@ -683,13 +694,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             //Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
 
-            if(!MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
+            if(Application.mainActivityVisible && !MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
                 MainActivity.signUpShowcaseShown = true;
                 Log.d(ShowcaseCreator.LOGTAG, "teacher create: creating showcase");
                 ShowcaseCreator.teacherHighlightCreate(this, createClassActionView, joinClassActionView); //show now
             }
 
-            if(!MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
+            if(Application.mainActivityVisible && !MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
@@ -729,13 +740,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             });
 
             Log.d(ShowcaseCreator.LOGTAG, "parent join: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
-            if(!MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
+            if(Application.mainActivityVisible && !MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
                 MainActivity.signUpShowcaseShown = true;
                 Log.d(ShowcaseCreator.LOGTAG, "parent join:  creataing the showcase");
                 ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now
             }
 
-            if(!MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
+            if(Application.mainActivityVisible && !MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account

@@ -215,9 +215,10 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
             param.put("number", number);
 
-            Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode() with " + number);
+            //calling new function
+            Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode2() with " + number);
             try {
-                isValid = ParseCloud.callFunction("genCode", param);
+                isValid = ParseCloud.callFunction("genCode2", param);
                 success = true;
             } catch (ParseException e) {
                 Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());

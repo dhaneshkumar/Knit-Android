@@ -810,10 +810,10 @@ public class Messages extends Fragment {
             Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
                     + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
 
-            if(position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
+            if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
                 String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
-                Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId);
                 SessionManager mgr = new SessionManager(Application.getAppContext());
+                Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId + " isSignUpAccount=" + mgr.getSignUpAccount() + " tutState=" + mgr.getTutorialState(tutorialId));
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
                     Log.d(ShowcaseCreator.LOGTAG, "(parent) creating response tutorial");
