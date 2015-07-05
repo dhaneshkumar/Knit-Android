@@ -12,7 +12,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -39,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import utility.Config;
 import utility.Queries;
@@ -48,7 +48,7 @@ import utility.Utility;
 /**
  * Created by dhanesh on 16/6/15.
  */
-public class ComposeMessage extends ActionBarActivity implements ChooserDialog.CommunicatorInterface{
+public class ComposeMessage extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface{
     public static final String LOGTAG = "DEBUG_COMPOSE_MESSAGE";
     private RelativeLayout sendTo;
     private List<List<String>> classList;
@@ -79,6 +79,8 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("__NOW__", "compose message onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.compose_message);
 
