@@ -1,10 +1,12 @@
 package tutorial;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.WindowManager;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
@@ -28,6 +30,12 @@ public class ParentTutorial extends MyActionBarActivity{
         myAdapter = new MyAdapter(getSupportFragmentManager());
         viewpager.setAdapter(myAdapter);
         viewpager.setOffscreenPageLimit(3);
+
+        // Set the status bar to dark-semi-transparentish
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        getWindow().setStatusBarColor(Color.TRANSPARENT);
+
     }
 
 

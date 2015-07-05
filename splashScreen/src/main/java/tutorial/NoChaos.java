@@ -28,6 +28,7 @@ public class NoChaos extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+
         TextView no_chaos_skip = (TextView) getActivity().findViewById(R.id.no_chaos_skip);
         LinearLayout no_chaos_next = (LinearLayout) getActivity().findViewById(R.id.no_chaos_next);
 

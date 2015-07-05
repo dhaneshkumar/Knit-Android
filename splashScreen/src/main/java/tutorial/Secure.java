@@ -32,7 +32,6 @@ public class Secure extends Fragment {
         TextView secure_skip = (TextView) getActivity().findViewById(R.id.secure_skip);
         LinearLayout secure_next = (LinearLayout) getActivity().findViewById(R.id.secure_next);
 
-
         secure_next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -57,4 +56,5 @@ public class Secure extends Fragment {
         });
 
     }
+
 }

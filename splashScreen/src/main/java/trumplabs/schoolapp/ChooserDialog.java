@@ -18,8 +18,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 
-import org.apache.commons.lang3.RandomStringUtils;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -31,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Random;
 
 import trumplab.textslate.R;
 import utility.ScalingUtilities;
@@ -281,7 +280,8 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
          * it
          */
         if (fileName == null || fileName.trim().equals("image.jpg")) {
-          fileName = RandomStringUtils.random(10, true, true);
+            Random rand = new Random();
+            fileName = rand.nextInt(9000000) + 1000000 + "";
           fileName += ".jpg";
         }
 

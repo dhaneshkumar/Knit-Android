@@ -34,7 +34,6 @@ public class Free extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         TextView free_done = (TextView) getActivity().findViewById(R.id.free_done);
-        TextView free_skip = (TextView) getActivity().findViewById(R.id.free_skip);
         final String role = getActivity().getIntent().getExtras().getString("role");
         TextView free_details = (TextView) getActivity().findViewById(R.id.free_details);
 
@@ -49,16 +48,6 @@ public class Free extends Fragment {
                 Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
                 intent.putExtra("role", role);
                 startActivity(intent);
-            }
-        });
-
-        free_skip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                    Intent intent = new Intent(getActivity(), PhoneSignUpName.class);
-                    intent.putExtra("role", role);
-                    startActivity(intent);
             }
         });
 
