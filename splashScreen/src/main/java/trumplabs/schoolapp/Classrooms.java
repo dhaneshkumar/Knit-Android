@@ -150,13 +150,9 @@ public class Classrooms extends Fragment  {
                     createClassDialog.show(fm, "create Class");
                 }
             });
-        }
 
-
-        //only if is teacher
-        if(isTeacher) {
-        /*
-        Initializing created class list and it's Adapter
+            /*
+            Initializing created class list and it's Adapter
          */
             createdGroups = parseObject.getList(Constants.CREATED_GROUPS);
             if (createdGroups == null) {
@@ -167,6 +163,7 @@ public class Classrooms extends Fragment  {
             createdClassListView.setAdapter(createdClassAdapter);
             createdClassListView.setExpanded(true);
         }
+
       /*
        Initializing joined class list and it's Adapter
        */

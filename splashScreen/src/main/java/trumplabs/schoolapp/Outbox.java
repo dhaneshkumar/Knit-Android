@@ -443,12 +443,6 @@ public class Outbox extends Fragment {
                     } else {
                         holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
 
-                       /* holder.root.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
-                            }
-                        });*/
                     }
 
                     holder.head.setPadding(0, 16, 0, 16);
