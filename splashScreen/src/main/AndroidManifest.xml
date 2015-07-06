@@ -114,7 +114,6 @@
         <activity android:name="loginpages.PhoneSignUpName"></activity>
         <activity android:name="loginpages.PhoneSignUpVerfication"></activity>
         <activity android:name="loginpages.PhoneLoginPage"></activity>
-        <activity android:name="loginpages.PhoneSignUpClassDetails"></activity>
 
 
         <activity android:name="profileDetails.ProfilePage">
