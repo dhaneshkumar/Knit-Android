@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 import android.view.View;
-import android.widget.EditText;
 
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -22,7 +21,6 @@ import java.util.List;
 
 import BackGroundProcesses.SendPendingMessages;
 import library.UtilString;
-import trumplab.textslate.R;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -277,9 +275,13 @@ public class ComposeMessageHelper {
             return -1; //io exception
         }
 
+        String oldName = imageName;
+        imageName = imageName.replaceAll("[^a-zA-Z0-9_\\.]", "");
+        imageName = "i" + imageName;
+
         final ParseFile file = new ParseFile(imageName, data);
 
-        Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size " + data.length + " bytes");
+        Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name="+imageName + ", old=" + oldName);
 
         try {
             file.save();
