@@ -76,9 +76,9 @@ public class Constants {
     public static final String GROUP_MEMBERS = "GroupMembers";
 
     //time milliseconds
-    public static final int MINUTE_MILLISEC = 60 * 1000;
-    public static final int HOUR_MILLISEC = 60 * 60 * 1000;
-    public static final int DAY_MILLISEC = 24 * 60 * 60 * 1000;
+    public static final long MINUTE_MILLISEC = 60 * 1000;
+    public static final long HOUR_MILLISEC = 60 * 60 * 1000;
+    public static final long DAY_MILLISEC = 24 * 60 * 60 * 1000;
 
     public static final String DEFAULT_NAME = "Knit";
 
@@ -124,11 +124,25 @@ public class Constants {
       public static final String PARENT_RESPONSE = "_parent_response_tutorial";
       public static final String TEACHER_RESPONSE = "_teacher_response_tutorial";
       public static final String OPTIONS = "_options_tutorial";
+      public static final String COMPOSE = "_compose_tutorial";
     }
 
     public static class ComposeSource{
       public static final String KEY = "SOURCE";
       public static final String INSIDE = "INSIDE";
       public static final String OUTSIDE = "OUTSIDE";
+    }
+
+    //keys in notification json received
+    public static class PendingNotification{
+      public static final String TABLE = "PendingNotification";
+      public static final String TIME = "time";//when notification arrived
+
+      public static final String TYPE = "type";
+      public static final String ACTION = "action";
+      public static final String MSG = "msg";
+      public static final String GROUP_NAME = "groupName";
+
+      public static final String ID = "id";
     }
 }

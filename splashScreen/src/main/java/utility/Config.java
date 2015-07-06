@@ -36,13 +36,19 @@ public class Config {
    */
   public static final boolean DETECT_INVALID_NUMBER = false;
 
-
-
+/*
+  6. Set alarm configuration like repeat duration, notification stale period AlarmTrigger, NotificationAlarmReceiver
+ */
+  public static final long NOTIFICATION_STALE_PERIOD = 3 * Constants.MINUTE_MILLISEC; //consider it stale after 15 minutes
+  public final static long EVENT_CHECKER_INTERVAL = 30 * Constants.MINUTE_MILLISEC;
+  public final static long REFRESHER_INTERVAL = 15 * Constants.MINUTE_MILLISEC; //15 minutes
+  public final static long NOTIFICATION_INTERVAL = 3 * Constants.MINUTE_MILLISEC; //15 minutes
 
   /*************************************************************************************************************/
 
     public static final String FB_APP_ID = "689390944539813";
-    public static int SUBSCRIBER_MIN_LIMIT = 1;
+
+  public static int SUBSCRIBER_MIN_LIMIT = 1;
 
     //Following are used now to NOT SHOW Kio for old users
     public static final String defaultParentGroupCode = "TS29734"; // raven

@@ -190,6 +190,8 @@
         </receiver>
         <receiver android:name="notifications.RefresherAlarmReceiver" >
         </receiver>
+        <receiver android:name="notifications.NotificationAlarmReceiver" >
+        </receiver>
     </application>
 
 </manifest>

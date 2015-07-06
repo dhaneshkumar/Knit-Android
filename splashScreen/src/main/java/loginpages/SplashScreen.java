@@ -70,6 +70,9 @@ public class SplashScreen extends MyActionBarActivity {
         isRefresherAlarmTriggered = true;
     }
 
+        //trigger notification alarm (TODO take care of boot issues)
+        AlarmTrigger.triggerNotificationAlarm(Application.getAppContext());
+
      /*
         Refreshing subscriber list of all classrooms in background
          */

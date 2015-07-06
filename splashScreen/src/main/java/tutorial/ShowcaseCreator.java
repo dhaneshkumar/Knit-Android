@@ -411,6 +411,18 @@ public class ShowcaseCreator {
         });
     }
 
+    public static void teacherComposeTutorial(final Activity activity){
+        ShowcaseView.isVisible = true;
+        ShowcaseView.Builder builder = getDefaultBuilder(activity);
+        builder.setTarget(Target.NONE); //no target
+        ShowcaseView showcaseView1 = builder.getShowcaseView();
+
+        showcaseView1.fixButton(); //need to call since not calling setPointer
+        showcaseView1.showOnlyDescription("You can use Knit to send bulk sms to parents who don't have smartphones. \n \n And don't worry if you send a message when you are offline, we will send it automatically when you come online");
+
+        builder.build();
+    }
+
     //highlight target along with points on left and right(distance = target view width)
     public static void exampleMultiPointHighlight(Activity activity, final View targetView){
         ShowcaseView.Builder builder = getDefaultBuilder(activity);

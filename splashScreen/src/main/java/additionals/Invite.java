@@ -24,6 +24,7 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MainActivity;
 import utility.Utility;
 
 /*
@@ -44,6 +45,8 @@ public class Invite extends MyActionBarActivity{
 
     private int inviteType = -1; //1, 2, 3, 4 (see Constants.java)
 
+    boolean pushOpen = false; //set to true when directly opened through notification click,
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -62,6 +65,9 @@ public class Invite extends MyActionBarActivity{
       if(getIntent()!= null &&  getIntent().getExtras() != null)
       {
           Bundle bundle = getIntent().getExtras();
+
+          pushOpen = bundle.getBoolean("pushOpen", false); //optional when opened via push
+          getIntent().removeExtra("pushOpen");
 
           if(bundle.getInt("inviteType", -1000) != -1000){
               inviteType = bundle.getInt("inviteType");
@@ -295,5 +301,16 @@ public class Invite extends MyActionBarActivity{
     return super.onOptionsItemSelected(item);
   }
 
+    @Override
+    public void onBackPressed() {
+        if(pushOpen){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
 
 }

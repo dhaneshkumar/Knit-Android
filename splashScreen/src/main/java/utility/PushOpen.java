@@ -20,6 +20,7 @@ import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Classrooms;
+import trumplabs.schoolapp.ComposeMessage;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.SendMessage;
@@ -56,6 +57,7 @@ public class PushOpen extends MyActionBarActivity {
                 i = new Intent(this, Invite.class);
                 i.putExtra("inviteType", Constants.INVITATION_P2T);
                 i.putExtra("source", Constants.SOURCE_NOTIFICATION);
+                i.putExtra("pushOpen", true);
             }
             else if(action.equals(Constants.Actions.INVITE_PARENT_ACTION)){
                 i = new Intent(this, Invite.class);
@@ -69,21 +71,22 @@ public class PushOpen extends MyActionBarActivity {
                     i.putExtra("className", className);
                     i.putExtra("source", Constants.SOURCE_NOTIFICATION);
                     i.putExtra("inviteType", Constants.INVITATION_T2P);
+                    i.putExtra("pushOpen", true);
                 }
                 else
                     i = new Intent(this, MainActivity.class); //go to main activity
             }
             else if(action.equals(Constants.Actions.SEND_MESSAGE_ACTION)){
-                i = new Intent(this, MainActivity.class);
+                i = new Intent(this, ComposeMessage.class);
 
                 String classCode = getIntent().getExtras().getString("classCode");
                 String className = getIntent().getExtras().getString("className");
 
                 if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
                     Log.d("DEBUG_PUSH_OPEN", "send message action " + classCode + " " + className);
-                    i.putExtra("action", action);
-                    i.putExtra("classCode", classCode);
-                    i.putExtra("className", className);
+                    i.putExtra("pushOpen", true);
+                    i.putExtra("CLASS_CODE", classCode);
+                    i.putExtra("CLASS_NAME", className);
                 }
                 else
                     i = new Intent(this, MainActivity.class); //go to main activity
