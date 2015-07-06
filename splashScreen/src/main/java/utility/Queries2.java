@@ -26,113 +26,6 @@ import trumplabs.schoolapp.Constants;
 public class Queries2 {
 
     /**
-     * Tell whether given class exist locally or not
-     * @param code
-     * @param userId
-     * @return
-     */
-    public boolean isCodegroupExist(String code, String userId) {
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
-        query.fromLocalDatastore();
-        query.whereEqualTo("code", code);
-        query.whereEqualTo("userId", userId);
-
-        Utility.ls(code + " : " + userId + " doesn't exist");
-        ParseObject obj;
-        try {
-            obj = query.getFirst();
-
-            if (obj != null) {
-                return true;
-            }
-
-        } catch (ParseException e) {
-
-            e.printStackTrace();
-            return false;
-        }
-
-        return false;
-    }
-
-    /**
-     * Update profile image of teacher
-     * @param code
-     * @param userId
-     * @throws ParseException
-     */
-    public void updateProfileImage(String code, String userId) throws ParseException {
-    /*
-     * fetching updated codegroup entry from server
-     */
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
-        query.fromLocalDatastore();
-        query.whereEqualTo("code", code);
-        query.whereEqualTo("userId", userId);
-
-
-        Log.d("JOIN", "old pic,,,,ppp ");
-
-        ParseObject obj = query.getFirst();
-        if (obj != null) {
-
-            String oldPic = obj.getString("picName");
-
-            obj.fetch();    //fetching from server
-
-            //retrieving server pic name
-            String newPic = obj.getString("picName");
-            String senderId = obj.getString("senderId");
-            senderId = senderId.replaceAll("@", "");
-            ParseFile senderPic = obj.getParseFile("senderPic");
-            Log.d("JOIN", "old pic : " + oldPic);
-            Log.d("JOIN", "old pic : ---");
-
-            if (UtilString.isBlank(oldPic)) {
-
-                //no image locally then download it
-                if(!UtilString.isBlank(newPic))
-                    downloadProfileImage(senderId, senderPic);
-
-                Log.d("JOIN", "newpic : " + newPic);
-
-            } else if ((!UtilString.isBlank(oldPic)) && (!UtilString.isBlank(newPic))) {
-
-                Log.d("JOIN", "old pic : " + oldPic);
-                Log.d("JOIN", "new pic : " + newPic);
-
-                if (!oldPic.equals(newPic)) {
-
-                    downloadProfileImage(senderId, senderPic);
-                } else {
-                    final File senderThumbnailFile =
-                            new File(Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg");
-                    if (!senderThumbnailFile.exists()) {
-
-                        downloadProfileImage(senderId, senderPic);
-                    }
-
-                }
-
-            } else {
-                final File senderThumbnailFile =
-                        new File(Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg");
-                if (!senderThumbnailFile.exists()) {
-
-                    downloadProfileImage(senderId, senderPic);
-                }
-            }
-
-        }
-        else
-        {
-            Log.d("JOIN", "obj... null ");
-        }
-
-
-    }
-
-    /**
      * Downloading image from server and storing it locally
      * @param senderId
      * @param senderImagefile
@@ -174,45 +67,6 @@ public class Queries2 {
                 }
             });
         }
-
-
-    }
-
-    /**
-     * Locally storing codegroup entry corresponding to given class-code
-     * @param code
-     * @param userId
-     */
-    public void storeCodegroup(String code, String userId) {
-
-        //setting parameters
-        HashMap<String, Object> params = new HashMap<String, Object>();
-        params.put("classcode", code);
-
-        ParseObject codeGroupObject = null;
-
-        //calling parse cloud function to create class
-        try {
-            codeGroupObject = ParseCloud.callFunction("getCodegroup", params);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
-        if (codeGroupObject != null)
-        {
-            codeGroupObject.put("userId", userId);
-            try {
-                codeGroupObject.pin();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            //Downloading profile pic of teacher
-            String senderId = codeGroupObject.getString("senderId");
-            senderId = senderId.replaceAll("@", "");
-
-            downloadProfileImage(senderId, codeGroupObject.getParseFile("senderPic"));
-        }
     }
 
     /*
@@ -252,26 +106,4 @@ public class Queries2 {
             Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "Failed with exception");
         }
     }
-
-
-    public boolean isItemExist(List<ParseObject> groupDetails, ParseObject item) {
-        if (groupDetails == null)
-            return false;
-
-        String itemTitle = item.getString("title");
-        Date itemDate = item.getCreatedAt();
-
-        for (int i = 0; i < groupDetails.size(); i++) {
-            String title = groupDetails.get(i).getString("title");
-            Date date = groupDetails.get(i).getCreatedAt();
-
-            if (!UtilString.isBlank(itemTitle)) {
-                if (title.trim().equals(itemTitle.trim()) && date == itemDate)
-                    return true;
-            }
-        }
-
-        return false;
-    }
-
 }
