@@ -77,20 +77,19 @@ public class ClassMsgFunctions {
             params.put("classcode", groupCode);
 
             //calling parse cloud function to delete class
-            boolean isClassDeleted = false;
+            ParseObject updatedUser = null;
             try {
-                isClassDeleted = ParseCloud.callFunction("deleteClass", params);
+                updatedUser = ParseCloud.callFunction("deleteClass2", params);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            if(isClassDeleted) {
-                //classroom has beeb deleted then
-
+            if(updatedUser != null) {
+                //classroom has been deleted then
+                //pin updated user object
                 ParseUser user = ParseUser.getCurrentUser();
-                //fetch current user to update created classrooms list
                 try {
-                    user.fetch();
+                    updatedUser.pin();
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }
@@ -121,7 +120,6 @@ public class ClassMsgFunctions {
 
                 return true;
             }
-
 
             return false;
         }

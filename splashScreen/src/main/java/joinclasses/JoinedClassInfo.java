@@ -310,9 +310,9 @@ public class JoinedClassInfo extends MyActionBarActivity {
             param.put("installationObjectId", ParseInstallation.getCurrentInstallation().getString("id"));
 
             try {
-                success = ParseCloud.callFunction("leaveClass", param);
-                ParseUser user = ParseUser.getCurrentUser();
-                user.fetch();
+                ParseObject updatedUser = ParseCloud.callFunction("leaveClass2", param);
+                updatedUser.pin();
+                success = true;
             } catch (ParseException e) {
                 e.printStackTrace();
                 return null;
@@ -356,10 +356,9 @@ public class JoinedClassInfo extends MyActionBarActivity {
             parameters.put("childName", newAssignedName);
 
             try{
-                ParseCloud.callFunction("changeAssociateName", parameters);
+                ParseObject updatedUser = ParseCloud.callFunction("changeAssociateName2", parameters);
                 Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() success with new asso name "+ newAssignedName);
-                ParseUser user = ParseUser.getCurrentUser();
-                user.fetch();
+                updatedUser.pin();
                 success = true;
             }
             catch (ParseException e){

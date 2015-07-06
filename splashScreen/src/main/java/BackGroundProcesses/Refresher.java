@@ -31,13 +31,6 @@ public class Refresher {
        * Storing current time stamp
        */
 
-            //fetch user only once when app starts - just to make user object sync
-            if(!Application.userFetchedOnce){
-                Log.d("DEBUG_REFRESHER", "Fetching user once");
-                freshUser.fetchInBackground();
-                Application.userFetchedOnce = true;
-            }
-
             if(Application.mainActivityVisible) {
                     Utility.updateCurrentTimeInBackground(freshUser);
             }

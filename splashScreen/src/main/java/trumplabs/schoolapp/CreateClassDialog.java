@@ -176,59 +176,44 @@ public class CreateClassDialog extends DialogFragment{
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("classname", className);
 
-            ParseObject codeGroupObject = null;
-
             //calling parse cloud function to create class
+            HashMap<String, Object> result = null;
             try {
-                codeGroupObject = ParseCloud.callFunction("createClass", params);
+                result = ParseCloud.callFunction("createClass2", params);
             } catch (ParseException e) {
                 e.printStackTrace();
                 return false;
             }
 
-
-            if (codeGroupObject == null)
+            if (result == null)
                 return false;
-            else {
-                //successfully created your class
 
-                //locally saving codegroup entry corresponding to that class
-                codeGroupObject.put("userId", user.getUsername());
-                try {
-                    codeGroupObject.pin();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+            ParseObject codeGroupObject = (ParseObject) result.get("codegroup");
+            ParseObject updatedUser = (ParseObject) result.get("user");
+            if(codeGroupObject == null || updatedUser == null)
+                return false;
 
-                //retrieving class-code
-                classCode = codeGroupObject.getString("code");
-
-
-                //retrieving class name
-                className = codeGroupObject.getString("name");
-
-
-                //fetching changes made to created groups of user
-                try {
-                    user.fetch();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                return true;
+            //successfully created your class
+            //locally saving codegroup(of that class) and updated user object
+            codeGroupObject.put("userId", user.getUsername());
+            try {
+                updatedUser.pin();
+                codeGroupObject.pin();
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
+
+            //retrieving class-code
+            classCode = codeGroupObject.getString("code");
+
+            //retrieving class name
+            className = codeGroupObject.getString("name");
+            return true;
         }
 
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                if(getActivity() != null) {
-                    //create class creation messages and notification
-                    //SessionManager session = new SessionManager(getActivity().getApplicationContext());
-                    //NotificationGenerator.generateNotification(getActivity().getApplicationContext(), Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, Constants.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
-                    //EventCheckerAlarmReceiver.generateLocalMessage(Constants.CLASS_CREATION_MESSAGE_TEACHER, Constants.DEFAULT_NAME, user);
-                }
-
                 codeTV.setText(classCode);
 
                 Classrooms.createdGroups = user.getList(Constants.CREATED_GROUPS);

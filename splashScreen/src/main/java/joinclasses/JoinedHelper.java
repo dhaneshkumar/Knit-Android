@@ -69,18 +69,16 @@ public class JoinedHelper {
         else
             Log.d("JOIN", "parseInstallation : null");
 
-        ParseObject codeGroupObject = null;
         HashMap<String, Object> result = null;
 
         try {
-            result = ParseCloud.callFunction("joinClass", params);
+            result = ParseCloud.callFunction("joinClass2", params);
             Log.d("join", "class joining");
         } catch (ParseException e) {
             e.printStackTrace();
 
             if(e.getMessage().equals("No such class exits"))
                 return 3;
-
             return 0;
         }
 
@@ -89,73 +87,66 @@ public class JoinedHelper {
 
         if (result == null)
             return 0;
-        else {
 
-            codeGroupObject = (ParseObject) result.get("codegroup");
-            List<ParseObject> oldMessages = (List<ParseObject>) result.get("messages");
+        ParseObject codeGroupObject = (ParseObject) result.get("codegroup");
+        List<ParseObject> oldMessages = (List<ParseObject>) result.get("messages");
+        ParseObject updatedUser = (ParseObject) result.get("user");
 
-            if(codeGroupObject != null) {
-
-                //fetching parse user's joined group details
-                try {
-                    user.fetch();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                Log.d("join", "code object not null");
-                //successfully joined the classroom
-                codeGroupObject.put("userId", userId);
-                try {
-                    codeGroupObject.pin();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-
-             /*
-              * download profile pic of teacher locally
-              */
-                String senderId = codeGroupObject.getString("senderId");
-                ParseFile senderPic = codeGroupObject.getParseFile("senderPic");
-
-                if (!UtilString.isBlank(senderId)) {
-                    senderId = senderId.replaceAll("@", "");
-                    String filePath =
-                            Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
-                    final File senderThumbnailFile = new File(filePath);
-
-                    if (!senderThumbnailFile.exists()) {
-
-                        Queries2 imageQuery = new Queries2();
-
-                        if (senderPic != null)
-                            imageQuery.downloadProfileImage(senderId, senderPic);
-                    } else {
-                        // Utility.toast("image already exist ");
-                    }
-                }
-            }
-
-            //locally generating joining notification and inbox msg
-            Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
-            NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
-            EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
-
-            if(oldMessages != null)
-            {
-                for(int i=0 ; i<oldMessages.size(); i++)
-                {
-                    oldMessages.get(i).put("userId", ParseUser.getCurrentUser().getUsername());
-                }
-
-                try {
-                    ParseObject.pinAll(oldMessages);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-            return 1;
+        if(codeGroupObject == null || updatedUser == null){
+            return 0;
         }
+
+        Log.d("join", "code object not null");
+        //successfully joined the classroom
+        codeGroupObject.put("userId", userId);
+        try {
+            updatedUser.pin();
+            codeGroupObject.pin();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        /*
+         * download profile pic of teacher locally
+        */
+        String senderId = codeGroupObject.getString("senderId");
+        ParseFile senderPic = codeGroupObject.getParseFile("senderPic");
+
+        if (!UtilString.isBlank(senderId)) {
+            senderId = senderId.replaceAll("@", "");
+            String filePath =
+                    Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
+            final File senderThumbnailFile = new File(filePath);
+
+            if (!senderThumbnailFile.exists()) {
+
+                Queries2 imageQuery = new Queries2();
+
+                if (senderPic != null)
+                    imageQuery.downloadProfileImage(senderId, senderPic);
+            } else {
+                // Utility.toast("image already exist ");
+            }
+        }
+
+        //locally generating joining notification and inbox msg
+        Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
+        NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
+        EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
+
+        if(oldMessages != null)
+        {
+            for(int i=0 ; i<oldMessages.size(); i++)
+            {
+                oldMessages.get(i).put("userId", ParseUser.getCurrentUser().getUsername());
+            }
+
+            try {
+                ParseObject.pinAll(oldMessages);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        return 1;
     }
 }
