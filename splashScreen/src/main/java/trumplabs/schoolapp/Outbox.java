@@ -241,18 +241,6 @@ public class Outbox extends Fragment {
         else{
             Log.d("DEBUG_MESSAGES", "skipping outbox update : gap " + Refresher.isSufficientGapOutbox());
         }
-
-
-
-        //before showing no internet popup make sure view is created
-        if(outboxListv != null) {
-            outboxListv.post(new Runnable() {
-                @Override
-                public void run() {
-                    Utility.isInternetExist();
-                }
-            });
-        }
     }
 
     public static void notifyAdapter(){

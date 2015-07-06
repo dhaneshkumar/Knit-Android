@@ -321,22 +321,8 @@ public class Messages extends Fragment {
                     };
                     h.sendMessageDelayed(new Message(), 2000);
                 }
-
-
-                // stop refreshing bar after some certain interval
-
             }
         });
-
-        //before showing no internet popup make sure view is created
-        if(listv != null) {
-            listv.post(new Runnable() {
-                @Override
-                public void run() {
-                    Utility.isInternetExist();
-                }
-            });
-        }
     }
 
     /*

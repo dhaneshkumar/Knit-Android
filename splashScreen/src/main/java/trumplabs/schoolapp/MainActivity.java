@@ -57,7 +57,6 @@ import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
 import notifications.AlarmTrigger;
-import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
@@ -102,59 +101,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static boolean goToOutboxFlag = false; //when returns from Message Composer, go directly to Outbox
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        //TODO delete from here(TESTING APP TUTORIAL FUNCTIONALITY)
-        //Constants.IS_SIGNUP = true;
-
-        /*SessionManager mgr = new SessionManager(Application.getAppContext());
-        String p_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
-        String t_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
-        String o_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
-        String c_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.COMPOSE;
-        mgr.setTutorialState(p_flag, false);
-        mgr.setTutorialState(t_flag, false);
-        mgr.setTutorialState(o_flag, false);
-        mgr.setTutorialState(c_flag, false);*/
-
-        //delete SentMessges
-        /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
-        deleteOutbox.fromLocalDatastore();
-        deleteOutbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
-        try{
-            List<ParseObject> msgs = deleteOutbox.find();
-            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
-            ParseObject.unpinAll(msgs);
-        }
-        catch (ParseException e){
-            e.printStackTrace();
-        }*/
-
-        //delete Inbox messages
-        /*ParseQuery deleteInbox = new ParseQuery(Constants.GROUP_DETAILS);
-        deleteInbox.fromLocalDatastore();
-        deleteInbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
-        try{
-            List<ParseObject> msgs = deleteInbox.find();
-            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
-            ParseObject.unpinAll(msgs);
-        }
-        catch (ParseException e){
-            e.printStackTrace();
-        }*/
-
-        //delete Inbox messages
-        /*ParseQuery deleteLocal = new ParseQuery("LocalMessages");
-        deleteLocal.fromLocalDatastore();
-        deleteLocal.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
-        try{
-            List<ParseObject> msgs = deleteLocal.find();
-            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
-            ParseObject.unpinAll(msgs);
-        }
-        catch (ParseException e){
-            e.printStackTrace();
-        }*/
-        //TODO delete upto here
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
@@ -249,7 +195,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         myAdapter = new MyAdapter(fragmentmanager);
         viewpager.setAdapter(myAdapter);
 
-
+        //checking internet connection
+        Utility.isInternetExist();
 
         //Set the number of pages that should be retained to either side of the current page
         if(sessionManager.getHasUserJoinedClass())
@@ -492,50 +439,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
         }
 
-        //Check if parent/student has just signed up and show join class dialog
-        //Not used. Show the dialog after tutorial is over
-        /*Intent intent = getIntent();
-        if(intent != null && intent.getExtras() != null) {
-            String signup = intent.getExtras().getString("flag");
-
-            if(!UtilString.isBlank(signup) && signup.equalsIgnoreCase("SIGNUP")) {
-                intent.putExtra("flag", "false"); //set flag to something else
-                setIntent(intent);
-
-                if (role.equalsIgnoreCase("student") || role.equalsIgnoreCase("parent")) {
-                    FragmentManager fm = getSupportFragmentManager();
-                    JoinClassDialog joinClassDialog = new JoinClassDialog();
-                    joinClassDialog.show(fm, "Join Class");
-                }
-
-                if(role.equalsIgnoreCase("teacher"))
-                {
-                    FragmentManager fm = getSupportFragmentManager();
-                    CreateClassDialog createClassDialog = new CreateClassDialog();
-                    Bundle args = new Bundle();
-                    args.putString("flag", "SIGNUP");
-                    createClassDialog.setArguments(args);
-                    createClassDialog.show(fm, "create Class");
-                }
-
-                Constants.signup_classrooms= true;
-                Constants.signup_inbox= true;
-                Constants.signup_outbox = true;
-            }
-        }*/
-
         FacebookSdk.sdkInitialize(getApplicationContext());
-
-        //testing local notification flow
-        /*if(!gen){
-            gen = true;
-            Bundle extras = new Bundle();
-            extras.putString("grpCode", "UNI4516");
-            extras.putString("grpName", "CHILL");
-            //NotificationGenerator.generateNotification(this, "Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION, extras);
-            //NotificationGenerator.generateNotification(this, "invite teacher now!" , Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_TEACHER_ACTION);
-            NotificationGenerator.generateNotification(this, "invite parent to your class", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_PARENT_ACTION, extras);
-        }*/
     }
 
     //static boolean gen = false;
