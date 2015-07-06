@@ -245,6 +245,21 @@ public class ShowcaseView extends RelativeLayout
         //pointer.setVisibility(INVISIBLE);
     }
 
+
+    //used when we just want to show informatory text in middle without highlighting anything
+    public void showOnlyDescription(String text){
+        description = (TextView) LayoutInflater.from(activityContext).inflate(R.layout.description, null);
+
+        description.setTypeface(font);
+        description.setText(text);
+        description.setTextSize(17); //change this
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(LayoutParams.WRAP_CONTENT,LayoutParams.WRAP_CONTENT); //The WRAP_CONTENT parameters can be replaced by an absolute width and height or the FILL_PARENT option)
+        params.addRule(CENTER_HORIZONTAL);
+        params.addRule(CENTER_VERTICAL);
+        description.setLayoutParams(params);
+        addView(description);
+    }
+
     public void setDescription(String text){
         setDescription(text, false);
     }

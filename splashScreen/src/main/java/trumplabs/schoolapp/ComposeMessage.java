@@ -12,7 +12,6 @@ import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -30,6 +29,8 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.appevents.AppEventsLogger;
+import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
@@ -38,16 +39,21 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import baseclasses.MyActionBarActivity;
+import loginpages.LoginPage;
+import profileDetails.ProfilePage;
 import trumplab.textslate.R;
+import tutorial.ShowcaseCreator;
 import utility.Config;
 import utility.Queries;
+import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 
 /**
  * Created by dhanesh on 16/6/15.
  */
-public class ComposeMessage extends ActionBarActivity implements ChooserDialog.CommunicatorInterface{
+public class ComposeMessage extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface{
     public static final String LOGTAG = "DEBUG_COMPOSE_MESSAGE";
     private RelativeLayout sendTo;
     private List<List<String>> classList;
@@ -76,8 +82,14 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
     //So we need to show the status of msg as 'sending' even though jobRunning flag is not yet set
     //It is cleared when either msg is added to queue or new job started
 
+    boolean pushOpen = false; //set to true when directly opened through notification click, if so go to main activity onPause(). Don't call finish on message sent
+                                //since non-static so don't have to reset in onCreate()
+
+    public static boolean composeTutorialShown = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("__NOW__", "compose message onCreate");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.compose_message);
 
@@ -107,6 +119,8 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
 
         if(getIntent() != null && getIntent().getExtras() != null)
         {
+            pushOpen = getIntent().getExtras().getBoolean("pushOpen", false); //optional when opened via push
+            getIntent().removeExtra("pushOpen");
 
             if(getIntent().getExtras().getBoolean("SELECT_ALL"))
             {
@@ -224,6 +238,25 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
                 }*/
             }
         });
+
+        //show tutorial on first time
+        if(!composeTutorialShown && !ShowcaseView.isVisible){
+            Log.d("_TUTORIAL_", "compose tutorial entered");
+            String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.COMPOSE;
+            SessionManager mgr = new SessionManager(Application.getAppContext());
+            if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
+                mgr.setTutorialState(tutorialId, true);
+
+                sendTo.post(new Runnable() {//post needed to make sure activity is not null before calling hide keyboard
+                    @Override
+                    public void run() {
+                        Tools.hideKeyboard(ComposeMessage.this); //hide keyboard before showing the tutorial black screen
+                        ShowcaseCreator.teacherComposeTutorial(ComposeMessage.this);
+                    }
+                });
+            }
+            composeTutorialShown = true;
+        }
     }
 
 
@@ -330,7 +363,12 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
             MainActivity.goToOutboxFlag = true;
         }
 
-        finish(); //activity over. Return to parent(MainActivity or SendMessage - whatsoever it may be)
+        if(pushOpen){
+            onBackPressed(); //this will open MainActivity directly
+        }
+        else {
+            finish(); //activity over. Return to parent(MainActivity or SendMessage - whatsoever it may be)
+        }
     }
 
     @Override
@@ -346,6 +384,17 @@ public class ComposeMessage extends ActionBarActivity implements ChooserDialog.C
         sendimgview.setImageBitmap(myBitmap);
     }
 
+    @Override
+    public void onBackPressed() {
+        if(pushOpen){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
 
     /**
      * Adapter to show created class lists while selecting classrooms to send msg

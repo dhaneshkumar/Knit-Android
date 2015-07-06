@@ -110,9 +110,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         String p_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
         String t_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
         String o_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
+        String c_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.COMPOSE;
         mgr.setTutorialState(p_flag, false);
         mgr.setTutorialState(t_flag, false);
-        mgr.setTutorialState(o_flag, false);*/
+        mgr.setTutorialState(o_flag, false);
+        mgr.setTutorialState(c_flag, false);*/
 
         //delete SentMessges
         /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
@@ -524,14 +526,15 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        /*
         //testing local notification flow
-        if(!gen){
+        /*if(!gen){
             gen = true;
             Bundle extras = new Bundle();
             extras.putString("grpCode", "UNI4516");
             extras.putString("grpName", "CHILL");
-            NotificationGenerator.generateNotification(this, "Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION, extras);
+            //NotificationGenerator.generateNotification(this, "Send a message now !", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.SEND_MESSAGE_ACTION, extras);
+            //NotificationGenerator.generateNotification(this, "invite teacher now!" , Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_TEACHER_ACTION);
+            NotificationGenerator.generateNotification(this, "invite parent to your class", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_PARENT_ACTION, extras);
         }*/
     }
 
