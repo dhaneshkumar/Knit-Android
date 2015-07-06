@@ -6,8 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -313,16 +311,6 @@ public class Outbox extends Fragment {
             head = (LinearLayout) row.findViewById(R.id.headLayout);
             retryButton = (TextView) row.findViewById(R.id.retry);
 
-            Drawable drawing = pendingClockIcon.getDrawable();
-            Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
-            int w = (int) (bitmap.getWidth() * 0.4);
-            int h = (int) (bitmap.getHeight() * 0.4);
-            Log.d("__TEMP__", "w=" + w + ",h=" + h);
-
-            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pendingClockIcon.getLayoutParams();
-            params.width = w;
-            params.height = h;
-            pendingClockIcon.setLayoutParams(params);
         }
     }
 
