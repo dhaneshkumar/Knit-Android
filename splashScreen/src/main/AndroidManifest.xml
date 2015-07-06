@@ -191,6 +191,11 @@
         </receiver>
         <receiver android:name="notifications.NotificationAlarmReceiver" >
         </receiver>
+        <receiver android:name="notifications.ConnectivityChangeReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
