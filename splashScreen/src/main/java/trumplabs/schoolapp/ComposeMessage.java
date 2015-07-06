@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.webkit.WebView;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -64,6 +65,8 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     private TextView classTextView;
     private List<String> selectedClassNames;
     private ImageView doneImageView;
+
+    public static EditText typedmsg;
     public static LinearLayout sendimgpreview;
     public static LinearLayout picProgressBarLayout;
     public static ImageView sendimgview;
@@ -100,6 +103,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         selectedClassTV.getSettings().setJavaScriptEnabled(true);
         doneImageView = (ImageView) findViewById(R.id.done);
         classTextView = (TextView) findViewById(R.id.classTV);
+        typedmsg = (EditText) findViewById(R.id.typedmsg);
         sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         sendimgview = (ImageView) findViewById(R.id.attachedimg);
@@ -260,7 +264,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     }
 
 
-        @Override
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
                 inflater.inflate(R.menu.compose_message_menu, menu);
@@ -298,6 +302,25 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
     public void  checkTime()
     {
+        final List<List<String>> selectedClassList = new ArrayList<>();
+        for(List<String> c : classList){
+            if(c.size() > 2 && c.get(2).equals(TRUE)){
+                selectedClassList.add(c);
+            }
+        }
+
+        Log.d(LOGTAG, "selectedClassList size=" + selectedClassList.size());
+        if(selectedClassList.isEmpty()){
+            Utility.toast("Select atleast one class!");
+            return;
+        }
+
+
+        if(typedmsg.getText().toString().trim().isEmpty() && sendimgpreview.getVisibility() == View.GONE){
+            Utility.toast("Enter some text or attach a pic");
+            return;
+        }
+
         int hourOfDay = -1;
 
         //using local time instead of session.getCurrentTime
@@ -329,7 +352,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
                 builder.setPositiveButton("SEND", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        sendNow();
+                        sendNow(selectedClassList);
                     }
                 });
                 builder.setNegativeButton("CANCEL", null);
@@ -338,24 +361,15 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 dialog.show();
 
             } else {
-                sendNow();
+                sendNow(selectedClassList);
             }
         } else {
-            sendNow();
+            sendNow(selectedClassList);
         }
     }
 
-    public void sendNow(){
+    public void sendNow(List<List<String>> selectedClassList){
         //get the selected classes from classlist here
-        List<List<String>> selectedClassList = new ArrayList<>();
-        for(List<String> c : classList){
-            if(c.size() > 2 && c.get(2).equals(TRUE)){
-                selectedClassList.add(c);
-            }
-        }
-
-        Log.d(LOGTAG, "selectedClassList size=" + selectedClassList.size());
-
         ComposeMessageHelper composeMessageHelper = new ComposeMessageHelper(this, selectedClassList);
         composeMessageHelper.sendFunction();
 

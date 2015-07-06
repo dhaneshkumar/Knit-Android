@@ -109,7 +109,7 @@ public class Refresher {
             InviteTasks.sendAllPendingInvites();
 
             //Send all pending messages
-            SendPendingMessages.sendPendingMessages(); //direct call since already in a thread
+            SendPendingMessages.spawnThread(false); //direct call since already in a thread
         }
         else {
             Log.d("DEBUG_REFRESHER", "User NULL");

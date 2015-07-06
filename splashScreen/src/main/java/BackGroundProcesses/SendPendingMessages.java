@@ -39,6 +39,13 @@ public class SendPendingMessages {
     //This is called from GUI as it spawns a new thread
     public static void spawnThread(boolean gui){
         isLive = gui;
+        if(!Utility.isInternetExistWithoutPopup()){
+            ComposeMessage.sendButtonClicked = false;
+            isLive = false;
+            notifyAllAdapters();
+            return;
+        }
+
         Runnable r = new Runnable() {
             @Override
             public void run() {
@@ -62,6 +69,8 @@ public class SendPendingMessages {
     //called when send button clicked in SendMessage page(GUI)
     //order among these msgs in msgList doesn't matter as created at same time(multicast)
     public static void addMessageListToQueue(List<ParseObject> msgList){
+        Utility.isInternetExist(); //show toast if no internet connection once
+
         Log.d(LOGTAG, "[GUI] addMessageToQueue() entered");
 
         //since job is queue won't be null, but still for safety check null

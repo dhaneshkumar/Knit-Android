@@ -30,7 +30,6 @@ import utility.Utility;
  * Created by dhanesh on 26/6/15.
  */
 public class ComposeMessageHelper {
-    private EditText typedmsg;
     private Context context;
     private String typedtxt;
 
@@ -44,7 +43,6 @@ public class ComposeMessageHelper {
     {
         this.context = context;
         this.selectedClassList = classList;
-        typedmsg = (EditText) context.findViewById(R.id.typedmsg);
 
         user = ParseUser.getCurrentUser();
         userId = user.getUsername();
@@ -58,7 +56,7 @@ public class ComposeMessageHelper {
     public void sendFunction() {
 
         Log.d(ComposeMessage.LOGTAG, "helper : sendFunction()");
-        typedtxt = typedmsg.getText().toString().trim();  //message to send
+        typedtxt = ComposeMessage.typedmsg.getText().toString().trim();  //message to send
 
         if (!UtilString.isBlank(typedtxt) && ComposeMessage.sendimgpreview.getVisibility() == View.GONE) {
 
@@ -72,7 +70,7 @@ public class ComposeMessageHelper {
             sendPic((String) ComposeMessage.sendimgpreview.getTag(), typedtxt);
 
             // for image we try to keep track of progress
-            typedmsg.setText("");
+            ComposeMessage.typedmsg.setText("");
             ComposeMessage.sendimgpreview.setTag("");
             ComposeMessage.sendimgview.setImageBitmap(null);
             ComposeMessage.sendimgpreview.setVisibility(View.GONE);
@@ -157,7 +155,7 @@ public class ComposeMessageHelper {
             sentMsg.put("userId", userId);
             sentMsg.put("pending", true);
 
-            typedmsg.setText(""); //for reuse
+            ComposeMessage.typedmsg.setText(""); //for reuse
 
             messagesToSend.add(sentMsg);
         }
@@ -246,7 +244,7 @@ public class ComposeMessageHelper {
             if (fileName != null)
                 sentMsg.put("attachment_name", fileName);
 
-            typedmsg.setText(""); //for reuse
+            ComposeMessage.typedmsg.setText(""); //for reuse
 
             messagesToSend.add(sentMsg);
         }

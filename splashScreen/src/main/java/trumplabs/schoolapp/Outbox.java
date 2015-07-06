@@ -468,8 +468,10 @@ public class Outbox extends Fragment {
                         @Override
                         public void onClick(View v) {
                             Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
-                            SendPendingMessages.spawnThread(true);
-                            myadapter.notifyDataSetChanged();
+                            if(Utility.isInternetExist()) {
+                                SendPendingMessages.spawnThread(true);
+                                myadapter.notifyDataSetChanged();
+                            }
                         }
                     });
                 }
