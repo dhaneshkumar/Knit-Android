@@ -81,7 +81,7 @@ public class SendMessage extends MyActionBarActivity  {
     public static TextView memberCountTV;
     private boolean isLoading = false;
     private Typeface typeface;
-
+    private ImageView empty_class_bg;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +111,7 @@ public class SendMessage extends MyActionBarActivity  {
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         memberCountTV = (TextView) findViewById(R.id.memberCount);
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+        empty_class_bg = (ImageView) findViewById(R.id.sent_class_bg);
 
         session = new SessionManager(Application.getAppContext());
 
@@ -386,7 +387,15 @@ public class SendMessage extends MyActionBarActivity  {
     class myBaseAdapter extends BaseAdapter {
         @Override
         public int getCount() {
-            return groupDetails.size();
+
+            int size = groupDetails.size();
+
+            if(size ==0)
+                empty_class_bg.setVisibility(View.VISIBLE);
+            else
+                empty_class_bg.setVisibility(View.GONE);
+
+            return size;
         }
 
         @Override

@@ -44,33 +44,33 @@
                 android:paddingBottom="6dp"
                 android:gravity="center"
                 >
-            <ImageButton
-                android:id="@+id/members"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:background="@drawable/ic_action_users"
-                />
-            <TextView
-                android:id="@+id/memberCount"
-                android:layout_width="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_height="wrap_content"
-                android:layout_toRightOf="@id/members"
-                android:text="5"
-                android:textStyle="bold"
-                android:textColor="@color/color_secondary"
-                android:textSize="17sp"
-                />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Members"
-                android:layout_marginTop="-3dp"
-                android:textColor="@color/greyDark"
-                android:layout_alignLeft="@+id/memberCount"
-                android:layout_below="@+id/memberCount"
-                android:textSize="13sp" />
+                <ImageButton
+                    android:id="@+id/members"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/ic_action_users"
+                    />
+                <TextView
+                    android:id="@+id/memberCount"
+                    android:layout_width="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toRightOf="@id/members"
+                    android:text="5"
+                    android:textStyle="bold"
+                    android:textColor="@color/color_secondary"
+                    android:textSize="17sp"
+                    />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Members"
+                    android:layout_marginTop="-3dp"
+                    android:textColor="@color/greyDark"
+                    android:layout_alignLeft="@+id/memberCount"
+                    android:layout_below="@+id/memberCount"
+                    android:textSize="13sp" />
             </RelativeLayout>
 
             <TextView
@@ -128,13 +128,25 @@
         <ListView
             android:id="@+id/classmsglistview"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:listSelector="@android:color/transparent"
-            android:layout_weight="1"
             android:background="@color/lightbackgroundcolor"
             android:divider="@color/lightbackgroundcolor"
             />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ImageView
+                android:id="@+id/sent_class_bg"
+                android:layout_width="225dp"
+                android:layout_height="162dp"
+                android:layout_marginTop="-50dp"
+                android:visibility="gone"
+                android:background="@drawable/empty_sent_message"
+                />
+        </LinearLayout>
     </LinearLayout>
 
     <com.software.shell.fab.ActionButton
