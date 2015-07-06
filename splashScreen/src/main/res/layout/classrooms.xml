@@ -87,7 +87,7 @@
         <ImageView
             android:id="@+id/classroom_empty_background"
             android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_height="246dp"
             android:background="@drawable/empty_classroom_bg"
             />
     </LinearLayout>

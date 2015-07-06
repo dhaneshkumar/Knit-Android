@@ -55,8 +55,8 @@
 
             <ImageView
                 android:id="@+id/done"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
                 android:layout_alignParentRight="true"
                 android:layout_marginTop="12dp"
                 android:layout_marginRight="12dp"
@@ -122,19 +122,15 @@
 
             </ImageView>
 
-            <Button
+            <ImageView
                 android:id="@+id/removebutton"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:text="X"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginLeft="16dp"
-                android:background="@drawable/circle"
-                android:textColor="@color/white"
-                android:textSize="20sp" />
+                android:background="@drawable/cancel"
+                />
         </LinearLayout>
-
-
     </LinearLayout>
 
 </ScrollView>

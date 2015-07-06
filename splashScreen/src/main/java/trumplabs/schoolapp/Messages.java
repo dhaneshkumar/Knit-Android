@@ -615,9 +615,7 @@ public class Messages extends Fragment {
 
             int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP){
-                holder.root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
                 holder.head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
-
             }
 
             String senderId = msgObject.getString("senderId");

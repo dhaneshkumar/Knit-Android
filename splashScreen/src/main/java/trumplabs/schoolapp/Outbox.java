@@ -74,6 +74,7 @@ public class Outbox extends Fragment {
     private Typeface typeface;
     private static ImageView emptyBackground;
     private static ProgressBar loadingBar;
+    private static int selectedMsgIndex = -1;
 
     //handle notification
     private static String action; //LIKE/CONFUSE
@@ -290,7 +291,7 @@ public class Outbox extends Fragment {
         TextView likes;
         TextView confused;
         TextView seen;
-        LinearLayout root;
+        RelativeLayout root;
         LinearLayout head;
         TextView retryButton;
 
@@ -308,7 +309,7 @@ public class Outbox extends Fragment {
             likes = (TextView) row.findViewById(R.id.like);
             confused = (TextView) row.findViewById(R.id.confusion);
             seen = (TextView) row.findViewById(R.id.seen);
-            root = (LinearLayout) row.findViewById(R.id.rootLayout);
+            root = (RelativeLayout) row.findViewById(R.id.rootLayout);
             head = (LinearLayout) row.findViewById(R.id.headLayout);
             retryButton = (TextView) row.findViewById(R.id.retry);
 
@@ -341,7 +342,7 @@ public class Outbox extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final ViewHolder holder, int position) {
+        public void onBindViewHolder(final ViewHolder holder, final int position) {
             ParseObject groupdetails1 = groupDetails.get(position);
 
             if (groupdetails1 == null) return;
@@ -363,13 +364,13 @@ public class Outbox extends Fragment {
                 //previous version support < in the version from now onwards storing class name also>
                 String groupCode = groupdetails1.getString("code");
 
-
                 //Retrieving from shared preferences to access fast
                 className = session.getClassName(groupCode);
                 holder.classname.setText(className);
 
 
             }
+
 
             int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.LIKE_COUNT));
             int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.CONFUSED_COUNT));
@@ -404,10 +405,54 @@ public class Outbox extends Fragment {
 
             //setting cardview for higher api using elevation
 
-            int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+            final int currentapiVersion = android.os.Build.VERSION.SDK_INT;
             if (currentapiVersion >= Build.VERSION_CODES.LOLLIPOP) {
-                holder.root.setBackground(getResources().getDrawable(R.drawable.messages_item_background));
-                holder.head.setBackground(getResources().getDrawable(R.drawable.greyoutline));
+
+                if (selectedMsgIndex != -1) {
+
+                if (position == selectedMsgIndex) {
+                    holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline_selected));
+
+                    holder.root.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            selectedMsgIndex = -1;
+                            holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline));
+                        }
+                    });
+                } else
+                    holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline));
+
+
+            }
+        }
+            else {
+                if (selectedMsgIndex != -1) {
+                    if (position == selectedMsgIndex) {
+                        holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_selected));
+
+                        holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                selectedMsgIndex = -1;
+                                holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
+                                holder.head.setPadding(0, 16, 0, 16);
+                            }
+                        });
+
+                    } else {
+                        holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
+
+                       /* holder.root.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.outbox_item_shadow));
+                            }
+                        });*/
+                    }
+
+                    holder.head.setPadding(0, 16, 0, 16);
+                }
             }
 
             boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
@@ -422,13 +467,16 @@ public class Outbox extends Fragment {
             }
 
 
+
+
+
             //retry button handle
             if (pending) {//this message is not yet sent
                 holder.seen.setVisibility(View.GONE);
                 holder.retryButton.setVisibility(View.VISIBLE);
                 if (SendPendingMessages.isJobRunning() || ComposeMessage.sendButtonClicked) {
                     holder.retryButton.setClickable(false);
-                    holder.retryButton.setText("Sending");
+                    holder.retryButton.setText("sending..");
                     holder.retryButton.setTextColor(getResources().getColor(R.color.grey_light));
                 } else {
                     holder.retryButton.setClickable(true);
@@ -764,6 +812,9 @@ public class Outbox extends Fragment {
                 if (Outbox.outboxListv.getAdapter() == null) return;
                 if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
                     Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
+
+                    selectedMsgIndex = msgIndex;
+                    Outbox.myadapter.notifyDataSetChanged();
                     Outbox.outboxListv.smoothScrollToPosition(msgIndex);
                     action = null;
                     id = null; //do not repeat
