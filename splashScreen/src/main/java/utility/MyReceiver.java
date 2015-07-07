@@ -16,6 +16,7 @@ import java.util.Calendar;
 
 import library.UtilString;
 import notifications.AlarmTrigger;
+import notifications.NotificationAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplabs.schoolapp.Constants;
 
@@ -69,6 +70,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
 
                 if(type.equals(Constants.Notifications.TRANSITION_NOTIFICATION) &&
                         (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))){
+                    Log.d(NotificationAlarmReceiver.LOGTAG, "received t=" + type + ", a=" + action + ", gname=" + groupName + ", msg=" + contentText);
                     //store in table
                     String msgId = json.optString("id", null); //required for like/confuse action
                     if(UtilString.isBlank(msgId)){
@@ -90,6 +92,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
                 }
                 else if(type.equals(Constants.Notifications.TRANSITION_NOTIFICATION) &&
                         action.equals(Constants.Actions.MEMBER_ACTION)){
+                    Log.d(NotificationAlarmReceiver.LOGTAG, "received t=" + type + ", a=" + action + ", gname=" + groupName + ", msg=" + contentText);
                     //store in table
                     String classCode = json.optString("groupCode", null); //required for like/confuse action
                     if(UtilString.isBlank(classCode)){

@@ -83,7 +83,7 @@ public class AlarmTrigger {
         //otherwise set alarm
 
         if(isNotificationAlarmTriggered(context)) {
-            Log.d("DEBUG_NOT_ALARM", "triggerNotificationAlarm : already running");
+            Log.d(NotificationAlarmReceiver.LOGTAG, "triggerNotificationAlarm : already running");
             return;
         }
 
@@ -97,7 +97,7 @@ public class AlarmTrigger {
         am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
                 Config.NOTIFICATION_INTERVAL, sender); //first trigger now
 
-        Log.d("DEBUG_NOT_ALARM", "triggerNotificationAlarm : scheduled notification alarm");
+        Log.d(NotificationAlarmReceiver.LOGTAG, "triggerNotificationAlarm : scheduled notification alarm");
     }
 
     public static void cancelNotificationAlarm(Context context){
@@ -111,6 +111,6 @@ public class AlarmTrigger {
 
         sender.cancel(); //delete pending intent so that isNotificationAlarmTriggered() works as expected
 
-        Log.d("DEBUG_NOT_ALARM", "Cancelled notification alarm");
+        Log.d(NotificationAlarmReceiver.LOGTAG, "Cancelled notification alarm");
     }
 }

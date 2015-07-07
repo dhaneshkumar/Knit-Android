@@ -23,6 +23,7 @@ import utility.Config;
  */
 
 public class NotificationAlarmReceiver extends WakefulBroadcastReceiver {
+    public static final String LOGTAG = "DEBUG_NOT_ALARM";
 
     public NotificationAlarmReceiver() {
     }
@@ -31,7 +32,7 @@ public class NotificationAlarmReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.d("DEBUG_NOT_ALARM", "onReceive() : entered");
+        Log.d(NotificationAlarmReceiver.LOGTAG, "onReceive() : entered");
         //check for pending messages
         ParseQuery query = new ParseQuery(Constants.PendingNotification.TABLE);
         query.fromLocalDatastore();
@@ -39,10 +40,10 @@ public class NotificationAlarmReceiver extends WakefulBroadcastReceiver {
         List<ParseObject> notificationList = new ArrayList<>();
         try{
             notificationList = query.find();
-            Log.d("DEBUG_NOT_ALARM", "onReceive() : pending count=" + notificationList.size());
+            Log.d(NotificationAlarmReceiver.LOGTAG, "onReceive() : pending count=" + notificationList.size());
         }
         catch (ParseException e){
-            Log.d("DEBUG_NOT_ALARM", "onReceive() : exception " + e.getMessage());
+            Log.d(NotificationAlarmReceiver.LOGTAG, "onReceive() : exception " + e.getMessage());
             e.printStackTrace();
         }
 
@@ -70,7 +71,7 @@ public class NotificationAlarmReceiver extends WakefulBroadcastReceiver {
         //remove stale from original list
         notificationList.removeAll(staleList);
 
-        Log.d("DEBUG_NOT_ALARM", "onReceive() : stale notifications=" + staleList.size());
+        Log.d(NotificationAlarmReceiver.LOGTAG, "onReceive() : stale notifications=" + staleList.size());
 
         //Now handle next 2 notifications remaining in notificationList
         for(int i = 0; i < 2 && i < notificationList.size(); i++){
@@ -90,7 +91,7 @@ public class NotificationAlarmReceiver extends WakefulBroadcastReceiver {
                 if(id != null){
                     Bundle extras = new Bundle();
                     extras.putString("id", id);
-                    Log.d("DEBUG_NOT_ALARM", "onReceive() like/confuse : generating notification msg=" + msg);
+                    Log.d(NotificationAlarmReceiver.LOGTAG, "onReceive() like/confuse : generating notification msg=" + msg);
                     NotificationGenerator.generateNotification(context, msg, groupName, type, action, extras);
                 }
             }
@@ -99,7 +100,7 @@ public class NotificationAlarmReceiver extends WakefulBroadcastReceiver {
                 if(classCode != null){
                     Bundle extras = new Bundle();
                     extras.putString("classCode", classCode);
-                    Log.d("DEBUG_NOT_ALARM", "onReceive() member : generating notification msg=" + msg);
+                    Log.d(NotificationAlarmReceiver.LOGTAG, "onReceive() member : generating notification msg=" + msg);
                     NotificationGenerator.generateNotification(context, msg, groupName, type, action, extras);
                 }
             }
