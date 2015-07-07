@@ -1,6 +1,5 @@
 package utility;
 
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Calendar;
-import java.util.Date;
 
 import library.UtilString;
 import notifications.AlarmTrigger;
@@ -81,7 +79,29 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
                     notObject.put(Constants.PendingNotification.ACTION, action);
                     notObject.put(Constants.PendingNotification.GROUP_NAME, groupName);
                     notObject.put(Constants.PendingNotification.MSG, contentText);
+
                     notObject.put(Constants.PendingNotification.ID, msgId);
+
+                    notObject.put(Constants.PendingNotification.TIME, Calendar.getInstance().getTime());//local(sync not needed)
+                    notObject.pinInBackground();//won't fail in general
+
+                    //Trigger notification alarm, if not running already
+                    AlarmTrigger.triggerNotificationAlarm(context);
+                }
+                else if(type.equals(Constants.Notifications.TRANSITION_NOTIFICATION) &&
+                        action.equals(Constants.Actions.MEMBER_ACTION)){
+                    //store in table
+                    String classCode = json.optString("groupCode", null); //required for like/confuse action
+                    if(UtilString.isBlank(classCode)){
+                        return; //ignore it
+                    }
+                    ParseObject notObject = new ParseObject(Constants.PendingNotification.TABLE);
+                    notObject.put(Constants.PendingNotification.TYPE, type);
+                    notObject.put(Constants.PendingNotification.ACTION, action);
+                    notObject.put(Constants.PendingNotification.GROUP_NAME, groupName);
+                    notObject.put(Constants.PendingNotification.MSG, contentText);
+
+                    notObject.put(Constants.PendingNotification.CLASS_CODE, classCode);
 
                     notObject.put(Constants.PendingNotification.TIME, Calendar.getInstance().getTime());//local(sync not needed)
                     notObject.pinInBackground();//won't fail in general

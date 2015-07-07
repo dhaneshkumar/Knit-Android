@@ -15,11 +15,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import BackGroundProcesses.Refresher;
-import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import utility.Config;
-import utility.SessionManager;
 
 /**
  * Created by ashish on 18/1/15.
@@ -93,7 +90,16 @@ public class NotificationAlarmReceiver extends WakefulBroadcastReceiver {
                 if(id != null){
                     Bundle extras = new Bundle();
                     extras.putString("id", id);
-                    Log.d("DEBUG_NOT_ALARM", "onReceive() : generating notification msg=" + msg);
+                    Log.d("DEBUG_NOT_ALARM", "onReceive() like/confuse : generating notification msg=" + msg);
+                    NotificationGenerator.generateNotification(context, msg, groupName, type, action, extras);
+                }
+            }
+            else if(action.equals(Constants.Actions.MEMBER_ACTION)){
+                String classCode = notification.getString(Constants.PendingNotification.CLASS_CODE);
+                if(classCode != null){
+                    Bundle extras = new Bundle();
+                    extras.putString("classCode", classCode);
+                    Log.d("DEBUG_NOT_ALARM", "onReceive() member : generating notification msg=" + msg);
                     NotificationGenerator.generateNotification(context, msg, groupName, type, action, extras);
                 }
             }

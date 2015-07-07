@@ -145,5 +145,6 @@ public class Constants {
       public static final String GROUP_NAME = "groupName";
 
       public static final String ID = "id";
+      public static final String CLASS_CODE = "classCode";
     }
 }
