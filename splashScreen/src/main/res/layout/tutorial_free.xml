@@ -40,7 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Knit is free. Not only that, you can also send bulk SMS to parents without smartphones absolutely FREE."
+                android:text="Knit is free. Not only that, you can send updates to parents who don't have smartphones via FREE text messages."
                 android:textColor="@color/white"
                 android:textSize="16sp"
                 />

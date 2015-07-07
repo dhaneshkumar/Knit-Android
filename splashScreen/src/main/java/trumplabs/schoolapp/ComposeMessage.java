@@ -30,7 +30,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facebook.appevents.AppEventsLogger;
 import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
@@ -41,8 +40,6 @@ import java.util.Calendar;
 import java.util.List;
 
 import baseclasses.MyActionBarActivity;
-import loginpages.LoginPage;
-import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
 import utility.Config;
@@ -114,9 +111,22 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         getSupportActionBar().setTitle("New Message");
 
         selectedClassNames = new ArrayList<>();
-        classList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
-        if(classList == null)
-            classList = new ArrayList<List<String>>();
+        List<List<String>> createdClassList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+
+        classList = new ArrayList<List<String>>();
+
+        if(createdClassList != null)
+        {
+            for(int i=0; i<createdClassList.size() ; i++)
+            {
+                List<String> item = createdClassList.get(i);
+                List<String > newItem = new ArrayList<>();
+                newItem.add(item.get(0));
+                newItem.add(item.get(1));
+
+              classList.add(newItem);
+            }
+        }
 
         String selectedClassCode = null;
         boolean selectAllClasses = false;
@@ -311,13 +321,13 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
         Log.d(LOGTAG, "selectedClassList size=" + selectedClassList.size());
         if(selectedClassList.isEmpty()){
-            Utility.toast("Select atleast one class!");
+            Utility.toast("Select target classrooms");
             return;
         }
 
 
         if(typedmsg.getText().toString().trim().isEmpty() && sendimgpreview.getVisibility() == View.GONE){
-            Utility.toast("Enter some text or attach a pic");
+            Utility.toast("Enter your message");
             return;
         }
 

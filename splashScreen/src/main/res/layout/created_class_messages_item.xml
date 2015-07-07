@@ -87,8 +87,9 @@
                     android:adjustViewBounds="true"
                     android:visibility="visible"
                     android:scaleType="centerInside"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="11dp"
+                    android:layout_marginTop="2dp"
+                    android:layout_height="11dp"
                     android:layout_below="@+id/classname1"
                     android:layout_alignLeft="@+id/classname1"
                     android:layout_alignStart="@+id/classname1" />

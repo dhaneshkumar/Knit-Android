@@ -116,7 +116,7 @@ public class Subscribers extends MyActionBarActivity {
         else
             emptyTV.setVisibility(View.GONE);
 
-        subscriberTV.setText(memberCount + " subscribers");
+        subscriberTV.setText(memberCount + " Members");
 
         classCodeTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -534,7 +534,7 @@ public class Subscribers extends MyActionBarActivity {
                 else
                     emptyTV.setVisibility(View.GONE);
 
-                subscriberTV.setText(memberCount + " subscribers");
+                subscriberTV.setText(memberCount + " Members");
 
                 if(SendMessage.memberCountTV != null)
                     SendMessage.memberCountTV.setText(memberCount +"");

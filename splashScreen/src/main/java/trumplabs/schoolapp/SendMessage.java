@@ -9,8 +9,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -473,24 +471,12 @@ public class SendMessage extends MyActionBarActivity  {
                 timestampview.setVisibility(View.GONE);
                 pendingClockIcon.setVisibility(View.VISIBLE);
 
-                //resize the clock icon properly
-                Drawable drawing = pendingClockIcon.getDrawable();
-                Bitmap bitmap = ((BitmapDrawable)drawing).getBitmap();
-                int w = (int) (bitmap.getWidth() * 0.4);
-                int h = (int) (bitmap.getHeight() * 0.4);
-                Log.d("__TEMP__", "w=" + w + ",h=" + h);
-
-                RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) pendingClockIcon.getLayoutParams();
-                params.width = w;
-                params.height = h;
-                pendingClockIcon.setLayoutParams(params);
-
                 //do other stuff
                 seenCountArea.setVisibility(View.GONE);
                 retryButton.setVisibility(View.VISIBLE);
                 if(SendPendingMessages.isJobRunning() || ComposeMessage.sendButtonClicked){
                     retryButton.setClickable(false);
-                    retryButton.setText("Sending");
+                    retryButton.setText("Sending..");
                     retryButton.setTextColor(getResources().getColor(R.color.grey_light));
                 }
                 else{

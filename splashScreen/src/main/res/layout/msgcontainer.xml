@@ -18,12 +18,11 @@
         <ProgressBar
             android:id="@+id/inbox_messages_pb"
             android:layout_width="wrap_content"
-
             android:layout_height="wrap_content" />
         <ImageView
             android:id="@+id/inbox_messages_bg"
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+            android:layout_width="150dp"
+            android:layout_height="191dp"
             android:visibility="gone"
             android:background="@drawable/empty_join_classroom_bg"
             />

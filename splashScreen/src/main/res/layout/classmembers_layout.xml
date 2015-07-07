@@ -45,7 +45,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:text="Removing Child..."
+            android:text="Removing Member..."
             android:textSize="18dp" />
     </LinearLayout>
 
@@ -93,7 +93,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:id="@+id/memberCount"
-                android:text="0 subscribers"
+                android:text="0 Members"
                 android:textSize="11sp"
                 android:layout_below="@+id/className"
                 android:layout_alignLeft="@+id/school"
@@ -138,13 +138,13 @@
             android:layout_marginTop="-4dp"
             android:background="@color/buttoncolor">
 
-            <ImageButton
+            <TextView
                 android:id="@+id/gallery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:background="@color/buttoncolor"
-                android:src="@drawable/plus_white" />
+                android:background="@drawable/plus_white"
+                />
 
             <TextView
                 android:id="@+id/lettercount"
