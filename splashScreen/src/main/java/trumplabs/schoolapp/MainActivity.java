@@ -62,6 +62,7 @@ import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
 import utility.Config;
 import utility.SessionManager;
+import utility.TestingUtililty;
 import utility.Utility;
 
 /**
@@ -101,6 +102,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static boolean goToOutboxFlag = false; //when returns from Message Composer, go directly to Outbox
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        //testing tutorial TODO comment following line before release
+        //TestingUtililty.testingTutorial();
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage_layout);
@@ -440,9 +444,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
-    }
 
-    //static boolean gen = false;
+        //testing local notifications TODO comment following line before release
+        //TestingUtililty.testingLocalNotification();
+    }
 
     /**
      * create list of options to show on selecting action button
