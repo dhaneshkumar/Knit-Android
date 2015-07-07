@@ -83,10 +83,6 @@ public class Subscribers extends MyActionBarActivity {
             if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
                 classCode = getIntent().getExtras().getString("classCode");
                 className = getIntent().getExtras().getString("className");
-
-                if(pushOpen){
-                    refresh(); //fetch subscribers for the class, classCode has now been set
-                }
             }
         }
 
@@ -152,6 +148,10 @@ public class Subscribers extends MyActionBarActivity {
         });
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if(pushOpen){
+            refresh(); //fetch subscribers for the class, classCode has now been set, gui also created
+        }
     }
 
 
