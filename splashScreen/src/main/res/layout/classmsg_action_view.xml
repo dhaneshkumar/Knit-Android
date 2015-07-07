@@ -20,7 +20,7 @@
         android:text="class-code"
         android:textColor="#E6EDF1"
         android:id="@+id/class_code"
-        android:textSize="11sp"
+        android:textSize="12sp"
         android:layout_marginTop="-4dp"
         android:layout_below="@+id/className"
         android:layout_alignParentLeft="true"

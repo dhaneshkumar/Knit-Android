@@ -77,7 +77,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     private LinearLayout.LayoutParams params;
     private int screenwidth;
     private static String role;
-    private int backCount = 0;
     public static LinearLayout progressBarLayout;
     public static SmoothProgressBar mHeaderProgressBar;
     public static MyAdapter myAdapter;
@@ -165,6 +164,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         role = user.getString(Constants.ROLE);
+
+        List<String> testingList = new ArrayList<>();
 
         // setting layout params for tab color
         params = (LinearLayout.LayoutParams) tabcolor.getLayoutParams();

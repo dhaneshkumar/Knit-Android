@@ -92,7 +92,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Whatsapp"
+            android:text="WhatsApp"
             android:textColor="@color/black"
             android:layout_marginLeft="16dp"
             android:textSize="18sp"

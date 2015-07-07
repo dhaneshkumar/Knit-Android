@@ -29,7 +29,6 @@
         android:orientation="vertical">
 
         <LinearLayout
-
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/white">
@@ -141,8 +140,8 @@
             android:layout_height="match_parent">
             <ImageView
                 android:id="@+id/sent_class_bg"
-                android:layout_width="250dp"
-                android:layout_height="180dp"
+                android:layout_width="200dp"
+                android:layout_height="118dp"
                 android:layout_marginTop="-50dp"
                 android:visibility="gone"
                 android:background="@drawable/empty_sent_message"
