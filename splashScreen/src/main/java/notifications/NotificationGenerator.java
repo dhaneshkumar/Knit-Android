@@ -179,6 +179,16 @@ public class NotificationGenerator {
                     mBuilder.addAction(R.drawable.fwd, "VIEW", overrideClickPendingIntent);
                 }
             }
+            else if(notEntity.action.equals(Constants.Actions.MEMBER_ACTION)){
+                Log.d(LOGTAG, "special action=" + notEntity.action);
+                if(extras != null){
+                    clickIntent.putExtra("classCode", extras.getString("classCode"));
+                    clickIntent.putExtra("className", notEntity.groupName);
+                    PendingIntent overrideClickPendingIntent = PendingIntent.getActivity(context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    mBuilder.setContentIntent(overrideClickPendingIntent);
+                    mBuilder.addAction(R.drawable.fwd, "VIEW", overrideClickPendingIntent);
+                }
+            }
             else{
                 show = false;//ignore this as this might be a new type of notification - recognized in updated app
                 Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);

@@ -83,6 +83,8 @@ public class SendMessage extends MyActionBarActivity  {
     private Typeface typeface;
     private ImageView empty_class_bg;
 
+    boolean pushOpen = false; //set to true when directly opened through notification click,
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -91,6 +93,9 @@ public class SendMessage extends MyActionBarActivity  {
 
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
+            pushOpen = getIntent().getExtras().getBoolean("pushOpen", false); //optional when opened via push
+            getIntent().removeExtra("pushOpen");
+
             if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
                 groupCode = getIntent().getExtras().getString("classCode");
                 grpName = getIntent().getExtras().getString("className");
@@ -378,6 +383,17 @@ public class SendMessage extends MyActionBarActivity  {
 
     }
 
+    @Override
+    public void onBackPressed() {
+        if(pushOpen){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        else{
+            super.onBackPressed();
+        }
+    }
 
 
 
