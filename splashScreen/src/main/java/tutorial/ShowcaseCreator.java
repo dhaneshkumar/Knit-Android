@@ -56,7 +56,6 @@ public class ShowcaseCreator {
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
-                        .setContentText("To create a class, click on the highlighted button")
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
                             @Override
                             public void onShowcaseViewHide(ShowcaseView showcaseView) {
@@ -83,7 +82,7 @@ public class ShowcaseCreator {
                 double scalingFactor = 2.0 / 3; //according to pointer width and action bar icon width
                 final ShowcaseView showcaseView = builder.getShowcaseView();
                 showcaseView.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor), center.y + targetView.getHeight());
-                showcaseView.setDescription("To create a class, click on the highlighted button");
+                showcaseView.setDescription("To create a classroom, click here");
 
                 builder.build();
             }
@@ -99,11 +98,8 @@ public class ShowcaseCreator {
             @Override
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
-                builder.setScaleMultipler(0.25f)
-                        .setContentText("To join a class, click on the circled button");
 
                 builder.setScaleMultipler(0.25f)
-                        .setContentText("To create a class, click on the highlighted button")
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
                             @Override
                             public void onShowcaseViewHide(ShowcaseView showcaseView) {
@@ -139,7 +135,7 @@ public class ShowcaseCreator {
 
                 double scalingFactor = 2.0/3;
                 showcaseView1.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor) , center.y + targetView.getHeight());
-                showcaseView1.setDescription("Click here to join a class");
+                showcaseView1.setDescription("Click here to join a classroom");
 
                 builder.build();
             }
@@ -158,7 +154,6 @@ public class ShowcaseCreator {
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
-                        .setContentTitle("To create a class, click on the highlighted button")
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
                             @Override
                             public void onShowcaseViewHide(ShowcaseView showcaseView) {
@@ -183,7 +178,7 @@ public class ShowcaseCreator {
                 double scalingFactor = 2.0/3; //according to pointer width and action bar icon width
                 final ShowcaseView showcaseView = builder.getShowcaseView();
                 showcaseView.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor), center.y + targetView.getHeight());
-                showcaseView.setDescription("Click here to join a new class");
+                showcaseView.setDescription("Click here to join a classroom");
 
                 builder.build();
             }
@@ -199,7 +194,6 @@ public class ShowcaseCreator {
             public void run() {
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
-                        .setContentTitle("Click here to see your joined classes")
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
                             @Override
                             public void onShowcaseViewHide(ShowcaseView showcaseView) {
@@ -230,7 +224,7 @@ public class ShowcaseCreator {
 
                 double scalingFactor = 2.0 / 3;
                 showcaseView1.setPointer(center.x - (int) (targetView.getWidth() * scalingFactor), center.y + targetView.getHeight());
-                showcaseView1.setDescription("Click here to see your joined classes");
+                showcaseView1.setDescription("Click here to see your joined classrooms");
 
                 builder.build();
             }
@@ -331,7 +325,7 @@ public class ShowcaseCreator {
                 showcaseView1.addButtonRow(buttonRow);
                 showcaseView1.setPointerAbove(buttonRow);
                 showcaseView1.flipPointer();
-                showcaseView1.setDescription("Use these two buttons to respond to messages. Use thumbs up to like and '?' to show you are confused", true);
+                showcaseView1.setDescription("Use these two buttons to respond to messages. Use thumbs-up to like and '?' to show you are confused", true);
 
                 builder.build();
             }
@@ -418,7 +412,7 @@ public class ShowcaseCreator {
         ShowcaseView showcaseView1 = builder.getShowcaseView();
 
         showcaseView1.fixButton(); //need to call since not calling setPointer
-        showcaseView1.showOnlyDescription("You can use Knit to send bulk sms to parents who don't have smartphones. \n \n And don't worry if you send a message when you are offline, we will send it automatically when you come online");
+        showcaseView1.showOnlyDescription("You can use Knit to send bulk sms to parents/students who don't have smartphones if they subscribe via sms. \n \n And don't worry if you send a message when you are offline, we will send it automatically whenever you come online");
 
         builder.build();
     }

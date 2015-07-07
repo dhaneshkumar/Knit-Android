@@ -62,6 +62,8 @@ public class Subscribers extends MyActionBarActivity {
 
     static String defaultSchoolName = "";
 
+    boolean pushOpen = false; //set to true when directly opened through notification click,
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +77,9 @@ public class Subscribers extends MyActionBarActivity {
 
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
+            pushOpen = getIntent().getExtras().getBoolean("pushOpen", false); //optional when opened via push
+            getIntent().removeExtra("pushOpen");
+
             if(!UtilString.isBlank(getIntent().getExtras().getString("classCode"))) {
                 classCode = getIntent().getExtras().getString("classCode");
                 className = getIntent().getExtras().getString("className");
@@ -143,6 +148,10 @@ public class Subscribers extends MyActionBarActivity {
         });
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if(pushOpen){
+            refresh(); //fetch subscribers for the class, classCode has now been set, gui also created
+        }
     }
 
 
@@ -233,6 +242,18 @@ public class Subscribers extends MyActionBarActivity {
                 break;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(pushOpen){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 
     void refresh(){

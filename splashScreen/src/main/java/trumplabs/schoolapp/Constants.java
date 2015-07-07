@@ -101,6 +101,7 @@ public class Constants {
       public static final String INVITE_PARENT_ACTION = "INVITE_PARENT"; //open invite parent activity for that class
       public static final String CREATE_CLASS_ACTION = "CREATE_CLASS"; //open create class dialog
       public static final String SEND_MESSAGE_ACTION = "SEND_MESSAGE"; //go to specified created class to send a message
+      public static final String MEMBER_ACTION = "MEMBER"; //go to specified created class to send a message
 
       //new actions
       public static final String LIKE_ACTION = "LIKE";

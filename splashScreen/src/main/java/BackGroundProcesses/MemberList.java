@@ -173,7 +173,7 @@ public class MemberList extends AsyncTask<Void, Void, String[]> {
 
     @Override
     protected void onPostExecute(String[] strings) {
-        Log.d("DEBUG_MEMBER", "members onPostExecute()");
+        Log.d("DEBUG_MEMBER", "members onPostExecute() " + groupCode);
 
 
         if(groupCode != null)

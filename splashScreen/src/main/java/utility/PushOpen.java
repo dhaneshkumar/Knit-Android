@@ -24,6 +24,7 @@ import trumplabs.schoolapp.ComposeMessage;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.SendMessage;
+import trumplabs.schoolapp.Subscribers;
 
 public class PushOpen extends MyActionBarActivity {
     String type;
@@ -88,8 +89,9 @@ public class PushOpen extends MyActionBarActivity {
                     i.putExtra("CLASS_CODE", classCode);
                     i.putExtra("CLASS_NAME", className);
                 }
-                else
+                else {
                     i = new Intent(this, MainActivity.class); //go to main activity
+                }
             }
             else if(action.equals(Constants.Actions.CLASSROOMS_ACTION)){
                 i = new Intent(this, MainActivity.class);
@@ -125,6 +127,22 @@ public class PushOpen extends MyActionBarActivity {
                 i.putExtra("action", action);
                 i.putExtra("id", id);
                 i.putExtra("pushOpen", true);
+            }
+            else if(action.equals(Constants.Actions.MEMBER_ACTION)){//go to outbox and scroll to that message
+                i = new Intent(this, Subscribers.class);
+
+                String classCode = getIntent().getExtras().getString("classCode");
+                String className = getIntent().getExtras().getString("className");
+
+                if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
+                    Log.d("DEBUG_PUSH_OPEN", "member action " + classCode + " " + className);
+                    i.putExtra("pushOpen", true);
+                    i.putExtra("classCode", classCode);
+                    i.putExtra("className", className);
+                }
+                else {
+                    i = new Intent(this, MainActivity.class); //go to main activity
+                }
             }
         }
         else if (type.equals(Constants.Notifications.LINK_NOTIFICATION)) {
