@@ -16,6 +16,7 @@ import com.github.amlcurran.showcaseview.targets.PointTarget;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
+import additionals.InviteToClassDialog;
 import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.CreateClassDialog;
@@ -309,7 +310,7 @@ public class ShowcaseCreator {
         }, 100);
     }
 */
-    public static void parentHighlightResponseButtonsNew(final Activity activity, final View likeView){
+    public static void parentHighlightResponseButtonsNew(final Activity activity, final View likeView, final Bundle bundle){
         ShowcaseView.isVisible = true;
 
         likeView.post(new Runnable() {
@@ -319,6 +320,29 @@ public class ShowcaseCreator {
 
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setTarget(Target.NONE); //no target
+
+                builder.setShowcaseEventListener(new OnShowcaseEventListener() {
+                    @Override
+                    public void onShowcaseViewHide(ShowcaseView showcaseView) {
+                        //show join class dialog
+                        if(activity == null) return; //check activity become null after delay
+                        FragmentManager fm = ((FragmentActivity) (activity)).getSupportFragmentManager(); //MyActionBarActivity (our base class) is FragmentActivity derivative
+                        InviteToClassDialog inviteToClassDialog = new InviteToClassDialog();
+                        inviteToClassDialog.setArguments(bundle);
+                        inviteToClassDialog.show(fm, "Invite others");
+                    }
+
+                    @Override
+                    public void onShowcaseViewDidHide(ShowcaseView showcaseView) {
+
+                    }
+
+                    @Override
+                    public void onShowcaseViewShow(ShowcaseView showcaseView) {
+
+                    }
+                });
+
                 ShowcaseView showcaseView1 = builder.getShowcaseView();
 
                 //center.y + likeView.getHeight()
