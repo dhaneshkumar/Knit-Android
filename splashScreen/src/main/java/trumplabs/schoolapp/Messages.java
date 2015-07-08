@@ -802,11 +802,7 @@ public class Messages extends Fragment {
                     mgr.setTutorialState(tutorialId, true);
                     Log.d(ShowcaseCreator.LOGTAG, "(parent) creating response tutorial");
 
-                    Bundle bundle = new Bundle();
-                    bundle.putString("classCode", msgObject.getString("code"));
-                    bundle.putString("className", msgObject.getString("name"));
-                    bundle.putString("teacherName", msgObject.getString("Creator"));
-                    ShowcaseCreator.parentHighlightResponseButtonsNew(getactivity, holder.likeButton, bundle);
+                    ShowcaseCreator.parentHighlightResponseButtonsNew(getactivity, holder.likeButton);
                 }
                 responseTutorialShown = true;
             }

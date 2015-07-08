@@ -126,6 +126,7 @@ public class Constants {
       public static final String TEACHER_RESPONSE = "_teacher_response_tutorial";
       public static final String OPTIONS = "_options_tutorial";
       public static final String COMPOSE = "_compose_tutorial";
+      public static final String JOIN_INVITE = "_join_invite_dialog";
     }
 
     public static class ComposeSource{

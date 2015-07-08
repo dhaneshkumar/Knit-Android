@@ -8,6 +8,9 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -25,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import additionals.Invite;
+import additionals.InviteToClassDialog;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
@@ -371,6 +375,28 @@ public class JoinClassDialog extends DialogFragment {
 
                 } catch (ParseException e) {
                     e.printStackTrace();
+                }
+
+                if(getActivity() != null){
+                    //show if signup account, and not set in sharedprefs
+                    String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.JOIN_INVITE;
+                    if(sessionManager.getSignUpAccount() && !sessionManager.getTutorialState(tutorialId)) {
+                        sessionManager.setTutorialState(tutorialId, true);
+
+                        if(Messages.msgs != null && Messages.msgs.size() > 0){
+                            ParseObject msgObject = Messages.msgs.get(0);
+
+                            Bundle bundle = new Bundle();
+                            bundle.putString("classCode", msgObject.getString("code"));
+                            bundle.putString("className", msgObject.getString("name"));
+                            bundle.putString("teacherName", msgObject.getString("Creator"));
+
+                            FragmentManager fm = getActivity().getSupportFragmentManager(); //MyActionBarActivity (our base class) is FragmentActivity derivative
+                            InviteToClassDialog inviteToClassDialog = new InviteToClassDialog();
+                            inviteToClassDialog.setArguments(bundle);
+                            inviteToClassDialog.show(fm, "Invite others");
+                        }
+                    }
                 }
 
                 if( Messages.myadapter != null)
