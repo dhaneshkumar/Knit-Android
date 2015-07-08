@@ -9,6 +9,7 @@ import android.util.Log;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -34,12 +35,21 @@ public class ConnectivityChangeReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d(LOGTAG, "onReceive() : entered");
 
-        if(Utility.isInternetExistWithoutPopup()){
-            Log.d(LOGTAG, "onReceive() : connected");
-            SendPendingMessages.spawnThread(false);
-        }
-        else{
-            Log.d(LOGTAG, "onReceive() : not connected");
+        if(ParseUser.getCurrentUser() == null)
+            return;
+
+        String role = ParseUser.getCurrentUser().getString("role");
+        if(role == null)
+            return;
+
+        if(role.equalsIgnoreCase(Constants.TEACHER)) {
+            if (Utility.isInternetExistWithoutPopup()){
+                Log.d(LOGTAG, "onReceive() : connected");
+                SendPendingMessages.spawnThread(false);
+            }
+            else{
+                Log.d(LOGTAG, "onReceive() : not connected");
+            }
         }
     }
 }
