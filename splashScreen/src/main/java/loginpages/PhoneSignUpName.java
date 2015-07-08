@@ -17,6 +17,8 @@ import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationListener;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
@@ -36,7 +38,7 @@ import utility.Utility;
  * Created by ashish on 26/2/15.
  */
 public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener{
+        GoogleApiClient.OnConnectionFailedListener, LocationListener {
     EditText displayNameET;
     EditText phoneNumberET;
 
@@ -158,6 +160,26 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
     /*********** Location Detection methods ****************/
 
+    protected void createLocationRequest() {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+
+        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        if (mLastLocation != null) {
+            Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
+                    + ", " + String.valueOf(mLastLocation.getLongitude()));
+
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
+    }
+
     protected synchronized void buildGoogleApiClient() {
         Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -171,12 +193,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d("DEBUG_LOCATION", "onConnected() entered");
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+        createLocationRequest();
+        /*mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
                 mGoogleApiClient);
         if (mLastLocation != null) {
             Log.d("DEBUG_LOCATION", "onConnected() : location : " + String.valueOf(mLastLocation.getLatitude())
                     + ", " + String.valueOf(mLastLocation.getLongitude()));
-        }
+        }*/
     }
 
     @Override
@@ -194,6 +217,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     }
 
     /****************** class GenerateVerificationCode **********************/
+
+    @Override
+    public void onPause(){
+        super.onPause();
+        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+    }
 
     public static class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
         Boolean isValid = false;
