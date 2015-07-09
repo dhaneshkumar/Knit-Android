@@ -136,6 +136,7 @@ public class Outbox extends Fragment {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), ComposeMessage.class);
+                intent.putExtra(Constants.ComposeSource.KEY, Constants.ComposeSource.OUTSIDE); //i.e not from within a particular classroom's page
                 startActivity(intent);
             }
         });

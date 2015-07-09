@@ -16,6 +16,7 @@ import com.github.amlcurran.showcaseview.targets.PointTarget;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
+import additionals.InviteToClassDialog;
 import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.CreateClassDialog;
@@ -319,6 +320,7 @@ public class ShowcaseCreator {
 
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setTarget(Target.NONE); //no target
+
                 ShowcaseView showcaseView1 = builder.getShowcaseView();
 
                 //center.y + likeView.getHeight()

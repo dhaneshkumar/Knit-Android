@@ -801,6 +801,7 @@ public class Messages extends Fragment {
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
                     Log.d(ShowcaseCreator.LOGTAG, "(parent) creating response tutorial");
+
                     ShowcaseCreator.parentHighlightResponseButtonsNew(getactivity, holder.likeButton);
                 }
                 responseTutorialShown = true;

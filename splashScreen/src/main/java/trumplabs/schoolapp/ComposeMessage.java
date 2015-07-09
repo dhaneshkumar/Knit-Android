@@ -70,9 +70,9 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     private ImageView removebutton;
     private Typeface typeface;
 
-    public static String source = Constants.ComposeSource.INSIDE;
-                                //i.e inside the particular class page
+    public static String source = Constants.ComposeSource.OUTSIDE;
                                 //"OUTSIDE" i.e from MainActivity
+                                //"INSIDE" inside the particular class page
     //will be used by ComposeMessageHelper to decide what all things to update on sending a message
 
 
@@ -384,6 +384,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         composeMessageHelper.sendFunction();
 
         if(source.equals(Constants.ComposeSource.OUTSIDE)){
+            Log.d(ComposeMessage.LOGTAG, "ComposeMessage sendNow() : setting goToOutboxFlag");
             MainActivity.goToOutboxFlag = true;
         }
 

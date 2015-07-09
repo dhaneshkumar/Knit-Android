@@ -56,8 +56,6 @@ class TextDrawer {
         this.calculator = calculator;
         this.context = context;
 
-        //customFont = Typeface.createFromAsset(context.getAssets(), "fonts/roboto-condensed.bold.ttf");
-
         titlePaint = new TextPaint();
         titlePaint.setAntiAlias(true);
 

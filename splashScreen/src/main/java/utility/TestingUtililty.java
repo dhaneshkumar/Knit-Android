@@ -26,15 +26,17 @@ public class TestingUtililty {
 
         //Constants.IS_SIGNUP = true;
 
-        SessionManager mgr = new SessionManager(Application.getAppContext());
+        /*SessionManager mgr = new SessionManager(Application.getAppContext());
         String p_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
         String t_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
         String o_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
         String c_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.COMPOSE;
-//        mgr.setTutorialState(p_flag, false);
-//        mgr.setTutorialState(t_flag, false);
-//        mgr.setTutorialState(o_flag, false);
+        String i_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.JOIN_INVITE;
+        mgr.setTutorialState(p_flag, false);
+        mgr.setTutorialState(t_flag, false);
+        mgr.setTutorialState(o_flag, false);
         mgr.setTutorialState(c_flag, false);
+        mgr.setTutorialState(i_flag, false);*/
 
         //delete SentMessges
         /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);

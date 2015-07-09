@@ -235,9 +235,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                     if (classList.size() == 0) {
                         Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                        intent.putExtra(Constants.ComposeSource.KEY, Constants.ComposeSource.OUTSIDE); //i.e not from within a particular classroom's page
                         startActivity(intent);
                     } else if (classList.size() == 1) {
                         Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                        intent.putExtra(Constants.ComposeSource.KEY, Constants.ComposeSource.OUTSIDE); //i.e not from within a particular classroom's page
                         intent.putExtra("CLASS_CODE", classList.get(0).get(0));
                         intent.putExtra("CLASS_NAME", classList.get(0).get(1));
                         startActivity(intent);
@@ -248,6 +250,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                         if (isFloatingButtonCliked) {
                             Intent intent = new Intent(MainActivity.this, ComposeMessage.class);
+                            intent.putExtra(Constants.ComposeSource.KEY, Constants.ComposeSource.OUTSIDE); //i.e not from within a particular classroom's page
                             startActivity(intent);
                             isFloatingButtonCliked = false;
                             action_menu.setVisibility(View.GONE);
@@ -545,8 +548,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         super.onResume();
         Application.mainActivityVisible = true;
         AppEventsLogger.activateApp(this, Config.FB_APP_ID);
+        Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() : goToOutboxFlag=" + goToOutboxFlag);
         if(goToOutboxFlag){
-            Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() going to outbox tab");
+            Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() : going to outbox tab");
             goToOutboxFlag = false;
             if(viewpager != null) {
                 viewpager.setCurrentItem(0, false); //0th is the outbox tab
