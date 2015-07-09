@@ -30,7 +30,7 @@ public class ShowcaseCreator {
 
     static ShowcaseView.Builder getDefaultBuilder(final Activity activity){
         //assume activity not null
-        Typeface showcaseFont = Typeface.createFromAsset(activity.getAssets(), "fonts/RobotoCondensed-Bold.ttf");
+        Typeface showcaseFont = Typeface.createFromAsset(activity.getAssets(), "fonts/roboto-condensed.bold.ttf");
         ShowcaseView.Builder builder = new ShowcaseView.Builder(activity)
                 .setStyle(R.style.ShowcaseView)
                 .setFont(showcaseFont);

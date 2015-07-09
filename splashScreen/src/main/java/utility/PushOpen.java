@@ -79,7 +79,7 @@ public class PushOpen extends MyActionBarActivity {
             }
             else if(action.equals(Constants.Actions.SEND_MESSAGE_ACTION)){
                 i = new Intent(this, ComposeMessage.class);
-
+                i.putExtra(Constants.ComposeSource.KEY, Constants.ComposeSource.OUTSIDE); //i.e not from within a particular classroom's page
                 String classCode = getIntent().getExtras().getString("classCode");
                 String className = getIntent().getExtras().getString("className");
 
