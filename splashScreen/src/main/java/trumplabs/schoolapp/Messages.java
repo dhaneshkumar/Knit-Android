@@ -52,6 +52,7 @@ import joinclasses.JoinClassDialog;
 import library.UtilString;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
+import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -79,6 +80,9 @@ public class Messages extends Fragment {
     private ProgressBar inbox_messages_pb;
 
     public static boolean responseTutorialShown = false;
+
+    public boolean oldInboxFetched = false;
+    public boolean isGetMoreOldMessagesRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -260,6 +264,8 @@ public class Messages extends Fragment {
 
                 if (visibleItemCount + pastVisibleItems >= totalItemCount - 2) {
                     if (totalItemCount >= totalInboxMessages) {
+                        //Now no more available locally, now if not all inbox messages have been fetched, fetch more using showOldMessages cloud function and update adapter and totalInboxMessages
+                        checkAndFetchOldMessages();
                         Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
@@ -1002,6 +1008,65 @@ public class Messages extends Fragment {
 
                 Inbox newInboxMsg = new Inbox(msgs);
                 newInboxMsg.execute();
+            }
+
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    void checkAndFetchOldMessages(){
+        //check if flag set
+        //if not - run GetMoreOldMessages task
+        //set flag if #msgs returned non null and less than 20
+        if(!oldInboxFetched){
+            String username = ParseUser.getCurrentUser().getUsername();
+            String key = username + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
+            if(SessionManager.getBooleanValue(key)){//if true set
+                Log.d("_FETCH_OLD", "already set in shared prefs");
+                oldInboxFetched = true;
+                return;
+            }
+
+            if(!isGetMoreOldMessagesRunning){
+                Log.d("_FETCH_OLD", "spawning GetMoreOldMessages");
+                GetMoreOldMessages getMoreOldMessages = new GetMoreOldMessages();
+                getMoreOldMessages.execute();
+                isGetMoreOldMessagesRunning = true;
+            }
+            else{
+                //Log.d("_FETCH_OLD", "already running GetMoreOldMessages");
+            }
+        }
+    }
+
+    //called when all local messages shown
+    class GetMoreOldMessages extends AsyncTask<Void, Void, Void>
+    {
+        List<ParseObject> extraMessages = null;
+        @Override
+        protected Void doInBackground(Void... params) {
+            extraMessages = query.getOldServerInboxMsgs();
+            if(extraMessages != null){
+                if(extraMessages.size() < Config.oldMessagesPagingSize){
+                    Log.d("_FETCH_OLD", "oldInboxFetched set to true - we're done");
+                    oldInboxFetched = true;
+                }
+            }
+            else{
+                Log.d("_FETCH_OLD", "extraMessages null - connection failure or other error");
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            isGetMoreOldMessagesRunning = false;
+
+            if(extraMessages != null && Messages.msgs != null && Messages.myadapter != null){
+                Messages.msgs.addAll(extraMessages);
+                Messages.myadapter.notifyDataSetChanged();
+                totalInboxMessages += extraMessages.size();
             }
 
             super.onPostExecute(aVoid);

@@ -60,6 +60,9 @@ public class Config {
     public static final int outboxMsgRefreshTotal = 10; //how many latest sent messages will be updated for like/confused
     public static final int outboxMsgMaxFetchCount = 100; //max how many outbox messages to fetch on first time app is opened
 
+    public static final int oldMessagesPagingSize = 5; //how many old msgs to fetch from server every time scroll down
+    public static final int firstTimeInboxFetchCount = 50; //how many inbox messages to fetch first time on login
+
     public static final int inboxMsgRefreshTotal= 10; //how many of the latest inbox messages(total) will
 
     //be updated(periodically in Refresher) for like/confused

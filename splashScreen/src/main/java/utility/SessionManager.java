@@ -14,21 +14,22 @@ import java.util.Calendar;
 import java.util.Date;
 
 import library.UtilString;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 
 @SuppressLint("SimpleDateFormat")
 public class SessionManager {
     // Shared Preferences
-    public static SharedPreferences pref;
+    static SharedPreferences pref;
 
     // Editor for Shared preferences
-    Editor editor;
+    static Editor editor;
 
     // Context
     Context _context;
 
     // Shared pref mode
-    int PRIVATE_MODE = 0;
+    public static final int PRIVATE_MODE = 0;
 
     private static final String PREF_NAME = "AndroidHivePref";
     public static final String APP_OPENING_COUNT = "app_opening_count";
@@ -240,6 +241,27 @@ public class SessionManager {
         return pref.getBoolean(USER_HAS_JOINED_CLASS + ParseUser.getCurrentUser().getUsername(), false);
     }
 
+    public static void setUp(){
+        pref = Application.getAppContext().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        editor = pref.edit();
+    }
 
+    public static boolean getBooleanValue(String key){
+        if(pref == null){
+            Log.d("_FETCH_OLD", "SM : get value for key=" + key);
+            setUp();
+        }
+        //pref won't be null
+        return pref.getBoolean(key, false);
+    }
 
+    public static void setBooleanValue(String key, Boolean value){
+        if(editor == null){
+            setUp();
+        }
+
+        //editor won't be null
+        editor.putBoolean(key, value);
+        editor.commit();
+    }
 }
