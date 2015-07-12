@@ -152,12 +152,51 @@
 
     </RelativeLayout>
 
+    <RelativeLayout
+        android:id="@+id/facebook"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:visibility="gone"
+        android:layout_marginTop="4dp"
+        android:background="@color/white"
+        android:layout_below="@+id/email"
+        >
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_height="wrap_content"
+            android:background="@drawable/fb"
+            android:id="@+id/imageView32"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Facebook"
+            android:textColor="@color/black"
+            android:layout_marginLeft="16dp"
+            android:textSize="18sp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@+id/imageView32"
+            android:layout_toEndOf="@+id/imageView32" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:visibility="gone"
+            android:background="@drawable/ic_action_next_item"
+            android:layout_alignParentRight="true"
+            />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/instructions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/email"
+        android:layout_below="@+id/facebook"
         android:text="Receive Instructions via Email"
         android:layout_marginTop="32dp"
         android:padding="16dp"

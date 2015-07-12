@@ -585,7 +585,6 @@ public class Outbox extends Fragment {
 
             return groupDetails.size();
         }
-
     }
 
 

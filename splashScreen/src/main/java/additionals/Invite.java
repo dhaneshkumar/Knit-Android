@@ -15,6 +15,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.share.model.AppInviteContent;
+import com.facebook.share.widget.AppInviteDialog;
 import com.parse.ParseAnalytics;
 
 import java.util.HashMap;
@@ -59,6 +65,7 @@ public class Invite extends MyActionBarActivity{
       RelativeLayout whatsapp = (RelativeLayout) findViewById(R.id.whatsapp);
       RelativeLayout email = (RelativeLayout) findViewById(R.id.email);
       RelativeLayout phonebook = (RelativeLayout) findViewById(R.id.phonebook);
+      RelativeLayout facebook = (RelativeLayout) findViewById(R.id.facebook);
 
       final LinearLayout seeHow = (LinearLayout) findViewById(R.id.seeHow);
 
@@ -92,6 +99,9 @@ public class Invite extends MyActionBarActivity{
       Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
       inviteHeading.setTypeface(typeFace);
 
+
+      FacebookSdk.sdkInitialize(getApplicationContext());
+
       String whatsAppContent = "";
 
       if(inviteType == Constants.INVITATION_T2P){
@@ -106,21 +116,25 @@ public class Invite extends MyActionBarActivity{
 
       switch (inviteType){
           case Constants.INVITATION_T2P:
+              facebook.setVisibility(View.GONE);
               inviteHeading.setText("Invite Parents");
               getSupportActionBar().setTitle("Invite Parents & Students");
               whatsAppContent = "Hi! I have recently started using 'Knit Messaging' app to send updates for my '"+ className +"' class. Download the app from "+ "http://goo.gl/cormDk" +" and use code '"+classCode+"' to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_P2T:
+              facebook.setVisibility(View.VISIBLE);
               inviteHeading.setText("Invite Teachers");
               getSupportActionBar().setTitle("Invite Teachers");
               whatsAppContent = "Dear teacher, I found an awesome app, 'Knit Messaging', for teachers to communicate with parents and students. You can download the app from " + "http://goo.gl/FmydzU ";
               break;
           case Constants.INVITATION_P2P:
+              facebook.setVisibility(View.GONE);
               inviteHeading.setText("Invite other parents");
               getSupportActionBar().setTitle("Invite other parents");
               whatsAppContent = "Hi! I just joined '" + className + "' class of " + teacherName + " on 'Knit Messaging' app.  Download the app from " + "http://goo.gl/Q2yeE3" +  " and use code '" + classCode + "' to join this class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_SPREAD:
+              facebook.setVisibility(View.VISIBLE);
               inviteHeading.setText("Tell your friends about Knit");
               getSupportActionBar().setTitle("Spread the word");
               whatsAppContent = "Yo! I just started using 'Knit Messaging' app. It's an awesome app for teachers, parents and students to connect with each other. Download the app from " + "http://goo.gl/GLkQ57 ";
@@ -192,6 +206,48 @@ public class Invite extends MyActionBarActivity{
           }
       });
 
+
+      facebook.setOnClickListener(new OnClickListener() {
+          @Override
+          public void onClick(View v) {
+              String appLinkUrl, previewImageUrl;
+
+              appLinkUrl = " https://fb.me/744615242350716";
+              previewImageUrl = "http://knitapp.co.in/images/fb_app_invite.png";
+
+              if (AppInviteDialog.canShow()) {
+                  AppInviteContent content = new AppInviteContent.Builder()
+                          .setApplinkUrl(appLinkUrl)
+                          .setPreviewImageUrl(previewImageUrl)
+                          .build();
+                  CallbackManager  sCallbackManager = CallbackManager.Factory.create();
+
+                  AppInviteDialog appInviteDialog = new AppInviteDialog(Invite.this);
+                  appInviteDialog.registerCallback(sCallbackManager,
+                          new FacebookCallback<AppInviteDialog.Result>() {
+                              @Override
+                              public void onSuccess(AppInviteDialog.Result result) {
+                                  Log.d("Invitation", "Invitation Sent Successfully");
+                                  finish();
+                              }
+
+                              @Override
+                              public void onCancel() {
+                              }
+
+                              @Override
+                              public void onError(FacebookException e) {
+                                  Log.d("Invitation", "Error Occured");
+                              }
+                          });
+
+                  appInviteDialog.show(content);
+              }
+          }
+      });
+
+
+
       instructions.setOnClickListener(new OnClickListener() {
           @Override
           public void onClick(View v) {
@@ -212,7 +268,6 @@ public class Invite extends MyActionBarActivity{
               recommendationDialog.show(fm, "Join Class");
           }
       });
-
 
 
       sms.setOnClickListener(new OnClickListener() {
