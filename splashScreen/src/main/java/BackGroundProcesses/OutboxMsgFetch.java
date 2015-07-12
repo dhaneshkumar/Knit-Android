@@ -73,7 +73,7 @@ public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
         List<ParseObject> newMsgsToPin = new ArrayList<ParseObject>();
 
         try{
-            List<ParseObject> outboxMessages = ParseCloud.callFunction("showLatestMessagesWithLimit", parameters);
+            List<ParseObject> outboxMessages = ParseCloud.callFunction("showLatestMessagesWithLimit2", parameters);
            // Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "fetched " + outboxMessages.size() + "messages");
             for(int i=0; i<outboxMessages.size(); i++){
                 ParseObject outboxMsg = outboxMessages.get(i);

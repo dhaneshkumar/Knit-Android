@@ -253,7 +253,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             }
         });
 
-        //show tutorial on first time
+        /*//show tutorial on first time
         if(!composeTutorialShown && !ShowcaseView.isVisible){
             Log.d("_TUTORIAL_", "compose tutorial entered");
             String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.COMPOSE;
@@ -270,7 +270,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 });
             }
             composeTutorialShown = true;
-        }
+        }*/
     }
 
 

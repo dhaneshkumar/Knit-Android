@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import library.UtilString;
 import trumplabs.schoolapp.Application;
@@ -196,7 +197,7 @@ public class Queries {
         //      Otherwise use showLatestMessagesWithLimit for login mode
 
         if(newTimeStamp == null && sessionManager.getSignUpAccount()){
-            Log.d("DEBUG_QUERIES_SERVER_MSGS", "timestamp null with SIGNUP mode. Using user's creation time as timestamp");
+            Log.d("DBG_QUERIES_SERVER_MSGS", "timestamp null with SIGNUP mode. Using user's creation time as timestamp");
             newTimeStamp = user.getCreatedAt();
         }
 
@@ -205,15 +206,15 @@ public class Queries {
         //if newTimeStamp is NOT null, fetch all new messages with timestamp > newTimeStamp
 
         if(newTimeStamp == null){
-            Log.d("DEBUG_QUERIES_SERVER_MSGS", "timestamp null. So no messages stored. Fetching first batch of messages");
+            Log.d("DBG_QUERIES_SERVER_MSGS", "timestamp null. So no messages stored. Fetching first batch of messages");
             HashMap<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("limit", Config.firstTimeInboxFetchCount);
             parameters.put("classtype", "j");
             try {
-                HashMap<String, List<ParseObject> > resultMap = ParseCloud.callFunction("showLatestMessagesWithLimit", parameters);
-                List<ParseObject> allMessages = resultMap.get("message");
-                List<ParseObject> allStates = resultMap.get("states");
+                HashMap<String, Object > resultMap = ParseCloud.callFunction("showLatestMessagesWithLimit2", parameters);
+                List<ParseObject> allMessages = (List<ParseObject>) resultMap.get("message");
+                Map<String, List<Boolean>> allStates = (Map<String, List<Boolean>>) resultMap.get("states");
 
                 //since old messages, need to update their MessageState(like_status, confused_status)
                 if(allMessages != null) {
@@ -225,20 +226,22 @@ public class Queries {
                         SessionManager.setBooleanValue(key, true);
                     }
 
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] : fetched msgs " + allMessages.size());
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] : fetched states " + allStates.size());
+                    Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : fetched msgs=" + allMessages.size() + ", states=" + allStates.size());
                     //use allStates to set appropriate state for the each received message
+
                     for(int m=0; m < allMessages.size(); m++){
                         ParseObject msg = allMessages.get(m);
-                        for(int s=0; s < allStates.size(); s++){
-                            ParseObject msgState = allStates.get(s);
-                            if(msgState.getString("message_id").equals(msg.getObjectId())){
-                                msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
-                                msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
-                                msg.put(Constants.SYNCED_LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
-                                msg.put(Constants.SYNCED_CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
-                                break;
-                            }
+                        List<Boolean> msgState = allStates.get(msg.getObjectId());
+
+                        if(msgState != null){
+                            Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
+
+                            msg.put(Constants.LIKE, msgState.get(0));
+                            msg.put(Constants.CONFUSING, msgState.get(1));
+                            msg.put(Constants.SYNCED_LIKE, msgState.get(0));
+                            msg.put(Constants.SYNCED_CONFUSING, msgState.get(1));
+                        }
+                        else{
                             //default
                             msg.put(Constants.LIKE, false);
                             msg.put(Constants.CONFUSING, false);
@@ -250,7 +253,7 @@ public class Queries {
                         msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
 
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
+                    Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages);
                 }
@@ -260,7 +263,7 @@ public class Queries {
             }
         }
         else{
-            Log.d("DEBUG_QUERIES_SERVER_MSGS", "fetch messages greater than newTimeStamp");
+            Log.d("DBG_QUERIES_SERVER_MSGS", "fetch messages greater than newTimeStamp");
             //fetch messages greater than newTimeStamp
             HashMap<String, Date> parameters = new HashMap<String, Date>();
 
@@ -270,7 +273,7 @@ public class Queries {
                 //just fetch, set default state(like, confused = false, false)
                 List<ParseObject> allMessages= ParseCloud.callFunction("showLatestMessages", parameters);
                 if(allMessages != null) {
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
+                    Log.d("DBG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
                     for(int i=0; i<allMessages.size(); i++){
                         ParseObject msg = allMessages.get(i);
                         msg.put(Constants.LIKE, false);
@@ -282,7 +285,6 @@ public class Queries {
                         msg.put(Constants.DIRTY_BIT, false);
                         msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
-                    Log.d("DEBUG_QUERIES_SERVER_MSGS", "[time] pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages); //in the beginning so that [newMessages ... followed by ... original_msgList]
                 }
@@ -309,8 +311,6 @@ public class Queries {
         oldestInboxMsgQuery.fromLocalDatastore();
         oldestInboxMsgQuery.orderByAscending(Constants.TIMESTAMP);
 
-        Log.d("_FETCH_OLD", "1");
-
         ParseObject oldestMsg = null;
         try{
             oldestMsg = oldestInboxMsgQuery.getFirst();
@@ -334,9 +334,10 @@ public class Queries {
         parameters.put("date", oldestTimeStamp);
 
         try {
-            HashMap<String, List<ParseObject> > resultMap = ParseCloud.callFunction("showOldMessages", parameters);
-            List<ParseObject> allMessages = resultMap.get("message");
-            List<ParseObject> allStates = resultMap.get("states");
+            HashMap<String, Object > resultMap = ParseCloud.callFunction("showOldMessages2", parameters);
+            List<ParseObject> allMessages = (List<ParseObject>) resultMap.get("message");
+            Map<String, List<Boolean>> allStates = (Map<String, List<Boolean>>) resultMap.get("states");
+
 
             //since old messages, need to update their MessageState(like_status, confused_status)
             if(allMessages != null) {
@@ -352,27 +353,29 @@ public class Queries {
                 //use allStates to set appropriate state for the each received message
                 for(int m=0; m < allMessages.size(); m++){
                     ParseObject msg = allMessages.get(m);
-                    for(int s=0; s < allStates.size(); s++){
-                        ParseObject msgState = allStates.get(s);
-                        if(msgState.getString("message_id").equals(msg.getObjectId())){
-                            msg.put(Constants.LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
-                            msg.put(Constants.CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
-                            msg.put(Constants.SYNCED_LIKE, msgState.getBoolean(Constants.LIKE_STATUS));
-                            msg.put(Constants.SYNCED_CONFUSING, msgState.getBoolean(Constants.CONFUSED_STATUS));
-                            break;
-                        }
+                    List<Boolean> msgState = allStates.get(msg.getObjectId());
+
+                    if(msgState != null){
+                        Log.d("_FETCH_OLD", "msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
+
+                        msg.put(Constants.LIKE, msgState.get(0));
+                        msg.put(Constants.CONFUSING, msgState.get(1));
+                        msg.put(Constants.SYNCED_LIKE, msgState.get(0));
+                        msg.put(Constants.SYNCED_CONFUSING, msgState.get(1));
+                    }
+                    else{
                         //default
                         msg.put(Constants.LIKE, false);
                         msg.put(Constants.CONFUSING, false);
                         msg.put(Constants.SYNCED_LIKE, false);
                         msg.put(Constants.SYNCED_CONFUSING, false);
                     }
+
                     msg.put(Constants.USER_ID, userId);
                     msg.put(Constants.DIRTY_BIT, false);
                     msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                 }
 
-                Log.d("_FETCH_OLD", "pin and return");
                 ParseObject.pinAll(allMessages); //pin all the messages
                 return allMessages; //non null
             }
