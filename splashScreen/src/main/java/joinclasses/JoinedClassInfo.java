@@ -331,7 +331,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                     Classrooms.joinedClassAdapter.notifyDataSetChanged();
                 }
 
-                Utility.toast("You are successfully left this class");
+                Utility.toast("You have successfully left this class");
                 finish(); //close the activity
             }
             else{

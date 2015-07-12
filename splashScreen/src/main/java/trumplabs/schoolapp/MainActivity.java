@@ -62,7 +62,6 @@ import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
 import utility.Config;
 import utility.SessionManager;
-import utility.TestingUtililty;
 import utility.Utility;
 
 /**
