@@ -129,6 +129,11 @@ public class Constants {
       public static final String JOIN_INVITE = "_join_invite_dialog";
     }
 
+    public static class SharedPrefsKeys{
+      public static final String SERVER_INBOX_FETCHED = "_server_inbox_fetched"; //prepend <username>
+      public static final String SERVER_OUTBOX_FETCHED = "_server_outbox_fetched"; //prepend <username>
+    }
+
     public static class ComposeSource{
       public static final String KEY = "SOURCE";
       public static final String INSIDE = "INSIDE";

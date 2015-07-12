@@ -436,6 +436,10 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             Utility.setNewIdFlagInstallation();
             boolean installationStatus = Utility.checkParseInstallation();
+
+            //set inbox fetch flag. We dont need to fetch old messages in this account
+            SessionManager.setBooleanValue(currentUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
+
             if(installationStatus){
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save SUCCESS");
             }
