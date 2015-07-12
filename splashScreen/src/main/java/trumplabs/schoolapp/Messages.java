@@ -236,8 +236,11 @@ public class Messages extends Fragment {
                     runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                 }
 
-                Inbox newInboxMsg = new Inbox(msgs);
-                newInboxMsg.execute();
+                if(!Inbox.isQueued){
+                    Inbox newInboxMsg = new Inbox();
+                    newInboxMsg.execute();
+                }
+
                 refreshServerMessage = false;
             }
         }
@@ -303,8 +306,10 @@ public class Messages extends Fragment {
                     Utility.ls(" inbox has to sstart ... ");
                     Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
 
-                    Inbox newInboxMsg = new Inbox(msgs);
-                    newInboxMsg.execute();
+                    if(!Inbox.isQueued) {
+                        Inbox newInboxMsg = new Inbox();
+                        newInboxMsg.execute();
+                    }
 
                     //start handler for 10 secs.  <to stop refreshbar>
                     final Handler h = new Handler() {
@@ -1006,8 +1011,10 @@ public class Messages extends Fragment {
                     runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                 }
 
-                Inbox newInboxMsg = new Inbox(msgs);
-                newInboxMsg.execute();
+                if(!Inbox.isQueued) {
+                    Inbox newInboxMsg = new Inbox();
+                    newInboxMsg.execute();
+                }
             }
 
             super.onPostExecute(aVoid);
