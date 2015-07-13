@@ -20,48 +20,6 @@ import library.UtilString;
 import utility.Utility;
 
 public class ClassMsgFunctions {
-  
-  public static void sendMessageAsData(String groupCode, String msg, int attachmentFlag, String sender,
-      String groupName) {
-
-    JSONObject data = new JSONObject();
-    try {
-      
-      if(UtilString.isBlank(msg)) {
-          data.put("msg", "Image...");
-      }
-        else
-          data.put("msg", msg);
-
-      if (UtilString.isBlank(groupName))
-        data.put("groupName", "Knit");
-      else
-        data.put("groupName", groupName);
-
-    } catch (JSONException x) {
-      throw new RuntimeException("Something wrong with JSON", x);
-    }
-
-    ParsePush push = new ParsePush();
-    push.setChannel(groupCode);
-    push.setData(data);
-    push.sendInBackground();
-    
-    
-    
-    HashMap<String, String> params = new HashMap<String, String>();
-    params.put("classcode", groupCode);
-    params.put("message", msg);
-    ParseCloud.callFunctionInBackground("messagecc", params, new FunctionCallback<String>() {
-      @Override
-      public void done(String result, ParseException e) {
-
-        
-      }
-    });
-  }
-
-
     /**
      * Delete a crated classroom
      */
