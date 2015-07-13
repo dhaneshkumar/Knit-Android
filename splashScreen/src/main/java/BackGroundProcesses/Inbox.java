@@ -20,39 +20,33 @@ import utility.Queries;
 public class Inbox extends AsyncTask<Void, Void, String[]> {
 
   String[] mStrings;
-  private List<ParseObject> msgs;
-  private List<ParseObject> newMsgs;
-  private Queries query;
-  private boolean newDataStatus = false;
-  
 
-  public Inbox( List<ParseObject> msgs)
+    private Queries query;
+    public static boolean isQueued = false;
+
+    int myid = 0;
+    static int id = 0;
+
+  public Inbox()
   {
-    this.msgs = msgs;
-    query = new Queries();
+      isQueued = true; //enable so that another Inbox asynctask is not triggered
+      myid = id++;
+      Log.d("_DEBUG_INBOX", "queued " + myid);
+      query = new Queries();
   }
 
   public void doInBackgroundCore(){
-      //set lastTimeInboxSync
+      Log.d("_DEBUG_INBOX", "running background " + myid);
+
+    //set lastTimeInboxSync
       Application.lastTimeInboxSync = Calendar.getInstance().getTime();
 
       Log.d("DEBUG_INBOX", "fetching new messages and setting lastTimeInboxSync");
 
-      int initialSize = -1;
-      if(msgs != null)
-      {
-          initialSize =  msgs.size();
-      }
-
-      newMsgs = query.getServerInboxMsgs();
+      List<ParseObject> newMsgs = query.getServerInboxMsgs();
 
       if(newMsgs != null)
       {
-          if(newMsgs.size()- initialSize == 0)
-          {
-              newDataStatus = true;
-          }
-
       /*
        * Deleting extra element from list
        */
@@ -74,6 +68,9 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
   }
 
   public void onPostExecuteHelper(){
+      Log.d("_DEBUG_INBOX", "helper leaving " + myid);
+      isQueued = false; //remove queued flag.
+
       if(MainActivity.mHeaderProgressBar!=null){
           MainActivity.mHeaderProgressBar.post(new Runnable() {
               @Override
@@ -96,15 +93,10 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
           Messages.myadapter.notifyDataSetChanged();
       if(Messages.mPullToRefreshLayout != null)
           Messages.mPullToRefreshLayout.setRefreshing(false);
-
-      if(newDataStatus)
-      {
-          newDataStatus = false;
-      }
   }
 
     //notifies the adapter also
-  public void syncOtherInboxDetails(){
+  public static void syncOtherInboxDetails(){
       Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
       SeenHandler seenHandler = new SeenHandler();
       seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
@@ -140,6 +132,9 @@ public class Inbox extends AsyncTask<Void, Void, String[]> {
 
   @Override
   protected void onPostExecute(String[] result) {
+      Log.d("_DEBUG_INBOX", "asynctask leaving " + myid);
+      isQueued = false; //remove queued flag.
+
       onPostExecuteCore();
       super.onPostExecute(result);
 

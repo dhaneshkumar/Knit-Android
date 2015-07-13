@@ -23,10 +23,8 @@ import utility.Utility;
  */
 public class SeenHandler extends AsyncTask<Void, Void, String[]> {
     String[] mStrings;
-    private List<ParseObject> msgs;
 
     public SeenHandler(){
-        msgs = Messages.msgs;
     }
 
     /**
@@ -43,7 +41,6 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
     }
 
     public void syncSeenJob(){
-        if(msgs == null) return;
         Log.d("DEBUG_SEEN_HANDLER", "Starting");
         ParseUser user = ParseUser.getCurrentUser();
 
