@@ -58,7 +58,7 @@ public class ClassRoomsUpdate {
 
             ParseQuery joinedQuery = new ParseQuery(Constants.CODE_GROUP);
             joinedQuery.fromLocalDatastore();
-            joinedQuery.whereEqualTo("userId", user.getUsername());
+            joinedQuery.whereEqualTo(Constants.USER_ID, user.getUsername());
             joinedQuery.whereContainedIn("code", joinedClassCodes);
 
             try{
@@ -109,10 +109,10 @@ public class ClassRoomsUpdate {
         ParseFile newPid = (ParseFile) userInfo.get("pid");
         String newName = (String) userInfo.get("name");
 
-        ParseQuery userQuery = new ParseQuery("User");
+        ParseQuery userQuery = new ParseQuery(Constants.UserTable._TNAME);
         userQuery.fromLocalDatastore();
-        userQuery.whereEqualTo("username", username);
-        userQuery.whereEqualTo("userId", currentUserName); //associated with current logged in user
+        userQuery.whereEqualTo(Constants.UserTable.USERNAME, username);
+        userQuery.whereEqualTo(Constants.USER_ID, currentUserName); //associated with current logged in user
 
         try{
             List<ParseObject> userObjects = userQuery.find();
@@ -123,39 +123,39 @@ public class ClassRoomsUpdate {
             if(userObjects.size() == 0){
                 nameChanged = true;
                 //create a new User object and pin with dirty true
-                ParseObject newUser = new ParseObject("User");
-                newUser.put("username", username);
+                ParseObject newUser = new ParseObject(Constants.UserTable._TNAME);
+                newUser.put(Constants.UserTable.USERNAME, username);
                 if(newPid != null){
-                    newUser.put("pid", newPid);
-                    newUser.put("dirty", true);
+                    newUser.put(Constants.UserTable.PID, newPid);
+                    newUser.put(Constants.UserTable.DIRTY, true);
                 }
                 else{
-                    newUser.put("dirty", false);
+                    newUser.put(Constants.UserTable.DIRTY, false);
                 }
                 Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : creating a new User object with dirty " +
-                        Boolean.toString(newUser.getBoolean("dirty")));
+                        Boolean.toString(newUser.getBoolean(Constants.UserTable.DIRTY)));
 
-                newUser.put("name", newName);
-                newUser.put("userId", currentUserName);
+                newUser.put(Constants.UserTable.NAME, newName);
+                newUser.put(Constants.USER_ID, currentUserName);
                 newUser.pinInBackground();
             }
             else{
                 ParseObject oldUser = userObjects.get(0);
                 boolean changed = false; //flag telling whether some info has changed. Used whether to pin or not
-                if(!oldUser.getString("name").equals(newName)){
+                if(!oldUser.getString(Constants.UserTable.NAME).equals(newName)){
                     //update the name here
 
                     Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : updating user's name to " + newName);
-                    oldUser.put("name", newName);
+                    oldUser.put(Constants.UserTable.NAME, newName);
                     changed = true;
                     nameChanged = true;
                 }
 
                 if(newPid != null){
-                    if(oldUser.getParseFile("pid") == null || !oldUser.getParseFile("pid").getName().equals(newPid.getName())){//if existing is null or has different name from newPid
+                    if(oldUser.getParseFile(Constants.UserTable.PID) == null || !oldUser.getParseFile(Constants.UserTable.PID).getName().equals(newPid.getName())){//if existing is null or has different name from newPid
                         Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : updating user's pic to " + newPid.getName());
-                        oldUser.put("pid", newPid);
-                        oldUser.put("dirty", true); //has become dirty. i.e need to fetch updated profile pic
+                        oldUser.put(Constants.UserTable.PID, newPid);
+                        oldUser.put(Constants.UserTable.DIRTY, true); //has become dirty. i.e need to fetch updated profile pic
                         changed = true;
                     }
                 }
@@ -170,7 +170,7 @@ public class ClassRoomsUpdate {
                 ParseQuery classQuery = new ParseQuery(Constants.CODE_GROUP);
                 classQuery.fromLocalDatastore();
                 classQuery.whereEqualTo("senderId", username);
-                classQuery.whereEqualTo("userId", currentUserName);
+                classQuery.whereEqualTo(Constants.USER_ID, currentUserName);
 
                 List<ParseObject> classList = classQuery.find();
                 if (classList != null) {
@@ -191,10 +191,10 @@ public class ClassRoomsUpdate {
         fetch new profile pics for dirty marked Users
      */
     public static void fetchProfilePics(String currentUserName){
-        ParseQuery dirtyUserQuery = new ParseQuery("User");
+        ParseQuery dirtyUserQuery = new ParseQuery(Constants.UserTable._TNAME);
         dirtyUserQuery.fromLocalDatastore();
-        dirtyUserQuery.whereEqualTo("dirty", true);
-        dirtyUserQuery.whereEqualTo("userId", currentUserName);
+        dirtyUserQuery.whereEqualTo(Constants.UserTable.DIRTY, true);
+        dirtyUserQuery.whereEqualTo(Constants.USER_ID, currentUserName);
 
         try{
             List<ParseObject> dirtyUsers = dirtyUserQuery.find();
@@ -212,8 +212,8 @@ public class ClassRoomsUpdate {
 
 
     public static void downloadProfileImage(final ParseObject dirtyUser) {
-        String senderId = dirtyUser.getString("username");
-        final ParseFile senderImagefile = dirtyUser.getParseFile("pid");
+        String senderId = dirtyUser.getString(Constants.UserTable.USERNAME);
+        final ParseFile senderImagefile = dirtyUser.getParseFile(Constants.UserTable.PID);
 
         Log.d("DEBUG_CLASS_ROOMS_UPDATE", "downloadProfileImage() : start downloading pic for " + senderId);
 
@@ -232,7 +232,7 @@ public class ClassRoomsUpdate {
                                 fos.write(data);
 
                                 //download and save is success. Set dirty bit to false and pin
-                                dirtyUser.put("dirty", false);
+                                dirtyUser.put(Constants.UserTable.DIRTY, false);
                                 dirtyUser.pin();
                                 Log.d("DEBUG_CLASS_ROOMS_UPDATE", "downloadProfileImage() : profile pic download and save successful in " + filePath);
                             } catch (IOException e1) {
@@ -262,7 +262,7 @@ public class ClassRoomsUpdate {
         }
         else{
             //since it has no valid image parse file, just set dirty to false
-            dirtyUser.put("dirty", false);
+            dirtyUser.put(Constants.UserTable.DIRTY, false);
             try{
                 dirtyUser.pin();
             }

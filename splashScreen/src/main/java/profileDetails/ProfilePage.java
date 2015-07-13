@@ -123,14 +123,16 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         try {
             final File thumbnailFile = new File(filePath);
             if (thumbnailFile.exists()) {
+                Log.d("__K", "displaying available locally : " + filePath);
                 // image file present locally
                 Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
                 profileimgview.setImageBitmap(myBitmap);
             } else if (ParseUser.getCurrentUser() != null && ParseUser.getCurrentUser().has("pid")) {
-
+                Log.d("__K", "displaying fetching :" + filePath);
                 ParseFile imagefile = (ParseFile) ParseUser.getCurrentUser().get("pid");
                 imagefile.getDataInBackground(new GetDataCallback() {
                     public void done(byte[] data, ParseException e) {
+                        Log.d("__K", "displaying date fetch over :" + filePath);
                         if (e == null) {
                             // ////Image download successful
                             FileOutputStream fos;
@@ -485,6 +487,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     }
 
     public void updateProfilePic(final String filepath, final String userId) throws IOException {
+        Log.d("__K", "pic path=" + filepath);
         int slashindex = (filepath).lastIndexOf("/");
         String fileName = (filepath).substring(slashindex + 1);// image file //
         // name
@@ -500,9 +503,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 public void done(ParseException e) {
                     if (e == null) {
                         Utility.toast("Profile Pic Updated!!");
-
-
-                        ParseUser.getCurrentUser().put("pid", file);
 
                         picName = ParseUser.getCurrentUser().getString("picName");
                         if (picName == null) {
@@ -520,53 +520,25 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                             }
                             picName += Integer.toString(++count);
                         }
+
+                        //TODO call cloud function updateProfilePic
+                        ParseUser.getCurrentUser().put("pid", file);
                         ParseUser.getCurrentUser().put("picName", picName);
                         ParseUser.getCurrentUser().saveInBackground();
 
+                        /*
+                         * Saving image details in Codegroup globally - DON'T DO NOW - avoid redundancy in cloud
+                         */
 
-            /*
-             * Saving image details in code group
-             */
-
-                        ParseQuery<ParseObject> codeQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
-                        codeQuery.whereEqualTo("senderId", userId);
-
-                        codeQuery.findInBackground(new FindCallback<ParseObject>() {
-
-                            @Override
-                            public void done(List<ParseObject> arg0, ParseException arg1) {
-                                if (arg1 == null) {
-                                    if (arg0 != null) {
-                                        for (int i = 0; i < arg0.size(); i++) {
-                                            ParseObject obj = arg0.get(i);
-                                            if (picName != null)
-                                                obj.put("picName", picName);
-                                            if (ParseUser.getCurrentUser().getParseFile("pid") != null)
-                                                obj.put("senderPic", ParseUser.getCurrentUser().getParseFile("pid"));
-                                            obj.saveInBackground();
-                                        }
-                                    }
-                                }
-                            }
-
-                        });
-
-
-                        // updating locally
-                        ParseQuery<ParseObject> query1 = ParseQuery.getQuery("UserDetails");
-                        query1.fromLocalDatastore();
-                        query1.whereEqualTo("userId", userId);
-                        try {
-                            ParseObject object = query1.getFirst();
-                            object.put("pid", file);
-                        } catch (ParseException e1) {
-                        }
                     } else {
+                        Log.d("__K", "deleting " + filepath);
                         Utility.toast("Profile Pic Not Updated!!");
 
                         File file = new File(filepath);
 
-                        boolean check = file.delete();
+                        boolean check = file.delete(); //file <username>_PC.jpg will be deleted. But the pid in User object is not updated and the corresponding
+                                                        //parsefile's data is already present. So next time when pic file is not present in sdcard,
+                                                        //we won't need to fetch the data for parsefile. So consistent even if net not present ;)
 
                     }
                 }

@@ -18,6 +18,16 @@ public class Constants {
   public static final String PHONE = "phone";
 
   /*
+    Users table - store updated teacher's name and pic info
+   */
+  public static class UserTable{
+    public static final String _TNAME = "User";
+    public static final String DIRTY = "dirty";
+    public static final String NAME = "name";
+    public static final String PID = "pid";
+    public static final String USERNAME = "username";
+  }
+  /*
    * groupDetails table variables
    */
   public static final String GROUP_DETAILS = "GroupDetails";
