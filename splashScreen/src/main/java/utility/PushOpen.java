@@ -202,6 +202,7 @@ public class PushOpen extends MyActionBarActivity {
 
                 //updating user entry
                 if (user != null) {
+                    user.fetchInBackground(); //so that updated joined groups list come immediately
                     //user should be non-null for generating local message
                     ParseObject codeGroupObject = null;
                     try {
