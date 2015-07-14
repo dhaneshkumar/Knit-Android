@@ -11,15 +11,16 @@ import trumplabs.schoolapp.Constants;
  */
 public class UpdateAllClassSubscribers  {
 
-    static void updateMembers()
+    //call from THREAD only
+    public static void updateMembers()
     {
         ParseUser user = ParseUser.getCurrentUser();
         if(user != null)
         {
             if(user.getString("role").equals(Constants.TEACHER))
             {
-                        MemberList memberList = new MemberList();
-                        memberList.doInBackgroundCore();
+                MemberList memberList = new MemberList();
+                memberList.doInBackgroundCore();
 
                 Log.d("SUBSCRIBER", "updating subscriber in a thread");
             }

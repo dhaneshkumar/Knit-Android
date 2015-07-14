@@ -469,16 +469,15 @@ public class Subscribers extends MyActionBarActivity {
                                 param.put("emailId", memberId);
                             param.put("usertype", "app");
 
-                            Log.d("REMOVE", "calling  start remove function");
+                            Log.d("REMOVE", "calling : removeMember function");
 
                             isRemoved = ParseCloud.callFunction("removeMember", param);
 
-                            Log.d("REMOVE", "calling remove function");
-
+                            Log.d("REMOVE", "call over : removeMember function");
 
                             if(isRemoved){
-
-                                obj.fetch();        //retrieving updates from server
+                                Log.d("REMOVE", "success - just unpin it");
+                                obj.unpin(); //just unpin for now. Next time if it is fetched using MemberList task, it will have updated value for status column
 
                                 /*******    check whether fetched obj saved automatically or not ********/
                                 memberDetails = memberQuery.getLocalClassMembers(classCode);
@@ -519,7 +518,7 @@ public class Subscribers extends MyActionBarActivity {
                             isRemoved = ParseCloud.callFunction("removeMember", param);
 
                             if(isRemoved){
-                                obj.fetch();        //retrieving updates from server
+                                obj.unpin(); //just unpin for now. Next time if it is fetched using MemberList task, it will have updated field for status
 
                                 /*******    check whether fetched obj saved automatically or not ********/
                                 memberDetails = memberQuery.getLocalClassMembers(classCode);

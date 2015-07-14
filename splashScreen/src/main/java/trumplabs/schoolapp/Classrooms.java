@@ -198,35 +198,6 @@ public class Classrooms extends Fragment  {
         }
         return groups;
     }
-/*
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.refresh:
-
-                if(Utility.isInternetExist(getActivity())) {
-                    //showing refreshing bar
-                    if (MainActivity.mHeaderProgressBar != null) {
-                        Tools.runSmoothProgressBar(MainActivity.mHeaderProgressBar, 10);
-                    }
-
-                    if(isTeacher) {
-                        //refreshing class-list in background
-                        CreatedClassRooms createdClassList = new CreatedClassRooms();
-                        createdClassList.execute();
-                    }
-                    //refreshing joined classes list
-                    JoinedClassRooms joinClass = new JoinedClassRooms();
-                    joinClass.execute();
-
-
-                }
-                break;
-            default:
-                break;
-        }
-        return super.onOptionsItemSelected(item);
-    }*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

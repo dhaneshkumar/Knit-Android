@@ -202,12 +202,6 @@ public class PushOpen extends MyActionBarActivity {
 
                 //updating user entry
                 if (user != null) {
-                    try {
-                        user.fetch();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-
                     //user should be non-null for generating local message
                     ParseObject codeGroupObject = null;
                     try {

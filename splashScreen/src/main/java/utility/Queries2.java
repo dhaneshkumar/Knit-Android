@@ -7,21 +7,20 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-import BackGroundProcesses.CreatedClassRooms;
+import BackGroundProcesses.MemberList;
+import BackGroundProcesses.UpdateAllClassSubscribers;
 import library.UtilString;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MainActivity;
 
 public class Queries2 {
 
@@ -97,9 +96,7 @@ public class Queries2 {
 
             //Fetch subscriber list once and for all in the same thread user for fetching all class details
             Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "fetching subscriber list of all created classes once");
-            CreatedClassRooms createdClassList = new CreatedClassRooms();
-            createdClassList.doInBackgroundCore();
-            createdClassList.onPostExecuteCoreHelper();
+            UpdateAllClassSubscribers.updateMembers();
         }
         catch (ParseException e){
             e.printStackTrace();

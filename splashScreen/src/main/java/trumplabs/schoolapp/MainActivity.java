@@ -434,15 +434,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         //show rate app dialog after using 10 times app
-        if(appOpeningCount == 11) {
-
-            if( user!= null && !user.getBoolean("APP_RATED")) { //checking whether already app rated or not
+        if(sessionManager.getSignUpAccount() && appOpeningCount == 11) {
+            if( user != null) {
                 FragmentManager fm = getSupportFragmentManager();
                 RateAppDialog rateAppDialog = new RateAppDialog();
                 rateAppDialog.show(fm, "rate app");
-
-                user.put("APP_RATED", true);
-                user.saveEventually();
             }
         }
 
