@@ -493,6 +493,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                         model = android.os.Build.MODEL;
                     parseSession.put("model", model);
                     parseSession.put("os", "ANDROID");
+                    parseSession.put("role", ParseUser.getCurrentUser().getString(Constants.ROLE));
 
                     if(login){
                         if (PhoneLoginPage.mLastLocation != null) {
