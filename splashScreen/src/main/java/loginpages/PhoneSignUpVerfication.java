@@ -259,6 +259,11 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 param.put("number", PhoneSignUpName.phoneNumber);
                 param.put("name", /*PhoneSignUpName.title + " " + */ PhoneSignUpName.displayName);
                 param.put("role", PhoneSignUpName.role);
+                String emailId = Utility.getAccountEmail();
+                Log.d("__Y", "got email from account " + emailId);
+                if(emailId != null){
+                    param.put("emailId", emailId);
+                }
             }
             else{
                 param.put("number", PhoneLoginPage.phoneNumber);

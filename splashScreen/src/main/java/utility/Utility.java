@@ -1,5 +1,7 @@
 package utility;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
@@ -14,6 +16,7 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
@@ -38,6 +41,7 @@ import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -548,5 +552,19 @@ public class Utility extends MyActionBarActivity {
         float scale = Application.getAppContext().getResources().getDisplayMetrics().density;
         int pixels = (int) (dpi * scale + 0.5f);
         return pixels;
+    }
+
+    public static String getAccountEmail(){
+        Pattern emailPattern = Patterns.EMAIL_ADDRESS; // API level 8+
+        Account[] accounts = AccountManager.get(Application.getAppContext()).getAccounts();
+        for (Account account : accounts) {
+            if (emailPattern.matcher(account.name).matches()) {
+                String possibleEmail = account.name;
+                if(possibleEmail != null){
+                    return possibleEmail;
+                }
+            }
+        }
+        return null;
     }
 }
