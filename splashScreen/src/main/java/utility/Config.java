@@ -6,7 +6,7 @@ public class Config {
 
   /*
    * Parse Configurations
-   * 5 Parameters to change before updating app on playstore
+   * 6 Parameters to change before updating app on playstore
    */
 
     /*
@@ -15,7 +15,7 @@ public class Config {
     //public static final String APP_ID="jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
     public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
 
-  /*
+    /*
     2. Select CLIENT Key
      */
     //public static final String CLIENT_KEY= "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // Knit

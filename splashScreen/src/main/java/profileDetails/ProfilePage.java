@@ -7,12 +7,12 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -25,21 +25,19 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.FindCallback;
+import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
-import com.parse.SaveCallback;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.List;
+import java.util.HashMap;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
@@ -54,10 +52,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     private TextView name_textView;
     private TextView phone_textView;
     private String userId;
-    private String picName;
     private String filePath;
     private String name;
-    private String phone;
     public static LinearLayout progressBarLayout;
     public static LinearLayout profileLayout;
 
@@ -105,8 +101,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
      * Setting local data
      */
         name = user.getString(Constants.NAME);
-        phone = user.getString(Constants.PHONE);
-        //school = user.getString(Constants.SCHOOL);
 
         if (!UtilString.isBlank(name))
             name_textView.setText(name);
@@ -116,8 +110,45 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     /*
      * set Profile Pic.
      */
-        String userString = userId;
-        userString = userId.replaceAll("@", "");
+        setProfilePic();
+
+    /*
+     * Setting clicklistner on each buttton
+     */
+        profileimgview.setOnClickListener(this);
+        editName.setOnClickListener(this);
+        //editPhone.setOnClickListener(this);
+        rateOurApp.setOnClickListener(this);
+        faq.setOnClickListener(this);
+        feedback.setOnClickListener(this);
+        signOut.setOnClickListener(this);
+
+        //following handles update app action from profile page
+        if (getIntent().hasExtra("action")) {
+            if (getIntent().getStringExtra("action").equals(Constants.PROFILE_PAGE_ACTION)) {
+                //go to market
+                Uri uri = Uri.parse("market://details?id=" + getPackageName());
+                Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
+
+                if(Utility.isInternetExistWithoutPopup()) {
+                    try {
+                        startActivity(myAppLinkToMarket);
+                    } catch (ActivityNotFoundException e) {
+                    }
+                } else {
+                    Utility.toast("Check your Internet Connection.");
+
+                    Intent intent = new Intent(this, MainActivity.class);
+                    startActivity(intent);
+                }
+            }
+        }
+
+      //  FacebookSdk.sdkInitialize(getApplicationContext());
+    }
+
+    void setProfilePic(){
+        String userString = userId.replaceAll("@", "");
         filePath = Utility.getWorkingAppDir() + "/thumbnail/" + userString + "_PC.jpg";
 
         try {
@@ -132,7 +163,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 ParseFile imagefile = (ParseFile) ParseUser.getCurrentUser().get("pid");
                 imagefile.getDataInBackground(new GetDataCallback() {
                     public void done(byte[] data, ParseException e) {
-                        Log.d("__K", "displaying date fetch over :" + filePath);
+                        Log.d("__K", "displaying fetch over :" + filePath);
                         if (e == null) {
                             // ////Image download successful
                             FileOutputStream fos;
@@ -172,43 +203,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             }
         } catch (Exception e) {
         }
-
-    /*
-     * Setting clicklistner on each buttton
-     */
-        profileimgview.setOnClickListener(this);
-        editName.setOnClickListener(this);
-        //editPhone.setOnClickListener(this);
-        rateOurApp.setOnClickListener(this);
-        faq.setOnClickListener(this);
-        feedback.setOnClickListener(this);
-        signOut.setOnClickListener(this);
-
-        //following handles update app action from profile page
-        if (getIntent().hasExtra("action")) {
-            if (getIntent().getStringExtra("action").equals(Constants.PROFILE_PAGE_ACTION)) {
-                //go to market
-                Uri uri = Uri.parse("market://details?id=" + getPackageName());
-                Intent myAppLinkToMarket = new Intent(Intent.ACTION_VIEW, uri);
-
-                if(Utility.isInternetExistWithoutPopup()) {
-                    try {
-                        startActivity(myAppLinkToMarket);
-                    } catch (ActivityNotFoundException e) {
-                    }
-                } else {
-                    Utility.toast("Check your Internet Connection.");
-
-                    Intent intent = new Intent(this, MainActivity.class);
-                    startActivity(intent);
-                }
-            }
-        }
-
-    
-      //  FacebookSdk.sdkInitialize(getApplicationContext());
     }
-
 
     @Override
     protected void onResume() {
@@ -262,12 +257,11 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     File thumbnailFile = new File(filePath);
                     Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
                     profileimgview.setImageBitmap(myBitmap);
-                    // //update the profile picture on server
-                    try {
-                        updateProfilePic(filePath, userId);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+
+                    //update the profile picture on server
+                    UpdateProfilePicTask task = new UpdateProfilePicTask(filePath);
+                    task.execute();
+
                     break;
                 case Activity.RESULT_CANCELED:
                     break;
@@ -344,25 +338,40 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                         (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                                 imm.hideSoftInputFromWindow(nameInput.getWindowToken(), 0);
 
-                                ParseUser user = ParseUser.getCurrentUser();
-                                if (user != null) {
-                                    user.put("name", value);
-                                    user.saveInBackground(new SaveCallback() {
+                                final ParseUser user = ParseUser.getCurrentUser();
+                                if(user == null){
+                                    return;
+                                }
+
+                                HashMap<String, Object> parameters = new HashMap<String, Object>();
+                                parameters.put("name", value);
+
+                                ParseCloud.callFunctionInBackground("updateProfileName", parameters,
+                                    new FunctionCallback<Boolean>() {
                                         @Override
-                                        public void done(ParseException e) {
-                                            if (e == null) {
-                                                name_textView.setText(value);
+                                        public void done(Boolean result, ParseException e) {
+                                            if (e == null && result) {
+                                                Log.d("__N", "all success : now just pinning");
+                                                name = value;
+                                                name_textView.setText(name);
                                                 Utility.toast("Name updated !");
+                                                user.put("name", value);
+                                                try {
+                                                    user.pin();
+                                                } catch (ParseException e2) {
+                                                    e2.printStackTrace();
+                                                }
                                             } else {
-                                                e.printStackTrace();
+                                                Log.d("__N", "cloud call failed");
                                                 Utility.toast("Name update failed !");
                                             }
                                         }
-                                    });
-
-
-                                }
+                                    }
+                                );
                             }
+                        }
+                        else{
+                            Utility.toast("Name can't be empty !");
                         }
                     }
                 });
@@ -379,59 +388,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 dialog.show();
 
                 break;
-
-            case R.id.editPhone: //Not used right now
-        /*
-         * Updating Phone Details ----------------------------------
-         */
-                AlertDialog.Builder alert = new AlertDialog.Builder(this);
-
-                alert.setTitle("Update Phone Number");
-
-                LinearLayout layout = new LinearLayout(this);
-                layout.setOrientation(LinearLayout.VERTICAL);
-                LinearLayout.LayoutParams params =
-                        new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT);
-                params.setMargins(30, 30, 30, 30);
-
-                final EditText input = new EditText(this);
-                input.setText(phone);
-                layout.addView(input, params);
-                alert.setView(layout);
-                input.setRawInputType(Configuration.KEYBOARD_QWERTY);
-                alert.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        String value = input.getText().toString();
-
-                        if (!UtilString.isBlank(value)) {
-
-                            if(Utility.isInternetExist()) {
-                                InputMethodManager imm =
-                                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                                imm.hideSoftInputFromWindow(input.getWindowToken(), 0);
-
-                                ParseUser user = ParseUser.getCurrentUser();
-                                if (user != null) {
-                                    user.put("phone", value);
-                                    user.saveEventually();
-                                    phone_textView.setText(value);
-                                }
-                            }
-                        }
-                    }
-                });
-
-                alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int whichButton) {
-                        dialog.dismiss();
-                    }
-                });
-
-                alert.show();
-
-                break;
-
       /*
        * Setting feedback
        */
@@ -485,73 +441,98 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 break;
         }
     }
-
-    public void updateProfilePic(final String filepath, final String userId) throws IOException {
-        Log.d("__K", "pic path=" + filepath);
-        int slashindex = (filepath).lastIndexOf("/");
-        String fileName = (filepath).substring(slashindex + 1);// image file //
-        // name
-
-        if (ParseUser.getCurrentUser() != null) {
-            RandomAccessFile f = new RandomAccessFile(filepath, "r");
-            byte[] data = new byte[(int) f.length()];
-            f.read(data);
-            final ParseFile file = new ParseFile(fileName, data);
-            file.saveInBackground(new SaveCallback() {
-
-                @Override
-                public void done(ParseException e) {
-                    if (e == null) {
-                        Utility.toast("Profile Pic Updated!!");
-
-                        picName = ParseUser.getCurrentUser().getString("picName");
-                        if (picName == null) {
-                            // picName = userId.replaceAll("\\.", "");
-                            picName = userId.replaceAll("@", "") + "___0";
-                        } else {
-                            String[] parts = picName.split("___");
-
-                            int count = Integer.parseInt(parts[parts.length - 1]);
-
-                            picName = "";
-
-                            for (int i = 0; i < parts.length - 1; i++) {
-                                picName += parts[i] + "___";
-                            }
-                            picName += Integer.toString(++count);
-                        }
-
-                        //TODO call cloud function updateProfilePic
-                        ParseUser.getCurrentUser().put("pid", file);
-                        ParseUser.getCurrentUser().put("picName", picName);
-                        ParseUser.getCurrentUser().saveInBackground();
-
-                        /*
-                         * Saving image details in Codegroup globally - DON'T DO NOW - avoid redundancy in cloud
-                         */
-
-                    } else {
-                        Log.d("__K", "deleting " + filepath);
-                        Utility.toast("Profile Pic Not Updated!!");
-
-                        File file = new File(filepath);
-
-                        boolean check = file.delete(); //file <username>_PC.jpg will be deleted. But the pid in User object is not updated and the corresponding
-                                                        //parsefile's data is already present. So next time when pic file is not present in sdcard,
-                                                        //we won't need to fetch the data for parsefile. So consistent even if net not present ;)
-
-                    }
-                }
-            });
-
-        } else {
-            Utility.toast("Profile Pic Not Updated!!");
-        }
-    }
-
+    
     public void onBackPressed() {
         Intent intent = new Intent(ProfilePage.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    class UpdateProfilePicTask extends AsyncTask<Void, Void, Void>
+    {
+        String filepath;
+        Boolean success = false;
+
+        public UpdateProfilePicTask(final String fp) {
+            filepath = fp;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            Log.d("__K", "pic path=" + filepath);
+
+            if(!Utility.isInternetExistWithoutPopup()){
+                return null; //return immediately if internet not connected
+            }
+
+            int slashindex = (filepath).lastIndexOf("/");
+            String fileName = (filepath).substring(slashindex + 1);// image file //
+            // name
+
+            if (ParseUser.getCurrentUser() != null) {
+                byte[] data = null;
+                try {
+                    RandomAccessFile f = new RandomAccessFile(filepath, "r");
+                    data = new byte[(int) f.length()];
+                    f.read(data);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                if (data == null) {
+                    Log.d("__K", "file read error");
+                    return null;
+                }
+
+                final ParseFile file = new ParseFile(fileName, data);
+                try {
+                    file.save();
+                    HashMap<String, Object> parameters = new HashMap<String, Object>();
+                    parameters.put("pid", file);
+                    boolean result = ParseCloud.callFunction("updateProfilePic", parameters);
+
+                    if (result) {
+                        Log.d("__K", "all success : now just pinning");
+                        //TODO call cloud function updateProfilePic
+                        ParseUser.getCurrentUser().put("pid", file);
+                        ParseUser.getCurrentUser().pin();
+                        success = true;
+                    } else {
+                        Log.d("__K", "cloud code returned false :(");
+                    }
+                } catch (ParseException e) {
+                    Log.d("__K", "parse file save, cloud code call OR pinning failure");
+                    e.printStackTrace();
+                }
+            }
+            else{
+                Log.d("__K", "parse user null");
+            }
+
+            return null;
+        }
+
+
+        void deletePicFileOnFailure(){
+            File file=new File(filepath);
+
+            boolean check=file.delete();//file <username>_PC.jpg will be deleted. But the pid in User object is not updated and the corresponding
+                                        //parsefile's data is already present. So next time when pic file is not present in sdcard,
+                                        //we won't need to fetch the data for parsefile. So consistent even if net not present ;)
+        }
+
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if(success) {
+                Utility.toast("Profile Pic Updated!!");
+            }
+            else{
+                Utility.toast("Profile Pic Not Updated!!");
+                deletePicFileOnFailure();
+                setProfilePic();
+            }
+        }
     }
 }
