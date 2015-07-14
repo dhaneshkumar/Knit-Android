@@ -87,8 +87,8 @@ public class Constants {
 
     //time milliseconds
     public static final long MINUTE_MILLISEC = 60 * 1000;
-    public static final long HOUR_MILLISEC = 60 * 60 * 1000;
-    public static final long DAY_MILLISEC = 24 * 60 * 60 * 1000;
+    public static final long HOUR_MILLISEC = 60 * MINUTE_MILLISEC;
+    public static final long DAY_MILLISEC = 24 * HOUR_MILLISEC;
 
     public static final String DEFAULT_NAME = "Knit";
 
