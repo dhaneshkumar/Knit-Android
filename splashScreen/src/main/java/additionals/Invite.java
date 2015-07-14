@@ -2,6 +2,7 @@
 package additionals;
 
 import android.content.Intent;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Typeface;
 import android.net.Uri;
@@ -15,9 +16,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
 import com.facebook.share.model.AppInviteContent;
 import com.facebook.share.widget.AppInviteDialog;
@@ -212,37 +210,27 @@ public class Invite extends MyActionBarActivity{
           public void onClick(View v) {
               String appLinkUrl, previewImageUrl;
 
-              appLinkUrl = " https://fb.me/744615242350716";
+              appLinkUrl = "https://fb.me/744615242350716";
               previewImageUrl = "http://knitapp.co.in/images/fb_app_invite.png";
 
-              if (AppInviteDialog.canShow()) {
-                  AppInviteContent content = new AppInviteContent.Builder()
-                          .setApplinkUrl(appLinkUrl)
-                          .setPreviewImageUrl(previewImageUrl)
-                          .build();
-                  CallbackManager  sCallbackManager = CallbackManager.Factory.create();
 
-                  AppInviteDialog appInviteDialog = new AppInviteDialog(Invite.this);
-                  appInviteDialog.registerCallback(sCallbackManager,
-                          new FacebookCallback<AppInviteDialog.Result>() {
-                              @Override
-                              public void onSuccess(AppInviteDialog.Result result) {
-                                  Log.d("Invitation", "Invitation Sent Successfully");
-                                  finish();
-                              }
+              try{
+                  ApplicationInfo info = getPackageManager().
+                          getApplicationInfo("com.facebook.katana", 0 );
 
-                              @Override
-                              public void onCancel() {
-                              }
+                  if (AppInviteDialog.canShow()) {
+                      AppInviteContent content = new AppInviteContent.Builder()
+                              .setApplinkUrl(appLinkUrl)
+                              .setPreviewImageUrl(previewImageUrl)
+                              .build();
+                      AppInviteDialog.show(Invite.this, content);
+                  }
 
-                              @Override
-                              public void onError(FacebookException e) {
-                                  Log.d("Invitation", "Error Occured");
-                              }
-                          });
-
-                  appInviteDialog.show(content);
+              } catch( PackageManager.NameNotFoundException e ){
+                  Utility.toast("Facebook not installed !");
               }
+
+
           }
       });
 
