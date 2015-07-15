@@ -31,6 +31,7 @@ import com.parse.ParseUser;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.List;
 
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
@@ -310,8 +311,15 @@ public class JoinedClassInfo extends MyActionBarActivity {
             param.put("installationObjectId", ParseInstallation.getCurrentInstallation().getString("id"));
 
             try {
-                ParseObject updatedUser = ParseCloud.callFunction("leaveClass2", param);
-                updatedUser.pin();
+                List<List<String>> updatedJoinedGroups = ParseCloud.callFunction("leaveClass3", param);
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                if(updatedJoinedGroups == null || currentUser == null){
+                    Log.d("DEBUG_JOINED_CLASS_INFO", "UnSubscribeTask() updatedJoinedGroups/currentUser null");
+                    return null;
+                }
+                Log.d("DEBUG_JOINED_CLASS_INFO", "UnSubscribeTask() success");
+                currentUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
+                currentUser.pin();
                 success = true;
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -351,14 +359,19 @@ public class JoinedClassInfo extends MyActionBarActivity {
         protected Void doInBackground(Void... params) {
 
             HashMap<String, Object> parameters = new HashMap<String, Object>();
-
             parameters.put("classCode", classCode);
             parameters.put("childName", newAssignedName);
 
             try{
-                ParseObject updatedUser = ParseCloud.callFunction("changeAssociateName2", parameters);
+                List<List<String>> updatedJoinedGroups = ParseCloud.callFunction("changeAssociateName3", parameters);
+                ParseUser currentUser = ParseUser.getCurrentUser();
+                if(updatedJoinedGroups == null || currentUser == null){
+                    Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() updatedJoinedGroups/currentUser null");
+                    return null;
+                }
                 Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() success with new asso name "+ newAssignedName);
-                updatedUser.pin();
+                currentUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
+                currentUser.pin();
                 success = true;
             }
             catch (ParseException e){

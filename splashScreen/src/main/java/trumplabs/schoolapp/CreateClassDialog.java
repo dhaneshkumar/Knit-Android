@@ -22,6 +22,7 @@ import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import additionals.Invite;
@@ -179,7 +180,7 @@ public class CreateClassDialog extends DialogFragment{
             //calling parse cloud function to create class
             HashMap<String, Object> result = null;
             try {
-                result = ParseCloud.callFunction("createClass2", params);
+                result = ParseCloud.callFunction("createClass3", params);
             } catch (ParseException e) {
                 e.printStackTrace();
                 return false;
@@ -189,15 +190,18 @@ public class CreateClassDialog extends DialogFragment{
                 return false;
 
             ParseObject codeGroupObject = (ParseObject) result.get("codegroup");
-            ParseObject updatedUser = (ParseObject) result.get("user");
-            if(codeGroupObject == null || updatedUser == null)
+            List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS); //todo change the key name acc
+
+            ParseUser currentUser = ParseUser.getCurrentUser();
+            if(codeGroupObject == null || updatedCreatedGroups == null || currentUser == null)
                 return false;
 
             //successfully created your class
             //locally saving codegroup(of that class) and updated user object
             codeGroupObject.put("userId", user.getUsername());
+            currentUser.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
             try {
-                updatedUser.pin();
+                currentUser.pin();
                 codeGroupObject.pin();
             } catch (ParseException e) {
                 e.printStackTrace();

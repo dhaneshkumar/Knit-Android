@@ -15,6 +15,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
 
 import library.UtilString;
 import utility.Utility;
@@ -35,51 +36,52 @@ public class ClassMsgFunctions {
             params.put("classcode", groupCode);
 
             //calling parse cloud function to delete class
-            ParseObject updatedUser = null;
+            ParseUser currentUser = ParseUser.getCurrentUser();
+            List<List<String>> updatedCreatedGroups = null;
             try {
-                updatedUser = ParseCloud.callFunction("deleteClass2", params);
+                updatedCreatedGroups = ParseCloud.callFunction("deleteClass3", params);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
 
-            if(updatedUser != null) {
-                //classroom has been deleted then
-                //pin updated user object
-                ParseUser user = ParseUser.getCurrentUser();
-                try {
-                    updatedUser.pin();
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-
-                //locally removing sent messages of that class
-                ParseQuery<ParseObject> delquery22 = new ParseQuery<ParseObject>(Constants.SENT_MESSAGES_TABLE);
-                delquery22.whereEqualTo("code", groupCode);
-                delquery22.whereEqualTo("userId", user.getUsername());
-                delquery22.setLimit(1000);
-                delquery22.fromLocalDatastore();
-                try {
-                    ParseObject.unpinAll(delquery22.find());
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
-                }
-
-                //locally removing all members of that group
-                ParseQuery<ParseObject> delquery33 = new ParseQuery<ParseObject>(Constants.GROUP_MEMBERS);
-                delquery33.whereEqualTo("code", groupCode);
-                delquery33.whereEqualTo("userId", user.getUsername());
-                delquery33.fromLocalDatastore();
-                delquery33.setLimit(1000);
-                try {
-                    ParseObject.unpinAll(delquery33.find());
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
-                }
-
-                return true;
+            if(updatedCreatedGroups == null || currentUser == null){
+                return false;
             }
 
-            return false;
+            currentUser.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
+            //classroom has been deleted then
+            //pin updated user object
+            try {
+                currentUser.pin();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            //locally removing sent messages of that class
+            ParseQuery<ParseObject> delquery22 = new ParseQuery<ParseObject>(Constants.SENT_MESSAGES_TABLE);
+            delquery22.whereEqualTo("code", groupCode);
+            delquery22.whereEqualTo("userId", currentUser.getUsername());
+            delquery22.setLimit(1000);
+            delquery22.fromLocalDatastore();
+            try {
+                ParseObject.unpinAll(delquery22.find());
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+
+            //locally removing all members of that group
+            ParseQuery<ParseObject> delquery33 = new ParseQuery<ParseObject>(Constants.GROUP_MEMBERS);
+            delquery33.whereEqualTo("code", groupCode);
+            delquery33.whereEqualTo("userId", currentUser.getUsername());
+            delquery33.fromLocalDatastore();
+            delquery33.setLimit(1000);
+            try {
+                ParseObject.unpinAll(delquery33.find());
+            } catch (ParseException e1) {
+                e1.printStackTrace();
+            }
+
+            return true;
         }
 
 

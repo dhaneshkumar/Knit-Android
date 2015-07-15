@@ -72,7 +72,7 @@ public class JoinedHelper {
         HashMap<String, Object> result = null;
 
         try {
-            result = ParseCloud.callFunction("joinClass2", params);
+            result = ParseCloud.callFunction("joinClass3", params);
             Log.d("join", "class joining");
         } catch (ParseException e) {
             e.printStackTrace();
@@ -90,17 +90,19 @@ public class JoinedHelper {
 
         ParseObject codeGroupObject = (ParseObject) result.get("codegroup");
         List<ParseObject> oldMessages = (List<ParseObject>) result.get("messages");
-        ParseObject updatedUser = (ParseObject) result.get("user");
+        List<List<String>> updatedJoinedGroups = (List<List<String>>) result.get(Constants.JOINED_GROUPS);
 
-        if(codeGroupObject == null || updatedUser == null){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if(codeGroupObject == null || updatedJoinedGroups == null || currentUser == null){
             return 0;
         }
 
         Log.d("join", "code object not null");
         //successfully joined the classroom
         codeGroupObject.put("userId", userId);
+        currentUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
         try {
-            updatedUser.pin();
+            currentUser.pin();
             codeGroupObject.pin();
         } catch (ParseException e) {
             e.printStackTrace();
