@@ -226,11 +226,14 @@ public class Invite extends MyActionBarActivity{
                       AppInviteDialog.show(Invite.this, content);
                   }
 
+                  Map<String, String> dimensions = new HashMap<String, String>();
+                  dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
+                  dimensions.put("Invite Mode", Constants.MODE_FACEBOOK);
+                  ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
+
               } catch( PackageManager.NameNotFoundException e ){
                   Utility.toast("Facebook not installed !");
               }
-
-
           }
       });
 

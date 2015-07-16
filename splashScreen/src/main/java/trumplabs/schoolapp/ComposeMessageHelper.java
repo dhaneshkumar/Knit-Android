@@ -330,5 +330,4 @@ public class ComposeMessageHelper {
             //Utility.toast("Sorry, sending failed now. We'll send it next time you're online");
         }
     }
-
 }

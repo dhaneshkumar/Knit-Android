@@ -67,6 +67,7 @@ public class Constants {
   public static final String MODE_PHONE = "phone";
   public static final String MODE_EMAIL = "email";
   public static final String MODE_WHATSAPP = "whatsapp";
+  public static final String MODE_FACEBOOK = "facebook";
   public static final String MODE_RECEIVE_INSTRUCTIONS = "receiveInstructions";
 
 
