@@ -173,6 +173,27 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
             }
 
             }
+            else{
+                //updating all classroom's member entries
+
+                List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+                if(createdGroups != null )
+                {
+                    int classCount = createdGroups.size();
+
+                    for(int i=0; i<classCount ; i++)
+                    {
+                        try {
+                            memberCount = queries.getMemberCount(createdGroups.get(i).get(0));
+                            setMemberCount(createdGroups.get(i).get(0), memberCount);  //updating codegroup entry
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+
+            }
 
 
         }
@@ -189,7 +210,6 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
         if(groupCode != null)
         {
-
             if (updatedLocalMemberList != null)
                 Subscribers.memberDetails = updatedLocalMemberList;
 
