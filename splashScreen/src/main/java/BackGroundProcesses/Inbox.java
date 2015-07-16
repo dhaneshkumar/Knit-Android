@@ -17,7 +17,7 @@ import utility.Config;
 import utility.Queries;
 
 
-public class Inbox extends AsyncTask<Void, Void, String[]> {
+public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
 
   String[] mStrings;
 
