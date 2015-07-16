@@ -114,6 +114,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     public void onStop(){
         super.onStop();
         if(mGoogleApiClient != null) {
+            Log.d("DEBUG_LOCATION_LOGIN", "onStop() client disconnect");
             mGoogleApiClient.disconnect();
         }
     }
@@ -129,14 +130,8 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     @Override
     public void onConnected(Bundle connectionHint) {
-
         Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered");
         createLocationRequest();
-        /*mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            Log.d("DEBUG_LOCATION_LOGIN", "onConnected() : location : " + String.valueOf(mLastLocation.getLatitude())
-                    + ", " + String.valueOf(mLastLocation.getLongitude()));
-        }*/
     }
 
     @Override
@@ -155,9 +150,15 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     @Override
     public void onPause(){
+        Log.d("DEBUG_LOCATION_LOGIN", "onPause() called");
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            Log.d("DEBUG_LOCATION_LOGIN", "onPause() removeLocationUpdates");
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
         super.onPause();
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
+
+    /********* end of Location Detection methods ******/
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {

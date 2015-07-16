@@ -62,6 +62,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("DEBUG_LOCATION_LOGIN", "PhoneSignUpVerfication - onCreate()");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup_verification);
 

@@ -173,7 +173,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     public void onLocationChanged(Location location) {
         mLastLocation = location;
         if (mLastLocation != null) {
-            Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
+            Log.d("DEBUG_LOCATION", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
                     + ", " + String.valueOf(mLastLocation.getLongitude()));
 
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -203,19 +203,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
         Log.d("DEBUG_LOCATION", "onConnected() entered");
         createLocationRequest();
-        /*mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            Log.d("DEBUG_LOCATION", "onConnected() : location : " + String.valueOf(mLastLocation.getLatitude())
-                    + ", " + String.valueOf(mLastLocation.getLongitude()));
-        }*/
     }
 
     @Override
@@ -232,14 +225,18 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         Log.d("DEBUG_LOCATION", "onConnectionSuspended()");
     }
 
-    /****************** class GenerateVerificationCode **********************/
-
     @Override
     public void onPause(){
+        Log.d("DEBUG_LOCATION", "onPause() called");
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
         super.onPause();
-        LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
     }
 
+    /********* end of Location Detection methods ******/
+
+    /****************** class GenerateVerificationCode **********************/
     public static class GenerateVerificationCode extends AsyncTask<Void, Void, Void> {
         Boolean isValid = false;
         Boolean success = false;
