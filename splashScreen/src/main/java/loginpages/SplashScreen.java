@@ -81,7 +81,7 @@ public class SplashScreen extends MyActionBarActivity {
     /*
      * Setting App opening count Each time app count increases by one
      */
-        SessionManager session = new SessionManager(Application.getAppContext());
+        final SessionManager session = new SessionManager(Application.getAppContext());
     if(ParseUser.getCurrentUser() != null){ //only if logged in
         session.setAppOpeningCount();
     }
@@ -153,6 +153,15 @@ public class SplashScreen extends MyActionBarActivity {
             }
             else
             {
+                /*
+                Putting security check to support old users while updating app
+                 */
+                if (user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() > 0) {
+                    SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                    sessionManager.setHasUserJoinedClass();
+                }
+
+
                 Intent loginIntent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(loginIntent);
                 // we override the transition

@@ -44,9 +44,15 @@ public class Application extends android.app.Application {
   public void onCreate() 
   {
     super.onCreate();
-    FontsOverride.setDefaultFont(this, "MONOSPACE","fonts/Roboto-Regular.ttf");
 
+      FontsOverride.setDefaultFont(this, "MONOSPACE","fonts/Roboto-Regular.ttf");
 
+      try {
+          Class.forName("android.os.AsyncTask");
+      }
+      catch(Throwable ignore) {
+          // ignored
+      }
 
  // Enable Crash Reporting on parse analytics
     ParseCrashReporting.enable(this);
