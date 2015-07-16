@@ -180,6 +180,22 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         }
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
     protected synchronized void buildGoogleApiClient() {
         Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -187,7 +203,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-        mGoogleApiClient.connect();
+
     }
 
     @Override

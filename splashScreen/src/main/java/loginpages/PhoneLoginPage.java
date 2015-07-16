@@ -102,6 +102,22 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         }
     }
 
+    @Override
+    public void onStart(){
+        super.onStart();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
+    }
+
     protected synchronized void buildGoogleApiClient() {
         Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() entered");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -109,7 +125,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
-        mGoogleApiClient.connect();
     }
 
     @Override
