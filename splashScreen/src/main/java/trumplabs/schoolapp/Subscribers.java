@@ -482,11 +482,8 @@ public class Subscribers extends MyActionBarActivity {
                                 /*******    check whether fetched obj saved automatically or not ********/
                                 memberDetails = memberQuery.getLocalClassMembers(classCode);
 
-                                try {
-                                    memberCount = memberQuery.getMemberCount(classCode);
-                                } catch (ParseException e) {
-                                    e.printStackTrace();
-                                }
+                                if(memberDetails != null)
+                                    memberCount = memberDetails.size();
 
                                 MemberList.setMemberCount(classCode, memberCount);  //updating codegroup
                                 return true;
@@ -575,6 +572,5 @@ public class Subscribers extends MyActionBarActivity {
             editProfileLayout.setVisibility(View.VISIBLE);
         }
     }
-
 }
 

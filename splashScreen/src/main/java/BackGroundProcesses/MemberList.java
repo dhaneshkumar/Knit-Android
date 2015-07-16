@@ -257,12 +257,11 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
                 codeGroup.get(0).put("count",count);
                 codeGroup.get(0).pin();
 
-                Log.d("MEMBER", count+" -- mm");
+                Log.d("MEMBER", count + " -- mm");
             }
         } catch (ParseException e1) {
             e1.printStackTrace();
-            Log.d("MEMBER",   "err -- mm");
+            Log.d("MEMBER", "err -- mm");
         }
-
     }
 }
