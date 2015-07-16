@@ -98,8 +98,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
     //notifies the adapter also
   public static void syncOtherInboxDetails(){
       Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
-      SeenHandler seenHandler = new SeenHandler();
-      seenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
+      SeenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
       SyncMessageDetails.syncStatus();
 
       if(Messages.mPullToRefreshLayout != null){

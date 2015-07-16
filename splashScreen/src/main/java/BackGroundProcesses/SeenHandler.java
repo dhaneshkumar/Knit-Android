@@ -21,26 +21,15 @@ import utility.Utility;
 /**
  * Created by ashish on 6/1/15.
  */
-public class SeenHandler extends AsyncTask<Void, Void, String[]> {
-    String[] mStrings;
-
-    public SeenHandler(){
-    }
-
+public class SeenHandler{
     /**
      * @action Handles the 'seen' status of messages
-     * @param params none
-     * @return
+     * @return void
      * @how Now for messages which have seen_status 0, seenCountIncrement cloud function is called and if
      *      success its local status is changed to 1
      */
-    @Override
-    protected String[] doInBackground(Void... params) {
-        syncSeenJob();
-        return mStrings;
-    }
 
-    public void syncSeenJob(){
+    public static void syncSeenJob(){
         Log.d("DEBUG_SEEN_HANDLER", "Starting");
         ParseUser user = ParseUser.getCurrentUser();
 
@@ -88,11 +77,5 @@ public class SeenHandler extends AsyncTask<Void, Void, String[]> {
         catch(ParseException e){
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onPostExecute(String[] result) {
-        Log.d("DEBUG_SEEN_HANDLER", "Done");
-        super.onPostExecute(result);
     }
 }

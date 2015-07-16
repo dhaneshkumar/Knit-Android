@@ -246,6 +246,8 @@ public class NotificationGenerator {
                 String classCode = extras.getString("classCode");
                 if(classCode != null) {
                     notificationManager.notify(notEntity.notificationId, mBuilder.build());
+                    //This type of notification will be generated in onReceive of notification receiver(i.e in GUI)
+                    //and not within a thread or such. Hence can run following AsyncTask safely
                     PushOpen.UserRemovedTask userRemovedTask = new PushOpen.UserRemovedTask(groupName, classCode);
                     userRemovedTask.execute();
                 }

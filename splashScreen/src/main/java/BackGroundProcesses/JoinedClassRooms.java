@@ -18,18 +18,9 @@ import utility.Utility;
  * Refreshing joined-classes in background
  * Sync joined-classes of user with server
  */
-public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
+public class JoinedClassRooms{
 
-  private String userId;
-  private List<List<String>> joinedGroups;
-
-  @Override
-  protected String[] doInBackground(Void... params) {
-    doInBackgroundCore();
-    return null;
-  }
-
-  public void doInBackgroundCore(){
+  public static void doInBackgroundCore(){
     //set lastTimeInboxSync
     Application.lastTimeJoinedSync = Calendar.getInstance().getTime();
 
@@ -40,14 +31,15 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
     if (user == null)
     {Utility.logout(); return;}
 
-    userId = user.getUsername();
+
+    String userId = user.getUsername();
 
     //just update all the Users info as we need to update name and profile pic only
     ClassRoomsUpdate.fetchUpdates();
     ClassRoomsUpdate.fetchProfilePics(userId);
   }
 
-  public void onPostExecuteHelper(){
+  public static void onPostExecuteHelper(){
       if(MainActivity.mHeaderProgressBar != null){
           MainActivity.mHeaderProgressBar.post(new Runnable() {
               @Override
@@ -58,17 +50,11 @@ public class JoinedClassRooms extends AsyncTask<Void, Void, String[]> {
       }
   }
 
-  public void onPostExecuteCore(){
+  static void onPostExecuteCore(){
       if (Classrooms.joinedClassAdapter != null)
           Classrooms.joinedClassAdapter.notifyDataSetChanged();
 
       if (MainActivity.mHeaderProgressBar != null)
           MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
-  }
-
-  @Override
-  protected void onPostExecute(String[] result) {
-    onPostExecuteCore();
-    super.onPostExecute(result);
   }
 }

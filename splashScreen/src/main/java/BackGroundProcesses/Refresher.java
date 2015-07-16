@@ -77,9 +77,8 @@ public class Refresher {
              */
             if(!Application.joinedSyncOnce) {
                 Application.joinedSyncOnce = true;
-                final JoinedClassRooms joinClass = new JoinedClassRooms();
-                joinClass.doInBackgroundCore();
-                joinClass.onPostExecuteHelper();
+                JoinedClassRooms.doInBackgroundCore();
+                JoinedClassRooms.onPostExecuteHelper();
             }
             else{
                 Log.d("DEBUG_REFRESHER", "refresher joined classes update - done once");

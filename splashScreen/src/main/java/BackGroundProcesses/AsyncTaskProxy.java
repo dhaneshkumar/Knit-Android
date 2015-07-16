@@ -33,9 +33,9 @@ public abstract class AsyncTaskProxy<Params, Progress, Result> {
         task.execute(params);
     }
 
-    abstract Result doInBackground(Params... params);
+    protected abstract Result doInBackground(Params... params);
 
-    void onPostExecute(Result result){
+    protected void onPostExecute(Result result){
 
     }
 }

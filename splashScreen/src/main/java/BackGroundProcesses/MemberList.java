@@ -24,7 +24,7 @@ import utility.Queries;
  * Fetch updated group members from server of a class in background
  * @param-groupCode
  */
-public class MemberList extends AsyncTask<Void, Void, String[]> {
+public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
     private Queries queries;
     private String groupCode;

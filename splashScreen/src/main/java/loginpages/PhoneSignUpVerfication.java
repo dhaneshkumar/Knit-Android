@@ -26,6 +26,7 @@ import com.parse.ParseUser;
 import java.util.HashMap;
 import java.util.Map;
 
+import BackGroundProcesses.AsyncTaskProxy;
 import additionals.SmsListener;
 import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
@@ -165,6 +166,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /* call from main(GUI) thread */
     public static void smsListenerVerifyTask(String code){
         pdialog = new ProgressDialog(PhoneSignUpVerfication.activityContext);
         pdialog.setCancelable(false);
@@ -385,7 +387,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
     }
 
 
-    static class PostLoginTask extends  AsyncTask<Void, Void, Void> {
+    static class PostLoginTask extends AsyncTaskProxy<Void, Void, Void> {
         ParseUser user;
 
         public PostLoginTask(ParseUser u) {
@@ -428,7 +430,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
     }
 
-    static class PostSignUpTask extends AsyncTask<Void, Void, Void>
+    static class PostSignUpTask extends AsyncTaskProxy<Void, Void, Void>
     {
         ParseUser currentUser;
         public PostSignUpTask(ParseUser u) {

@@ -15,12 +15,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 
-import BackGroundProcesses.MemberList;
 import BackGroundProcesses.UpdateAllClassSubscribers;
 import library.UtilString;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 
 public class Queries2 {
 

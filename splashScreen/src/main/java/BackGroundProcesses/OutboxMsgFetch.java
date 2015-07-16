@@ -23,25 +23,7 @@ import utility.Utility;
 /**
  * Created by ashish on 11/1/15.
  */
-public class OutboxMsgFetch extends AsyncTask<Void, Void, String[]> {
-
-    public OutboxMsgFetch()
-    {
-    }
-
-    @Override
-    protected String[] doInBackground(Void... params) {
-        fetchOutboxMessages();
-
-        String[] mStrings = null;
-        return mStrings;
-    }
-
-    @Override
-    protected void onPostExecute(String[] result) {
-        super.onPostExecute(result);
-    }
-
+public class OutboxMsgFetch{
     /**
      * fetch outbox messages and pin it into "SentMessages" table
      */
