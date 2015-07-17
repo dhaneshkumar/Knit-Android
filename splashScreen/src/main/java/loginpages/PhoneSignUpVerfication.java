@@ -282,25 +282,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
                             taskSuccess = true;
-
-                            SessionManager session = new SessionManager(Application.getAppContext());
-
-                            //If user has joined any class then locally saving it in session manager
-                            if(user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0)
-                            session.setHasUserJoinedClass();
-
-                            if(isLogin){
-                                PostLoginTask postLoginTask = new PostLoginTask(user);
-                                postLoginTask.execute();
-                            }
-                            else {
-
-                                session.setSignUpAccount();
-
-                                // The current user is now set to user. Do registration in default class
-                                PostSignUpTask postSignUpTask = new PostSignUpTask(user);
-                                postSignUpTask.execute();
-                            }
+                            /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
                             // The token could not be validated.
                             Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user null");
@@ -343,6 +325,28 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
         @Override
         protected void onPostExecute(Void result){
+            if(taskSuccess){
+                SessionManager session = new SessionManager(Application.getAppContext());
+                ParseUser user = ParseUser.getCurrentUser();
+                //If user has joined any class then locally saving it in session manager
+                if(user != null && user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
+                    session.setHasUserJoinedClass();
+                }
+
+                if(isLogin){
+                    PostLoginTask postLoginTask = new PostLoginTask(user);
+                    postLoginTask.execute();
+                }
+                else {
+
+                    session.setSignUpAccount();
+
+                    // The current user is now set to user. Do registration in default class
+                    PostSignUpTask postSignUpTask = new PostSignUpTask(user);
+                    postSignUpTask.execute();
+                }
+            }
+
             Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
             if(!taskSuccess){
                 if(pdialog != null){
