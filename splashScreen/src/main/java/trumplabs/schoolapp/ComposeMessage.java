@@ -30,7 +30,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.github.amlcurran.showcaseview.ShowcaseView;
 import com.parse.ParseException;
 import com.parse.ParseUser;
 
@@ -39,12 +38,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import BackGroundProcesses.MemberList;
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
-import tutorial.ShowcaseCreator;
 import utility.Config;
-import utility.Queries;
-import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 
@@ -466,8 +463,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             className.setText(item.get(1));
 
             try {
-                Queries memberQuery = new Queries();
-                int memberCount = memberQuery.getMemberCount(item.get(0));
+                int memberCount = MemberList.getMemberCount(item.get(0));
 
                 memberCountTV.setText(memberCount+" Members");
 

@@ -1,6 +1,5 @@
 package BackGroundProcesses;
 
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
@@ -28,6 +27,10 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
     private Queries queries;
     private String groupCode;
+    private List<MemberDetails> updatedLocalMemberList;
+    private final int defaultMemberCount = -111;
+    private int memberCount = defaultMemberCount;
+
 
     public MemberList(){
         this.groupCode =null;
@@ -153,55 +156,113 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
                     e.printStackTrace();
                 }
             }
+
+            //updating listview items of member list & codegroup entry
+
+            if(groupCode != null) {
+                updatedLocalMemberList = queries.getLocalClassMembers(groupCode);
+
+            if(updatedLocalMemberList != null)
+            {
+                memberCount = updatedLocalMemberList.size();
+                try {
+                    setMemberCount(groupCode, memberCount);  //updating codegroup entry
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            }
+
+
         }
         else
             Log.d("SUBSCRIBER_DEBUG", "got zero members");
 
 
+
+
     }
 
+    @Override
+    protected void onPostExecute(String[] strings) {
 
-    public static void onPostExecuteCore()
-    {
+        if(groupCode != null)
+        {
+
+            if (updatedLocalMemberList != null)
+                Subscribers.memberDetails = updatedLocalMemberList;
+
+          if(memberCount != defaultMemberCount) {
+              if (Subscribers.subscriberTV != null)
+                  Subscribers.subscriberTV.setText(memberCount + " subscribers");
+
+              if (SendMessage.memberCountTV != null)
+                  SendMessage.memberCountTV.setText(memberCount + "");
+          }
+        }
 
         if (Subscribers.mHeaderProgressBar != null)
             Subscribers.mHeaderProgressBar.setVisibility(View.GONE);
 
         if (Subscribers.myadapter != null)
             Subscribers.myadapter.notifyDataSetChanged();
-    }
-
-    @Override
-    protected void onPostExecute(String[] strings) {
-        Log.d("DEBUG_MEMBER", "members onPostExecute() " + groupCode);
-
-
-        if(groupCode != null)
-        {
-            //updating listview items of member list.
-            List<MemberDetails> updatedLocalMemberList = queries.getLocalClassMembers(groupCode);
-            if (updatedLocalMemberList != null) {
-                Subscribers.memberDetails = updatedLocalMemberList;
-            }
-
-
-            int memberCount = 0;
-            Queries memberQuery = new Queries();
-            try {
-                memberCount = memberQuery.getMemberCount(groupCode);
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-
-            if(Subscribers.subscriberTV != null)
-                Subscribers.subscriberTV.setText(memberCount + " subscribers");
-
-            if(SendMessage.memberCountTV != null)
-                SendMessage.memberCountTV.setText(memberCount + "");
-        }
-
-        onPostExecuteCore();
 
         super.onPostExecute(strings);
+    }
+
+
+    public static int getMemberCount(String groupCode) throws ParseException {
+
+        ParseQuery<ParseObject> query123 = ParseQuery.getQuery(Constants.CODE_GROUP);
+        query123.fromLocalDatastore();
+        query123.whereEqualTo("code", groupCode);
+
+        Log.d("MEMBER", "code" + groupCode);
+
+        List<ParseObject> l;
+        ParseObject codeGroup = null;
+        try {
+            l = query123.find();
+
+            if(l != null && l.size() > 0)
+            {
+                Log.d("MEMBER", "query count " + l.size() + " classcount=" + ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS).size());
+                Log.d("MEMBER", l.get(0).getString("code") + ", member count="+l.get(0).getInt("count"));
+                return l.get(0).getInt("count");
+            }
+            else
+                Log.d("MEMBER", "query null");
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+            Log.d("MEMBER", "query failed");
+        }
+
+        return 0;
+    }
+
+
+    public static void setMemberCount(String groupCode, int count) throws ParseException {
+
+        ParseQuery<ParseObject> query111 = ParseQuery.getQuery(Constants.CODE_GROUP);
+        query111.fromLocalDatastore();
+        query111.whereEqualTo("code", groupCode);
+
+        List<ParseObject> codeGroup = null;
+        try {
+            codeGroup = query111.find();
+
+            if(codeGroup != null && codeGroup.size() >0)
+            {
+                codeGroup.get(0).put("count",count);
+                codeGroup.get(0).pin();
+
+                Log.d("MEMBER", count+" -- mm");
+            }
+        } catch (ParseException e1) {
+            e1.printStackTrace();
+            Log.d("MEMBER",   "err -- mm");
+        }
+
     }
 }

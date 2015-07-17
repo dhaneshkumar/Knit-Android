@@ -58,7 +58,7 @@ public class Subscribers extends MyActionBarActivity {
     private ExpandableListView listv;
     private TextView emptyTV;
     public static TextView subscriberTV;
-   // public static TextView schoolNameTV;
+    private int memberCount = 0;
 
     static String defaultSchoolName = "";
 
@@ -111,7 +111,7 @@ public class Subscribers extends MyActionBarActivity {
         int memberCount = 0;
 
         try {
-            memberCount = memberQuery.getMemberCount(classCode);
+            memberCount = MemberList.getMemberCount(classCode);
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -481,6 +481,14 @@ public class Subscribers extends MyActionBarActivity {
 
                                 /*******    check whether fetched obj saved automatically or not ********/
                                 memberDetails = memberQuery.getLocalClassMembers(classCode);
+
+                                try {
+                                    memberCount = memberQuery.getMemberCount(classCode);
+                                } catch (ParseException e) {
+                                    e.printStackTrace();
+                                }
+
+                                MemberList.setMemberCount(classCode, memberCount);  //updating codegroup
                                 return true;
                             }
                         }
@@ -522,6 +530,11 @@ public class Subscribers extends MyActionBarActivity {
 
                                 /*******    check whether fetched obj saved automatically or not ********/
                                 memberDetails = memberQuery.getLocalClassMembers(classCode);
+
+                                if(memberDetails != null) {
+                                    memberCount = memberDetails.size();
+                                    MemberList.setMemberCount(classCode, memberCount);  //updating codegroup
+                                }
                                 return true;
                             }
                         }
@@ -541,13 +554,6 @@ public class Subscribers extends MyActionBarActivity {
                 myadapter.notifyDataSetChanged();
 
                 //updating member count display view
-                int memberCount = 0;
-
-                try {
-                    memberCount = memberQuery.getMemberCount(classCode);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
 
                 if(memberCount == 0)
                     emptyTV.setVisibility(View.VISIBLE);

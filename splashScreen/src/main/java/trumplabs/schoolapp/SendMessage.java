@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import BackGroundProcesses.MemberList;
 import BackGroundProcesses.SendPendingMessages;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
@@ -192,8 +193,7 @@ public class SendMessage extends MyActionBarActivity  {
         //FacebookSdk.sdkInitialize(getApplicationContext());
 
         try {
-            Queries memberQuery = new Queries();
-            int memberCount = memberQuery.getMemberCount(groupCode);
+            int memberCount = MemberList.getMemberCount(groupCode);
             memberCountTV.setText(memberCount+"");
         } catch (ParseException e) {
             e.printStackTrace();
