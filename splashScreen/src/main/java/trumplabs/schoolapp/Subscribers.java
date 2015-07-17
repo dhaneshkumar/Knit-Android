@@ -552,8 +552,11 @@ public class Subscribers extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
-                memberDetails.remove(member);
-                myadapter.notifyDataSetChanged();
+                if(memberDetails != null)
+                    memberDetails.remove(member);
+
+                if(myadapter != null)
+                    myadapter.notifyDataSetChanged();
 
                 //updating member count display view
 
