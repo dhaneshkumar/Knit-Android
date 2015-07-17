@@ -14,12 +14,12 @@ import com.parse.ParseUser;
 import java.util.Date;
 import java.util.List;
 
+import BackGroundProcesses.MemberList;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import utility.Queries;
 import utility.SessionManager;
-import utility.Utility;
 
 /**
  * Created by ashish on 18/1/15.
@@ -173,7 +173,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
 
             int memberCount = 0;
             try{
-                memberCount = queryInstance.getMemberCount(groupCode);
+                memberCount = MemberList.getMemberCount(groupCode);
             }
             catch (ParseException e){
                 e.printStackTrace();
