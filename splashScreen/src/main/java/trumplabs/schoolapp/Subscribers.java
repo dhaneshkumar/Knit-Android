@@ -59,6 +59,7 @@ public class Subscribers extends MyActionBarActivity {
     private TextView emptyTV;
     public static TextView subscriberTV;
     private int memberCount = 0;
+    private LinearLayout memberProgressBar;
 
     static String defaultSchoolName = "";
 
@@ -98,6 +99,7 @@ public class Subscribers extends MyActionBarActivity {
          subscriberTV = (TextView) findViewById(R.id.memberCount);
         final TextView classCodeTV = (TextView) findViewById(R.id.classcode);
         emptyTV = (TextView) findViewById(R.id.emptyTV);
+        memberProgressBar = (LinearLayout) findViewById(R.id.memberBarLayout);
 
         //setting class code
         if(!UtilString.isBlank(classCode))
@@ -204,8 +206,8 @@ public class Subscribers extends MyActionBarActivity {
     public void intializeBackgroundParameters() {
         memberQuery = new Queries();
 
-        if (memberDetails == null)
-            memberDetails = new ArrayList<MemberDetails>();
+       // if (memberDetails == null)  //no need to check null otherwise it causes one memberlist is loaded in other classroom in case of high volumes
+         memberDetails = new ArrayList<MemberDetails>();
 
         LocalMembers localMembers = new LocalMembers(classCode);
         localMembers.execute();
@@ -405,6 +407,9 @@ public class Subscribers extends MyActionBarActivity {
 
         @Override
         protected void onPostExecute(Void res) {
+
+            //hide progressbar
+            memberProgressBar.setVisibility(View.GONE);
 
             if (myadapter != null)
                 myadapter.notifyDataSetChanged();

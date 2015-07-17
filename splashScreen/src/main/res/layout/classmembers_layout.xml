@@ -163,6 +163,19 @@
             android:background="@color/lightbackgroundcolor"
             android:id="@+id/memberslistview"/>
 
+        <LinearLayout
+            android:id="@+id/memberBarLayout"
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:layout_height="match_parent">
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
+
         <TextView
             android:id="@+id/emptyTV"
             android:layout_width="match_parent"
