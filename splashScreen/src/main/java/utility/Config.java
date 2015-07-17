@@ -14,12 +14,14 @@ public class Config {
      */
     public static final String APP_ID="jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
     //public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
+    //public static final String APP_ID = "NCevIU3UOFsXQxcxCp0jp5qGECwHgWgP3SEqRSFr"; // load testing
 
     /*
     2. Select CLIENT Key
      */
     public static final String CLIENT_KEY= "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // Knit
     //public static final String CLIENT_KEY = "4LnlMXS6hFUunIZ6cS3F7IcLrWGuzOIkyLldkxQJ"; // development_knit
+    //public static final String CLIENT_KEY = "n7XBHP4N6l8lafxjFrh1bgLZJXtFyB6JQ4CNFwi3"; // load testing
 
   /*
   3.  Uncomment out "minifyEnabled true" & "shrinkResources true" in build.gradle before updating app on playstore
@@ -29,7 +31,7 @@ public class Config {
   4. Set flag to allow to join his own class.  # false : Knit & #true for testing
    */
   //flag to show teacher can join his own class or not
-  public static final boolean CAN_JOIN_OWN_CLASS = true;
+  public static final boolean CAN_JOIN_OWN_CLASS = false;
 
   /*
   5. Set flag to detect invalid number.  #true : knit & #false for testing
