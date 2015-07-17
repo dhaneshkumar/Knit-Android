@@ -7,10 +7,16 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.parse.Parse;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
 import additionals.Invite;
 import additionals.OpenURL;
@@ -194,27 +200,46 @@ public class PushOpen extends MyActionBarActivity {
         @Override
         protected Void doInBackground(Void... params) {
             if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
+                ParseUser user = ParseUser.getCurrentUser();
+                if(user == null) return null;
+
                 ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
                 query.fromLocalDatastore();
                 query.whereEqualTo("code", classCode);
 
-                ParseUser user = ParseUser.getCurrentUser();
+                //user should be non-null for generating local message
+                ParseObject codeGroupObject = null;
+                try {
+                    codeGroupObject = query.getFirst();
 
-                //updating user entry
-                if (user != null) {
-                    user.fetchInBackground(); //so that updated joined groups list come immediately
-                    //user should be non-null for generating local message
-                    ParseObject codeGroupObject = null;
-                    try {
-                        codeGroupObject = query.getFirst();
-
-                        if (codeGroupObject != null) {
-                            EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.RemovalMsg, classCode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
-                            Log.d("DEBUG_PUSH_OPEN", "UserRemovedTask : local message generated");
-                        }
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                    if (codeGroupObject != null) {
+                        EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.RemovalMsg, classCode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
+                        Log.d("DEBUG_PUSH_OPEN", "UserRemovedTask : local message generated");
                     }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                //updating user joined_groups by calling cloud function 'getUserDetails'
+
+                HashMap<String, Object> callParameters = new HashMap<>();
+                List<String> neededColumns = new ArrayList<>();
+                neededColumns.add(Constants.JOINED_GROUPS);
+                callParameters.put("details", neededColumns);
+
+                try{
+                    //call function
+                    HashMap<String, Object> result = ParseCloud.callFunction("getUserDetails", callParameters);
+                    List<List<String>> updatedJoinedGroups = (List<List<String>>) result.get(Constants.JOINED_GROUPS);
+
+                    if(updatedJoinedGroups != null){
+                        user.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
+                        user.pin(); //pin it, important
+                    }
+                }
+                catch (ParseException e){
+                    e.printStackTrace();
                 }
             }
             else{
