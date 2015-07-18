@@ -133,7 +133,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
                 for (int i = 0; i < appMembersList.size(); i++) {
                     ParseObject appMembers = appMembersList.get(i);
                     appMembers.put("userId", user.getUsername());
-                    Log.d("DEBUG_MEMBER", "members " + appMembers.getString("name") + "  :  " + appMembers.getString("status") );
+                    Log.d("DEBUG_MEMBER", "members " + appMembers.getString("name") + "  :  " + appMembers.getString("status"));
                 }
                 try {
                     ParseObject.pinAll(appMembersList);
@@ -162,39 +162,19 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
             if(groupCode != null) {
                 updatedLocalMemberList = queries.getLocalClassMembers(groupCode);
 
-            if(updatedLocalMemberList != null)
-            {
-                memberCount = updatedLocalMemberList.size();
-                try {
-                    setMemberCount(groupCode, memberCount);  //updating codegroup entry
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            }
-            else{
-                //updating all classroom's member entries
-
-                List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
-                if(createdGroups != null )
+                if(updatedLocalMemberList != null)
                 {
-                    int classCount = createdGroups.size();
-
-                    for(int i=0; i<classCount ; i++)
-                    {
-                        try {
-                            memberCount = queries.getMemberCount(createdGroups.get(i).get(0));
-                            setMemberCount(createdGroups.get(i).get(0), memberCount);  //updating codegroup entry
-
-                        } catch (ParseException e) {
-                            e.printStackTrace();
-                        }
+                    memberCount = updatedLocalMemberList.size();
+                    try {
+                        setMemberCount(groupCode, memberCount);  //updating codegroup entry
+                    } catch (ParseException e) {
+                        e.printStackTrace();
                     }
                 }
-
             }
 
+            //updating other class member counts in thread to stop delay in display
+            setMemberCountInThread();
 
         }
         else
@@ -213,13 +193,13 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
             if (updatedLocalMemberList != null)
                 Subscribers.memberDetails = updatedLocalMemberList;
 
-          if(memberCount != defaultMemberCount) {
-              if (Subscribers.subscriberTV != null)
-                  Subscribers.subscriberTV.setText(memberCount + " subscribers");
+            if(memberCount != defaultMemberCount) {
+                if (Subscribers.subscriberTV != null)
+                    Subscribers.subscriberTV.setText(memberCount + " subscribers");
 
-              if (SendMessage.memberCountTV != null)
-                  SendMessage.memberCountTV.setText(memberCount + "");
-          }
+                if (SendMessage.memberCountTV != null)
+                    SendMessage.memberCountTV.setText(memberCount + "");
+            }
         }
 
         if (Subscribers.mHeaderProgressBar != null)
@@ -283,5 +263,36 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
             e1.printStackTrace();
             Log.d("MEMBER", "err -- mm");
         }
+    }
+
+
+    public void setMemberCountInThread()
+    {
+        Runnable r = new Runnable() {
+            @Override
+            public void run(){
+                //updating all classroom's member entries
+
+                List<List<String>> createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+                if(createdGroups != null )
+                {
+                    int classCount = createdGroups.size();
+
+                    for(int i=0; i<classCount ; i++)
+                    {
+                        try {
+                            memberCount = queries.getMemberCount(createdGroups.get(i).get(0));
+                            setMemberCount(createdGroups.get(i).get(0), memberCount);  //updating codegroup entry
+
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        };
+
+        Thread t = new Thread(r);
+        t.start();
     }
 }
