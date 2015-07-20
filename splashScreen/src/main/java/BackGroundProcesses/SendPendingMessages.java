@@ -201,24 +201,8 @@ public class SendPendingMessages {
 
                 Log.d(LOGTAG, "result=" + result + " isLive=" + isLive);
 
-                /*if(result == 100 && isLive){
-                    showToast = true; //if network error and latest request was gui(send/retry) then show toast of "internet connection"
-                }
-
-                //show error toast only once
-                if(result != 0 && showToast){
-                    if(errorToastShown){
-                        Log.d(LOGTAG, "error already shown, avoiding");
-                        showToast = false;
-                    }
-                    else{
-                        Log.d(LOGTAG, "showing error first and last time");
-                        errorToastShown = true;
-                    }
-                }*/
-
                 //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null if the app is running
-                if(showToast) {
+                if(showToast && isLive) {
                     final String className = currentMsg.getString(Constants.GroupDetails.NAME);
                     if (MainActivity.viewpager != null) {
                         MainActivity.viewpager.post(new Runnable() {
@@ -234,11 +218,6 @@ public class SendPendingMessages {
                         });
                     }
                 }
-
-                /*if(res == 100){
-                    abort = true;
-                    continue;
-                }*/
             }
             else{
                 Log.d(LOGTAG, "currentMsg is either null or duplicate(not pending)");

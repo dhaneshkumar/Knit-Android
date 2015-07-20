@@ -394,13 +394,13 @@ public class Classrooms extends Fragment  {
     }
 
     //can be called from anywhere
-    public static void refreshCreatedClassrooms(){
-        if(getactivity != null && createdClassAdapter != null){
+    public static void refreshCreatedClassrooms(final String deletedClassCode){
+        if(getactivity != null && createdClassAdapter != null && MainActivity.floatOptionsAdapter != null){
             getactivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     ParseUser currentUser = ParseUser.getCurrentUser();
-                    if(currentUser == null){
+                    if (currentUser == null) {
                         return;
                     }
                     createdGroups = currentUser.getList(Constants.CREATED_GROUPS);
@@ -408,6 +408,23 @@ public class Classrooms extends Fragment  {
                         createdGroups = new ArrayList<>();
                     }
                     createdClassAdapter.notifyDataSetChanged();
+
+                    //remove this class from MainActivity's floating classList
+                    if (MainActivity.classList != null && deletedClassCode != null){
+                        int removeIndex = -1;
+                        for(int i=0; i<MainActivity.classList.size(); i++){
+                            List<String> cls = MainActivity.classList.get(i);
+                            if(cls != null && cls.size() > 1 && cls.get(0).equalsIgnoreCase(deletedClassCode)){
+                                removeIndex = i;
+                                break;
+                            }
+                        }
+
+                        if(removeIndex >= 0 && removeIndex < MainActivity.classList.size()){
+                            MainActivity.classList.remove(removeIndex);
+                            MainActivity.floatOptionsAdapter.notifyDataSetChanged();
+                        }
+                    }
                 }
             });
         }

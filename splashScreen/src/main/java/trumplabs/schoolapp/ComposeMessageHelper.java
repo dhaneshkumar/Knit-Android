@@ -187,10 +187,11 @@ public class ComposeMessageHelper {
                 Date createdAt = (Date) result.get("createdAt");
                 String objectId = (String) result.get("messageId");
 
-                //updating local time
-                SessionManager sm = new SessionManager(Application.getAppContext());
                 if (createdAt != null) {
+                    //updating local time
+                    SessionManager sm = new SessionManager(Application.getAppContext());
                     sm.setCurrentTime(createdAt);
+
                     //update msg and pin
                     msg.put("objectId", objectId);
                     msg.put("pending", false);
@@ -220,7 +221,7 @@ public class ComposeMessageHelper {
                     }
 
                     //Notify created classrooms adapter
-                    Classrooms.refreshCreatedClassrooms();
+                    Classrooms.refreshCreatedClassrooms(msg.getString(Constants.GroupDetails.CODE));
 
                     //unpin the message,
                     msg.unpin();
@@ -324,31 +325,66 @@ public class ComposeMessageHelper {
             params.put("filename", msg.getString("attachment_name"));
             params.put("parsefile", file);
 
-            HashMap obj = ParseCloud.callFunction("sendPhotoTextMessage", params);
+            HashMap result = ParseCloud.callFunction("sendPhotoTextMessage", params);
 
             Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : calling cloud function success");
-            if (obj != null) {
-                Date createdAt = (Date) obj.get("createdAt");
-                String objectId = (String) obj.get("messageId");
+            if (result != null) {
+                int retVal = 0; //success
 
-                //update msg and pin
-                msg.put("objectId", objectId);
-                msg.put("pending", false);
-                msg.put("creationTime", createdAt);
-                msg.put("attachment", file);
+                Date createdAt = (Date) result.get("createdAt");
+                String objectId = (String) result.get("messageId");
 
-                //saving locally
-                try {
-                    msg.pin();
-                } catch (ParseException e1) {
-                    e1.printStackTrace();
+                if(createdAt != null) {
+                    //update msg and pin
+                    msg.put("objectId", objectId);
+                    msg.put("pending", false);
+                    msg.put("creationTime", createdAt);
+                    msg.put("attachment", file);
+
+                    //saving locally
+                    try {
+                        msg.pin();
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
+                    }
+                }
+                else{
+                    retVal = 200; //class has been deleted
+                    //error that class does not exist
+
+                    //first update created groups of user
+                    List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
+                    try{
+                        ParseUser user = ParseUser.getCurrentUser();
+                        if(user != null && updatedCreatedGroups != null){
+                            user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
+                            user.pin();
+                        }
+                    }
+                    catch (ParseException err){
+                        err.printStackTrace();
+                    }
+
+                    //Notify created classrooms adapter
+                    Classrooms.refreshCreatedClassrooms(msg.getString(Constants.GroupDetails.CODE));
+
+                    //unpin the message,
+                    msg.unpin();
+                    //delete the message from lists
+                    if(SendMessage.groupDetails != null){
+                        SendMessage.groupDetails.remove(msg);
+                    }
+                    if(Outbox.groupDetails != null){
+                        Outbox.groupDetails.remove(msg);
+                    }
                 }
 
                 SendMessage.notifyAdapter();
                 //just notify outbox - no new query or updating count (since an old message just got new status)
                 Outbox.notifyAdapter();
-                return 0;
+                return retVal;
             }
+
             return -1;
         }
         catch(ParseException esave){

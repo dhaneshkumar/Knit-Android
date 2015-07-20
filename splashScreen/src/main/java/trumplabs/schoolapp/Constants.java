@@ -45,6 +45,8 @@ public class Constants {
     public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
 
     public static final String NAME = "name";
+    public static final String CODE = "code";
+
   }
   /*
    * Invitation table
