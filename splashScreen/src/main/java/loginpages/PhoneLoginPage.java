@@ -94,8 +94,9 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     @Override
     public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        if (mLastLocation != null) {
+        //override the last location by this updated current location if non-null
+        if (location != null) {
+            mLastLocation = location;
             Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
                     + ", " + String.valueOf(mLastLocation.getLongitude()));
 
@@ -137,7 +138,14 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered");
+        Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered, first take last known location, just in case that gps location is not received");
+
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+        if(mLastLocation != null){
+            Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
+                    + ", " + String.valueOf(mLastLocation.getLongitude()));
+        }
+
         createLocationRequest();
     }
 
