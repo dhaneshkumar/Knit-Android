@@ -394,24 +394,20 @@ public class Classrooms extends Fragment  {
     }
 
     //can be called from anywhere
-    public static void notifyCreatedClassAdapter(){
+    public static void refreshCreatedClassrooms(){
         if(getactivity != null && createdClassAdapter != null){
             getactivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    ParseUser currentUser = ParseUser.getCurrentUser();
+                    if(currentUser == null){
+                        return;
+                    }
+                    createdGroups = currentUser.getList(Constants.CREATED_GROUPS);
+                    if (createdGroups == null) {
+                        createdGroups = new ArrayList<>();
+                    }
                     createdClassAdapter.notifyDataSetChanged();
-                }
-            });
-        }
-    }
-
-    //can be called from anywhere
-    public static void notifyJoinedClassAdapter(){
-        if(getactivity != null && createdClassAdapter != null){
-            getactivity.runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    joinedClassAdapter.notifyDataSetChanged();
                 }
             });
         }

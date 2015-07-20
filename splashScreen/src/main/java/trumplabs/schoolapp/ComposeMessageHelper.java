@@ -210,7 +210,7 @@ public class ComposeMessageHelper {
                     List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
                     try{
                         ParseUser user = ParseUser.getCurrentUser();
-                        if(user != null){
+                        if(user != null && updatedCreatedGroups != null){
                             user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
                             user.pin();
                         }
@@ -220,7 +220,7 @@ public class ComposeMessageHelper {
                     }
 
                     //Notify created classrooms adapter
-                    Classrooms.notifyCreatedClassAdapter();
+                    Classrooms.refreshCreatedClassrooms();
 
                     //unpin the message,
                     msg.unpin();
