@@ -52,7 +52,7 @@ public class TestingUtililty {
         }*/
 
         //delete Inbox messages
-        /*ParseQuery deleteInbox = new ParseQuery(Constants.GROUP_DETAILS);
+        /*ParseQuery deleteInbox = new ParseQuery(Constants.TABLE);
         deleteInbox.fromLocalDatastore();
         deleteInbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
         try{

@@ -32,16 +32,16 @@ public class SyncMessageDetails {
 
         String username = user.getUsername();
 
-        ParseQuery query = new ParseQuery(Constants.GROUP_DETAILS);
+        ParseQuery query = new ParseQuery(Constants.GroupDetails.TABLE);
         query.fromLocalDatastore();
         query.whereMatches("userId", username);
         query.orderByDescending(Constants.TIMESTAMP); //since limited, consider only latest ones
         query.setLimit(Config.inboxMsgRefreshTotal); //consider only limited number of messages
 
-        query.whereEqualTo(Constants.DIRTY_BIT, true);
+        query.whereEqualTo(Constants.GroupDetails.DIRTY_BIT, true);
         //consider only new messages which contains SYNCED like and confusing status
-        query.whereExists(Constants.SYNCED_CONFUSING);
-        query.whereExists(Constants.SYNCED_LIKE);
+        query.whereExists(Constants.GroupDetails.SYNCED_CONFUSING);
+        query.whereExists(Constants.GroupDetails.SYNCED_LIKE);
 
         try{
             List<ParseObject> messages = query.find();
@@ -58,10 +58,10 @@ public class SyncMessageDetails {
 
             for(int i=0; i<messages.size(); i++){
                 ParseObject msg = messages.get(i);
-                int like = msg.getBoolean(Constants.LIKE) ? 1 : 0;
-                int confusing = msg.getBoolean(Constants.CONFUSING) ? 1 : 0;
-                int synced_like = msg.getBoolean(Constants.SYNCED_LIKE) ? 1 : 0;
-                int synced_confusing = msg.getBoolean(Constants.SYNCED_CONFUSING) ? 1 : 0;
+                int like = msg.getBoolean(Constants.GroupDetails.LIKE) ? 1 : 0;
+                int confusing = msg.getBoolean(Constants.GroupDetails.CONFUSING) ? 1 : 0;
+                int synced_like = msg.getBoolean(Constants.GroupDetails.SYNCED_LIKE) ? 1 : 0;
+                int synced_confusing = msg.getBoolean(Constants.GroupDetails.SYNCED_CONFUSING) ? 1 : 0;
 
                 ArrayList<Integer> changes = new ArrayList<Integer>();
                 int likeChange = like - synced_like;
@@ -70,7 +70,7 @@ public class SyncMessageDetails {
                 if(likeChange == 0 && confusingChange == 0){ //This should not happen as msg was marked dirty.
                                                             // No changes at all. Just move to next message
                     Log.d("DEBUG_SYNC_STATE", "false DIRTY " + msg.getObjectId());
-                    msg.put(Constants.DIRTY_BIT, false);
+                    msg.put(Constants.GroupDetails.DIRTY_BIT, false);
                     continue;
                 }
 
@@ -114,14 +114,14 @@ public class SyncMessageDetails {
                         if(stateChangeMap.containsKey(msg.getObjectId())){
                             ArrayList<Integer> current = currentStateMap.get(msg.getObjectId());
                             if(current.size() == 2) {
-                                msg.put(Constants.SYNCED_LIKE, current.get(0) == 1);
-                                msg.put(Constants.SYNCED_CONFUSING, current.get(1) == 1);
+                                msg.put(Constants.GroupDetails.SYNCED_LIKE, current.get(0) == 1);
+                                msg.put(Constants.GroupDetails.SYNCED_CONFUSING, current.get(1) == 1);
                             }
 
                             //check if not dirty
-                            if(msg.getBoolean(Constants.SYNCED_CONFUSING) == msg.getBoolean(Constants.CONFUSING) &&
-                                    msg.getBoolean(Constants.SYNCED_LIKE) == msg.getBoolean(Constants.LIKE)) {
-                                msg.put(Constants.DIRTY_BIT, false);
+                            if(msg.getBoolean(Constants.GroupDetails.SYNCED_CONFUSING) == msg.getBoolean(Constants.GroupDetails.CONFUSING) &&
+                                    msg.getBoolean(Constants.GroupDetails.SYNCED_LIKE) == msg.getBoolean(Constants.GroupDetails.LIKE)) {
+                                msg.put(Constants.GroupDetails.DIRTY_BIT, false);
                             }
                         }
                     }
@@ -147,7 +147,7 @@ public class SyncMessageDetails {
         if(user == null) return;
 
         //fetch received messages from local GroupDetails table only(not locally generated msgs)
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
         query.fromLocalDatastore();
         query.orderByDescending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", user.getUsername());
@@ -188,14 +188,14 @@ public class SyncMessageDetails {
                     if(counts != null) {
                         //formula for correct display of count(like/confused) : received count - synced status + current status
                         //seen count correct as is
-                        int like = msg.getBoolean(Constants.LIKE) ? 1 : 0;
-                        int confusing = msg.getBoolean(Constants.CONFUSING) ? 1 : 0;
-                        int synced_like = msg.getBoolean(Constants.SYNCED_LIKE) ? 1 : 0;
-                        int synced_confusing = msg.getBoolean(Constants.SYNCED_CONFUSING) ? 1 : 0;
+                        int like = msg.getBoolean(Constants.GroupDetails.LIKE) ? 1 : 0;
+                        int confusing = msg.getBoolean(Constants.GroupDetails.CONFUSING) ? 1 : 0;
+                        int synced_like = msg.getBoolean(Constants.GroupDetails.SYNCED_LIKE) ? 1 : 0;
+                        int synced_confusing = msg.getBoolean(Constants.GroupDetails.SYNCED_CONFUSING) ? 1 : 0;
 
-                        msg.put(Constants.SEEN_COUNT, counts.get(0));
-                        msg.put(Constants.LIKE_COUNT, counts.get(1) - synced_like + like);
-                        msg.put(Constants.CONFUSED_COUNT, counts.get(2) - synced_confusing + confusing);
+                        msg.put(Constants.GroupDetails.SEEN_COUNT, counts.get(0));
+                        msg.put(Constants.GroupDetails.LIKE_COUNT, counts.get(1) - synced_like + like);
+                        msg.put(Constants.GroupDetails.CONFUSED_COUNT, counts.get(2) - synced_confusing + confusing);
                         //Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }
@@ -280,9 +280,9 @@ public class SyncMessageDetails {
                     ParseObject msg = recentSentMessages.get(i);
                     List<Integer> counts = updateCountMap.get(msg.getString("objectId")); //[seen, like, confused]
                     if(counts != null) {
-                        msg.put(Constants.LIKE_COUNT, counts.get(1));
-                        msg.put(Constants.CONFUSED_COUNT, counts.get(2));
-                        msg.put(Constants.SEEN_COUNT, counts.get(0));
+                        msg.put(Constants.GroupDetails.LIKE_COUNT, counts.get(1));
+                        msg.put(Constants.GroupDetails.CONFUSED_COUNT, counts.get(2));
+                        msg.put(Constants.GroupDetails.SEEN_COUNT, counts.get(0));
                         //Log.d("DEBUG_SYNC", "Updated outbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }

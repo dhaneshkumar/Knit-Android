@@ -42,7 +42,7 @@ public class Queries {
 
     public List<ParseObject> getLocalInboxMsgs() throws ParseException {
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
         query.fromLocalDatastore();
         query.orderByDescending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", userId);
@@ -236,21 +236,21 @@ public class Queries {
                         if(msgState != null){
                             Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
 
-                            msg.put(Constants.LIKE, msgState.get(0));
-                            msg.put(Constants.CONFUSING, msgState.get(1));
-                            msg.put(Constants.SYNCED_LIKE, msgState.get(0));
-                            msg.put(Constants.SYNCED_CONFUSING, msgState.get(1));
+                            msg.put(Constants.GroupDetails.LIKE, msgState.get(0));
+                            msg.put(Constants.GroupDetails.CONFUSING, msgState.get(1));
+                            msg.put(Constants.GroupDetails.SYNCED_LIKE, msgState.get(0));
+                            msg.put(Constants.GroupDetails.SYNCED_CONFUSING, msgState.get(1));
                         }
                         else{
                             //default
-                            msg.put(Constants.LIKE, false);
-                            msg.put(Constants.CONFUSING, false);
-                            msg.put(Constants.SYNCED_LIKE, false);
-                            msg.put(Constants.SYNCED_CONFUSING, false);
+                            msg.put(Constants.GroupDetails.LIKE, false);
+                            msg.put(Constants.GroupDetails.CONFUSING, false);
+                            msg.put(Constants.GroupDetails.SYNCED_LIKE, false);
+                            msg.put(Constants.GroupDetails.SYNCED_CONFUSING, false);
                         }
                         msg.put(Constants.USER_ID, userId);
-                        msg.put(Constants.DIRTY_BIT, false);
-                        msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
+                        msg.put(Constants.GroupDetails.DIRTY_BIT, false);
+                        msg.put(Constants.GroupDetails.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
 
                     Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
@@ -276,14 +276,14 @@ public class Queries {
                     Log.d("DBG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
                     for(int i=0; i<allMessages.size(); i++){
                         ParseObject msg = allMessages.get(i);
-                        msg.put(Constants.LIKE, false);
-                        msg.put(Constants.CONFUSING, false);
-                        msg.put(Constants.SYNCED_LIKE, false);
-                        msg.put(Constants.SYNCED_CONFUSING, false);
+                        msg.put(Constants.GroupDetails.LIKE, false);
+                        msg.put(Constants.GroupDetails.CONFUSING, false);
+                        msg.put(Constants.GroupDetails.SYNCED_LIKE, false);
+                        msg.put(Constants.GroupDetails.SYNCED_CONFUSING, false);
 
                         msg.put(Constants.USER_ID, userId);
-                        msg.put(Constants.DIRTY_BIT, false);
-                        msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
+                        msg.put(Constants.GroupDetails.DIRTY_BIT, false);
+                        msg.put(Constants.GroupDetails.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages); //in the beginning so that [newMessages ... followed by ... original_msgList]
@@ -307,7 +307,7 @@ public class Queries {
 
         String userId = user.getUsername();
 
-        ParseQuery oldestInboxMsgQuery = new ParseQuery(Constants.GROUP_DETAILS);
+        ParseQuery oldestInboxMsgQuery = new ParseQuery(Constants.GroupDetails.TABLE);
         oldestInboxMsgQuery.fromLocalDatastore();
         oldestInboxMsgQuery.orderByAscending(Constants.TIMESTAMP);
 
@@ -358,22 +358,22 @@ public class Queries {
                     if(msgState != null){
                         Log.d("_FETCH_OLD", "msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
 
-                        msg.put(Constants.LIKE, msgState.get(0));
-                        msg.put(Constants.CONFUSING, msgState.get(1));
-                        msg.put(Constants.SYNCED_LIKE, msgState.get(0));
-                        msg.put(Constants.SYNCED_CONFUSING, msgState.get(1));
+                        msg.put(Constants.GroupDetails.LIKE, msgState.get(0));
+                        msg.put(Constants.GroupDetails.CONFUSING, msgState.get(1));
+                        msg.put(Constants.GroupDetails.SYNCED_LIKE, msgState.get(0));
+                        msg.put(Constants.GroupDetails.SYNCED_CONFUSING, msgState.get(1));
                     }
                     else{
                         //default
-                        msg.put(Constants.LIKE, false);
-                        msg.put(Constants.CONFUSING, false);
-                        msg.put(Constants.SYNCED_LIKE, false);
-                        msg.put(Constants.SYNCED_CONFUSING, false);
+                        msg.put(Constants.GroupDetails.LIKE, false);
+                        msg.put(Constants.GroupDetails.CONFUSING, false);
+                        msg.put(Constants.GroupDetails.SYNCED_LIKE, false);
+                        msg.put(Constants.GroupDetails.SYNCED_CONFUSING, false);
                     }
 
                     msg.put(Constants.USER_ID, userId);
-                    msg.put(Constants.DIRTY_BIT, false);
-                    msg.put(Constants.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
+                    msg.put(Constants.GroupDetails.DIRTY_BIT, false);
+                    msg.put(Constants.GroupDetails.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                 }
 
                 ParseObject.pinAll(allMessages); //pin all the messages
@@ -402,7 +402,7 @@ public class Queries {
 
         }
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
         query.fromLocalDatastore();
         query.orderByDescending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", userId);

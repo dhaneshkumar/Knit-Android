@@ -456,14 +456,14 @@ public class Messages extends Fragment {
                 //means like status has changed
                 if(newState.likeStatus == 1) {
                     liked(holder.likeIcon, holder.likes, holder.likeButton);
-                    msgObject.put(Constants.LIKE, true);
+                    msgObject.put(Constants.GroupDetails.LIKE, true);
                 }
                 else {
                     unLiked(holder.likeIcon, holder.likes, holder.likeButton);
-                    msgObject.put(Constants.LIKE, false);
+                    msgObject.put(Constants.GroupDetails.LIKE, false);
                 }
 
-                int likeCount = msgObject.getInt(Constants.LIKE_COUNT);
+                int likeCount = msgObject.getInt(Constants.GroupDetails.LIKE_COUNT);
                 int diff = newState.likeStatus - currentState.likeStatus;
                 //Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newLS" + newState.likeStatus + " curLS" + currentState.likeStatus + " likeCount"  + likeCount + " diff" + diff);
                 int newLikeCount = likeCount + diff;
@@ -471,20 +471,20 @@ public class Messages extends Fragment {
 
                 holder.likes.setText(newLikeCount + "");
 
-                msgObject.put(Constants.LIKE_COUNT, newLikeCount);
+                msgObject.put(Constants.GroupDetails.LIKE_COUNT, newLikeCount);
             }
 
             if(newState.confusedStatus - currentState.confusedStatus !=0){
                 if (newState.confusedStatus == 1) {
                     confused(holder.confusingIcon, holder.confused, holder.confuseButton);
-                    msgObject.put(Constants.CONFUSING, true);
+                    msgObject.put(Constants.GroupDetails.CONFUSING, true);
                 }
                 else {
                     unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
-                    msgObject.put(Constants.CONFUSING, false);
+                    msgObject.put(Constants.GroupDetails.CONFUSING, false);
                 }
 
-                int confusedCount = msgObject.getInt(Constants.CONFUSED_COUNT);
+                int confusedCount = msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT);
                 int diff = newState.confusedStatus - currentState.confusedStatus;
                 //Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newCS" + newState.confusedStatus + " curCS" + currentState.confusedStatus + " conCount"  + confusedCount + " diff" + diff);
 
@@ -493,25 +493,25 @@ public class Messages extends Fragment {
 
                 holder.confused.setText(newConfusedCount + "");
 
-                msgObject.put(Constants.CONFUSED_COUNT, newConfusedCount);
+                msgObject.put(Constants.GroupDetails.CONFUSED_COUNT, newConfusedCount);
             }
 
             Log.d("DEBUG_MESSAGES", "new status L/C = " + newState.likeStatus + "/" + newState.confusedStatus +
                     "|| old status L/C = " + currentState.likeStatus + "/" + currentState.confusedStatus +
-                    "|| new count L/C = " + msgObject.getInt(Constants.CONFUSED_COUNT) + "/" + msgObject.getInt(Constants.CONFUSED_COUNT) +
-                    "|| synced status L/C = " + msgObject.getBoolean(Constants.SYNCED_LIKE) + "/" + msgObject.getBoolean(Constants.SYNCED_CONFUSING));
+                    "|| new count L/C = " + msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT) + "/" + msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT) +
+                    "|| synced status L/C = " + msgObject.getBoolean(Constants.GroupDetails.SYNCED_LIKE) + "/" + msgObject.getBoolean(Constants.GroupDetails.SYNCED_CONFUSING));
 
             //Set the dirty bit in message according to current and synced states
-            boolean like = msgObject.getBoolean(Constants.LIKE);
-            boolean confusing = msgObject.getBoolean(Constants.CONFUSING);
-            boolean synced_like = msgObject.getBoolean(Constants.SYNCED_LIKE);
-            boolean synced_confusing = msgObject.getBoolean(Constants.SYNCED_CONFUSING);
+            boolean like = msgObject.getBoolean(Constants.GroupDetails.LIKE);
+            boolean confusing = msgObject.getBoolean(Constants.GroupDetails.CONFUSING);
+            boolean synced_like = msgObject.getBoolean(Constants.GroupDetails.SYNCED_LIKE);
+            boolean synced_confusing = msgObject.getBoolean(Constants.GroupDetails.SYNCED_CONFUSING);
 
             if(like == synced_like && confusing == synced_confusing){ //no changes at all.
-                msgObject.put(Constants.DIRTY_BIT, false);
+                msgObject.put(Constants.GroupDetails.DIRTY_BIT, false);
             }
             else {
-                msgObject.put(Constants.DIRTY_BIT, true);
+                msgObject.put(Constants.GroupDetails.DIRTY_BIT, true);
             }
             //updating msgObject locally
             msgObject.pinInBackground();
@@ -525,21 +525,21 @@ public class Messages extends Fragment {
       /*
        * Set likes and confused count
        */
-            int likeCount = msgObject.getInt(Constants.LIKE_COUNT);
+            int likeCount = msgObject.getInt(Constants.GroupDetails.LIKE_COUNT);
             if(likeCount < 0) likeCount = 0;
-            int confusedCount = msgObject.getInt(Constants.CONFUSED_COUNT);
+            int confusedCount = msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT);
             if(confusedCount < 0) confusedCount = 0;
 
             holder.likes.setText(likeCount + "");
             holder.confused.setText(confusedCount + "");
 
 
-            if (msgObject.getBoolean(Constants.LIKE))
+            if (msgObject.getBoolean(Constants.GroupDetails.LIKE))
                 liked(holder.likeIcon, holder.likes, holder.likeButton);
             else
                 unLiked(holder.likeIcon, holder.likes, holder.likeButton);
 
-            if (msgObject.getBoolean(Constants.CONFUSING))
+            if (msgObject.getBoolean(Constants.GroupDetails.CONFUSING))
                 confused(holder.confusingIcon, holder.confused, holder.confuseButton);
             else
                 unConfused(holder.confusingIcon, holder.confused, holder.confuseButton);
@@ -554,10 +554,10 @@ public class Messages extends Fragment {
                                                      public void onClick(View v) {
                                                          final MessageStatePair currentState = new MessageStatePair(0, 0);
 
-                                                         if(msgObject.getBoolean(Constants.LIKE)){
+                                                         if(msgObject.getBoolean(Constants.GroupDetails.LIKE)){
                                                              currentState.likeStatus = 1;
                                                          }
-                                                         if(msgObject.getBoolean(Constants.CONFUSING)){
+                                                         if(msgObject.getBoolean(Constants.GroupDetails.CONFUSING)){
                                                              currentState.confusedStatus = 1;
                                                          }
 
@@ -584,10 +584,10 @@ public class Messages extends Fragment {
                                                         public void onClick(View v) {
                                                             final MessageStatePair currentState = new MessageStatePair(0, 0);
 
-                                                            if(msgObject.getBoolean(Constants.LIKE)){
+                                                            if(msgObject.getBoolean(Constants.GroupDetails.LIKE)){
                                                                 currentState.likeStatus = 1;
                                                             }
-                                                            if(msgObject.getBoolean(Constants.CONFUSING)){
+                                                            if(msgObject.getBoolean(Constants.GroupDetails.CONFUSING)){
                                                                 currentState.confusedStatus = 1;
                                                             }
 
@@ -943,7 +943,7 @@ public class Messages extends Fragment {
 
         if (user != null) {
             int totalMessages = 0;
-            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_DETAILS);
+            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
             query.fromLocalDatastore();
             query.whereEqualTo("userId", user.getUsername());
             try {

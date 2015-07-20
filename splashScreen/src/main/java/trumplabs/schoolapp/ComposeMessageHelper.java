@@ -181,32 +181,62 @@ public class ComposeMessageHelper {
         params.put("message", msg.getString("title"));
 
         try{
-            HashMap obj = ParseCloud.callFunction("sendTextMessage", params);
-            if (obj != null) {
-                Date createdAt = (Date) obj.get("createdAt");
-                String objectId = (String) obj.get("messageId");
+            HashMap result = ParseCloud.callFunction("sendTextMessage", params);
+            if (result != null) {
+                int retVal = 0; //success
+                Date createdAt = (Date) result.get("createdAt");
+                String objectId = (String) result.get("messageId");
 
                 //updating local time
                 SessionManager sm = new SessionManager(Application.getAppContext());
                 if (createdAt != null) {
                     sm.setCurrentTime(createdAt);
+                    //update msg and pin
+                    msg.put("objectId", objectId);
+                    msg.put("pending", false);
+                    msg.put("creationTime", createdAt);
+
+                    try {
+                        msg.pin();
+                    } catch (ParseException err) {
+                        err.printStackTrace();
+                    }
+                }
+                else{
+                    retVal = 200; //class has been deleted
+                    //error that class does not exist
+
+                    //first update created groups of user
+                    List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
+                    try{
+                        ParseUser user = ParseUser.getCurrentUser();
+                        if(user != null){
+                            user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
+                            user.pin();
+                        }
+                    }
+                    catch (ParseException err){
+                        err.printStackTrace();
+                    }
+
+                    //Notify created classrooms adapter
+                    Classrooms.notifyCreatedClassAdapter();
+
+                    //unpin the message,
+                    msg.unpin();
+                    //delete the message from lists
+                    if(SendMessage.groupDetails != null){
+                        SendMessage.groupDetails.remove(msg);
+                    }
+                    if(Outbox.groupDetails != null){
+                        Outbox.groupDetails.remove(msg);
+                    }
                 }
 
-                //update msg and pin
-                msg.put("objectId", objectId);
-                msg.put("pending", false);
-                msg.put("creationTime", createdAt);
-
-                try {
-                    msg.pin();
-                } catch (ParseException err) {
-                    err.printStackTrace();
-                }
-
+                //notify outbox and class page adapter
                 SendMessage.notifyAdapter();
-                //just notify outbox - no new query or updating count (since an old message just got new status)
                 Outbox.notifyAdapter();
-                return 0; //success
+                return retVal; //success
             }
             return -1; //unexpected error
         }

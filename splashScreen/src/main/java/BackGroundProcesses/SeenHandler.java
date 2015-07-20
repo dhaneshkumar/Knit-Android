@@ -1,6 +1,5 @@
 package BackGroundProcesses;
 
-import android.os.AsyncTask;
 import android.util.Log;
 
 import com.parse.ParseCloud;
@@ -14,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.Messages;
 import utility.Config;
 import utility.Utility;
 
@@ -39,9 +37,9 @@ public class SeenHandler{
         String username = user.getUsername();
 
         //Now find all those messages for which status is 0(i.e Seen but not Notified)
-        ParseQuery<ParseObject> seenQuery = ParseQuery.getQuery(Constants.GROUP_DETAILS);
+        ParseQuery<ParseObject> seenQuery = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
         seenQuery.fromLocalDatastore();
-        seenQuery.whereEqualTo(Constants.SEEN_STATUS, 0);
+        seenQuery.whereEqualTo(Constants.GroupDetails.SEEN_STATUS, 0);
         seenQuery.whereMatches(Constants.USER_ID, username);
         seenQuery.setLimit(Config.inboxMsgRefreshTotal); //at max this many
 
@@ -68,7 +66,7 @@ public class SeenHandler{
                 //change seen status of messages
                 for(int i=0; i < newSeenMessages.size(); i++){
                     ParseObject msg = newSeenMessages.get(i);
-                    msg.put(Constants.SEEN_STATUS, 1);
+                    msg.put(Constants.GroupDetails.SEEN_STATUS, 1);
                 }
                 //now pin all at once using pinAll call
                 ParseObject.pinAll(newSeenMessages);

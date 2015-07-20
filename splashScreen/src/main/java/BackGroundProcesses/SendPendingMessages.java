@@ -219,6 +219,7 @@ public class SendPendingMessages {
 
                 //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null if the app is running
                 if(showToast) {
+                    final String className = currentMsg.getString(Constants.GroupDetails.NAME);
                     if (MainActivity.viewpager != null) {
                         MainActivity.viewpager.post(new Runnable() {
                             @Override
@@ -226,12 +227,9 @@ public class SendPendingMessages {
                                 if(result == 0){
                                     Utility.toast("Notification Sent");
                                 }
-                               /* else if(result == 100){//aborting
-                                    Utility.toast("Sending failed ! Check your internet connection !");
+                                else if(result == 200){ //class has been deleted
+                                    Utility.toast("Class " + className + " has already been deleted");
                                 }
-                                else{
-                                    Utility.toast("Unable to send message! We will send it later");
-                                }*/
                             }
                         });
                     }

@@ -109,7 +109,7 @@ public class ClassRoomsUpdate {
         ParseFile newPid = (ParseFile) userInfo.get("pid");
         String newName = (String) userInfo.get("name");
 
-        ParseQuery userQuery = new ParseQuery(Constants.UserTable._TNAME);
+        ParseQuery userQuery = new ParseQuery(Constants.UserTable.TABLE);
         userQuery.fromLocalDatastore();
         userQuery.whereEqualTo(Constants.UserTable.USERNAME, username);
         userQuery.whereEqualTo(Constants.USER_ID, currentUserName); //associated with current logged in user
@@ -123,7 +123,7 @@ public class ClassRoomsUpdate {
             if(userObjects.size() == 0){
                 nameChanged = true;
                 //create a new User object and pin with dirty true
-                ParseObject newUser = new ParseObject(Constants.UserTable._TNAME);
+                ParseObject newUser = new ParseObject(Constants.UserTable.TABLE);
                 newUser.put(Constants.UserTable.USERNAME, username);
                 if(newPid != null){
                     newUser.put(Constants.UserTable.PID, newPid);
@@ -191,7 +191,7 @@ public class ClassRoomsUpdate {
         fetch new profile pics for dirty marked Users
      */
     public static void fetchProfilePics(String currentUserName){
-        ParseQuery dirtyUserQuery = new ParseQuery(Constants.UserTable._TNAME);
+        ParseQuery dirtyUserQuery = new ParseQuery(Constants.UserTable.TABLE);
         dirtyUserQuery.fromLocalDatastore();
         dirtyUserQuery.whereEqualTo(Constants.UserTable.DIRTY, true);
         dirtyUserQuery.whereEqualTo(Constants.USER_ID, currentUserName);

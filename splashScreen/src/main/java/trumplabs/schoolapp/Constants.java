@@ -10,7 +10,6 @@ public class Constants {
   public static boolean updatedTimestamp = false;
   public static final String TIMESTAMP = "createdAt";
   public static final String ROLE = "role";
-  public static Map<String, Integer> serverMsgCounter;
 
   public static final String CREATED_GROUPS = "Created_groups";
   public static final String JOINED_GROUPS = "joined_groups";
@@ -21,29 +20,32 @@ public class Constants {
     Users table - store updated teacher's name and pic info
    */
   public static class UserTable{
-    public static final String _TNAME = "User";
+    public static final String TABLE = "User";
     public static final String DIRTY = "dirty";
     public static final String NAME = "name";
     public static final String PID = "pid";
     public static final String USERNAME = "username";
   }
+
+  public static final String USER_ID = "userId"; //local  user id
+
   /*
    * groupDetails table variables
    */
-  public static final String GROUP_DETAILS = "GroupDetails";
-  public static final String LIKE_COUNT = "like_count";
-  public static final String CONFUSED_COUNT = "confused_count";
-  public static final String SEEN_COUNT = "seen_count";
-  public static final String LIKE = "like"; //local
-  public static final String CONFUSING = "confusing"; //local
-  public static final String SYNCED_LIKE = "synced_like"; //local like status last synced
-  public static final String SYNCED_CONFUSING = "synced_confusing"; //local
-  public static final String DIRTY_BIT = "dirty_bit"; //local
-  public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
-  public static final String USER_ID = "userId"; //local  user id
-  public static final String LIKE_STATUS = "like_status";
-  public static final String CONFUSED_STATUS = "confused_status";
+  public static class GroupDetails{
+    public static final String TABLE = "GroupDetails";
+    public static final String LIKE_COUNT = "like_count";
+    public static final String CONFUSED_COUNT = "confused_count";
+    public static final String SEEN_COUNT = "seen_count";
+    public static final String LIKE = "like"; //local
+    public static final String CONFUSING = "confusing"; //local
+    public static final String SYNCED_LIKE = "synced_like"; //local like status last synced
+    public static final String SYNCED_CONFUSING = "synced_confusing"; //local
+    public static final String DIRTY_BIT = "dirty_bit"; //local
+    public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
 
+    public static final String NAME = "name";
+  }
   /*
    * Invitation table
    */
@@ -75,13 +77,9 @@ public class Constants {
    * Database table names
    */
   public static final String MESSAGE_NEEDERS= "Messageneeders";
-  
 
     // codegroup
-
     public static  final String CODE_GROUP = "Codegroup";
-    public static  final String DIVISION = "divison";
-    public static final String IS_SUGGESTION = "isSuggestion"; //flag indicating whether this codegroup entry is a suggestion
 
     //group members
     public static final String GROUP_MEMBERS = "GroupMembers";
@@ -126,9 +124,6 @@ public class Constants {
     public static int actionBarHeight = 0;
     public static final String SENT_MESSAGES_TABLE = "SentMessages";
 
-    public static boolean signup_classrooms =false;
-    public static boolean signup_inbox = false;
-    public static boolean signup_outbox = false;
     public static boolean IS_SIGNUP = false;
 
     public static class TutorialKeys{

@@ -392,4 +392,28 @@ public class Classrooms extends Fragment  {
             return row;
         }
     }
+
+    //can be called from anywhere
+    public static void notifyCreatedClassAdapter(){
+        if(getactivity != null && createdClassAdapter != null){
+            getactivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    createdClassAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
+
+    //can be called from anywhere
+    public static void notifyJoinedClassAdapter(){
+        if(getactivity != null && createdClassAdapter != null){
+            getactivity.runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    joinedClassAdapter.notifyDataSetChanged();
+                }
+            });
+        }
+    }
 }

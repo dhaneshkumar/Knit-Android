@@ -143,13 +143,13 @@ public class JoinedHelper {
                 ParseObject msg = oldMessages.get(i);
                 msg.put(Constants.USER_ID, ParseUser.getCurrentUser().getUsername());
 
-                msg.put(Constants.LIKE, false);
-                msg.put(Constants.CONFUSING, false);
-                msg.put(Constants.SYNCED_LIKE, false);
-                msg.put(Constants.SYNCED_CONFUSING, false);
+                msg.put(Constants.GroupDetails.LIKE, false);
+                msg.put(Constants.GroupDetails.CONFUSING, false);
+                msg.put(Constants.GroupDetails.SYNCED_LIKE, false);
+                msg.put(Constants.GroupDetails.SYNCED_CONFUSING, false);
 
-                msg.put(Constants.DIRTY_BIT, false);
-                msg.put(Constants.SEEN_STATUS, 0);
+                msg.put(Constants.GroupDetails.DIRTY_BIT, false);
+                msg.put(Constants.GroupDetails.SEEN_STATUS, 0);
             }
 
             try {

@@ -520,9 +520,9 @@ public class SendMessage extends MyActionBarActivity  {
                 retryButton.setVisibility(View.GONE);
             }
 
-            int likeCount = Utility.nonNegative(msg.getInt(Constants.LIKE_COUNT));
-            int confusedCount = Utility.nonNegative(msg.getInt(Constants.CONFUSED_COUNT));
-            int seenCount = Utility.nonNegative(msg.getInt(Constants.SEEN_COUNT));
+            int likeCount = Utility.nonNegative(msg.getInt(Constants.GroupDetails.LIKE_COUNT));
+            int confusedCount = Utility.nonNegative(msg.getInt(Constants.GroupDetails.CONFUSED_COUNT));
+            int seenCount = Utility.nonNegative(msg.getInt(Constants.GroupDetails.SEEN_COUNT));
             if(seenCount < likeCount + confusedCount){ //for consistency(SC >= LC + CC) - might not be correct though
                 seenCount = likeCount + confusedCount;
             }
