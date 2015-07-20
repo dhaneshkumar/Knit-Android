@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -155,7 +156,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             });
 
         }
-        
     }
 
     /*********** Location Detection methods ****************/
@@ -164,7 +164,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
@@ -197,6 +197,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     }
 
     protected synchronized void buildGoogleApiClient() {
+        PackageManager pm = getPackageManager();
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
+            Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
+            return;
+        }
+
         Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)

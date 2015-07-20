@@ -3,6 +3,7 @@ package loginpages;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
@@ -86,7 +87,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
         mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
     }
@@ -120,6 +121,12 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     }
 
     protected synchronized void buildGoogleApiClient() {
+        PackageManager pm = getPackageManager();
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
+            Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() feature not available");
+            return;
+        }
+
         Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() entered");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
