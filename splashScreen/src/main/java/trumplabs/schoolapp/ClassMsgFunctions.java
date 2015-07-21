@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.os.AsyncTask;
+import android.util.Log;
 import android.view.View;
 
 import com.parse.FunctionCallback;
@@ -57,17 +58,18 @@ public class ClassMsgFunctions {
                 e.printStackTrace();
             }
 
-            //locally removing sent messages of that class
-            ParseQuery<ParseObject> delquery22 = new ParseQuery<ParseObject>(Constants.SENT_MESSAGES_TABLE);
+            //locally removing sent messages of that class - DON'T REMOVE HISTORY
+            /*ParseQuery<ParseObject> delquery22 = new ParseQuery<ParseObject>(Constants.SENT_MESSAGES_TABLE);
             delquery22.whereEqualTo("code", groupCode);
             delquery22.whereEqualTo("userId", currentUser.getUsername());
             delquery22.setLimit(1000);
             delquery22.fromLocalDatastore();
             try {
-                ParseObject.unpinAll(delquery22.find());
+                List<ParseObject> l = delquery22.find();
+                ParseObject.unpinAll(l);
             } catch (ParseException e1) {
                 e1.printStackTrace();
-            }
+            }*/
 
             //locally removing all members of that group
             ParseQuery<ParseObject> delquery33 = new ParseQuery<ParseObject>(Constants.GROUP_MEMBERS);
@@ -76,7 +78,8 @@ public class ClassMsgFunctions {
             delquery33.fromLocalDatastore();
             delquery33.setLimit(1000);
             try {
-                ParseObject.unpinAll(delquery33.find());
+                List<ParseObject> l = delquery33.find();
+                ParseObject.unpinAll(l);
             } catch (ParseException e1) {
                 e1.printStackTrace();
             }

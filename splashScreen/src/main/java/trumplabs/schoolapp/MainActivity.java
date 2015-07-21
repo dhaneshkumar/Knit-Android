@@ -330,11 +330,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
                     Log.d("__TEMP__", "onPageSelected " + fragmentVisible);
                     if(fragmentVisible == 0 && !Outbox.responseTutorialShown && Outbox.myadapter != null){
-                        Log.d("__TEMP__", "Outbox notify");
                         Outbox.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
                     }
                     if(fragmentVisible == 2 && !Messages.responseTutorialShown && Messages.myadapter != null){
-                        Log.d("__TEMP__", "Messages notify");
                         Messages.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
                     }
                 }

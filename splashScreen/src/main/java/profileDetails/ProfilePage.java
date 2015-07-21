@@ -154,16 +154,13 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         try {
             final File thumbnailFile = new File(filePath);
             if (thumbnailFile.exists()) {
-                Log.d("__K", "displaying available locally : " + filePath);
                 // image file present locally
                 Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
                 profileimgview.setImageBitmap(myBitmap);
             } else if (ParseUser.getCurrentUser() != null && ParseUser.getCurrentUser().has("pid")) {
-                Log.d("__K", "displaying fetching :" + filePath);
                 ParseFile imagefile = (ParseFile) ParseUser.getCurrentUser().get("pid");
                 imagefile.getDataInBackground(new GetDataCallback() {
                     public void done(byte[] data, ParseException e) {
-                        Log.d("__K", "displaying fetch over :" + filePath);
                         if (e == null) {
                             // ////Image download successful
                             FileOutputStream fos;
@@ -351,7 +348,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                         @Override
                                         public void done(Boolean result, ParseException e) {
                                             if (e == null && result) {
-                                                Log.d("__N", "all success : now just pinning");
                                                 name = value;
                                                 name_textView.setText(name);
                                                 Utility.toast("Name updated !");
@@ -362,7 +358,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                                     e2.printStackTrace();
                                                 }
                                             } else {
-                                                Log.d("__N", "cloud call failed");
                                                 Utility.toast("Name update failed !");
                                             }
                                         }
@@ -459,7 +454,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d("__K", "pic path=" + filepath);
 
             if(!Utility.isInternetExistWithoutPopup()){
                 return null; //return immediately if internet not connected
@@ -480,7 +474,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 }
 
                 if (data == null) {
-                    Log.d("__K", "file read error");
                     return null;
                 }
 
@@ -492,21 +485,17 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     boolean result = ParseCloud.callFunction("updateProfilePic", parameters);
 
                     if (result) {
-                        Log.d("__K", "all success : now just pinning");
                         //TODO call cloud function updateProfilePic
                         ParseUser.getCurrentUser().put("pid", file);
                         ParseUser.getCurrentUser().pin();
                         success = true;
                     } else {
-                        Log.d("__K", "cloud code returned false :(");
                     }
                 } catch (ParseException e) {
-                    Log.d("__K", "parse file save, cloud code call OR pinning failure");
                     e.printStackTrace();
                 }
             }
             else{
-                Log.d("__K", "parse user null");
             }
 
             return null;

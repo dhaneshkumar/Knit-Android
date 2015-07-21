@@ -85,8 +85,6 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     public static boolean composeTutorialShown = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("__NOW__", "compose message onCreate");
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.compose_message);
 
