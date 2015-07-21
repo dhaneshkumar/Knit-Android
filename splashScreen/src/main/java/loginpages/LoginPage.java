@@ -97,15 +97,6 @@ public class LoginPage extends MyActionBarActivity {
                 //update current server time
                 Utility.updateCurrentTime(user);
 
-                  Utility.setNewIdFlagInstallation();
-                  boolean installationStatus = Utility.checkParseInstallation();
-                  if(installationStatus){
-                      Log.d("DEBUG_LOGIN_OLD", "installation save SUCCESS");
-                  }
-                  else{
-                      Log.d("DEBUG_LOGIN_OLD", "installation save FAILED");
-                  }
-
                 Intent intent = new Intent(getBaseContext(), MainActivity.class);
                 startActivity(intent);
               } else {

@@ -401,15 +401,6 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             fillDetailsInSessionInBackground(true);
             Utility.updateCurrentTime(user);
 
-            Utility.setNewIdFlagInstallation();
-            boolean installationStatus = Utility.checkParseInstallation();
-            if(installationStatus){
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostLoginTask : installation save SUCCESS");
-            }
-            else{
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostLoginTask : installation save FAILED");
-            }
-
             return null;
         }
 
@@ -420,7 +411,6 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 pdialog.dismiss();
             }
 
-
             //Switching to MainActivity
             Intent intent = new Intent(activityContext, MainActivity.class);
             activityContext.startActivity(intent);
@@ -429,7 +419,6 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Map<String, String> dimensions = new HashMap<String, String>();
             dimensions.put("Login", "Total Login");
             ParseAnalytics.trackEvent("Login", dimensions);
-
         }
     }
 
@@ -446,18 +435,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             
             Utility.updateCurrentTime(currentUser);
 
-            Utility.setNewIdFlagInstallation();
-            boolean installationStatus = Utility.checkParseInstallation();
-
             //set inbox fetch flag. We dont need to fetch old messages in this account
             SessionManager.setBooleanValue(currentUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
-
-            if(installationStatus){
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save SUCCESS");
-            }
-            else{
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "PostSignUpTask : installation save FAILED");
-            }
 
             return null;
         }

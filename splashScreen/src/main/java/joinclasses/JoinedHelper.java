@@ -54,20 +54,7 @@ public class JoinedHelper {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("classCode", classcode);
         params.put("associateName", childname);
-        params.put("installationObjectId", ParseInstallation.getCurrentInstallation().getString("id"));
-
-        if(ParseInstallation.getCurrentInstallation() != null)
-        {
-            if(ParseInstallation.getCurrentInstallation().getString("id") != null)
-                Log.d("JOIN", ParseInstallation.getCurrentInstallation().getString("id"));
-            else {
-                Log.d("JOIN", "object id : null ");
-
-                Log.d("JOIN",ParseInstallation.getCurrentInstallation().getInstallationId());
-            }
-        }
-        else
-            Log.d("JOIN", "parseInstallation : null");
+        params.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
 
         HashMap<String, Object> result = null;
 

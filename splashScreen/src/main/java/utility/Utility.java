@@ -61,30 +61,6 @@ public class Utility extends MyActionBarActivity {
     }
 
     /*
-        clear extra fields : "id"
-        set flag "newIdFlag" to true in parseInstallation indicating a signup/singin and that
-        not to put old objectId into "id" field as that objectId row might have been deleted on
-        cloud server.
-     */
-
-    public static void setNewIdFlagInstallation(){
-        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
-
-        if(parseInstallation != null){
-            parseInstallation.remove("id"); //remove id key so that in checkParseInstallation,
-                                            // we don't get a false indication that id is set
-            parseInstallation.put("newIdFlag", true);
-            try{
-                parseInstallation.pin();
-                Log.d("DEBUG_UTILITY", "setNewIdFlagInstallation : remove id field; set newIdFlag successfully");
-            }
-            catch (com.parse.ParseException e){
-                e.printStackTrace();
-            }
-        }
-    }
-
-    /*
         check if local parseinstallation has "id" field set which implies that cloud database
         has an entry corresponding to it(this id is the object id in cloud database).
         If not, use "appInstallation" cloud function to create an entry
@@ -102,20 +78,6 @@ public class Utility extends MyActionBarActivity {
                                                         // This is cleared during singup/signin to
                                                         // prevent use of stale ids
             return true; //we're done
-        }
-
-        // Since "id" is not set : Handle Upgrade to new version if newIdFlag not set & if objectId set,
-        // and use it to set "id" field
-        if(!parseInstallation.getBoolean("newIdFlag") && parseInstallation.getObjectId() != null){
-            parseInstallation.put("id", parseInstallation.getObjectId());
-            try{
-                parseInstallation.pin();
-                Log.d("DEBUG_UTILITY", "checkParseInstallation : setting id using already existing objectId");
-                return true; //success
-            }
-            catch (com.parse.ParseException e){
-                e.printStackTrace();
-            }
         }
 
         //Since neither id nor objectId set, call the cloud function.
