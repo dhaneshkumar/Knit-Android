@@ -20,6 +20,7 @@ import com.parse.GetCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseSession;
 import com.parse.ParseUser;
 
@@ -253,27 +254,33 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
+        protected Void doInBackground(Void... par) {
             //setting parameters
-            HashMap<String, Object> param = new HashMap<String, Object>();
-            param.put("code", Integer.parseInt(code));
-
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            params.put("code", Integer.parseInt(code));
 
             if(!isLogin) {
-                param.put("number", PhoneSignUpName.phoneNumber);
-                param.put("name", /*PhoneSignUpName.title + " " + */ PhoneSignUpName.displayName);
-                param.put("role", PhoneSignUpName.role);
+                params.put("number", PhoneSignUpName.phoneNumber);
+                params.put("name", /*PhoneSignUpName.title + " " + */ PhoneSignUpName.displayName);
+                params.put("role", PhoneSignUpName.role);
                 String emailId = Utility.getAccountEmail();
                 if(emailId != null){
-                    param.put("emailId", emailId);
+                    params.put("email", emailId);
                 }
             }
             else{
-                param.put("number", PhoneLoginPage.phoneNumber);
+                params.put("number", PhoneLoginPage.phoneNumber);
             }
 
+            //appInstallation params - devicetype, installationId
+            params.put("deviceType", "android");
+            params.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+
+            //Sessions save params - os, model, location(lat, long)
+            fillDetailsForSession(isLogin, params);
+
             try {
-                HashMap<String, Object> result = ParseCloud.callFunction("verifyCod", param);
+                HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
                 Boolean success = (Boolean) result.get("flag");
                 String sessionToken = (String) result.get("sessionToken");
                 if(success != null && success && sessionToken != null){
@@ -398,8 +405,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
 
         protected Void doInBackground(Void... params) {
-            fillDetailsInSessionInBackground(true);
-            Utility.updateCurrentTime(user);
+            Utility.updateCurrentTime();
 
             return null;
         }
@@ -431,9 +437,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         @Override
         protected Void doInBackground(Void... params) {
 
-            fillDetailsInSessionInBackground(false);
-            
-            Utility.updateCurrentTime(currentUser);
+            Utility.updateCurrentTime();
 
             //set inbox fetch flag. We dont need to fetch old messages in this account
             SessionManager.setBooleanValue(currentUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
@@ -474,39 +478,24 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
     }
 
-    static void fillDetailsInSessionInBackground(final boolean login){
-        ParseSession.getCurrentSessionInBackground(new GetCallback<ParseSession>() {
-            @Override
-            public void done(ParseSession parseSession, ParseException e) {
-                if(e == null){
-                    String model = "NA";
-                    if (android.os.Build.MODEL != null)
-                        model = android.os.Build.MODEL;
-                    parseSession.put("model", model);
-                    parseSession.put("os", "ANDROID");
-                    parseSession.put("role", ParseUser.getCurrentUser().getString(Constants.ROLE));
+    static void fillDetailsForSession(final boolean login, HashMap<String, Object> params){
+        String model = "NA";
+        if (android.os.Build.MODEL != null)
+            model = android.os.Build.MODEL;
+        params.put("model", model);
+        params.put("os", "ANDROID");
 
-                    if(login){
-                        if (PhoneLoginPage.mLastLocation != null) {
-//                            Log.d("DEBUG_SIGNUP_VERIFICATION", "login putting location in session");
-                            parseSession.put("lat", PhoneLoginPage.mLastLocation.getLatitude());
-                            parseSession.put("long", PhoneLoginPage.mLastLocation.getLongitude());
-                        }
-                    }
-                    else {
-                        if (PhoneSignUpName.mLastLocation != null) {
-//                            Log.d("DEBUG_SIGNUP_VERIFICATION", "signup putting location in session");
-                            parseSession.put("lat", PhoneSignUpName.mLastLocation.getLatitude());
-                            parseSession.put("long", PhoneSignUpName.mLastLocation.getLongitude());
-                        }
-                    }
-
-                    parseSession.saveEventually();
-                }
-                else{
-                    e.printStackTrace();
-                }
+        if(login){
+            if (PhoneLoginPage.mLastLocation != null) {
+                params.put("lat", PhoneLoginPage.mLastLocation.getLatitude());
+                params.put("long", PhoneLoginPage.mLastLocation.getLongitude());
             }
-        });
+        }
+        else {
+            if (PhoneSignUpName.mLastLocation != null) {
+                params.put("lat", PhoneSignUpName.mLastLocation.getLatitude());
+                params.put("long", PhoneSignUpName.mLastLocation.getLongitude());
+            }
+        }
     }
 }

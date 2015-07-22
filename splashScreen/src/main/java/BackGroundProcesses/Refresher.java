@@ -26,13 +26,13 @@ public class Refresher {
         if (freshUser != null) {
 
             final SessionManager sm = new SessionManager(Application.getAppContext());
-            Utility.checkParseInstallation(); //important for upgrade issues. This will be called first time app is launched after update
+            //Utility.checkParseInstallation(); //important for upgrade issues. This will be called first time app is launched after update
       /*
        * Storing current time stamp
        */
 
             if(Application.mainActivityVisible) {
-                    Utility.updateCurrentTimeInBackground(freshUser);
+                    Utility.updateCurrentTimeInBackground();
             }
 
             Log.d("DEBUG_REFRESHER",  "calling background tasks");

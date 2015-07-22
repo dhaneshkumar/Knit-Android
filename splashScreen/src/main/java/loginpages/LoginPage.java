@@ -2,6 +2,7 @@ package loginpages;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.view.Menu;
@@ -13,18 +14,28 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.parse.FunctionCallback;
 import com.parse.LogInCallback;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseUser;
+
+import java.util.HashMap;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
+import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
 
 public class LoginPage extends MyActionBarActivity {
+  private static final String LOGTAG = "OLD_LOGIN";
+
   EditText username_etxt;
   EditText password_etxt;
   Button signin_btn;
@@ -79,9 +90,7 @@ public class LoginPage extends MyActionBarActivity {
           Utility.toast("Enter your Email-id");
         } else if (UtilString.isBlank(passwd)) {
           Utility.toast("Enter your Password");
-        } else {
-
-
+        } else if(Utility.isInternetExist()){
           /*
            * Hiding the keyboard from screen
            */
@@ -90,24 +99,8 @@ public class LoginPage extends MyActionBarActivity {
           progressLayout.setVisibility(View.VISIBLE);
           // getSupportActionBar().hide();
 
-          ParseUser.logInInBackground(email, passwd, new LogInCallback() {
-            public void done(ParseUser user, ParseException e) {
-              if (e == null && user != null) {
-
-                //update current server time
-                Utility.updateCurrentTime(user);
-
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
-                startActivity(intent);
-              } else {
-                  e.printStackTrace();
-                getSupportActionBar().show();
-                loginLayout.setVisibility(View.VISIBLE);
-                progressLayout.setVisibility(View.GONE);
-                Utility.toast("Log in failed....  Try again.");
-              }
-            }
-          });
+          OldLoginTask oldLoginTask = new OldLoginTask(email, passwd);
+          oldLoginTask.execute();
         }
       }
     });
@@ -135,6 +128,92 @@ public class LoginPage extends MyActionBarActivity {
     }
 
     return super.onOptionsItemSelected(item);
+  }
+
+  class OldLoginTask extends AsyncTask<Void, Void, Void> {
+    boolean taskSuccess = false;
+    boolean networkError = false;
+    boolean userDoesNotExistsError = false; //user doesnot exist - during login
+
+    String email;
+    String password;
+    public OldLoginTask(String email, String password){
+      this.email = email;
+      this.password = password;
+    }
+
+    protected Void doInBackground(Void... par) {
+      HashMap<String, Object> params = new HashMap<>();
+      params.put("email", email);
+      params.put("password", password);
+
+      params.put("deviceType", "android");
+      params.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+
+      PhoneSignUpVerfication.fillDetailsForSession(true, params);
+
+      try {
+        HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
+        Boolean success = (Boolean) result.get("flag");
+        String sessionToken = (String) result.get("sessionToken");
+
+        if(success != null && success && sessionToken != null){
+          ParseUser user = ParseUser.become(sessionToken);
+          if (user != null) {
+            taskSuccess = true;
+            Utility.updateCurrentTimeInBackground();
+
+            SessionManager session = new SessionManager(Application.getAppContext());
+            //If user has joined any class then locally saving it in session manager
+            if(user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
+              session.setHasUserJoinedClass();
+            }
+          } else {
+            // The token could not be validated.
+            Log.d(LOGTAG, "parseuser become - returned user null");
+          }
+        }
+        else{
+          Log.d(LOGTAG, "verifyCode result not correct");
+        }
+      }
+      catch (ParseException e){
+        Log.d(LOGTAG, "verifyCode/becomeUser ParseException, error-code=" + e.getCode());
+        if(e.getCode() == ParseException.CONNECTION_FAILED){
+          networkError = true;
+        }
+        if(e.getMessage().equals("USER_DOESNOT_EXISTS")){
+          userDoesNotExistsError = true;
+        }
+        e.printStackTrace();
+      }
+
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void result){
+      if(taskSuccess){
+        //Switching to MainActivity
+        Intent intent = new Intent(LoginPage.this, MainActivity.class);
+        LoginPage.this.startActivity(intent);
+      }
+      else{
+        getSupportActionBar().show();
+        loginLayout.setVisibility(View.VISIBLE);
+        progressLayout.setVisibility(View.GONE);
+
+        if(networkError) {
+          Utility.toast("Connection failure");
+        }
+        else if(userDoesNotExistsError){
+          Utility.toast("Wrong email or password. Check again.");
+        }
+        else{
+          Utility.toast("Log in failed.... Please try again");
+        }
+      }
+    }
   }
 
 }

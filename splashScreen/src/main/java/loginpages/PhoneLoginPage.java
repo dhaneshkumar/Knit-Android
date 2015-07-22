@@ -35,7 +35,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
   EditText phoneNumberET;
   TextView oldLoginTV;
-  static ProgressDialog pdialog;
 
   Activity activity;
 
@@ -230,6 +229,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             ParseAnalytics.trackEvent("Login", dimensions);
 
         }
-        
+
     }
 }
