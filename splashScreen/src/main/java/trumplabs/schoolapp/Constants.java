@@ -27,6 +27,7 @@ public class Constants {
     public static final String PID = "pid";
     public static final String USERNAME = "username";
   }
+
   /*
    * groupDetails table variables
    */

@@ -176,6 +176,19 @@
                 android:paddingBottom="8dp"
                 android:textColor="@color/white" />
 
+
+            <Button
+                android:id="@+id/login_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/buttoncolor"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:text="Facebook Login"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_marginBottom="30dp" />
+
         </LinearLayout>
     </LinearLayout>
 

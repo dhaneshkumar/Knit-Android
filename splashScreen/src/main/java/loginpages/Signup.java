@@ -2,9 +2,19 @@ package loginpages;
 
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import com.facebook.CallbackManager;
+import com.parse.LogInCallback;
+import com.parse.ParseException;
+import com.parse.ParseFacebookUtils;
+import com.parse.ParseUser;
+
+import java.util.Collection;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
@@ -16,12 +26,11 @@ import tutorial.TeacherTutorial;
  * Created by Dhanesh on 1/12/2015.
  */
 public class Signup extends MyActionBarActivity {
-    /*int backCount = 0;
-    LinearLayout progressLayout;
-    LinearLayout loginlayout;*/
+    CallbackManager callbackManager;
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.signup);
         getSupportActionBar().hide();
 
@@ -37,6 +46,9 @@ public class Signup extends MyActionBarActivity {
         TextView ptext = (TextView) findViewById(R.id.ptext);
         TextView stext = (TextView) findViewById(R.id.stext);
         TextView member = (TextView) findViewById(R.id.member);
+
+
+        Button loginButton = (Button) findViewById(R.id.login_button);
 
         //Setting the font
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
@@ -89,8 +101,36 @@ public class Signup extends MyActionBarActivity {
             }
         });
 
+
+        // Callback registration
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Collection<String> permissions = null;
+
+                ParseFacebookUtils.logInWithReadPermissionsInBackground(Signup.this, permissions, new LogInCallback() {
+                    @Override
+                    public void done(ParseUser user, ParseException err) {
+                        if (user == null) {
+                            Log.d("MyApp", "Uh oh. The user cancelled the Facebook login.");
+                        } else if (user.isNew()) {
+                            Log.d("MyApp", "User signed up and logged in through Facebook!");
+                        } else {
+                            Log.d("MyApp", "User logged in through Facebook!");
+                        }
+                    }
+                });
+            }
+        });
+
     }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        ParseFacebookUtils.onActivityResult(requestCode, resultCode, data);
+    }
 
 
     @Override
