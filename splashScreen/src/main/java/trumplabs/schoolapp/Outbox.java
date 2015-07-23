@@ -369,16 +369,13 @@ public class Outbox extends Fragment {
             Retrieving timestamp
              */
             String timestampmsg = "";
-            try {
-                Date cdate = groupdetails1.getCreatedAt();
+            Date cdate = groupdetails1.getCreatedAt();
 
-                if (cdate == null)
-                    cdate = (Date) groupdetails1.get("creationTime");
+            if (cdate == null)
+                cdate = (Date) groupdetails1.get("creationTime");
 
-                //finding difference of current & createdAt timestamp
-                timestampmsg = Utility.convertTimeStamp(cdate);
-            } catch (java.text.ParseException e) {
-            }
+            //finding difference of current & createdAt timestamp
+            timestampmsg = Utility.convertTimeStamp(cdate);
 
             //setting cardview for higher api using elevation
 

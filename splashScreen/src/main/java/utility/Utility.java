@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
+import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
@@ -37,7 +38,6 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.text.ParseException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
@@ -107,7 +107,7 @@ public class Utility extends MyActionBarActivity {
             MainActivity.viewpager.post(new Runnable() {
                 @Override
                 public void run() {
-                    LogoutTask.startLoginActivity(); //called from UI thread
+                    startLoginActivity(); //called from UI thread
                 }
             });
         }
@@ -117,6 +117,16 @@ public class Utility extends MyActionBarActivity {
     public static void logoutProfilePage(){
         LogoutTask logoutTask = new LogoutTask();
         logoutTask.execute();
+    }
+
+    //call from UI thread only
+    static void startLoginActivity(){
+        Intent i = new Intent(Application.getAppContext(), Signup.class);
+        // Closing all the Activities
+        // Add new Flag to start new Activity
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        Application.getAppContext().startActivity(i);
     }
 
     public static class LogoutTask extends AsyncTask<Void, Void, Void> {
@@ -146,16 +156,6 @@ public class Utility extends MyActionBarActivity {
             SessionManager session = new SessionManager(_context);
             session.reSetAppOpeningCount();
             session.reSetSignUpAccount();
-        }
-
-        //call from UI thread only
-        static void startLoginActivity(){
-            Intent i = new Intent(Application.getAppContext(), Signup.class);
-            // Closing all the Activities
-            // Add new Flag to start new Activity
-            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-            Application.getAppContext().startActivity(i);
         }
 
         @Override
@@ -269,7 +269,7 @@ public class Utility extends MyActionBarActivity {
         }
     }
 
-    public static String convertTimeStamp(Date d1) throws ParseException {
+    public static String convertTimeStamp(Date d1){
 
 
         String result;
@@ -540,5 +540,22 @@ public class Utility extends MyActionBarActivity {
      */
     public static String getPluralSuffix(int count){
         return (count > 1 ? "s" : "");
+    }
+
+    public static void checkAndHandleInvalidSession(ParseException e){
+        if(e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    Log.d("__A", "checkAndHandleInvalidSession : inside job");
+                    Utility.toast("Session expired. Please login again !");
+                    ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
+                    startLoginActivity();
+                }
+            };
+
+            Log.d("__A", "checkAndHandleInvalidSession : posting job to Application.applicationHandler");
+            Application.applicationHandler.post(r);
+        }
     }
 }

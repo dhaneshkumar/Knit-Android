@@ -641,21 +641,18 @@ public class Messages extends Fragment {
                  Str = msgObject.getString("name").toUpperCase();
             holder.groupName.setText(Str);
 
-            try
-            {
-                if (msgObject.getCreatedAt() != null) {
-                    holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
 
-                    SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                    //Log.d("INBOX", "message : " + msgObject.getString("title"));
-                    //Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
-                    //Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
+            if (msgObject.getCreatedAt() != null) {
+                holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
 
-                }
-                else if (msgObject.get("creationTime") != null)
-                    holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
+                SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                //Log.d("INBOX", "message : " + msgObject.getString("title"));
+                //Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
+                //Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
+
             }
-            catch (java.text.ParseException e){}
+            else if (msgObject.get("creationTime") != null)
+                holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
 
             final String message = msgObject.getString("title");
             if (UtilString.isBlank(message)) {
