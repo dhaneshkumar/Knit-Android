@@ -8,8 +8,6 @@ import android.support.v7.app.ActionBarActivity;
 import trumplabs.schoolapp.Application;
 
 public class MyActionBarActivity extends ActionBarActivity{
-	protected Application mMyApp;
-
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
@@ -20,13 +18,12 @@ public class MyActionBarActivity extends ActionBarActivity{
          * Adding smooth transition
          */
        // overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        mMyApp = (Application)this.getApplicationContext();
     }
     
     protected void onResume() {
         super.onResume();
       //  overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
-        mMyApp.setCurrentActivity(this);
+        Application.setCurrentActivity(this);
     }
     protected void onPause() {
         clearReferences();
@@ -39,8 +36,8 @@ public class MyActionBarActivity extends ActionBarActivity{
     }
 
     private void clearReferences(){
-        Activity currActivity = mMyApp.getCurrentActivity();
+        Activity currActivity = Application.getCurrentActivity();
         if (currActivity != null && currActivity.equals(this))
-            mMyApp.setCurrentActivity(null);
+            Application.setCurrentActivity(null);
     }
 }

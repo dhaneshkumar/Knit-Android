@@ -238,6 +238,10 @@ public class SendMessage extends MyActionBarActivity  {
     protected void onResume() {
         super.onResume();
 
+        /*if(Application.getCurrentActivity() != null) {
+            Log.d("__A", "currentActivity=" + Application.getCurrentActivity().getClass().getSimpleName() + "; SendMessage's name=" + SendMessage.class.getSimpleName());
+        }*/
+
         //facebook ad tracking
         // Logs 'install' and 'app activate' App Events.
         //AppEventsLogger.activateApp(this, Config.FB_APP_ID);

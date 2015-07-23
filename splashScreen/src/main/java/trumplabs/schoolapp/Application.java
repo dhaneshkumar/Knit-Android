@@ -18,7 +18,7 @@ import utility.Config;
 public class Application extends android.app.Application {
 	
 	 private static Context context;
-	 private Activity mCurrentActivity = null;
+	 private static Activity mCurrentActivity = null;
 
      public static boolean joinedSyncOnce = false; //sync joined classes info only once on app start
 
@@ -84,15 +84,16 @@ public class Application extends android.app.Application {
   }
   
   
-  public Activity getCurrentActivity(){
+  public static Activity getCurrentActivity(){
         return mCurrentActivity;
   }
-  public void setCurrentActivity(Activity mCurrentActivity){
-        this.mCurrentActivity = mCurrentActivity;
-  }
-  
-  
-  
 
-  
+  public static void setCurrentActivity(Activity cActivity){
+        mCurrentActivity = cActivity;
+  }
+
+    public static boolean isAppForeground(){
+        //at least onResume of some activity
+        return mCurrentActivity != null;
+    }
 }

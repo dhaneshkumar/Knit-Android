@@ -31,7 +31,7 @@ public class Refresher {
        * Storing current time stamp
        */
 
-            if(Application.mainActivityVisible) {
+            if(Application.isAppForeground()) {
                     Utility.updateCurrentTimeInBackground();
             }
 
@@ -45,7 +45,7 @@ public class Refresher {
             // (modified like, seen, confused status) if any
             // this should be called before fetching like/confused counts
 
-            if((Application.mainActivityVisible && isSufficientGapInbox())) { //or if just signed in
+            if((Application.isAppForeground() && isSufficientGapInbox())) { //or if just signed in
                 if(!Inbox.isQueued) { //if not already queued
                     Inbox newInboxTask = new Inbox();
                     newInboxTask.doInBackgroundCore();
@@ -54,17 +54,17 @@ public class Refresher {
                 }
             }
             else{
-                Log.d("DEBUG_REFRESHER", "refresher skipping inbox update : visible " + Application.mainActivityVisible + " gap " +  isSufficientGapInbox());
+                Log.d("DEBUG_REFRESHER", "refresher skipping inbox update : visible " + Application.isAppForeground() + " gap " +  isSufficientGapInbox());
             }
 
            /*
             *   Updating counts for outbox messages only if main activity visible and sufficent gap since last update
             */
-            if((Application.mainActivityVisible && isSufficientGapOutbox())) {
+            if((Application.isAppForeground() && isSufficientGapOutbox())) {
                 Outbox.refreshCountCore();
             }
             else{
-                Log.d("DEBUG_REFRESHER", "refresher skipping Outbox update : visible " + Application.mainActivityVisible + " gap " + isSufficientGapOutbox());
+                Log.d("DEBUG_REFRESHER", "refresher skipping Outbox update : visible " + Application.isAppForeground() + " gap " + isSufficientGapOutbox());
             }
 
             /*
