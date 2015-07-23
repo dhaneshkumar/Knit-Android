@@ -59,6 +59,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("__A","onCreate ProfilePage");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
 

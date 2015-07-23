@@ -166,10 +166,13 @@ public class Utility extends MyActionBarActivity {
             param.put("installationId", pi.getInstallationId());
 
             try{
+                Log.d("DEBUG_UTILITY", "logout() - appLogout before calling");
                 boolean logoutSuccess = ParseCloud.callFunction("appExit", param);
-                Log.d("DEBUG_UTILITY", "logout() - appLogout cloud function result is " + logoutSuccess);
+                Log.d("DEBUG_UTILITY", "logout() - appLogout returned with" + logoutSuccess);
                 ParseUser.logOut();
+                Log.d("DEBUG_UTILITY", "logout() - appLogout ParseUser.logOut() over");
                 resetLocalData();
+                Log.d("DEBUG_UTILITY", "logout() - appLogout resetLocalData() over");
                 success = true;
                 return null;
             }

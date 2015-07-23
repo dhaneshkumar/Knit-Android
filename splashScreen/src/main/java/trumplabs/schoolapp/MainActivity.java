@@ -100,6 +100,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static boolean goToOutboxFlag = false; //when returns from Message Composer, go directly to Outbox
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d("__A","onCreate MainActivity");
 
         //testing tutorial TODO comment following line before release
         //TestingUtililty.testingTutorial();
