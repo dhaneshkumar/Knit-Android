@@ -71,7 +71,7 @@ public class Subscribers extends MyActionBarActivity {
         setContentView(R.layout.classmembers_layout);
 
         //setting action bar title
-        getSupportActionBar().setTitle("Subscribers");
+        getSupportActionBar().setTitle("Members");
 
         //Adding home back button
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -123,7 +123,7 @@ public class Subscribers extends MyActionBarActivity {
         else
             emptyTV.setVisibility(View.GONE);
 
-        subscriberTV.setText(memberCount + " Members");
+        subscriberTV.setText(memberCount + " Member" + Utility.getPluralSuffix(memberCount));
 
         classCodeTV.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -565,13 +565,15 @@ public class Subscribers extends MyActionBarActivity {
                 else
                     emptyTV.setVisibility(View.GONE);
 
-                subscriberTV.setText(memberCount + " Members");
-
-                if(SendMessage.memberCountTV != null)
-                    SendMessage.memberCountTV.setText(memberCount +"");
+                subscriberTV.setText(memberCount + " Member" + Utility.getPluralSuffix(memberCount));
 
 
-                Utility.toast(memberName +" successfully removed from your classroom.");
+                if(SendMessage.memberCountTV != null && SendMessage.memberLabelTV != null) {
+                    SendMessage.memberCountTV.setText(memberCount + "");
+                    SendMessage.memberLabelTV.setText("Member" + Utility.getPluralSuffix(memberCount));
+                }
+
+                Utility.toast(memberName + " successfully removed from your classroom.");
             }
             else
                 Utility.toast("Sorry, something went wrong.\n Try Again");

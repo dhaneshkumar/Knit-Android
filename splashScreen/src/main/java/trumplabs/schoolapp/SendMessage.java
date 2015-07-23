@@ -77,7 +77,10 @@ public class SendMessage extends MyActionBarActivity  {
     private RelativeLayout inviteLayout;
     private RelativeLayout memberLayout;
     public static LinearLayout picProgressBarLayout;
+
     public static TextView memberCountTV;
+    public static TextView memberLabelTV;
+
     private boolean isLoading = false;
     private Typeface typeface;
     private ImageView empty_class_bg;
@@ -114,6 +117,8 @@ public class SendMessage extends MyActionBarActivity  {
         memberLayout = (RelativeLayout) findViewById(R.id.memberLayout);
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         memberCountTV = (TextView) findViewById(R.id.memberCount);
+        memberLabelTV = (TextView) findViewById(R.id.memberLabel);
+
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
         empty_class_bg = (ImageView) findViewById(R.id.sent_class_bg);
 
@@ -195,6 +200,7 @@ public class SendMessage extends MyActionBarActivity  {
         try {
             int memberCount = MemberList.getMemberCount(groupCode);
             memberCountTV.setText(memberCount+"");
+            memberLabelTV.setText("Member" + Utility.getPluralSuffix(memberCount));
         } catch (ParseException e) {
             e.printStackTrace();
         }

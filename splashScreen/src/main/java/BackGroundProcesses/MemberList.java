@@ -18,6 +18,7 @@ import trumplabs.schoolapp.MemberDetails;
 import trumplabs.schoolapp.SendMessage;
 import trumplabs.schoolapp.Subscribers;
 import utility.Queries;
+import utility.Utility;
 
 /**
  * Fetch updated group members from server of a class in background
@@ -195,10 +196,12 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
             if(memberCount != defaultMemberCount) {
                 if (Subscribers.subscriberTV != null)
-                    Subscribers.subscriberTV.setText(memberCount + " subscribers");
+                    Subscribers.subscriberTV.setText(memberCount + " Member" + Utility.getPluralSuffix(memberCount));
 
-                if (SendMessage.memberCountTV != null)
+                if (SendMessage.memberCountTV != null && SendMessage.memberLabelTV != null) {
                     SendMessage.memberCountTV.setText(memberCount + "");
+                    SendMessage.memberLabelTV.setText("Member" + Utility.getPluralSuffix(memberCount));
+                }
             }
         }
 

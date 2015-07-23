@@ -529,4 +529,13 @@ public class Utility extends MyActionBarActivity {
         }
         return null;
     }
+
+    /*
+        input : int count
+        returns: "s" if count > 0
+                 "" otherwise
+     */
+    public static String getPluralSuffix(int count){
+        return (count > 1 ? "s" : "");
+    }
 }
