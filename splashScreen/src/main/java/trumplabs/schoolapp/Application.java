@@ -3,6 +3,7 @@ package trumplabs.schoolapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.util.Log;
 
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
@@ -10,6 +11,7 @@ import com.parse.ParseUser;
 import com.parse.PushService;
 
 import java.util.Date;
+import android.os.Handler;
 
 import utility.Config;
 
@@ -35,6 +37,7 @@ public class Application extends android.app.Application {
         /*
             Similar to above but for updating joined class details such as name and profile pic of teachers
          */
+    public static Handler applicationHandler;
 
   public Application() {
 	  Parse.enableLocalDatastore(this);
@@ -43,6 +46,10 @@ public class Application extends android.app.Application {
   @Override
   public void onCreate() 
   {
+      Log.d("__A","onCreate Application, earlier applicationHandler null=" + (applicationHandler==null));
+
+      applicationHandler = new Handler();
+
     super.onCreate();
 
       FontsOverride.setDefaultFont(this, "MONOSPACE","fonts/Roboto-Regular.ttf");
