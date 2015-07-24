@@ -430,6 +430,11 @@ public class Subscribers extends MyActionBarActivity {
         @Override
         protected Boolean doInBackground(Void... params) {
 
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+            if(currentParseUser == null){
+                return false;
+            }
+
             Utility.ls("remove child starting in background....");
 
             //Steps :
@@ -453,7 +458,7 @@ public class Subscribers extends MyActionBarActivity {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
                     query.fromLocalDatastore();
                     query.whereEqualTo("objectId", objectId);
-                    query.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+                    query.whereEqualTo("userId", currentParseUser.getUsername());
                     ParseObject obj = null;
 
                     Log.d("REMOVE", "APP Member");
@@ -510,7 +515,7 @@ public class Subscribers extends MyActionBarActivity {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.MESSAGE_NEEDERS);
                     query.fromLocalDatastore();
                     query.whereEqualTo("objectId", objectId);
-                    query.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+                    query.whereEqualTo("userId", currentParseUser.getUsername());
                     ParseObject obj = null;
 
                     try {

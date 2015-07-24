@@ -104,11 +104,11 @@ public class Utility extends MyActionBarActivity {
     //default called from everywhere(when ParseUser null) except ProfilePage
     public static void logout() {
         LogoutTask.resetLocalData();
-        if(MainActivity.viewpager != null){
-            MainActivity.viewpager.post(new Runnable() {
+        if(Application.applicationHandler != null){
+            Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    startLoginActivity(); //called from UI thread
+                    startLoginActivity();
                 }
             });
         }

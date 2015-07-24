@@ -26,12 +26,17 @@ public class TestingUtililty {
 
         //Constants.IS_SIGNUP = true;
 
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            return;
+        }
+
         /*SessionManager mgr = new SessionManager(Application.getAppContext());
-        String p_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
-        String t_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
-        String o_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
-        String c_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.COMPOSE;
-        String i_flag = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.JOIN_INVITE;
+        String p_flag = currentParseUser.getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+        String t_flag = currentParseUser.getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+        String o_flag = currentParseUser.getUsername() + Constants.TutorialKeys.OPTIONS;
+        String c_flag = currentParseUser.getUsername() + Constants.TutorialKeys.COMPOSE;
+        String i_flag = currentParseUser.getUsername() + Constants.TutorialKeys.JOIN_INVITE;
         mgr.setTutorialState(p_flag, false);
         mgr.setTutorialState(t_flag, false);
         mgr.setTutorialState(o_flag, false);
@@ -41,7 +46,7 @@ public class TestingUtililty {
         //delete SentMessges
         /*ParseQuery deleteOutbox = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
         deleteOutbox.fromLocalDatastore();
-        deleteOutbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        deleteOutbox.whereEqualTo("userId", currentParseUser.getUsername());
         try{
             List<ParseObject> msgs = deleteOutbox.find();
             Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
@@ -54,7 +59,7 @@ public class TestingUtililty {
         //delete Inbox messages
         /*ParseQuery deleteInbox = new ParseQuery(Constants.TABLE);
         deleteInbox.fromLocalDatastore();
-        deleteInbox.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        deleteInbox.whereEqualTo("userId", currentParseUser.getUsername());
         try{
             List<ParseObject> msgs = deleteInbox.find();
             Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
@@ -67,7 +72,7 @@ public class TestingUtililty {
         //delete local created messages
         /*ParseQuery deleteLocal = new ParseQuery("LocalMessages");
         deleteLocal.fromLocalDatastore();
-        deleteLocal.whereEqualTo("userId", ParseUser.getCurrentUser().getUsername());
+        deleteLocal.whereEqualTo("userId", currentParseUser.getUsername());
         try{
             List<ParseObject> msgs = deleteLocal.find();
             Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());

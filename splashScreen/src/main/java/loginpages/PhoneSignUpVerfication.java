@@ -16,12 +16,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.GetCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
-import com.parse.ParseSession;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
@@ -434,9 +432,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
     static class PostSignUpTask extends AsyncTaskProxy<Void, Void, Void>
     {
-        ParseUser currentUser;
+        ParseUser currentParseUser;
         public PostSignUpTask(ParseUser u) {
-            currentUser = u;
+            currentParseUser = u;
         }
         @Override
         protected Void doInBackground(Void... params) {
@@ -444,7 +442,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Utility.updateCurrentTime();
 
             //set inbox fetch flag. We dont need to fetch old messages in this account
-            SessionManager.setBooleanValue(currentUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
+            SessionManager.setBooleanValue(currentParseUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
 
             return null;
         }
@@ -456,7 +454,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             if(pdialog != null){
                 pdialog.dismiss();
             }
-            if(currentUser == null) return; //won't happen as called after successful login
+            if(currentParseUser == null) return; //won't happen as called after successful login
 
             //variable storing that its first time app <signup>user
             Constants.IS_SIGNUP = true;
@@ -470,7 +468,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             Intent intent = new Intent(activityContext, MainActivity.class);
             intent.putExtra("flag", "SIGNUP");
-            if (ParseUser.getCurrentUser().getString("role").equals(Constants.TEACHER))
+            if (currentParseUser.getString("role").equals(Constants.TEACHER))
                 intent.putExtra("VIEWPAGERINDEX", 1);
             activityContext.startActivity(intent);
 

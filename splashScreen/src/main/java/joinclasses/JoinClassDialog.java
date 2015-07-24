@@ -67,6 +67,7 @@ public class JoinClassDialog extends DialogFragment {
     private ImageView childHead;
     private TextView childPopupText;
 
+    ParseUser currentParseUser;
 
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -96,17 +97,21 @@ public class JoinClassDialog extends DialogFragment {
         childHead = (ImageView) view.findViewById(R.id.child_popup_up);
         childPopupText = (TextView) view.findViewById(R.id.child_popup_text);
 
-
+        currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            Utility.logout();
+            return dialog;
+        }
 
         //checking role and setting child name according to that
-        role = ParseUser.getCurrentUser().getString(Constants.ROLE);
+        role = currentParseUser.getString(Constants.ROLE);
         if(role.equals(Constants.STUDENT)) {
-            childName = ParseUser.getCurrentUser().getString("name");
+            childName = currentParseUser.getString("name");
             childET.setVisibility(View.GONE);
             childInfo.setVisibility(View.GONE);
         }
 
-        userId = ParseUser.getCurrentUser().getUsername();
+        userId = currentParseUser.getUsername();
         query = new Queries();
 
         callerflag = false;
@@ -338,7 +343,7 @@ public class JoinClassDialog extends DialogFragment {
                     Utility.toast("ClassRoom Joined");
 
                 //Refreshing joined class adapter
-                Classrooms.joinedGroups = ParseUser.getCurrentUser().getList(Constants.JOINED_GROUPS);
+                Classrooms.joinedGroups = currentParseUser.getList(Constants.JOINED_GROUPS);
 
                 SessionManager sessionManager = new SessionManager(Application.getAppContext());
 
@@ -379,7 +384,7 @@ public class JoinClassDialog extends DialogFragment {
 
                 if(getActivity() != null){
                     //show if signup account, and not set in sharedprefs
-                    String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.JOIN_INVITE;
+                    String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.JOIN_INVITE;
                     if(sessionManager.getSignUpAccount() && !sessionManager.getTutorialState(tutorialId)) {
                         sessionManager.setTutorialState(tutorialId, true);
 

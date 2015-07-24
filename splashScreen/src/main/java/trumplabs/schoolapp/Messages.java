@@ -187,12 +187,12 @@ public class Messages extends Fragment {
         listv.setLayoutManager(mLayoutManager);
 
 
-        ParseUser parseObject = ParseUser.getCurrentUser();
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
 
-        if (parseObject == null)
+        if (currentParseUser == null)
             {Utility.logout(); return;}
 
-        userId = parseObject.getUsername();
+        userId = currentParseUser.getUsername();
 
 
         //fetch local messages in background
@@ -204,7 +204,7 @@ public class Messages extends Fragment {
         /*
         If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
          */
-        String role = ParseUser.getCurrentUser().getString("role");
+        String role = currentParseUser.getString("role");
         if(role.equals("teacher"))
         {
             GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
@@ -798,13 +798,19 @@ public class Messages extends Fragment {
             }
 
             //if a) first msg, b) already not shown, c) either non-teacher or fragment # visible is 2 (ie. Messages tab)
-            String role = ParseUser.getCurrentUser().getString(Constants.ROLE);
+
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+            if(currentParseUser == null){
+                return;
+            }
+
+            String role = currentParseUser.getString(Constants.ROLE);
 
             Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
                     + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
 
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
-                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+                String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId + " isSignUpAccount=" + mgr.getSignUpAccount() + " tutState=" + mgr.getTutorialState(tutorialId));
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
@@ -1024,7 +1030,12 @@ public class Messages extends Fragment {
         //if not - run GetMoreOldMessages task
         //set flag if #msgs returned non null and less than 20
         if(!oldInboxFetched){
-            String username = ParseUser.getCurrentUser().getUsername();
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+            if(currentParseUser == null){
+                return;
+            }
+
+            String username = currentParseUser.getUsername();
             String key = username + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
             if(SessionManager.getBooleanValue(key)){//if true set
                 Log.d("_FETCH_OLD", "already set in shared prefs");

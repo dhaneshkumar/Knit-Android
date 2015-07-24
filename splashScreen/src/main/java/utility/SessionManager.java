@@ -232,13 +232,20 @@ public class SessionManager {
     public void setHasUserJoinedClass()
     {
         //variable format : username + flag
-        editor.putBoolean(USER_HAS_JOINED_CLASS + ParseUser.getCurrentUser().getUsername() , true);
-        editor.commit();
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser != null) {
+            editor.putBoolean(USER_HAS_JOINED_CLASS + currentParseUser.getUsername(), true);
+            editor.commit();
+        }
     }
 
     public boolean getHasUserJoinedClass()
     {
-        return pref.getBoolean(USER_HAS_JOINED_CLASS + ParseUser.getCurrentUser().getUsername(), false);
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser != null) {
+            return pref.getBoolean(USER_HAS_JOINED_CLASS + currentParseUser.getUsername(), false);
+        }
+        return false;
     }
 
     public static void setUp(){

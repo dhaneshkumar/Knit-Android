@@ -57,6 +57,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     public static LinearLayout progressBarLayout;
     public static LinearLayout profileLayout;
 
+    ParseUser currentParseUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         Log.d("__A","onCreate ProfilePage");
@@ -87,22 +89,21 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         account.setTypeface(typeFace);
         about.setTypeface(typeFace);
 
-        ParseUser user = ParseUser.getCurrentUser();
+        currentParseUser = ParseUser.getCurrentUser();
 
-        if (user == null) {
+        if (currentParseUser == null) {
             Utility.logout();
             return;
         }
 
-        userId = user.getUsername();
-        String role = user.getString(Constants.ROLE);
+        userId = currentParseUser.getUsername();
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     /*
      * Setting local data
      */
-        name = user.getString(Constants.NAME);
+        name = currentParseUser.getString(Constants.NAME);
 
         if (!UtilString.isBlank(name))
             name_textView.setText(name);
@@ -150,6 +151,12 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     }
 
     void setProfilePic(){
+
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            return;
+        }
+
         String userString = userId.replaceAll("@", "");
         filePath = Utility.getWorkingAppDir() + "/thumbnail/" + userString + "_PC.jpg";
 
@@ -159,8 +166,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 // image file present locally
                 Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
                 profileimgview.setImageBitmap(myBitmap);
-            } else if (ParseUser.getCurrentUser() != null && ParseUser.getCurrentUser().has("pid")) {
-                ParseFile imagefile = (ParseFile) ParseUser.getCurrentUser().get("pid");
+            } else if (currentParseUser.has("pid")) {
+                ParseFile imagefile = (ParseFile) currentParseUser.get("pid");
                 imagefile.getDataInBackground(new GetDataCallback() {
                     public void done(byte[] data, ParseException e) {
                         if (e == null) {
@@ -493,8 +500,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                     if (result) {
                         //TODO call cloud function updateProfilePic
-                        ParseUser.getCurrentUser().put("pid", file);
-                        ParseUser.getCurrentUser().pin();
+                        currentParseUser.put("pid", file);
+                        currentParseUser.pin();
                         success = true;
                     } else {
                     }

@@ -556,9 +556,11 @@ public class Outbox extends Fragment {
             }
 
             //if a) first msg, b) is a teacher & c) already not shown
-            if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+
+            if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && currentParseUser != null && currentParseUser.getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 Log.d("_TUTORIAL_", "outbox response tutorial entered");
-                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+                String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
                     mgr.setTutorialState(tutorialId, true);

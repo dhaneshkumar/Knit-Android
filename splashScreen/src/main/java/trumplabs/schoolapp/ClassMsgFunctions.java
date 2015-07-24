@@ -99,7 +99,13 @@ public class ClassMsgFunctions {
             {
                 Utility.toast("Successfully deleted your classroom");
 
-                Classrooms.createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+                ParseUser currentParseUser = ParseUser.getCurrentUser();
+                if(currentParseUser == null){
+                    Utility.logout();
+                    return;
+                }
+
+                Classrooms.createdGroups = currentParseUser.getList(Constants.CREATED_GROUPS);
                 MainActivity.setClassListOptions();
 
 

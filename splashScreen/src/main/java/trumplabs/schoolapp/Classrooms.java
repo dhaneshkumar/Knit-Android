@@ -86,7 +86,13 @@ public class Classrooms extends Fragment  {
         joinedClassTV.setTypeface(typeFace);
 
 
-        isTeacher = ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER);
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            Utility.logout();
+            return;
+        }
+
+        isTeacher = currentParseUser.getString(Constants.ROLE).equals(Constants.TEACHER);
 
         //signup check
         if(isTeacher && getActivity().getIntent() != null)
@@ -295,11 +301,15 @@ public class Classrooms extends Fragment  {
 
                 intent.putExtra("classCode", joinedGroups.get(position).get(0));
                 intent.putExtra("className", joinedGroups.get(position).get(1));
-                if(joinedGroups.get(position).size() > 2 && joinedGroups.get(position).get(2) != null){
+                if (joinedGroups.get(position).size() > 2 && joinedGroups.get(position).get(2) != null) {
                     intent.putExtra("assignedName", joinedGroups.get(position).get(2));
-                }
-                else{
-                    intent.putExtra("assignedName", ParseUser.getCurrentUser().getString("name"));
+                } else {
+                    ParseUser currentParseUser = ParseUser.getCurrentUser();
+                    if (currentParseUser == null) {
+                        Utility.logout();
+                        return;
+                    }
+                    intent.putExtra("assignedName", currentParseUser.getString("name"));
                 }
                 startActivity(intent);
             }

@@ -106,7 +106,14 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         getSupportActionBar().setTitle("New Message");
 
         selectedClassNames = new ArrayList<>();
-        List<List<String>> createdClassList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            Utility.logout();
+            return;
+        }
+
+        List<List<String>> createdClassList = currentParseUser.getList(Constants.CREATED_GROUPS);
 
         classList = new ArrayList<List<String>>();
 
@@ -247,25 +254,6 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 }*/
             }
         });
-
-        /*//show tutorial on first time
-        if(!composeTutorialShown && !ShowcaseView.isVisible){
-            Log.d("_TUTORIAL_", "compose tutorial entered");
-            String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.COMPOSE;
-            SessionManager mgr = new SessionManager(Application.getAppContext());
-            if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
-                mgr.setTutorialState(tutorialId, true);
-
-                sendTo.post(new Runnable() {//post needed to make sure activity is not null before calling hide keyboard
-                    @Override
-                    public void run() {
-                        Tools.hideKeyboard(ComposeMessage.this); //hide keyboard before showing the tutorial black screen
-                        ShowcaseCreator.teacherComposeTutorial(ComposeMessage.this);
-                    }
-                });
-            }
-            composeTutorialShown = true;
-        }*/
     }
 
 
