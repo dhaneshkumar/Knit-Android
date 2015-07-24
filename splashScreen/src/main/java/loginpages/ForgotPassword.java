@@ -61,12 +61,11 @@ public class ForgotPassword extends DialogFragment {
     @Override
     public void done(ParseException e) {
       if (e == null) {
-        Utility.toast("Password Reset Link is sent to " + email);
+        Utility.toast("Password Reset Link is sent to " + email, true);
       } else {
-        Utility.toast("Failed to send link to " + email + ". Try Again..");
+        Utility.toast("Failed to send link to " + email + ". Try Again..", true);
       }
     }
 
   }
 }
-

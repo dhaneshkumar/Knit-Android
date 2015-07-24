@@ -206,7 +206,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     void next(){
         phoneNumber = phoneNumberET.getText().toString();
         if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10) {
-            Utility.toast("Incorrect Mobile Number");
+            Utility.toast("Incorrect Mobile Number", true);
         }
         else if(Utility.isInternetExist()) {
             /*pdialog = new ProgressDialog(this);

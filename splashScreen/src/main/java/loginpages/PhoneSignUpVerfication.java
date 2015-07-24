@@ -142,7 +142,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             case R.id.verify:
                 verificationCode = verificationCodeET.getText().toString();
                 if(UtilString.isBlank(verificationCode) || verificationCode.length() != 4){
-                    Utility.toast("Please enter the 4-digit verification code");
+                    Utility.toast("Please enter the 4-digit verification code", true);
                 }
                 else if(Utility.isInternetExist()) {
                     Tools.hideKeyboard(this);
@@ -360,26 +360,26 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
             }
             if(networkError){
-                Utility.toast("Connection failure");
+                Utility.toast("Connection failure", true);
                 showError("Unable to establish connection. Please try again", false);
                 showResendAction();
             }
             else if(unexpectedError){
-                Utility.toast("Oops ! some error occured.");
+                Utility.toast("Oops ! some error occured.", true);
                 showError( "Some unexpected error occured. Please try again", false);
                 showResendAction();
             }
             else if(verifyError){
-                Utility.toast("Wrong verification code");
+                Utility.toast("Wrong verification code", true);
                 showError("Wrong verification code.\nPlease re-enter code and try again", false);
             }
             else if(loginError){
-                Utility.toast("Error logging in"); //code was verified but login unsuccessful
+                Utility.toast("Error logging in", true); //code was verified but login unsuccessful
                 showError("Some unexpected error occurred while logging in.\nTry again", true);
                 showResendAction();
             }
             else if(userAlreadyExistsError){
-                Utility.toast("This number is already in use.\nPlease recheck you number");
+                Utility.toast("This number is already in use.\nPlease recheck you number", true);
                 //take back ot Login Page
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpName.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -387,7 +387,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 //showError("This number is already in use. Please try logging in");
             }
             else if(userDoesNotExistsError){
-                Utility.toast("No account for this number exists.\nPlease recheck you number");
+                Utility.toast("No account for this number exists.\nPlease recheck you number", true);
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneLoginPage.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 Application.getAppContext().startActivity(nextIntent);

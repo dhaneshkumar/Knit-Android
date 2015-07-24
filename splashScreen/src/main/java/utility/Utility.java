@@ -195,7 +195,7 @@ public class Utility extends MyActionBarActivity {
                     ProfilePage.profileLayout.setVisibility(View.VISIBLE);
                     ProfilePage.progressBarLayout.setVisibility(View.GONE);
                     if(!success){
-                        Utility.toast("Unable to logout !");
+                        Utility.toast("Unable to logout !", true);
                     }
                 }
             }
@@ -203,8 +203,27 @@ public class Utility extends MyActionBarActivity {
     }
 
 
+    public static void toast(String str){
+        toast(str, false); //by default user shouldn't be null while showing toast
+    }
 
-    public static void toast(String str) {
+    /*
+        @param str Content to show as toast
+        @param isNullUserOK whether while showing this toast, null user is acceptable e.g during signup/login process
+     */
+    public static void toast(String str, boolean isNullUserOK) {
+
+        if(ParseUser.getCurrentUser() == null && !isNullUserOK){
+            Log.d("__A", "toast : parseUser null, hence ignoring content=" + str);
+            return;
+        }
+
+        //see if app is visible, i.e current activity not null
+        if(Application.getCurrentActivity() == null){
+            Log.d("__A", "toast : app not visible, hence ignoring content=" + str);
+            return;
+        }
+
         LinearLayout layout = new LinearLayout(Application.getAppContext());
         layout.setLayoutParams(new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
         layout.setBackgroundColor(Color.parseColor("#FBB51E"));
@@ -340,7 +359,7 @@ public class Utility extends MyActionBarActivity {
         } else if (connec.getNetworkInfo(0).getState() == NetworkInfo.State.DISCONNECTED
                 || connec.getNetworkInfo(1).getState() == NetworkInfo.State.DISCONNECTED) {
 
-            toast("No Internet Connection");
+            toast("No Internet Connection", true); //user null doesn't matter
             return false;
         }
 
@@ -548,7 +567,7 @@ public class Utility extends MyActionBarActivity {
                 @Override
                 public void run() {
                     Log.d("__A", "checkAndHandleInvalidSession : inside job");
-                    Utility.toast("Session expired. Please login again !");
+                    Utility.toast("Session expired. Please login again !", true);
                     ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
                     startLoginActivity();
                 }

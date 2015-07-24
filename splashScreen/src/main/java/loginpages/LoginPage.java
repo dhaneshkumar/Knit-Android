@@ -87,9 +87,9 @@ public class LoginPage extends MyActionBarActivity {
 
 
         if (UtilString.isBlank(email)) {
-          Utility.toast("Enter your Email-id");
+          Utility.toast("Enter your Email-id", true);
         } else if (UtilString.isBlank(passwd)) {
-          Utility.toast("Enter your Password");
+          Utility.toast("Enter your Password", true);
         } else if(Utility.isInternetExist()){
           /*
            * Hiding the keyboard from screen
@@ -204,13 +204,13 @@ public class LoginPage extends MyActionBarActivity {
         progressLayout.setVisibility(View.GONE);
 
         if(networkError) {
-          Utility.toast("Connection failure");
+          Utility.toast("Connection failure", true);
         }
         else if(userDoesNotExistsError){
-          Utility.toast("Wrong email or password. Check again.");
+          Utility.toast("Wrong email or password. Check again.", true);
         }
         else{
-          Utility.toast("Log in failed.... Please try again");
+          Utility.toast("Log in failed.... Please try again", true);
         }
       }
     }
