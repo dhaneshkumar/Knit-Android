@@ -286,6 +286,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                         Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
+                            Log.d("__A", "setting ignoreInvalidSessionCheck to false");
+                            Utility.ignoreInvalidSessionCheck = false;
+
                             Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
                             taskSuccess = true;
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/

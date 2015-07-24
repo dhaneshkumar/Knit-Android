@@ -580,10 +580,17 @@ public class Utility extends MyActionBarActivity {
         return (count > 1 ? "s" : "");
     }
 
+
+    public static boolean ignoreInvalidSessionCheck = false;
+    //flag so that checkAndHandleInvalidSession does not run multiple times(i.e run only once until next login)
+    //is set in checkAndHandleInvalidSession once it runs successfully
+    //is unset when ParseUser.becomeUser succeeds
+
     /*
         Looks at the ParseException and takes action if invalid_session_token error.
         Returns true if handled, false otherwise
      */
+
     public static boolean checkAndHandleInvalidSession(ParseException e){
         if(e != null && e.getCode() == ParseException.INVALID_SESSION_TOKEN){
             Runnable r = new Runnable() {
@@ -596,8 +603,14 @@ public class Utility extends MyActionBarActivity {
                 }
             };
 
-            Log.d("__A", "checkAndHandleInvalidSession : posting job to Application.applicationHandler");
-            Application.applicationHandler.post(r);
+            if(!ignoreInvalidSessionCheck) {
+                ignoreInvalidSessionCheck = true;
+                Log.d("__A", "checkAndHandleInvalidSession : posting job to Application.applicationHandler");
+                Application.applicationHandler.post(r);
+            }
+            else {
+                Log.d("__A", "checkAndHandleInvalidSession : SKIPPING posting job to Application.applicationHandler");
+            }
             return true;
         }
         return false;
