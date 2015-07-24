@@ -100,4 +100,12 @@ public class TestingUtililty {
             NotificationGenerator.generateNotification(Application.getAppContext(), "invite parent to your class", Constants.DEFAULT_NAME, Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.INVITE_PARENT_ACTION, extras);
         }
     }
+
+    public static void makeCurrentUserNull(){
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser != null){
+            currentParseUser.unpinInBackground();
+        }
+        ParseUser.logOut();
+    }
 }

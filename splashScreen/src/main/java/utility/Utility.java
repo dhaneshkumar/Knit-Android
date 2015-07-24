@@ -103,11 +103,13 @@ public class Utility extends MyActionBarActivity {
 
     //default called from everywhere(when ParseUser null) except ProfilePage
     public static void logout() {
+        Log.d("__A", "static logout called because current ParseUser became null");
         LogoutTask.resetLocalData();
         if(Application.applicationHandler != null){
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    Utility.toast("Session expired. Please login again !", true);
                     startLoginActivity();
                 }
             });
@@ -348,7 +350,6 @@ public class Utility extends MyActionBarActivity {
     }
 
 
-
     public static boolean isInternetExist() {
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
@@ -573,7 +574,7 @@ public class Utility extends MyActionBarActivity {
                 @Override
                 public void run() {
                     Log.d("__A", "checkAndHandleInvalidSession : inside job");
-                    Utility.toast("[DUMMY] Session expired. Please login again !", true);
+                    Utility.toast("Session expired. Please login again !", true);
 
                     Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
                     ParseUser currentUser = ParseUser.getCurrentUser();

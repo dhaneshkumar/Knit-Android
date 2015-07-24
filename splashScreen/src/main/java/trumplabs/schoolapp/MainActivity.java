@@ -537,12 +537,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 classList = newList;
             }
         }
-
-
     }
 
     @Override
     protected void onResume() {
+        if(myAdapter != null){
+            myAdapter.notifyDataSetChanged();
+        }
+
         super.onResume();
         Application.mainActivityVisible = true;
         AppEventsLogger.activateApp(this, Config.FB_APP_ID);
