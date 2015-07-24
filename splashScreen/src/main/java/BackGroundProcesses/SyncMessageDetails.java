@@ -291,6 +291,7 @@ public class SyncMessageDetails {
             }
         }
         catch (ParseException e){
+            Utility.checkAndHandleInvalidSession(e);
             Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : parse exception while fetching updates");
             e.printStackTrace();
         }
