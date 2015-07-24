@@ -141,29 +141,23 @@ public class SendPendingMessages {
             Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : end");
         }
 
-        //boolean abort = false; //if network error occurred in one of the attempts
+        boolean abort = false; //if session_invalid error in one of the cloud calls
+
         //boolean errorToastShown = false; //show only once
 
         while (true) {
             ParseObject currentMsg = null;
             synchronized (DATA_LOCK){
                 Log.d(LOGTAG, "sendPendingMessages : loop-LOCK acquired");
-                if(pendingMessageQueue.isEmpty()){
+                if(pendingMessageQueue.isEmpty() || abort){
                     jobRunning = false;
                     isLive = false;
                     //notify SendMessage adapter so that retry button may be shown/hidden
                     notifyAllAdapters();
-                    Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : queue empty, exiting : ");
+                    Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : queue empty or abort=" + abort);
                     return;
                 }
-                /*if(abort){
-                    jobRunning = false;
-                    isLive = false;
-                    //notify SendMessage adapter so that retry button may be shown/hidden
-                    notifyAllAdapters();
-                    Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : abort signal(network error), exiting");
-                    return;
-                }*/
+
                 currentMsg = pendingMessageQueue.get(0);
                 Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : picking next item in the queue");
             }
@@ -187,6 +181,11 @@ public class SendPendingMessages {
                 }
 
                 final int result = res;
+
+                if(result == ParseException.INVALID_SESSION_TOKEN){
+                    abort = true;
+                    continue;
+                }
 
                 //process the result
                 Boolean showToast = false;

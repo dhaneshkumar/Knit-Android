@@ -541,9 +541,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
     @Override
     protected void onResume() {
-        if(myAdapter != null){
-            myAdapter.notifyDataSetChanged();
-        }
 
         super.onResume();
         Application.mainActivityVisible = true;

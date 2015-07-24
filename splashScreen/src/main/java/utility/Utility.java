@@ -104,13 +104,12 @@ public class Utility extends MyActionBarActivity {
     //default called from everywhere(when ParseUser null) except ProfilePage
     public static void logout() {
         Log.d("__A", "static logout called because current ParseUser became null");
-        LogoutTask.resetLocalData();
         if(Application.applicationHandler != null){
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     Utility.toast("Session expired. Please login again !", true);
-                    startLoginActivity();
+                    performLogoutAction();
                 }
             });
         }
@@ -172,10 +171,6 @@ public class Utility extends MyActionBarActivity {
                 Log.d("DEBUG_UTILITY", "logout() - appLogout before calling");
                 boolean logoutSuccess = ParseCloud.callFunction("appExit", param);
                 Log.d("DEBUG_UTILITY", "logout() - appLogout returned with" + logoutSuccess);
-                ParseUser.logOut();
-                Log.d("DEBUG_UTILITY", "logout() - appLogout ParseUser.logOut() over");
-                resetLocalData();
-                Log.d("DEBUG_UTILITY", "logout() - appLogout resetLocalData() over");
                 success = true;
                 return null;
             }
@@ -191,7 +186,7 @@ public class Utility extends MyActionBarActivity {
             //UI thread
             if(success) {
                 Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
-                startLoginActivity();
+                performLogoutAction();
             }
             else{
                 //show profile page again
@@ -556,6 +551,27 @@ public class Utility extends MyActionBarActivity {
     }
 
     /*
+        call from GUI thread only
+     */
+    public static void performLogoutAction(){
+        Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if(currentUser != null){
+            currentUser.unpinInBackground();
+        }
+        ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
+        LogoutTask.resetLocalData(); //clear all the flags, stop alarms
+
+        //Needed because MainActivity page-adapter's count will change because user has become null
+        if(MainActivity.myAdapter != null){
+            MainActivity.myAdapter.notifyDataSetChanged();
+        }
+
+        //launch login activity
+        startLoginActivity();
+    }
+
+    /*
         input : int count
         returns: "s" if count > 0
                  "" otherwise
@@ -576,14 +592,7 @@ public class Utility extends MyActionBarActivity {
                     Log.d("__A", "checkAndHandleInvalidSession : inside job");
                     Utility.toast("Session expired. Please login again !", true);
 
-                    Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
-                    ParseUser currentUser = ParseUser.getCurrentUser();
-                    if(currentUser != null){
-                        currentUser.unpinInBackground();
-                    }
-                    ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
-                    LogoutTask.resetLocalData(); //try to mimic logout
-                    startLoginActivity();
+                    performLogoutAction();
                 }
             };
 
