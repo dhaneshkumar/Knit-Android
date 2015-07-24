@@ -277,6 +277,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 isValid = ParseCloud.callFunction("genCode2", param);
                 success = true;
             } catch (ParseException e) {
+                Utility.checkAndHandleInvalidSession(e);
                 Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;

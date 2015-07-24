@@ -526,6 +526,7 @@ public class Outbox extends Fragment {
                                 // Might be a problem when net is too slow :/
                             } else {
                                 // Image not downloaded
+                                Utility.checkAndHandleInvalidSession(e);
                                 holder.uploadprogressbar.setVisibility(View.GONE);
                             }
                         }

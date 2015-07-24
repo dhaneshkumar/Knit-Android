@@ -178,6 +178,8 @@ public class LoginPage extends MyActionBarActivity {
         }
       }
       catch (ParseException e){
+        Utility.checkAndHandleInvalidSession(e);
+
         Log.d(LOGTAG, "verifyCode/becomeUser ParseException, error-code=" + e.getCode());
         if(e.getCode() == ParseException.CONNECTION_FAILED){
           networkError = true;

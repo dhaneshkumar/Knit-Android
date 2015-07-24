@@ -252,10 +252,8 @@ public class ClassRoomsUpdate {
                         }
 
                   // Might be a problem when net is too slow :/
-                        System.out.println("Profile Image Downloaded"); // ************************************
                     } else {
                         // Image not downloaded
-                        System.out.println("Profile Image not Downloaded"); // **********************************
                     }
                 }
             });

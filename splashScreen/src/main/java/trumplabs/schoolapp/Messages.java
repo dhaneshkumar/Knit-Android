@@ -776,6 +776,7 @@ public class Messages extends Fragment {
 
                                     // might be problem
                                 } else {
+                                    Utility.checkAndHandleInvalidSession(e);
                                     // Image not downloaded
                                     holder.uploadprogressbar.setVisibility(View.GONE);
                                     holder.faildownload.setVisibility(View.VISIBLE);

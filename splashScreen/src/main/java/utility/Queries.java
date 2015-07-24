@@ -259,6 +259,7 @@ public class Queries {
                 }
             }
             catch (ParseException e){
+                Utility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
         }
@@ -290,6 +291,7 @@ public class Queries {
                 }
             }
             catch (ParseException e){
+                Utility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
         }
@@ -381,6 +383,7 @@ public class Queries {
             }
         }
         catch (ParseException e){
+            Utility.checkAndHandleInvalidSession(e);
             e.printStackTrace();
         }
         return null; //when cloud function fails or returns null

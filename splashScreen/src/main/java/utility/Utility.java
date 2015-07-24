@@ -31,6 +31,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParseSession;
 import com.parse.ParseUser;
 
 import org.json.JSONException;
@@ -177,6 +178,7 @@ public class Utility extends MyActionBarActivity {
                 return null;
             }
             catch (com.parse.ParseException e){
+                Utility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
             return null;
@@ -195,7 +197,7 @@ public class Utility extends MyActionBarActivity {
                     ProfilePage.profileLayout.setVisibility(View.VISIBLE);
                     ProfilePage.progressBarLayout.setVisibility(View.GONE);
                     if(!success){
-                        Utility.toast("Unable to logout !", true);
+                        Utility.toast("Unable to logout !");
                     }
                 }
             }
@@ -561,20 +563,33 @@ public class Utility extends MyActionBarActivity {
         return (count > 1 ? "s" : "");
     }
 
-    public static void checkAndHandleInvalidSession(ParseException e){
-        if(e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+    /*
+        Looks at the ParseException and takes action if invalid_session_token error.
+        Returns true if handled, false otherwise
+     */
+    public static boolean checkAndHandleInvalidSession(ParseException e){
+        if(e != null && e.getCode() == ParseException.INVALID_SESSION_TOKEN){
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
                     Log.d("__A", "checkAndHandleInvalidSession : inside job");
-                    Utility.toast("Session expired. Please login again !", true);
+                    Utility.toast("[DUMMY] Session expired. Please login again !", true);
+
+                    Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
+                    ParseUser currentUser = ParseUser.getCurrentUser();
+                    if(currentUser != null){
+                        currentUser.unpinInBackground();
+                    }
                     ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
+                    LogoutTask.resetLocalData(); //try to mimic logout
                     startLoginActivity();
                 }
             };
 
             Log.d("__A", "checkAndHandleInvalidSession : posting job to Application.applicationHandler");
             Application.applicationHandler.post(r);
+            return true;
         }
+        return false;
     }
 }

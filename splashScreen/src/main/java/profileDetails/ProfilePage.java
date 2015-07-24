@@ -189,6 +189,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                             // Might be a problem when net is too slow :/
                             // Utility.toast("Profile Image Downloaded");
                         } else {
+                            Utility.checkAndHandleInvalidSession(e);
                             // Image not downloaded
                             // Utility.toast("Profile Image not Downloaded");
                         }
@@ -360,7 +361,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                                     e2.printStackTrace();
                                                 }
                                             } else {
-                                                Utility.toast("Name update failed !");
+                                                if(!Utility.checkAndHandleInvalidSession(e)) {
+                                                    Utility.toast("Name update failed !");
+                                                }
                                             }
                                         }
                                     }
@@ -481,7 +484,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                 final ParseFile file = new ParseFile(fileName, data);
                 try {
+                    Log.d("__A", "profile pic : file.save() start");
                     file.save();
+                    Log.d("__A", "profile pic : file.save() success");
                     HashMap<String, Object> parameters = new HashMap<String, Object>();
                     parameters.put("pid", file);
                     boolean result = ParseCloud.callFunction("updateProfilePic", parameters);
@@ -494,6 +499,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     } else {
                     }
                 } catch (ParseException e) {
+                    Utility.checkAndHandleInvalidSession(e);
+                    Log.d("__A", "profile pic : file.save() error code=" + e.getCode() + ", msg=" + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -508,7 +515,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             File file=new File(filepath);
 
             boolean check=file.delete();//file <username>_PC.jpg will be deleted. But the pid in User object is not updated and the corresponding
-                                        //parsefile's data is already present. So next time when pic file is not present in sdcard,
+                                        //parsefile's data is already present in cache. So next time when pic file is not present in sdcard,
                                         //we won't need to fetch the data for parsefile. So consistent even if net not present ;)
         }
 

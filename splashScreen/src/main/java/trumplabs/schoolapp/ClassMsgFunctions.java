@@ -42,6 +42,7 @@ public class ClassMsgFunctions {
             try {
                 updatedCreatedGroups = ParseCloud.callFunction("deleteClass3", params);
             } catch (ParseException e) {
+                Utility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
 

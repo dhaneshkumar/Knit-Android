@@ -285,8 +285,10 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 String sessionToken = (String) result.get("sessionToken");
                 if(success != null && success && sessionToken != null){
                     try{
+                        Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
+                            Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
                             taskSuccess = true;
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
@@ -296,6 +298,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                         }
                     }
                     catch (ParseException e){
+                        Utility.checkAndHandleInvalidSession(e);
                         Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
                         if(e.getCode() == ParseException.CONNECTION_FAILED){
                             networkError = true;
@@ -310,6 +313,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                     verifyError = true;
                 }
             } catch (ParseException e) {
+                Utility.checkAndHandleInvalidSession(e);
                 Log.d("DEBUG_SIGNUP_VERIFICATION", "network error with message " + e.getMessage() + " code "  + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;

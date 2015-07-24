@@ -242,6 +242,7 @@ public class ComposeMessageHelper {
             return -1; //unexpected error
         }
         catch (ParseException e){
+            Utility.checkAndHandleInvalidSession(e);
             e.printStackTrace();
             if(e.getCode() == ParseException.CONNECTION_FAILED){
                 return 100; //network error
@@ -388,6 +389,7 @@ public class ComposeMessageHelper {
             return -1;
         }
         catch(ParseException esave){
+            Utility.checkAndHandleInvalidSession(esave);
             esave.printStackTrace();
             if(esave.getCode() == ParseException.CONNECTION_FAILED){
                 return 100;

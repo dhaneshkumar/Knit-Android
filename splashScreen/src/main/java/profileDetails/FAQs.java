@@ -29,6 +29,7 @@ import java.util.List;
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import utility.Queries;
+import utility.Utility;
 
 public class FAQs extends MyActionBarActivity {
 
@@ -197,6 +198,7 @@ public class FAQs extends MyActionBarActivity {
           faqs = ParseCloud.callFunction("faq", param);
 
       } catch (ParseException e) {
+        Utility.checkAndHandleInvalidSession(e);
       }
 
       if (faqs != null) {

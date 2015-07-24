@@ -499,6 +499,7 @@ public class Subscribers extends MyActionBarActivity {
                             Log.d("REMOVE", "got null object");
                         }
                     } catch (ParseException e) {
+                        Utility.checkAndHandleInvalidSession(e);
                         e.printStackTrace();
 
                         Log.d("REMOVE", "local query failed object");
@@ -541,6 +542,7 @@ public class Subscribers extends MyActionBarActivity {
                             }
                         }
                     } catch (ParseException e) {
+                        Utility.checkAndHandleInvalidSession(e);
                         e.printStackTrace();
                     }
                 }
