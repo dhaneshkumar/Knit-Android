@@ -112,7 +112,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         //check for current user loggedin or not
         if (user == null)
-        {Utility.logout(); return;}
+        {
+            Utility.LogoutUtility.logout(); return;}
 
         // Initialize elements
         viewpager = (ViewPager) findViewById(R.id.pager);

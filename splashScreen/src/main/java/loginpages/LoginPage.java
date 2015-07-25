@@ -14,8 +14,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.FunctionCallback;
-import com.parse.LogInCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -161,6 +159,7 @@ public class LoginPage extends MyActionBarActivity {
           ParseUser user = ParseUser.become(sessionToken);
           if (user != null) {
             taskSuccess = true;
+            Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
             Utility.updateCurrentTimeInBackground();
 
             SessionManager session = new SessionManager(Application.getAppContext());
@@ -178,7 +177,7 @@ public class LoginPage extends MyActionBarActivity {
         }
       }
       catch (ParseException e){
-        Utility.checkAndHandleInvalidSession(e);
+        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
 
         Log.d(LOGTAG, "verifyCode/becomeUser ParseException, error-code=" + e.getCode());
         if(e.getCode() == ParseException.CONNECTION_FAILED){

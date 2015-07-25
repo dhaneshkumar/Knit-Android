@@ -92,7 +92,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         currentParseUser = ParseUser.getCurrentUser();
 
         if (currentParseUser == null) {
-            Utility.logout();
+            Utility.LogoutUtility.logout();
             return;
         }
 
@@ -196,7 +196,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                             // Might be a problem when net is too slow :/
                             // Utility.toast("Profile Image Downloaded");
                         } else {
-                            Utility.checkAndHandleInvalidSession(e);
+                            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                             // Image not downloaded
                             // Utility.toast("Profile Image not Downloaded");
                         }
@@ -368,7 +368,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                                     e2.printStackTrace();
                                                 }
                                             } else {
-                                                if(!Utility.checkAndHandleInvalidSession(e)) {
+                                                if(!Utility.LogoutUtility.checkAndHandleInvalidSession(e)) {
                                                     Utility.toast("Name update failed !");
                                                 }
                                             }
@@ -506,7 +506,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     } else {
                     }
                 } catch (ParseException e) {
-                    Utility.checkAndHandleInvalidSession(e);
+                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                     Log.d("__A", "profile pic : file.save() error code=" + e.getCode() + ", msg=" + e.getMessage());
                     e.printStackTrace();
                 }

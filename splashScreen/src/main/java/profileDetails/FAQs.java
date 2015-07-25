@@ -20,8 +20,6 @@ import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 
-import org.slf4j.helpers.Util;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +58,7 @@ public class FAQs extends MyActionBarActivity {
 
     ParseUser currentParseUser = ParseUser.getCurrentUser();
     if(currentParseUser == null){
-      Utility.logout();
+      Utility.LogoutUtility.logout();
       return;
     }
 
@@ -190,7 +188,7 @@ public class FAQs extends MyActionBarActivity {
 
       ParseUser currentParseUser = ParseUser.getCurrentUser();
       if(currentParseUser == null){
-        Utility.logout();
+        Utility.LogoutUtility.logout();
         return null;
       }
 
@@ -213,7 +211,7 @@ public class FAQs extends MyActionBarActivity {
           faqs = ParseCloud.callFunction("faq", param);
 
       } catch (ParseException e) {
-        Utility.checkAndHandleInvalidSession(e);
+        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
       }
 
       if (faqs != null) {

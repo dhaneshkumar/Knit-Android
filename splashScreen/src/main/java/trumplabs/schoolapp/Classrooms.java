@@ -88,7 +88,7 @@ public class Classrooms extends Fragment  {
 
         ParseUser currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
-            Utility.logout();
+            Utility.LogoutUtility.logout();
             return;
         }
 
@@ -120,7 +120,7 @@ public class Classrooms extends Fragment  {
         ParseUser parseObject = ParseUser.getCurrentUser();
         if (parseObject == null)
             {
-                Utility.logout(); return;}
+                Utility.LogoutUtility.logout(); return;}
 
 
         //show create class option only for teachers
@@ -306,7 +306,7 @@ public class Classrooms extends Fragment  {
                 } else {
                     ParseUser currentParseUser = ParseUser.getCurrentUser();
                     if (currentParseUser == null) {
-                        Utility.logout();
+                        Utility.LogoutUtility.logout();
                         return;
                     }
                     intent.putExtra("assignedName", currentParseUser.getString("name"));

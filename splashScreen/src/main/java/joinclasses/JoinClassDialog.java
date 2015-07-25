@@ -8,9 +8,7 @@ import android.graphics.Point;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -99,7 +97,7 @@ public class JoinClassDialog extends DialogFragment {
 
         currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
-            Utility.logout();
+            Utility.LogoutUtility.logout();
             return dialog;
         }
 

@@ -30,7 +30,8 @@ public class OutboxMsgFetch{
         ParseUser parseObject = ParseUser.getCurrentUser();
 
         if (parseObject == null)
-            {Utility.logout(); return;}
+            {
+                Utility.LogoutUtility.logout(); return;}
 
         String userId = parseObject.getUsername();
 

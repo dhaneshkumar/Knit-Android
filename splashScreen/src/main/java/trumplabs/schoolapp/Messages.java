@@ -190,7 +190,8 @@ public class Messages extends Fragment {
         ParseUser currentParseUser = ParseUser.getCurrentUser();
 
         if (currentParseUser == null)
-            {Utility.logout(); return;}
+            {
+                Utility.LogoutUtility.logout(); return;}
 
         userId = currentParseUser.getUsername();
 
@@ -776,7 +777,7 @@ public class Messages extends Fragment {
 
                                     // might be problem
                                 } else {
-                                    Utility.checkAndHandleInvalidSession(e);
+                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                                     // Image not downloaded
                                     holder.uploadprogressbar.setVisibility(View.GONE);
                                     holder.faildownload.setVisibility(View.VISIBLE);
@@ -970,7 +971,8 @@ public class Messages extends Fragment {
             Messages.totalInboxMessages = totalMessages;
         }
         else
-        {Utility.logout(); return;}
+        {
+            Utility.LogoutUtility.logout(); return;}
     }
 
     class GetLocalInboxMsgInBackground extends AsyncTask<Void, Void, Void>

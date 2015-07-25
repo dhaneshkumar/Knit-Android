@@ -31,7 +31,6 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParseSession;
 import com.parse.ParseUser;
 
 import org.json.JSONException;
@@ -101,20 +100,6 @@ public class Utility extends MyActionBarActivity {
         }
     }
 
-    //default called from everywhere(when ParseUser null) except ProfilePage
-    public static void logout() {
-        Log.d("__A", "static logout called because current ParseUser became null");
-        if(Application.applicationHandler != null){
-            Application.applicationHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Utility.toast("Session expired. Please login again !", true);
-                    performLogoutAction();
-                }
-            });
-        }
-    }
-
     //called from ProfilePage logout option
     public static void logoutProfilePage(){
         LogoutTask logoutTask = new LogoutTask();
@@ -141,25 +126,6 @@ public class Utility extends MyActionBarActivity {
             }
         }
 
-        //called in general (and also when currentUser is null)
-        //can be called in a thread
-        static void resetLocalData(){
-            Context _context = Application.getAppContext();
-            // After logout redirect user to Loing Activity
-
-            Application.lastTimeJoinedSync = null;
-            Application.lastTimeInboxSync = null;
-            Application.lastTimeOutboxSync = null;
-
-            //cancel all alarms set. Very first thing to do
-            AlarmTrigger.cancelEventCheckerAlarm(_context);
-            AlarmTrigger.cancelRefresherAlarm(_context);
-
-            SessionManager session = new SessionManager(_context);
-            session.reSetAppOpeningCount();
-            session.reSetSignUpAccount();
-        }
-
         @Override
         protected Void doInBackground(Void... params) {
             ParseInstallation pi = ParseInstallation.getCurrentInstallation();
@@ -175,7 +141,7 @@ public class Utility extends MyActionBarActivity {
                 return null;
             }
             catch (com.parse.ParseException e){
-                Utility.checkAndHandleInvalidSession(e);
+                LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
             return null;
@@ -186,7 +152,7 @@ public class Utility extends MyActionBarActivity {
             //UI thread
             if(success) {
                 Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
-                performLogoutAction();
+                LogoutUtility.performLogoutAction();
             }
             else{
                 //show profile page again
@@ -551,27 +517,6 @@ public class Utility extends MyActionBarActivity {
     }
 
     /*
-        call from GUI thread only
-     */
-    public static void performLogoutAction(){
-        Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if(currentUser != null){
-            currentUser.unpinInBackground();
-        }
-        ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
-        LogoutTask.resetLocalData(); //clear all the flags, stop alarms
-
-        //Needed because MainActivity page-adapter's count will change because user has become null
-        if(MainActivity.myAdapter != null){
-            MainActivity.myAdapter.notifyDataSetChanged();
-        }
-
-        //launch login activity
-        startLoginActivity();
-    }
-
-    /*
         input : int count
         returns: "s" if count > 0
                  "" otherwise
@@ -581,38 +526,101 @@ public class Utility extends MyActionBarActivity {
     }
 
 
-    public static boolean ignoreInvalidSessionCheck = false;
-    //flag so that checkAndHandleInvalidSession does not run multiple times(i.e run only once until next login)
-    //is set in checkAndHandleInvalidSession once it runs successfully
-    //is unset when ParseUser.becomeUser succeeds
+    public static class LogoutUtility{
+        //flag so that checkAndHandleInvalidSession does not run multiple times(i.e run only once until next login)
+        //is set in checkAndHandleInvalidSession once it runs successfully
+        //is unset when ParseUser.becomeUser succeeds
+        private static boolean ignoreInvalidSessionCheck = false;
 
-    /*
+        public static void setIgnoreInvalidSessionCheck(){
+            ignoreInvalidSessionCheck = true;
+        }
+
+        public static void resetIgnoreInvalidSessionCheck(){
+            ignoreInvalidSessionCheck = false;
+        }
+
+        public static boolean getIgnoreInvalidSessionCheck(){
+            return ignoreInvalidSessionCheck;
+        }
+
+        /*
         Looks at the ParseException and takes action if invalid_session_token error.
         Returns true if handled, false otherwise
-     */
+        */
+        public static boolean checkAndHandleInvalidSession(ParseException e){
+            if(e != null && e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+                Log.d("__A", "checkAndHandleInvalidSession : calling static logout()");
+                logout();
+                return true;
+            }
+            return false;
+        }
 
-    public static boolean checkAndHandleInvalidSession(ParseException e){
-        if(e != null && e.getCode() == ParseException.INVALID_SESSION_TOKEN){
+        //can call from non-UI thread
+        //default called from everywhere(along with checkAndHandleInvalidSession)
+        public static void logout() {
+            Log.d("__A", "static logout called");
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("__A", "checkAndHandleInvalidSession : inside job");
+                    Log.d("__A", "logout() : inside job");
                     Utility.toast("Session expired. Please login again !", true);
-
                     performLogoutAction();
                 }
             };
 
-            if(!ignoreInvalidSessionCheck) {
-                ignoreInvalidSessionCheck = true;
-                Log.d("__A", "checkAndHandleInvalidSession : posting job to Application.applicationHandler");
+            if(!getIgnoreInvalidSessionCheck() && Application.applicationHandler != null){
+                setIgnoreInvalidSessionCheck();
+                Log.d("__A", "logout() : posting the job");
                 Application.applicationHandler.post(r);
             }
-            else {
-                Log.d("__A", "checkAndHandleInvalidSession : SKIPPING posting job to Application.applicationHandler");
+            else{
+                Log.d("__A", "logout() : SKIPPING posting the job");
             }
-            return true;
         }
-        return false;
+
+        /*
+           call from GUI thread only
+        */
+        public static void performLogoutAction(){
+            resetLocalData(); //clear all the flags(general & user specific), stop alarms
+            //do this first before unpinning or logout current user
+
+            Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
+            ParseUser currentUser = ParseUser.getCurrentUser();
+            if(currentUser != null){
+                currentUser.unpinInBackground();
+            }
+
+            ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
+
+            //Needed because MainActivity page-adapter's count will change because user has become null
+            if(MainActivity.myAdapter != null){
+                MainActivity.myAdapter.notifyDataSetChanged();
+            }
+
+            //launch login activity
+            startLoginActivity();
+        }
+
+        //called in general (and also when currentUser is null)
+        //can be called in a thread
+        static void resetLocalData(){
+            Context _context = Application.getAppContext();
+            // After logout redirect user to Loing Activity
+
+            Application.lastTimeJoinedSync = null;
+            Application.lastTimeInboxSync = null;
+            Application.lastTimeOutboxSync = null;
+
+            //cancel all alarms set. Very first thing to do
+            AlarmTrigger.cancelEventCheckerAlarm(_context);
+            AlarmTrigger.cancelRefresherAlarm(_context);
+
+            SessionManager session = new SessionManager(_context);
+            session.reSetAppOpeningCount();
+            session.reSetSignUpAccount();
+        }
     }
 }

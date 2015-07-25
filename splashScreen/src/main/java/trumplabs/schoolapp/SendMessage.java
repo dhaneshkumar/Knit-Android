@@ -129,7 +129,7 @@ public class SendMessage extends MyActionBarActivity  {
         //checking parse user null or not
         if (userObject == null)
         {
-            Utility.logout(); return;}
+            Utility.LogoutUtility.logout(); return;}
 
 
         groupDetails = new ArrayList<>(); //important since now its static variable so need to reset

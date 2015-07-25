@@ -283,24 +283,24 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 String sessionToken = (String) result.get("sessionToken");
                 if(success != null && success && sessionToken != null){
                     try{
-                        Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become calling " + ParseUser.getCurrentUser());
+                        Log.d("D_SIGNUP_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
                             Log.d("__A", "setting ignoreInvalidSessionCheck to false");
-                            Utility.ignoreInvalidSessionCheck = false;
+                            Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
 
-                            Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
+                            Log.d("D_SIGNUP_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
                             taskSuccess = true;
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
                             // The token could not be validated.
-                            Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user null");
+                            Log.d("D_SIGNUP_VERIF", "parseuser become - returned user null");
                             loginError = true;
                         }
                     }
                     catch (ParseException e){
-                        Utility.checkAndHandleInvalidSession(e);
-                        Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
+                        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                        Log.d("D_SIGNUP_VERIF", "parseuser become - parse exception");
                         if(e.getCode() == ParseException.CONNECTION_FAILED){
                             networkError = true;
                         }
@@ -310,12 +310,12 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                     }
                 }
                 else{
-                    Log.d("DEBUG_SIGNUP_VERIFICATION", "verifyCode error");
+                    Log.d("D_SIGNUP_VERIF", "verifyCode error");
                     verifyError = true;
                 }
             } catch (ParseException e) {
-                Utility.checkAndHandleInvalidSession(e);
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "network error with message " + e.getMessage() + " code "  + e.getCode());
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                Log.d("D_SIGNUP_VERIF", "network error with message " + e.getMessage() + " code "  + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;
                 }
@@ -330,7 +330,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
                 e.printStackTrace();
             }
-            Log.d("DEBUG_SIGNUP_VERIFICATION", "background : returning null");
+            Log.d("D_SIGNUP_VERIF", "background : returning null");
             return null;
         }
 
@@ -358,7 +358,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
             }
 
-            Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
+            Log.d("D_SIGNUP_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
             if(!taskSuccess){
                 if(pdialog != null){
                     pdialog.dismiss();

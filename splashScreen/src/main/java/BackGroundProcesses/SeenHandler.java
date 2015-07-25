@@ -32,7 +32,8 @@ public class SeenHandler{
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null)
-            {Utility.logout(); return;}
+            {
+                Utility.LogoutUtility.logout(); return;}
 
         String username = user.getUsername();
 

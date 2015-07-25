@@ -62,7 +62,7 @@ public class JoinedHelper {
             result = ParseCloud.callFunction("joinClass3", params);
             Log.d("join", "class joining");
         } catch (ParseException e) {
-            Utility.checkAndHandleInvalidSession(e);
+            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
             e.printStackTrace();
 
             if(e.getMessage().equals("No such class exits"))

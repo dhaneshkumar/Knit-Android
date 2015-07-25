@@ -69,7 +69,7 @@ public class InviteVia extends MyActionBarActivity {
 
         currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
-            Utility.logout();
+            Utility.LogoutUtility.logout();
             return;
         }
 

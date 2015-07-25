@@ -242,7 +242,7 @@ public class ComposeMessageHelper {
             return -1; //unexpected error
         }
         catch (ParseException e){
-            if(Utility.checkAndHandleInvalidSession(e)){
+            if(Utility.LogoutUtility.checkAndHandleInvalidSession(e)){
                 return ParseException.INVALID_SESSION_TOKEN;
             }
             else if(e.getCode() == ParseException.CONNECTION_FAILED){
@@ -391,7 +391,7 @@ public class ComposeMessageHelper {
             return -1;
         }
         catch(ParseException esave){
-            if(Utility.checkAndHandleInvalidSession(esave)){
+            if(Utility.LogoutUtility.checkAndHandleInvalidSession(esave)){
                 return ParseException.INVALID_SESSION_TOKEN;
             }
             else if(esave.getCode() == ParseException.CONNECTION_FAILED){

@@ -185,7 +185,7 @@ public class CreateClassDialog extends DialogFragment{
                 result = ParseCloud.callFunction("createClass3", params);
             } catch (ParseException e) {
                 Log.d("__A", "createClass3 parseexception, code=" + e.getCode() + " msg=" + e.getMessage());
-                Utility.checkAndHandleInvalidSession(e);
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
                 return false;
             }

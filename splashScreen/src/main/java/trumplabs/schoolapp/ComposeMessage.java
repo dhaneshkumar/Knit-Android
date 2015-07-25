@@ -109,7 +109,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
         ParseUser currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
-            Utility.logout();
+            Utility.LogoutUtility.logout();
             return;
         }
 
