@@ -467,6 +467,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         String token;
         boolean isLogin;
 
+        //response
+        String flag;
+
         public FBVerifyTask(String token, boolean isLogin){//code to verify. Number will be taken from relevant activity
             this.token = token;
             this.isLogin = isLogin;
@@ -502,6 +505,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 Log.d("D_FB_VERIF", "appEnter : calling");
                 HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
                 String sessionToken = (String) result.get("sessionToken");
+                flag = (String) result.get("flag");
+
                 if(!UtilString.isBlank(sessionToken)){
                     try{
                         Log.d("D_FB_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
@@ -551,7 +556,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
         @Override
         protected void onPostExecute(Void result){
-            Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
+            Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess + ", flag=" + flag);
 
             if(taskSuccess){
                 SessionManager session = new SessionManager(Application.getAppContext());
@@ -559,6 +564,10 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 //If user has joined any class then locally saving it in session manager
                 if(user != null && user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
                     session.setHasUserJoinedClass();
+                }
+
+                if(flag != null && flag.equals("logIn")){
+                    isLogin = true;
                 }
 
                 if(isLogin){

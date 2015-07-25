@@ -235,7 +235,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
     }
 
-    public static class VerifyCodeTask extends AsyncTask<Void, Void, Void> {
+    private static class VerifyCodeTask extends AsyncTask<Void, Void, Void> {
         Boolean loginError = false; //session code login status
         Boolean networkError = false; //parse exception
         Boolean verifyError = false; //code verification status
@@ -246,6 +246,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         Boolean taskSuccess = false;
 
         String code;
+
+        //response
+        String flag;
 
         public VerifyCodeTask(String tcode){//code to verify. Number will be taken from relevant activity
             code = tcode;
@@ -280,6 +283,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             try {
                 HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
                 String sessionToken = (String) result.get("sessionToken");
+                flag = (String) result.get("flag");
+
                 if(!UtilString.isBlank(sessionToken)){
                     try{
                         Log.d("D_SIGNUP_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
@@ -341,6 +346,10 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 //If user has joined any class then locally saving it in session manager
                 if(user != null && user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
                     session.setHasUserJoinedClass();
+                }
+
+                if(flag != null && flag.equals("logIn")){
+                    isLogin = true;
                 }
 
                 if(isLogin){
@@ -406,6 +415,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         ProgressDialog progressDialog;
 
         public PostLoginTask(ParseUser user, ProgressDialog progressDialog) {
+            Log.d("D_FB_VERIF", "PostLoginTask running");
             this.user = user;
             this.progressDialog = progressDialog;
         }
@@ -424,8 +434,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             }
 
             //Switching to MainActivity
-            Intent intent = new Intent(activityContext, MainActivity.class);
-            activityContext.startActivity(intent);
+            Intent intent = new Intent(Application.getAppContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            Application.getAppContext().startActivity(intent);
 
             //Analytics to measure total successful logins
             Map<String, String> dimensions = new HashMap<String, String>();
@@ -440,6 +451,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         ProgressDialog progressDialog;
 
         public PostSignUpTask(ParseUser u, ProgressDialog progressDialog) {
+            Log.d("D_FB_VERIF", "PostSignUpTask running");
             currentParseUser = u;
             this.progressDialog = progressDialog;
         }
@@ -474,12 +486,13 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Messages.responseTutorialShown = false;
             Outbox.responseTutorialShown = false;
 
-            Intent intent = new Intent(activityContext, MainActivity.class);
+            Intent intent = new Intent(Application.getAppContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+
             intent.putExtra("flag", "SIGNUP");
             if (currentParseUser.getString("role").equals(Constants.TEACHER))
                 intent.putExtra("VIEWPAGERINDEX", 1);
-            activityContext.startActivity(intent);
-
+            Application.getAppContext().startActivity(intent);
 
             //Analytics to measure total successful signups
             Map<String, String> dimensions = new HashMap<String, String>();
