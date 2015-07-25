@@ -7,32 +7,13 @@
     android:background="@color/lightbackgroundcolor"
     android:layout_height="match_parent">
 
-    <LinearLayout
-        android:id="@+id/classDetails"
+    <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:padding="16dp"
-        android:background="@color/white"
-        android:visibility="gone"
-        >
-
-        <TextView
-            android:id="@+id/className"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="ENGLISH 5A"
-            android:textColor="@color/black"
-            />
-        <TextView
-            android:id="@+id/teacherName"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:text="by Mr. Dhanesh Kumar"
-            />
-    </LinearLayout>
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginBottom="30dp" />
 
     <LinearLayout
         android:layout_height="wrap_content"
@@ -44,6 +25,7 @@
         android:layout_marginTop="16dp"
         android:background="@color/white"
         >
+
     <Spinner
         android:id="@+id/mr_spinner"
         style="@style/Widget.AppCompat.Spinner"

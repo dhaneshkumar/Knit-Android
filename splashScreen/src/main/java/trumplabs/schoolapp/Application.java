@@ -6,7 +6,6 @@ import android.content.Context;
 
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
-import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.PushService;
 
@@ -67,7 +66,6 @@ public class Application extends android.app.Application {
 
 	Application.context = getApplicationContext();
 
-      ParseFacebookUtils.initialize(context);
 
 	// Specify an Activity to handle all pushes by   default.
 	//PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class);

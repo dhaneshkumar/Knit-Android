@@ -50,7 +50,6 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
     static SmoothProgressBar smoothProgressBar;
     static TextView errorMsgTV;
     static TextView resendActionTV;
-
     static String verificationCode;
     static Boolean isLogin;
     static Menu menu;
