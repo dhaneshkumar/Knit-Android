@@ -152,10 +152,9 @@ public class LoginPage extends MyActionBarActivity {
 
       try {
         HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
-        Boolean success = (Boolean) result.get("flag");
         String sessionToken = (String) result.get("sessionToken");
 
-        if(success != null && success && sessionToken != null){
+        if(!UtilString.isBlank(sessionToken)){
           ParseUser user = ParseUser.become(sessionToken);
           if (user != null) {
             taskSuccess = true;

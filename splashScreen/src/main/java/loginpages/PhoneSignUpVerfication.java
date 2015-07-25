@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Html;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -278,9 +279,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             try {
                 HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
-                Boolean success = (Boolean) result.get("flag");
                 String sessionToken = (String) result.get("sessionToken");
-                if(success != null && success && sessionToken != null){
+                if(!UtilString.isBlank(sessionToken)){
                     try{
                         Log.d("D_SIGNUP_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);

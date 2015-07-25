@@ -501,9 +501,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             try {
                 Log.d("D_FB_VERIF", "appEnter : calling");
                 HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
-                Boolean success = (Boolean) result.get("flag");
                 String sessionToken = (String) result.get("sessionToken");
-                if(success != null && success && sessionToken != null){
+                if(!UtilString.isBlank(sessionToken)){
                     try{
                         Log.d("D_FB_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
