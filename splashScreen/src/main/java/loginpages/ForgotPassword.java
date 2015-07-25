@@ -19,6 +19,7 @@ import utility.Utility;
 
 public class ForgotPassword extends DialogFragment {
   Dialog dialog;
+  String email;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -38,7 +39,7 @@ public class ForgotPassword extends DialogFragment {
       @Override
       public void onClick(View v) {
 
-        String email = emailBox.getText().toString().trim();
+        email = emailBox.getText().toString().trim();
 
         if (!UtilString.isBlank(email)) {
           ParseUser.requestPasswordResetInBackground(email, new UserForgotPasswordCallback());
@@ -60,16 +61,11 @@ public class ForgotPassword extends DialogFragment {
     @Override
     public void done(ParseException e) {
       if (e == null) {
-        Utility.toast("Password Reset Link is sent to your Email-Id");
+        Utility.toast("Password Reset Link is sent to " + email, true);
       } else {
-        Utility.toast("Failed to send link to your Email. Try Again..");
-
+        Utility.toast("Failed to send link to " + email + ". Try Again..", true);
       }
-
-
     }
-
 
   }
 }
-

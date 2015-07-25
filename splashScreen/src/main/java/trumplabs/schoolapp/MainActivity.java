@@ -112,7 +112,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         //check for current user loggedin or not
         if (user == null)
-        {Utility.logout(); return;}
+        {
+            Utility.LogoutUtility.logout(); return;}
 
         // Initialize elements
         viewpager = (ViewPager) findViewById(R.id.pager);
@@ -456,8 +457,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
      */
     public static void setClassListOptions()
     {
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            return;
+        }
 
-        classList = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+        classList = currentParseUser.getList(Constants.CREATED_GROUPS);
 
         if(classList == null)
             classList = new ArrayList<>();
@@ -533,12 +538,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 classList = newList;
             }
         }
-
-
     }
 
     @Override
     protected void onResume() {
+
         super.onResume();
         Application.mainActivityVisible = true;
         AppEventsLogger.activateApp(this, Config.FB_APP_ID);
@@ -570,6 +574,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             inflater.inflate(R.menu.mainactivity_for_teachers, menu);
         else
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
+
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            return true;
+        }
 
         if(role.equals(Constants.TEACHER)){
             //prepare action views for menu items - create and join
@@ -612,7 +621,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
 
             if(Application.mainActivityVisible && !MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
-                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
+                String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.OPTIONS;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
@@ -658,7 +667,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
 
             if(Application.mainActivityVisible && !MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
-                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.OPTIONS;
+                String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.OPTIONS;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);

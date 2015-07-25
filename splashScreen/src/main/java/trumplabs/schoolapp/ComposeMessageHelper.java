@@ -242,10 +242,13 @@ public class ComposeMessageHelper {
             return -1; //unexpected error
         }
         catch (ParseException e){
-            e.printStackTrace();
-            if(e.getCode() == ParseException.CONNECTION_FAILED){
+            if(Utility.LogoutUtility.checkAndHandleInvalidSession(e)){
+                return ParseException.INVALID_SESSION_TOKEN;
+            }
+            else if(e.getCode() == ParseException.CONNECTION_FAILED){
                 return 100; //network error
             }
+            e.printStackTrace();
             return -1;
         }
     }
@@ -388,10 +391,13 @@ public class ComposeMessageHelper {
             return -1;
         }
         catch(ParseException esave){
-            esave.printStackTrace();
-            if(esave.getCode() == ParseException.CONNECTION_FAILED){
+            if(Utility.LogoutUtility.checkAndHandleInvalidSession(esave)){
+                return ParseException.INVALID_SESSION_TOKEN;
+            }
+            else if(esave.getCode() == ParseException.CONNECTION_FAILED){
                 return 100;
             }
+            esave.printStackTrace();
             return -1;
             //Utility.toast("Sorry, sending failed now. We'll send it next time you're online");
         }

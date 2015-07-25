@@ -16,12 +16,10 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.parse.GetCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
-import com.parse.ParseSession;
 import com.parse.ParseUser;
 
 import java.util.HashMap;
@@ -141,7 +139,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             case R.id.verify:
                 verificationCode = verificationCodeET.getText().toString();
                 if(UtilString.isBlank(verificationCode) || verificationCode.length() != 4){
-                    Utility.toast("Please enter the 4-digit verification code");
+                    Utility.toast("Please enter the 4-digit verification code", true);
                 }
                 else if(Utility.isInternetExist()) {
                     Tools.hideKeyboard(this);
@@ -284,18 +282,24 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 String sessionToken = (String) result.get("sessionToken");
                 if(success != null && success && sessionToken != null){
                     try{
+                        Log.d("D_SIGNUP_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
+                            Log.d("__A", "setting ignoreInvalidSessionCheck to false");
+                            Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
+
+                            Log.d("D_SIGNUP_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
                             taskSuccess = true;
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
                             // The token could not be validated.
-                            Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - returned user null");
+                            Log.d("D_SIGNUP_VERIF", "parseuser become - returned user null");
                             loginError = true;
                         }
                     }
                     catch (ParseException e){
-                        Log.d("DEBUG_SIGNUP_VERIFICATION", "parseuser become - parse exception");
+                        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                        Log.d("D_SIGNUP_VERIF", "parseuser become - parse exception");
                         if(e.getCode() == ParseException.CONNECTION_FAILED){
                             networkError = true;
                         }
@@ -305,11 +309,12 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                     }
                 }
                 else{
-                    Log.d("DEBUG_SIGNUP_VERIFICATION", "verifyCode error");
+                    Log.d("D_SIGNUP_VERIF", "verifyCode error");
                     verifyError = true;
                 }
             } catch (ParseException e) {
-                Log.d("DEBUG_SIGNUP_VERIFICATION", "network error with message " + e.getMessage() + " code "  + e.getCode());
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                Log.d("D_SIGNUP_VERIF", "network error with message " + e.getMessage() + " code "  + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;
                 }
@@ -324,7 +329,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
                 e.printStackTrace();
             }
-            Log.d("DEBUG_SIGNUP_VERIFICATION", "background : returning null");
+            Log.d("D_SIGNUP_VERIF", "background : returning null");
             return null;
         }
 
@@ -352,33 +357,33 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
             }
 
-            Log.d("DEBUG_SIGNUP_VERIFICATION", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
+            Log.d("D_SIGNUP_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
             if(!taskSuccess){
                 if(pdialog != null){
                     pdialog.dismiss();
                 }
             }
             if(networkError){
-                Utility.toast("Connection failure");
+                Utility.toast("Connection failure", true);
                 showError("Unable to establish connection. Please try again", false);
                 showResendAction();
             }
             else if(unexpectedError){
-                Utility.toast("Oops ! some error occured.");
+                Utility.toast("Oops ! some error occured.", true);
                 showError( "Some unexpected error occured. Please try again", false);
                 showResendAction();
             }
             else if(verifyError){
-                Utility.toast("Wrong verification code");
+                Utility.toast("Wrong verification code", true);
                 showError("Wrong verification code.\nPlease re-enter code and try again", false);
             }
             else if(loginError){
-                Utility.toast("Error logging in"); //code was verified but login unsuccessful
+                Utility.toast("Error logging in", true); //code was verified but login unsuccessful
                 showError("Some unexpected error occurred while logging in.\nTry again", true);
                 showResendAction();
             }
             else if(userAlreadyExistsError){
-                Utility.toast("This number is already in use.\nPlease recheck you number");
+                Utility.toast("This number is already in use.\nPlease recheck you number", true);
                 //take back ot Login Page
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneSignUpName.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -386,7 +391,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 //showError("This number is already in use. Please try logging in");
             }
             else if(userDoesNotExistsError){
-                Utility.toast("No account for this number exists.\nPlease recheck you number");
+                Utility.toast("No account for this number exists.\nPlease recheck you number", true);
                 Intent nextIntent = new Intent(Application.getAppContext(), PhoneLoginPage.class);
                 nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 Application.getAppContext().startActivity(nextIntent);
@@ -429,9 +434,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
     static class PostSignUpTask extends AsyncTaskProxy<Void, Void, Void>
     {
-        ParseUser currentUser;
+        ParseUser currentParseUser;
         public PostSignUpTask(ParseUser u) {
-            currentUser = u;
+            currentParseUser = u;
         }
         @Override
         protected Void doInBackground(Void... params) {
@@ -439,7 +444,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Utility.updateCurrentTime();
 
             //set inbox fetch flag. We dont need to fetch old messages in this account
-            SessionManager.setBooleanValue(currentUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
+            SessionManager.setBooleanValue(currentParseUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
 
             return null;
         }
@@ -451,7 +456,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             if(pdialog != null){
                 pdialog.dismiss();
             }
-            if(currentUser == null) return; //won't happen as called after successful login
+            if(currentParseUser == null) return; //won't happen as called after successful login
 
             //variable storing that its first time app <signup>user
             Constants.IS_SIGNUP = true;
@@ -465,7 +470,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             Intent intent = new Intent(activityContext, MainActivity.class);
             intent.putExtra("flag", "SIGNUP");
-            if (ParseUser.getCurrentUser().getString("role").equals(Constants.TEACHER))
+            if (currentParseUser.getString("role").equals(Constants.TEACHER))
                 intent.putExtra("VIEWPAGERINDEX", 1);
             activityContext.startActivity(intent);
 

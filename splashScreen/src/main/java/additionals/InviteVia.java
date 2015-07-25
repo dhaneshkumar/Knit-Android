@@ -59,12 +59,21 @@ public class InviteVia extends MyActionBarActivity {
     private BaseAdapter contactAdapter;
     private List<Contact> initialContactList;
     private String username;
+
+    ParseUser currentParseUser;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.contacts_list_view);
 
-        username = ParseUser.getCurrentUser().getUsername();
+        currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            Utility.LogoutUtility.logout();
+            return;
+        }
+
+        username = currentParseUser.getUsername();
 
         contactListview = (ListView) findViewById(R.id.contact_list);
 
@@ -156,7 +165,7 @@ public class InviteVia extends MyActionBarActivity {
         invitationQuery.fromLocalDatastore();
         invitationQuery.whereEqualTo(Constants.TYPE, inviteType);
         invitationQuery.whereEqualTo(Constants.MODE, inviteMode);
-        invitationQuery.whereEqualTo(Constants.USER_ID, ParseUser.getCurrentUser().getUsername());
+        invitationQuery.whereEqualTo(Constants.USER_ID, currentParseUser.getUsername());
 
         if(inviteType == Constants.INVITATION_T2P){
             invitationQuery.whereEqualTo(Constants.CLASS_CODE, classCode);

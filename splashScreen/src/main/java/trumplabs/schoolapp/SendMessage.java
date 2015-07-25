@@ -129,7 +129,7 @@ public class SendMessage extends MyActionBarActivity  {
         //checking parse user null or not
         if (userObject == null)
         {
-            Utility.logout(); return;}
+            Utility.LogoutUtility.logout(); return;}
 
 
         groupDetails = new ArrayList<>(); //important since now its static variable so need to reset
@@ -450,11 +450,8 @@ public class SendMessage extends MyActionBarActivity  {
 
             //retrieving the message sent time
             String timestampmsg = "";
-            try {
-                Date cdate = (Date) msg.get("creationTime");
-                timestampmsg = Utility.convertTimeStamp(cdate);
-            } catch (java.text.ParseException e) {
-            }
+            Date cdate = (Date) msg.get("creationTime");
+            timestampmsg = Utility.convertTimeStamp(cdate);
 
             boolean pending = msg.getBoolean("pending"); //if this key is not available (for older messages)
             //get pending "false" & that's what we want

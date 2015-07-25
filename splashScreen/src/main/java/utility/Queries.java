@@ -34,7 +34,7 @@ public class Queries {
     public Queries() {
         ParseUser userObject = ParseUser.getCurrentUser();
         if (userObject == null) {
-            Utility.logout();
+            Utility.LogoutUtility.logout();
             return;
         }
         userId = userObject.getUsername();
@@ -259,6 +259,7 @@ public class Queries {
                 }
             }
             catch (ParseException e){
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
         }
@@ -290,6 +291,7 @@ public class Queries {
                 }
             }
             catch (ParseException e){
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
         }
@@ -381,6 +383,7 @@ public class Queries {
             }
         }
         catch (ParseException e){
+            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
             e.printStackTrace();
         }
         return null; //when cloud function fails or returns null
@@ -755,7 +758,7 @@ public class Queries {
     public static List<ParseObject> getLocalOutbox() {
         ParseUser user = ParseUser.getCurrentUser();
         if(user == null){
-            Utility.logout();
+            Utility.LogoutUtility.logout();
             return new ArrayList<>();
         }
 

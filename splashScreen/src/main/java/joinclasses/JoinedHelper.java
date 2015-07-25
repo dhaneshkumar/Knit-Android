@@ -62,6 +62,7 @@ public class JoinedHelper {
             result = ParseCloud.callFunction("joinClass3", params);
             Log.d("join", "class joining");
         } catch (ParseException e) {
+            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
             e.printStackTrace();
 
             if(e.getMessage().equals("No such class exits"))
@@ -69,8 +70,13 @@ public class JoinedHelper {
             return 0;
         }
 
-        ParseUser user = ParseUser.getCurrentUser();
-        String userId = user.getUsername();
+
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            return 0;
+        }
+
+        String userId = currentParseUser.getUsername();
 
         if (result == null)
             return 0;
@@ -79,17 +85,16 @@ public class JoinedHelper {
         List<ParseObject> oldMessages = (List<ParseObject>) result.get("messages");
         List<List<String>> updatedJoinedGroups = (List<List<String>>) result.get(Constants.JOINED_GROUPS);
 
-        ParseUser currentUser = ParseUser.getCurrentUser();
-        if(codeGroupObject == null || updatedJoinedGroups == null || currentUser == null){
+        if(codeGroupObject == null || updatedJoinedGroups == null){
             return 0;
         }
 
         Log.d("join", "code object not null");
         //successfully joined the classroom
         codeGroupObject.put("userId", userId);
-        currentUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
+        currentParseUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
         try {
-            currentUser.pin();
+            currentParseUser.pin();
             codeGroupObject.pin();
         } catch (ParseException e) {
             e.printStackTrace();
@@ -121,14 +126,14 @@ public class JoinedHelper {
         //locally generating joining notification and inbox msg
         Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
         NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
-        EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
+        EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), currentParseUser);
 
         if(oldMessages != null)
         {
             for(int i=0 ; i<oldMessages.size(); i++)
             {
                 ParseObject msg = oldMessages.get(i);
-                msg.put(Constants.USER_ID, ParseUser.getCurrentUser().getUsername());
+                msg.put(Constants.USER_ID, currentParseUser.getUsername());
 
                 msg.put(Constants.GroupDetails.LIKE, false);
                 msg.put(Constants.GroupDetails.CONFUSING, false);

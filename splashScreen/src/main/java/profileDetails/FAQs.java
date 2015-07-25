@@ -29,6 +29,7 @@ import java.util.List;
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import utility.Queries;
+import utility.Utility;
 
 public class FAQs extends MyActionBarActivity {
 
@@ -43,6 +44,7 @@ public class FAQs extends MyActionBarActivity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     setContentView(R.layout.profile_faq);
     layoutinflater = getLayoutInflater();
 
@@ -54,9 +56,15 @@ public class FAQs extends MyActionBarActivity {
     if (faqAdapter == null)
       faqAdapter = new myBaseAdapter();
 
+    ParseUser currentParseUser = ParseUser.getCurrentUser();
+    if(currentParseUser == null){
+      Utility.LogoutUtility.logout();
+      return;
+    }
+
     Queries query = new Queries();
     try {
-      faqList = query.getLocalFAQs(ParseUser.getCurrentUser().getString("role"));
+      faqList = query.getLocalFAQs(currentParseUser.getString("role"));
 
 
       if (faqList == null || faqList.size() == 0) {
@@ -65,7 +73,7 @@ public class FAQs extends MyActionBarActivity {
           progressLayout.setVisibility(View.VISIBLE);
 
           GetServerFaqs serverFaqs =
-              new GetServerFaqs(ParseUser.getCurrentUser().getString("role"));
+              new GetServerFaqs(currentParseUser.getString("role"));
           serverFaqs.execute();
       }
 
@@ -178,6 +186,12 @@ public class FAQs extends MyActionBarActivity {
     @Override
     protected Void doInBackground(Void... params) {
 
+      ParseUser currentParseUser = ParseUser.getCurrentUser();
+      if(currentParseUser == null){
+        Utility.LogoutUtility.logout();
+        return null;
+      }
+
       List<ParseObject> faqs = null;
       try {
 
@@ -197,6 +211,7 @@ public class FAQs extends MyActionBarActivity {
           faqs = ParseCloud.callFunction("faq", param);
 
       } catch (ParseException e) {
+        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
       }
 
       if (faqs != null) {
@@ -204,7 +219,7 @@ public class FAQs extends MyActionBarActivity {
           ParseObject faq = faqs.get(i);
 
           faqList.add(faq);
-          faq.put("userId", ParseUser.getCurrentUser().getUsername());
+          faq.put("userId", currentParseUser.getUsername());
 
           try {
             faq.pin();

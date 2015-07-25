@@ -322,6 +322,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 currentUser.pin();
                 success = true;
             } catch (ParseException e) {
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
                 return null;
             }
@@ -375,6 +376,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 success = true;
             }
             catch (ParseException e){
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
             return null;

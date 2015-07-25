@@ -139,12 +139,4 @@ public class Refresher {
         }
         return false;
     }
-
-    public static boolean isSufficientGapJoined(){
-        Date currentTime = Calendar.getInstance().getTime();
-        if(Application.lastTimeJoinedSync == null || (currentTime.getTime() - Application.lastTimeJoinedSync.getTime() > Config.joinedClassUpdateGap)){
-            return true;
-        }
-        return false;
-    }
 }

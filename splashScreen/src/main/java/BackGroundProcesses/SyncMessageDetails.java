@@ -27,7 +27,8 @@ public class SyncMessageDetails {
     public static void syncStatus(){
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null) {
-            {Utility.logout(); return;}
+            {
+                Utility.LogoutUtility.logout(); return;}
         }
 
         String username = user.getUsername();
@@ -220,7 +221,8 @@ public class SyncMessageDetails {
         ParseUser parseObject = ParseUser.getCurrentUser();
 
         if (parseObject == null)
-            {Utility.logout(); return;}
+            {
+                Utility.LogoutUtility.logout(); return;}
         if(!parseObject.getString("role").equalsIgnoreCase("teacher")){
             return;
         }
@@ -291,6 +293,7 @@ public class SyncMessageDetails {
             }
         }
         catch (ParseException e){
+            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
             Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : parse exception while fetching updates");
             e.printStackTrace();
         }

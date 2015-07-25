@@ -1,24 +1,17 @@
 package trumplabs.schoolapp;
 
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 
-import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
-import com.parse.ParsePush;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
 
-import library.UtilString;
 import utility.Utility;
 
 public class ClassMsgFunctions {
@@ -42,6 +35,7 @@ public class ClassMsgFunctions {
             try {
                 updatedCreatedGroups = ParseCloud.callFunction("deleteClass3", params);
             } catch (ParseException e) {
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
             }
 
@@ -98,7 +92,13 @@ public class ClassMsgFunctions {
             {
                 Utility.toast("Successfully deleted your classroom");
 
-                Classrooms.createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+                ParseUser currentParseUser = ParseUser.getCurrentUser();
+                if(currentParseUser == null){
+                    Utility.LogoutUtility.logout();
+                    return;
+                }
+
+                Classrooms.createdGroups = currentParseUser.getList(Constants.CREATED_GROUPS);
                 MainActivity.setClassListOptions();
 
 
@@ -127,7 +127,7 @@ public class ClassMsgFunctions {
 
         if (user == null)
         {
-            Utility.logout(); return;}
+            Utility.LogoutUtility.logout(); return;}
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         query.fromLocalDatastore();

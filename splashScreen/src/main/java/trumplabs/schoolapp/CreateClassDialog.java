@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -179,9 +180,12 @@ public class CreateClassDialog extends DialogFragment{
 
             //calling parse cloud function to create class
             HashMap<String, Object> result = null;
+            Log.d("__A", "createGroup : calling createClass3");
             try {
                 result = ParseCloud.callFunction("createClass3", params);
             } catch (ParseException e) {
+                Log.d("__A", "createClass3 parseexception, code=" + e.getCode() + " msg=" + e.getMessage());
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
                 return false;
             }
@@ -217,6 +221,7 @@ public class CreateClassDialog extends DialogFragment{
 
         @Override
         protected void onPostExecute(Boolean result) {
+            Log.d("__A", "createGroup : onPostExecute()");
             if (result) {
                 codeTV.setText(classCode);
 

@@ -94,6 +94,7 @@ public class Messages extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         getactivity = getActivity();
 
         mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
@@ -187,12 +188,13 @@ public class Messages extends Fragment {
         listv.setLayoutManager(mLayoutManager);
 
 
-        ParseUser parseObject = ParseUser.getCurrentUser();
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
 
-        if (parseObject == null)
-            {Utility.logout(); return;}
+        if (currentParseUser == null)
+            {
+                Utility.LogoutUtility.logout(); return;}
 
-        userId = parseObject.getUsername();
+        userId = currentParseUser.getUsername();
 
 
         //fetch local messages in background
@@ -204,7 +206,7 @@ public class Messages extends Fragment {
         /*
         If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
          */
-        String role = ParseUser.getCurrentUser().getString("role");
+        String role = currentParseUser.getString("role");
         if(role.equals("teacher"))
         {
             GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
@@ -249,8 +251,6 @@ public class Messages extends Fragment {
         // Collections.reverse(msgs);
         myadapter = new RecycleAdapter();
         listv.setAdapter(myadapter);
-
-        super.onActivityCreated(savedInstanceState);
 
     /*
      * On scrolling down the list view display extra messages.
@@ -641,21 +641,18 @@ public class Messages extends Fragment {
                  Str = msgObject.getString("name").toUpperCase();
             holder.groupName.setText(Str);
 
-            try
-            {
-                if (msgObject.getCreatedAt() != null) {
-                    holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
 
-                    SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                    //Log.d("INBOX", "message : " + msgObject.getString("title"));
-                    //Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
-                    //Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
+            if (msgObject.getCreatedAt() != null) {
+                holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
 
-                }
-                else if (msgObject.get("creationTime") != null)
-                    holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
+                SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                //Log.d("INBOX", "message : " + msgObject.getString("title"));
+                //Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
+                //Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
+
             }
-            catch (java.text.ParseException e){}
+            else if (msgObject.get("creationTime") != null)
+                holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
 
             final String message = msgObject.getString("title");
             if (UtilString.isBlank(message)) {
@@ -779,6 +776,7 @@ public class Messages extends Fragment {
 
                                     // might be problem
                                 } else {
+                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                                     // Image not downloaded
                                     holder.uploadprogressbar.setVisibility(View.GONE);
                                     holder.faildownload.setVisibility(View.VISIBLE);
@@ -800,13 +798,19 @@ public class Messages extends Fragment {
             }
 
             //if a) first msg, b) already not shown, c) either non-teacher or fragment # visible is 2 (ie. Messages tab)
-            String role = ParseUser.getCurrentUser().getString(Constants.ROLE);
+
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+            if(currentParseUser == null){
+                return;
+            }
+
+            String role = currentParseUser.getString(Constants.ROLE);
 
             Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
                     + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
 
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
-                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
+                String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId + " isSignUpAccount=" + mgr.getSignUpAccount() + " tutState=" + mgr.getTutorialState(tutorialId));
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
@@ -966,7 +970,8 @@ public class Messages extends Fragment {
             Messages.totalInboxMessages = totalMessages;
         }
         else
-        {Utility.logout(); return;}
+        {
+            Utility.LogoutUtility.logout(); return;}
     }
 
     class GetLocalInboxMsgInBackground extends AsyncTask<Void, Void, Void>
@@ -1026,7 +1031,12 @@ public class Messages extends Fragment {
         //if not - run GetMoreOldMessages task
         //set flag if #msgs returned non null and less than 20
         if(!oldInboxFetched){
-            String username = ParseUser.getCurrentUser().getUsername();
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+            if(currentParseUser == null){
+                return;
+            }
+
+            String username = currentParseUser.getUsername();
             String key = username + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
             if(SessionManager.getBooleanValue(key)){//if true set
                 Log.d("_FETCH_OLD", "already set in shared prefs");

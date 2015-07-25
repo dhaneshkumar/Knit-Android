@@ -92,6 +92,7 @@ public class Outbox extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         //intializing variables
         outboxListv = (RecyclerView) getActivity().findViewById(R.id.outboxlistview);
@@ -127,10 +128,6 @@ public class Outbox extends Fragment {
         outboxListv.setLayoutManager(mLayoutManager);
         myadapter = new RecycleAdapter();
         outboxListv.setAdapter(myadapter);
-
-
-        super.onActivityCreated(savedInstanceState);
-
 
         emptyBackground.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -369,16 +366,13 @@ public class Outbox extends Fragment {
             Retrieving timestamp
              */
             String timestampmsg = "";
-            try {
-                Date cdate = groupdetails1.getCreatedAt();
+            Date cdate = groupdetails1.getCreatedAt();
 
-                if (cdate == null)
-                    cdate = (Date) groupdetails1.get("creationTime");
+            if (cdate == null)
+                cdate = (Date) groupdetails1.get("creationTime");
 
-                //finding difference of current & createdAt timestamp
-                timestampmsg = Utility.convertTimeStamp(cdate);
-            } catch (java.text.ParseException e) {
-            }
+            //finding difference of current & createdAt timestamp
+            timestampmsg = Utility.convertTimeStamp(cdate);
 
             //setting cardview for higher api using elevation
 
@@ -529,6 +523,7 @@ public class Outbox extends Fragment {
                                 // Might be a problem when net is too slow :/
                             } else {
                                 // Image not downloaded
+                                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                                 holder.uploadprogressbar.setVisibility(View.GONE);
                             }
                         }
@@ -558,9 +553,11 @@ public class Outbox extends Fragment {
             }
 
             //if a) first msg, b) is a teacher & c) already not shown
-            if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && ParseUser.getCurrentUser().getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+
+            if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && currentParseUser != null && currentParseUser.getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 Log.d("_TUTORIAL_", "outbox response tutorial entered");
-                String tutorialId = ParseUser.getCurrentUser().getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
+                String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
                     mgr.setTutorialState(tutorialId, true);
@@ -692,7 +689,7 @@ public class Outbox extends Fragment {
             ParseUser user = ParseUser.getCurrentUser();
 
             if (user == null) {
-                Utility.logout();
+                Utility.LogoutUtility.logout();
                 return;
             }
 

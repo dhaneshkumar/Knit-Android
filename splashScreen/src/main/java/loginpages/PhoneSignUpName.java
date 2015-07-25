@@ -219,9 +219,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         displayName = displayNameET.getText().toString();
         phoneNumber = phoneNumberET.getText().toString();
         if (UtilString.isBlank(displayName))
-            Utility.toast("Incorrect Display Name");
+            Utility.toast("Incorrect Display Name", true);
         else if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
-            Utility.toast("Incorrect Mobile Number");
+            Utility.toast("Incorrect Mobile Number", true);
         else if(Utility.isInternetExist()) {
             //Changing first letter to caps
             displayName = UtilString.changeFirstToCaps(displayName);
@@ -390,6 +390,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 isValid = ParseCloud.callFunction("genCode2", param);
                 success = true;
             } catch (ParseException e) {
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;
@@ -408,7 +409,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     SmsListener.unRegister();
                     String toastMsg = "Invalid Number";
                     String errorMsg = "Please enter a valid mobile number.";
-                    Utility.toast(toastMsg);
+                    Utility.toast(toastMsg, true);
                     //show error and hide timer as sms was not sent successfully
                     PhoneSignUpVerfication.showError(errorMsg, true);
 
@@ -426,7 +427,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     errorMsg = "Unable to establish connection. Please try again";
                 }
 
-                Utility.toast(toastMsg);
+                Utility.toast(toastMsg, true);
                 //show error and hide timer as sms was not sent successfully
                 PhoneSignUpVerfication.showError(errorMsg, true);
                 PhoneSignUpVerfication.showResendAction();

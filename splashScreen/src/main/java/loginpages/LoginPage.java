@@ -14,8 +14,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.parse.FunctionCallback;
-import com.parse.LogInCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -87,9 +85,9 @@ public class LoginPage extends MyActionBarActivity {
 
 
         if (UtilString.isBlank(email)) {
-          Utility.toast("Enter your Email-id");
+          Utility.toast("Enter your Email-id", true);
         } else if (UtilString.isBlank(passwd)) {
-          Utility.toast("Enter your Password");
+          Utility.toast("Enter your Password", true);
         } else if(Utility.isInternetExist()){
           /*
            * Hiding the keyboard from screen
@@ -161,6 +159,7 @@ public class LoginPage extends MyActionBarActivity {
           ParseUser user = ParseUser.become(sessionToken);
           if (user != null) {
             taskSuccess = true;
+            Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
             Utility.updateCurrentTimeInBackground();
 
             SessionManager session = new SessionManager(Application.getAppContext());
@@ -178,6 +177,8 @@ public class LoginPage extends MyActionBarActivity {
         }
       }
       catch (ParseException e){
+        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+
         Log.d(LOGTAG, "verifyCode/becomeUser ParseException, error-code=" + e.getCode());
         if(e.getCode() == ParseException.CONNECTION_FAILED){
           networkError = true;
@@ -204,13 +205,13 @@ public class LoginPage extends MyActionBarActivity {
         progressLayout.setVisibility(View.GONE);
 
         if(networkError) {
-          Utility.toast("Connection failure");
+          Utility.toast("Connection failure", true);
         }
         else if(userDoesNotExistsError){
-          Utility.toast("Wrong email or password. Check again.");
+          Utility.toast("Wrong email or password. Check again.", true);
         }
         else{
-          Utility.toast("Log in failed.... Please try again");
+          Utility.toast("Log in failed.... Please try again", true);
         }
       }
     }

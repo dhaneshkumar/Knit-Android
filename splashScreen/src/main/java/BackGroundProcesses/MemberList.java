@@ -216,6 +216,10 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
 
     public static int getMemberCount(String groupCode) throws ParseException {
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            return 0;
+        }
 
         ParseQuery<ParseObject> query123 = ParseQuery.getQuery(Constants.CODE_GROUP);
         query123.fromLocalDatastore();
@@ -230,7 +234,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
             if(l != null && l.size() > 0)
             {
-                Log.d("MEMBER", "query count " + l.size() + " classcount=" + ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS).size());
+                Log.d("MEMBER", "query count " + l.size() + " classcount=" + currentParseUser.getList(Constants.CREATED_GROUPS).size());
                 Log.d("MEMBER", l.get(0).getString("code") + ", member count="+l.get(0).getInt("count"));
                 return l.get(0).getInt("count");
             }
@@ -276,7 +280,12 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
             public void run(){
                 //updating all classroom's member entries
 
-                List<List<String>> createdGroups = ParseUser.getCurrentUser().getList(Constants.CREATED_GROUPS);
+                ParseUser currentParseUser = ParseUser.getCurrentUser();
+                if(currentParseUser == null){
+                    return;
+                }
+
+                List<List<String>> createdGroups = currentParseUser.getList(Constants.CREATED_GROUPS);
                 if(createdGroups != null )
                 {
                     int classCount = createdGroups.size();

@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
+import utility.Utility;
 
 /**
  * Created by ashish on 4/6/15.
@@ -20,13 +21,19 @@ import trumplabs.schoolapp.Constants;
 public class InviteTasks {
     static final String LOGTAG = "DEBUG_INVITE_TASKS";
     public static void sendInvitePhonebook(int inviteType, String inviteMode, String classCode){
+
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            return;
+        }
+
         //Log.d(LOGTAG, inviteType + " " + inviteMode + " " + classCode);
         ParseQuery query = ParseQuery.getQuery(Constants.INVITATION);
         query.fromLocalDatastore();
         query.whereEqualTo(Constants.PENDING, true);
         query.whereEqualTo(Constants.TYPE, inviteType);
         query.whereEqualTo(Constants.MODE, inviteMode);
-        query.whereEqualTo(Constants.USER_ID, ParseUser.getCurrentUser().getUsername());
+        query.whereEqualTo(Constants.USER_ID, currentParseUser.getUsername());
 
         if(inviteType == Constants.INVITATION_T2P) {
             query.whereEqualTo(Constants.CLASS_CODE, classCode);

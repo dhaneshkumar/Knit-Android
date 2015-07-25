@@ -59,7 +59,9 @@ public class FeedBackClass extends DialogFragment {
                     if (e == null) {
                         Utility.toast("Thanks for the feedback! :)");
                     } else {
-                        Utility.toast("Oops, could not submit your feedback !");
+                        if(!Utility.LogoutUtility.checkAndHandleInvalidSession(e)) {
+                            Utility.toast("Oops, could not submit your feedback !");
+                        }
                         e.printStackTrace();
                     }
                 }

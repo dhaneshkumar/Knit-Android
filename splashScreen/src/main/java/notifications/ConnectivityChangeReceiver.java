@@ -35,10 +35,12 @@ public class ConnectivityChangeReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         Log.d(LOGTAG, "onReceive() : entered");
 
-        if(ParseUser.getCurrentUser() == null)
+        ParseUser currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
             return;
+        }
 
-        String role = ParseUser.getCurrentUser().getString("role");
+        String role = currentParseUser.getString("role");
         if(role == null)
             return;
 
