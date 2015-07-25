@@ -108,4 +108,15 @@ public class TestingUtililty {
         }
         ParseUser.logOut();
     }
+
+    //get caller class and method
+    static String getCaller() {
+        int INDEX = 4;
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        if (stackTraceElements.length > INDEX) {
+            return stackTraceElements[INDEX].getClassName() + ":" + stackTraceElements[INDEX].getMethodName();
+        }
+
+        return "NONE";
+    }
 }

@@ -7,6 +7,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.FileNotFoundException;
@@ -91,15 +92,15 @@ public class Queries2 {
             ParseObject.pinAll(codegroupEntries);
             final SessionManager sm = new SessionManager(Application.getAppContext());
             sm.setCodegroupLocalState(1, userId); //set the flag locally that outbox data is valid
-            Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "Pinned all. State changed to 1");
+            Log.d("D_FETCH_CLASS_DETAILS", "Pinned all. State changed to 1");
 
             //Fetch subscriber list once and for all in the same thread user for fetching all class details
-            Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "fetching subscriber list of all created classes once");
+            Log.d("D_FETCH_CLASS_DETAILS", "fetching subscriber list of all created classes once");
             UpdateAllClassSubscribers.updateMembers();
         }
         catch (ParseException e){
             e.printStackTrace();
-            Log.d("DEBUG_QUERIES_FETCH_ALL_CLASS_DETAILS", "Failed with exception");
+            Log.d("D_FETCH_CLASS_DETAILS", "Failed with exception");
         }
     }
 }

@@ -38,7 +38,7 @@ public class OutboxMsgFetch{
         //Delete local outbox messages for current user. Query "SentMessages"
         ParseQuery deleteQuery = new ParseQuery(Constants.SENT_MESSAGES_TABLE);
         deleteQuery.fromLocalDatastore();
-        deleteQuery.whereMatches("userId", userId);
+        deleteQuery.whereMatches(Constants.USER_ID, userId);
         try{
             List<ParseObject> msgsToUnpin = deleteQuery.find();
             ParseObject.unpinAll(msgsToUnpin);

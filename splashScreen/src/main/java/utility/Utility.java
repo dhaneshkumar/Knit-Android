@@ -550,7 +550,7 @@ public class Utility extends MyActionBarActivity {
         */
         public static boolean checkAndHandleInvalidSession(ParseException e){
             if(e != null && e.getCode() == ParseException.INVALID_SESSION_TOKEN){
-                Log.d("__A", "checkAndHandleInvalidSession : calling static logout()");
+                Log.d("__A", "checkAndHandleInvalidSession : calling static logout() : my caller=" + TestingUtililty.getCaller());
                 logout();
                 return true;
             }
@@ -560,7 +560,7 @@ public class Utility extends MyActionBarActivity {
         //can call from non-UI thread
         //default called from everywhere(along with checkAndHandleInvalidSession)
         public static void logout() {
-            Log.d("__A", "static logout called");
+            Log.d("__A", "static logout called : my caller=" + TestingUtililty.getCaller());
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
@@ -610,7 +610,7 @@ public class Utility extends MyActionBarActivity {
             Context _context = Application.getAppContext();
             // After logout redirect user to Loing Activity
 
-            Application.lastTimeJoinedSync = null;
+            Application.joinedSyncOnce = false;
             Application.lastTimeInboxSync = null;
             Application.lastTimeOutboxSync = null;
 
@@ -621,6 +621,12 @@ public class Utility extends MyActionBarActivity {
             SessionManager session = new SessionManager(_context);
             session.reSetAppOpeningCount();
             session.reSetSignUpAccount();
+
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+            if(currentParseUser != null){
+                session.setCodegroupLocalState(0, currentParseUser.getUsername());
+                session.setOutboxLocalState(0, currentParseUser.getUsername());
+            }
         }
     }
 }

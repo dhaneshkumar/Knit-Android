@@ -33,10 +33,7 @@ public class Application extends android.app.Application {
         It is required to make sure that 1) and 3) occur only if time gap is Config.inboxOutboxUpdateGap or more
 
         initialized to null*/
-     public static Date lastTimeJoinedSync = null;
-        /*
-            Similar to above but for updating joined class details such as name and profile pic of teachers
-         */
+
     public static Handler applicationHandler;
 
   public Application() {

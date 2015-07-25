@@ -19,9 +19,6 @@ import utility.Utility;
 public class JoinedClassRooms{
 
   public static void doInBackgroundCore(){
-    //set lastTimeInboxSync
-    Application.lastTimeJoinedSync = Calendar.getInstance().getTime();
-
     Log.d("DEBUG_JOINED", "fetching name/pic updates and setting lastTimeJoinedSync");
 
     //validating current user
