@@ -25,7 +25,6 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FontsOverride;
 import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
-import utility.Utility;
 
 /**
  * Used to display splash screen on opening the app. It also start a background process to update
@@ -85,6 +84,8 @@ public class SplashScreen extends MyActionBarActivity {
     if(ParseUser.getCurrentUser() != null){ //only if logged in
         session.setAppOpeningCount();
     }
+
+       // FacebookSdk.sdkInitialize(getApplicationContext());
 
     /*
      * Setting parse analytics

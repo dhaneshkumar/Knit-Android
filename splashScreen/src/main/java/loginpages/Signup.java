@@ -16,12 +16,12 @@ import tutorial.TeacherTutorial;
  * Created by Dhanesh on 1/12/2015.
  */
 public class Signup extends MyActionBarActivity {
-    /*int backCount = 0;
-    LinearLayout progressLayout;
-    LinearLayout loginlayout;*/
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
         setContentView(R.layout.signup);
         getSupportActionBar().hide();
 
@@ -37,6 +37,7 @@ public class Signup extends MyActionBarActivity {
         TextView ptext = (TextView) findViewById(R.id.ptext);
         TextView stext = (TextView) findViewById(R.id.stext);
         TextView member = (TextView) findViewById(R.id.member);
+
 
         //Setting the font
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
@@ -89,7 +90,11 @@ public class Signup extends MyActionBarActivity {
             }
         });
 
+
+
+
     }
+
 
 
 

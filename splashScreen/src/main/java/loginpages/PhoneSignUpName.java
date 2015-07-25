@@ -16,6 +16,15 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.facebook.AccessToken;
+import com.facebook.CallbackManager;
+import com.facebook.FacebookCallback;
+import com.facebook.FacebookException;
+import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.login.LoginResult;
+import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -24,7 +33,12 @@ import com.google.android.gms.location.LocationServices;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,14 +64,23 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
     static GoogleApiClient mGoogleApiClient = null;
     static Location mLastLocation = null;
+    CallbackManager callbackManager;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //intializing facebook sdk
+        FacebookSdk.sdkInitialize(getApplicationContext());
+        callbackManager = CallbackManager.Factory.create();
+
         setContentView(R.layout.signup_name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         displayNameET = (EditText) findViewById(R.id.displaynameid);
         phoneNumberET = (EditText) findViewById(R.id.phoneid);
+        LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        loginButton.setReadPermissions(Arrays.asList("email"));
 
         if(getIntent() != null && getIntent().getExtras() != null) {
             resetFields();
@@ -71,6 +94,90 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         }
 
         buildGoogleApiClient();
+
+
+        // Callback registration
+        loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
+            @Override
+            public void onSuccess(LoginResult loginResult) {
+                Log.d("FB_LOGin", "logged in");
+
+                if(AccessToken.getCurrentAccessToken() != null){
+               //     RequestData();
+
+
+                }
+            }
+
+            @Override
+            public void onCancel() {
+                Log.d("FB_LOGin", "logged cancelled");
+            }
+
+            @Override
+            public void onError(FacebookException exception) {
+                Log.d("FB_LOGin", "logged in");
+            }
+        });
+    }
+
+
+    public void RequestData(){
+
+        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
+            @Override
+            public void onCompleted(JSONObject object, GraphResponse response) {
+
+                JSONObject json = response.getJSONObject();
+                try {
+                    if (json != null) {
+
+                        Log.d("FB_SIGNUP", "name : " + json.getString("name"));
+                        //    Log.d("FB_SIGNUP", "email : " + json.getString("email"));
+                        Log.d("FB_SIGNUP", "id : " + json.getString("id"));
+                        Log.d("FB_SIGNUP", "Link : " + json.getString("link"));
+                        Log.d("FB_SIGNUP", "age_range : " + json.getString("age_range"));
+                        Log.d("FB_SIGNUP", "gender : " + json.getString("gender"));
+                        Log.d("FB_SIGNUP", "locale : " + json.getString("locale"));
+                        Log.d("FB_SIGNUP", "verified : " + json.getString("verified"));
+                        Log.d("FB_SIGNUP", "access token : " + AccessToken.getCurrentAccessToken());
+
+                        // set profile pic
+                        //    http://stackoverflow.com/questions/19855072/android-get-facebook-profile-picture
+
+
+                        String token = AccessToken.getCurrentAccessToken().getToken();
+
+                        if(token != null && !UtilString.isBlank(role))
+                        {
+                            HashMap<String, Object> param = new HashMap<String, Object>();
+                            param.put("role", role);
+                            param.put("token", token);
+
+                            String emailId = Utility.getAccountEmail();
+                            Log.d("__Y", "got email from account " + emailId);
+                            if(emailId != null){
+                                param.put("emailId", emailId);
+                            }
+
+                            //appInstallation params - devicetype, installationId
+                            param.put("deviceType", "android");
+                            param.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+
+                        }
+
+
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        Bundle parameters = new Bundle();
+        parameters.putString("fields", "id,name,link,email,picture, gender, age_range, locale, verified, location");
+        request.setParameters(parameters);
+        request.executeAsync();
     }
 
     void resetFields(){
@@ -78,6 +185,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         phoneNumber = "";
     }
 
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        callbackManager.onActivityResult(requestCode, resultCode, data);
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
