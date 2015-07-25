@@ -344,7 +344,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
 
                 if(isLogin){
-                    PostLoginTask postLoginTask = new PostLoginTask(user);
+                    PostLoginTask postLoginTask = new PostLoginTask(user, pdialog);
                     postLoginTask.execute();
                 }
                 else {
@@ -352,7 +352,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                     session.setSignUpAccount();
 
                     // The current user is now set to user. Do registration in default class
-                    PostSignUpTask postSignUpTask = new PostSignUpTask(user);
+                    PostSignUpTask postSignUpTask = new PostSignUpTask(user, pdialog);
                     postSignUpTask.execute();
                 }
             }
@@ -403,9 +403,11 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
     static class PostLoginTask extends AsyncTaskProxy<Void, Void, Void> {
         ParseUser user;
+        ProgressDialog progressDialog;
 
-        public PostLoginTask(ParseUser u) {
-            user = u;
+        public PostLoginTask(ParseUser user, ProgressDialog progressDialog) {
+            this.user = user;
+            this.progressDialog = progressDialog;
         }
 
         protected Void doInBackground(Void... params) {
@@ -417,8 +419,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if (pdialog != null) {
-                pdialog.dismiss();
+            if (progressDialog != null) {
+                progressDialog.dismiss();
             }
 
             //Switching to MainActivity
@@ -435,9 +437,13 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
     static class PostSignUpTask extends AsyncTaskProxy<Void, Void, Void>
     {
         ParseUser currentParseUser;
-        public PostSignUpTask(ParseUser u) {
+        ProgressDialog progressDialog;
+
+        public PostSignUpTask(ParseUser u, ProgressDialog progressDialog) {
             currentParseUser = u;
+            this.progressDialog = progressDialog;
         }
+
         @Override
         protected Void doInBackground(Void... params) {
 
@@ -453,8 +459,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            if(pdialog != null){
-                pdialog.dismiss();
+            if(progressDialog != null){
+                progressDialog.dismiss();
             }
             if(currentParseUser == null) return; //won't happen as called after successful login
 

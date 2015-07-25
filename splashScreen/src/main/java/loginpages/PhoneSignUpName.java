@@ -3,6 +3,7 @@ package loginpages;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -34,6 +35,7 @@ import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
+import com.parse.ParseUser;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -46,7 +48,10 @@ import additionals.SmsListener;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
 import utility.Config;
+import utility.SessionManager;
 import utility.Utility;
 
 /**
@@ -54,6 +59,8 @@ import utility.Utility;
  */
 public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    static Context activityContext;
+
     EditText displayNameET;
     EditText phoneNumberET;
 
@@ -69,6 +76,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        activityContext = this;
 
         //intializing facebook sdk
         FacebookSdk.sdkInitialize(getApplicationContext());
@@ -100,23 +109,37 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("FB_LOGin", "logged in");
+                Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
 
                 if(AccessToken.getCurrentAccessToken() != null){
-               //     RequestData();
+                    //show progress bar
+                    pdialog = new ProgressDialog(activityContext);
+                    pdialog.setCancelable(true);
+                    pdialog.setCanceledOnTouchOutside(false);
+                    pdialog.setMessage("Please Wait...");
+                    pdialog.show();
 
 
+                    String token = AccessToken.getCurrentAccessToken().getToken();
+                    Log.d("D_FB_VERIF", "access token = " + token);
+
+                    FBVerifyTask fbVerifyTask = new FBVerifyTask(token, false); //isLogin = false
+                    fbVerifyTask.execute();
+                }
+                else{
+                    Log.d("D_FB_VERIF", "access token null");
                 }
             }
 
             @Override
             public void onCancel() {
-                Log.d("FB_LOGin", "logged cancelled");
+                Log.d("D_FB_VERIF", "logged cancelled");
             }
 
             @Override
             public void onError(FacebookException exception) {
-                Log.d("FB_LOGin", "logged in");
+                exception.printStackTrace();
+                Log.d("D_FB_VERIF", "FacebookException");
             }
         });
     }
@@ -434,6 +457,140 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             }
         }
     }
+
+    class FBVerifyTask extends AsyncTask<Void, Void, Void> {
+        Boolean networkError = false; //parse exception
+        Boolean unexpectedError = false;
+
+        Boolean taskSuccess = false;
+
+        String token;
+        boolean isLogin;
+
+        public FBVerifyTask(String token, boolean isLogin){//code to verify. Number will be taken from relevant activity
+            this.token = token;
+            this.isLogin = isLogin;
+        }
+
+        @Override
+        protected Void doInBackground(Void... par) {
+            Log.d("D_FB_VERIF", "FBVerifyTask : doInBackground");
+
+            //setting parameters
+            HashMap<String, Object> params = new HashMap<String, Object>();
+
+            if(!isLogin) {
+                params.put("token", token);
+                params.put("role", PhoneSignUpName.role);
+                String emailId = Utility.getAccountEmail();
+                if(emailId != null){
+                    params.put("email", emailId);
+                }
+            }
+            else{
+                params.put("number", PhoneLoginPage.phoneNumber);
+            }
+
+            //appInstallation params - devicetype, installationId
+            params.put("deviceType", "android");
+            params.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+
+            //Sessions save params - os, model, location(lat, long)
+            PhoneSignUpVerfication.fillDetailsForSession(isLogin, params);
+
+            try {
+                Log.d("D_FB_VERIF", "appEnter : calling");
+                HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
+                Boolean success = (Boolean) result.get("flag");
+                String sessionToken = (String) result.get("sessionToken");
+                if(success != null && success && sessionToken != null){
+                    try{
+                        Log.d("D_FB_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
+                        ParseUser user = ParseUser.become(sessionToken);
+                        if (user != null) {
+                            Log.d("__A", "setting ignoreInvalidSessionCheck to false");
+                            Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
+
+                            Log.d("D_FB_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
+                            taskSuccess = true;
+                            /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
+                        } else {
+                            // The token could not be validated.
+                            Log.d("D_FB_VERIF", "parseuser become - returned user null");
+                            unexpectedError = true;
+                        }
+                    }
+                    catch (ParseException e){
+                        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                        Log.d("D_FB_VERIF", "parseuser become - parse exception");
+                        if(e.getCode() == ParseException.CONNECTION_FAILED){
+                            networkError = true;
+                        }
+                        else {
+                            unexpectedError = true;
+                        }
+                    }
+                }
+                else{
+                    Log.d("D_FB_VERIF", "verifyCode error");
+                    unexpectedError = true;
+                }
+            } catch (ParseException e) {
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                Log.d("D_FB_VERIF", "network error with message " + e.getMessage() + " code "  + e.getCode());
+                if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    networkError = true;
+                }
+                else {
+                    unexpectedError = true;
+                }
+                e.printStackTrace();
+            }
+            Log.d("D_FB_VERIF", "background : returning null");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
+
+            if(taskSuccess){
+                SessionManager session = new SessionManager(Application.getAppContext());
+                ParseUser user = ParseUser.getCurrentUser();
+                //If user has joined any class then locally saving it in session manager
+                if(user != null && user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
+                    session.setHasUserJoinedClass();
+                }
+
+                if(isLogin){
+                    PhoneSignUpVerfication.PostLoginTask postLoginTask = new PhoneSignUpVerfication.PostLoginTask(user, pdialog);
+                    postLoginTask.execute();
+                }
+                else {
+                    session.setSignUpAccount();
+
+                    // The current user is now set to user. Do registration in default class
+                    PhoneSignUpVerfication.PostSignUpTask postSignUpTask = new PhoneSignUpVerfication.PostSignUpTask(user, pdialog);
+                    postSignUpTask.execute();
+                }
+            }
+
+            if(!taskSuccess){
+                if(pdialog != null){
+                    pdialog.dismiss();
+                }
+                //hide progress bar
+            }
+
+            if(networkError){
+                Utility.toast("Connection failure", true);
+            }
+            else if(unexpectedError){
+                Utility.toast("Oops ! some error occured.", true);
+            }
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
