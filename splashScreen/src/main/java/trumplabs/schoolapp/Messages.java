@@ -94,6 +94,7 @@ public class Messages extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
         getactivity = getActivity();
 
         mPullToRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_layout);
@@ -250,8 +251,6 @@ public class Messages extends Fragment {
         // Collections.reverse(msgs);
         myadapter = new RecycleAdapter();
         listv.setAdapter(myadapter);
-
-        super.onActivityCreated(savedInstanceState);
 
     /*
      * On scrolling down the list view display extra messages.

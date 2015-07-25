@@ -92,6 +92,7 @@ public class Outbox extends Fragment {
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
         //intializing variables
         outboxListv = (RecyclerView) getActivity().findViewById(R.id.outboxlistview);
@@ -127,10 +128,6 @@ public class Outbox extends Fragment {
         outboxListv.setLayoutManager(mLayoutManager);
         myadapter = new RecycleAdapter();
         outboxListv.setAdapter(myadapter);
-
-
-        super.onActivityCreated(savedInstanceState);
-
 
         emptyBackground.setOnClickListener(new View.OnClickListener() {
             @Override
