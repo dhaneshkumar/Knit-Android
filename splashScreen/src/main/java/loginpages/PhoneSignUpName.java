@@ -27,10 +27,14 @@ import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.plus.Plus;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -73,6 +77,16 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     static Location mLastLocation = null;
     CallbackManager callbackManager;
 
+    /* Request code used to invoke sign in user interactions. */
+    private static final int RC_SIGN_IN = 0;
+
+    /* Is there a ConnectionResult resolution in progress? */
+    private boolean mIsResolving = false;
+
+    /* Should we automatically resolve ConnectionResults when possible? */
+    private boolean mShouldResolve = false;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -89,6 +103,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         displayNameET = (EditText) findViewById(R.id.displaynameid);
         phoneNumberET = (EditText) findViewById(R.id.phoneid);
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
+        SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+
         loginButton.setReadPermissions(Arrays.asList("email"));
 
         if(getIntent() != null && getIntent().getExtras() != null) {
@@ -103,7 +119,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         }
 
         buildGoogleApiClient();
-
 
         // Callback registration
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -142,6 +157,15 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 Log.d("D_FB_VERIF", "FacebookException");
             }
         });
+
+
+        signInButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
     }
 
 
@@ -166,29 +190,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                         Log.d("FB_SIGNUP", "access token : " + AccessToken.getCurrentAccessToken());
 
                         // set profile pic
-                        //    http://stackoverflow.com/questions/19855072/android-get-facebook-profile-picture
-
+                        //   http://stackoverflow.com/questions/19855072/android-get-facebook-profile-picture
 
                         String token = AccessToken.getCurrentAccessToken().getToken();
-
-                        if(token != null && !UtilString.isBlank(role))
-                        {
-                            HashMap<String, Object> param = new HashMap<String, Object>();
-                            param.put("role", role);
-                            param.put("token", token);
-
-                            String emailId = Utility.getAccountEmail();
-                            Log.d("__Y", "got email from account " + emailId);
-                            if(emailId != null){
-                                param.put("emailId", emailId);
-                            }
-
-                            //appInstallation params - devicetype, installationId
-                            param.put("deviceType", "android");
-                            param.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
-
-                        }
-
 
                     }
                 } catch (JSONException e) {
@@ -212,8 +216,20 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        callbackManager.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == RC_SIGN_IN) {
+            // If the error resolution was not successful we should not resolve further.
+            if (resultCode != RESULT_OK) {
+                mShouldResolve = false;
+            }
+
+            mIsResolving = false;
+            mGoogleApiClient.connect();
+        }
+        else
+            callbackManager.onActivityResult(requestCode, resultCode, data);
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -345,6 +361,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
+                .addApi(Plus.API)
+                .addScope(new Scope(Scopes.PROFILE))
                 .build();
     }
 
