@@ -301,14 +301,15 @@ public class ComposeMessageHelper {
                 List<ParseObject> failedMessages = new ArrayList<>();
 
                 for(int i=0; i<createdAtList.size(); i++){
-                    Date createdAt = createdAtList.get(i);
                     String objectId = objectIdList.get(i);
-
                     ParseObject msg = batch.get(i);
 
-                    if(createdAt == null){
+                    if(UtilString.isBlank(objectId)){
                         failedMessages.add(msg);
+                        continue;
                     }
+
+                    Date createdAt = createdAtList.get(i);
 
                     //update msg and pin
                     msg.put("objectId", objectId);
@@ -602,14 +603,15 @@ public class ComposeMessageHelper {
                 List<ParseObject> failedMessages = new ArrayList<>();
 
                 for(int i=0; i<createdAtList.size(); i++){
-                    Date createdAt = createdAtList.get(i);
                     String objectId = objectIdList.get(i);
-
                     ParseObject msg = batch.get(i);
 
-                    if(createdAt == null){
+                    if(UtilString.isBlank(objectId)){
                         failedMessages.add(msg);
+                        continue;
                     }
+
+                    Date createdAt = createdAtList.get(i);
 
                     //update msg and pin
                     msg.put("objectId", objectId);
