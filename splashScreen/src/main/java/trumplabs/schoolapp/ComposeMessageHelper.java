@@ -15,6 +15,7 @@ import com.parse.SaveCallback;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -224,7 +225,7 @@ public class ComposeMessageHelper {
                     }
 
                     //Notify created classrooms adapter
-                    Classrooms.refreshCreatedClassrooms(msg.getString(Constants.GroupDetails.CODE));
+                    Classrooms.refreshCreatedClassrooms(Arrays.asList(new String[]{msg.getString(Constants.GroupDetails.CODE)}));
 
                     //unpin the message,
                     msg.unpin();
@@ -340,8 +341,13 @@ public class ComposeMessageHelper {
                         err.printStackTrace();
                     }
 
+                    List<String> deletedClasses = new ArrayList<>();
+                    for(ParseObject failedMsg : failedMessages){
+                        deletedClasses.add(failedMsg.getString(Constants.GroupDetails.CODE));
+                    }
+
                     //Notify created classrooms adapter
-                    //TODO Classrooms.refreshCreatedClassrooms(msg.getString(Constants.GroupDetails.CODE));
+                    Classrooms.refreshCreatedClassrooms(deletedClasses);
 
                     //unpin the message,
                     ParseObject.unpinAll(failedMessages);
@@ -493,7 +499,7 @@ public class ComposeMessageHelper {
                     }
 
                     //Notify created classrooms adapter
-                    Classrooms.refreshCreatedClassrooms(msg.getString(Constants.GroupDetails.CODE));
+                    Classrooms.refreshCreatedClassrooms(Arrays.asList(new String[]{msg.getString(Constants.GroupDetails.CODE)}));
 
                     //unpin the message,
                     msg.unpin();
@@ -643,8 +649,13 @@ public class ComposeMessageHelper {
                         err.printStackTrace();
                     }
 
+                    List<String> deletedClasses = new ArrayList<>();
+                    for(ParseObject failedMsg : failedMessages){
+                        deletedClasses.add(failedMsg.getString(Constants.GroupDetails.CODE));
+                    }
+
                     //Notify created classrooms adapter
-                    //TODO Classrooms.refreshCreatedClassrooms(msg.getString(Constants.GroupDetails.CODE));
+                    Classrooms.refreshCreatedClassrooms(deletedClasses);
 
                     //unpin the message,
                     ParseObject.unpinAll(failedMessages);

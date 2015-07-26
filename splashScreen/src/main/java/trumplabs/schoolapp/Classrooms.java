@@ -28,6 +28,7 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import BackGroundProcesses.SendPendingMessages;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinedClassInfo;
 import library.ExpandableListView;
@@ -404,11 +405,13 @@ public class Classrooms extends Fragment  {
     }
 
     //can be called from anywhere
-    public static void refreshCreatedClassrooms(final String deletedClassCode){
+    public static void refreshCreatedClassrooms(final List<String> deletedCodes){
         if(getactivity != null && createdClassAdapter != null && MainActivity.floatOptionsAdapter != null){
             getactivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms called with = " + deletedCodes);
+
                     ParseUser currentUser = ParseUser.getCurrentUser();
                     if (currentUser == null) {
                         return;
@@ -420,20 +423,20 @@ public class Classrooms extends Fragment  {
                     createdClassAdapter.notifyDataSetChanged();
 
                     //remove this class from MainActivity's floating classList
-                    if (MainActivity.classList != null && deletedClassCode != null){
-                        int removeIndex = -1;
+                    if (MainActivity.classList != null && deletedCodes != null){
                         for(int i=0; i<MainActivity.classList.size(); i++){
                             List<String> cls = MainActivity.classList.get(i);
-                            if(cls != null && cls.size() > 1 && cls.get(0).equalsIgnoreCase(deletedClassCode)){
-                                removeIndex = i;
-                                break;
+                            for(int j=0; j<deletedCodes.size(); j++) {
+                                String deletedClassCode = deletedCodes.get(j);
+
+                                if (cls != null && cls.size() > 1 && cls.get(0).equalsIgnoreCase(deletedClassCode)) {
+                                    MainActivity.classList.remove(i);
+                                    break;
+                                }
                             }
                         }
 
-                        if(removeIndex >= 0 && removeIndex < MainActivity.classList.size()){
-                            MainActivity.classList.remove(removeIndex);
-                            MainActivity.floatOptionsAdapter.notifyDataSetChanged();
-                        }
+                        MainActivity.floatOptionsAdapter.notifyDataSetChanged();
                     }
                 }
             });
