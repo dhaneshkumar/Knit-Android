@@ -353,10 +353,10 @@ public class ComposeMessageHelper {
                     ParseObject.unpinAll(failedMessages);
                     //delete the message from lists
                     if (SendMessage.groupDetails != null) {
-                        SendMessage.groupDetails.remove(failedMessages);
+                        SendMessage.groupDetails.removeAll(failedMessages);
                     }
                     if (Outbox.groupDetails != null) {
-                        Outbox.groupDetails.remove(failedMessages);
+                        Outbox.groupDetails.removeAll(failedMessages);
                     }
                 }
 
@@ -661,10 +661,10 @@ public class ComposeMessageHelper {
                     ParseObject.unpinAll(failedMessages);
                     //delete the message from lists
                     if (SendMessage.groupDetails != null) {
-                        SendMessage.groupDetails.remove(failedMessages);
+                        SendMessage.groupDetails.removeAll(failedMessages);
                     }
                     if (Outbox.groupDetails != null) {
-                        Outbox.groupDetails.remove(failedMessages);
+                        Outbox.groupDetails.removeAll(failedMessages);
                     }
                 }
 

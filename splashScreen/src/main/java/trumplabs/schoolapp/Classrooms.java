@@ -424,18 +424,22 @@ public class Classrooms extends Fragment  {
 
                     //remove this class from MainActivity's floating classList
                     if (MainActivity.classList != null && deletedCodes != null){
-                        for(int i=0; i<MainActivity.classList.size(); i++){
-                            List<String> cls = MainActivity.classList.get(i);
-                            for(int j=0; j<deletedCodes.size(); j++) {
-                                String deletedClassCode = deletedCodes.get(j);
 
+                        List<List<String>> tempClassList = new ArrayList<>(MainActivity.classList); //new list, iterate original and remove elements from here
+
+                        Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms starting classList is " + tempClassList);
+
+                        for(List<String> cls : MainActivity.classList){
+                            for(String deletedClassCode : deletedCodes) {
                                 if (cls != null && cls.size() > 1 && cls.get(0).equalsIgnoreCase(deletedClassCode)) {
-                                    MainActivity.classList.remove(i);
+                                    tempClassList.remove(cls);
                                     break;
                                 }
                             }
                         }
 
+                        Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms final classList is " + tempClassList);
+                        MainActivity.classList = tempClassList;
                         MainActivity.floatOptionsAdapter.notifyDataSetChanged();
                     }
                 }
