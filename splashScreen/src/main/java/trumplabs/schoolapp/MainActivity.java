@@ -330,7 +330,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     supportInvalidateOptionsMenu();
                     fragmentVisible = arg0;
 
-                    Log.d("__TEMP__", "onPageSelected " + fragmentVisible);
+                    Log.d("__TEMP__", "onPageSelected " + fragmentVisible + "["+Outbox.responseTutorialShown + "," + Messages.responseTutorialShown + "]");
                     if(fragmentVisible == 0 && !Outbox.responseTutorialShown && Outbox.myadapter != null){
                         Outbox.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
                     }

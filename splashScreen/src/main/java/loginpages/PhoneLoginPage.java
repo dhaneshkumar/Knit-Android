@@ -182,7 +182,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     public void onBackPressed() {
         Intent intent = new Intent(getBaseContext(), Signup.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 
