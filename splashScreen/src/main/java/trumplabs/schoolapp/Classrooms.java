@@ -250,6 +250,8 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            Log.d("__C", "CreatedGroups getView " + position + " begin");
+
             View row = convertView;
             if (row == null) {
                 row = layoutinflater.inflate(R.layout.classroom_created_item, parent, false);
@@ -268,6 +270,7 @@ public class Classrooms extends Fragment  {
 
             classname1.setText(classnamestr.toUpperCase());                 //setting class name
 
+            Log.d("__C", "CreatedGroups getView " + position + " end");
             return row;
         }
     }
@@ -317,7 +320,6 @@ public class Classrooms extends Fragment  {
         });
     }
 
-
     class JoinedClassAdapter extends BaseAdapter {
 
         @Override
@@ -359,6 +361,7 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+            Log.d("__J", "JoinedGroups getView " + position + " begin");
             View row = convertView;
             if (row == null) {
                 row = layoutinflater.inflate(R.layout.classrom_joined_item, parent, false);
@@ -367,39 +370,49 @@ public class Classrooms extends Fragment  {
             TextView classcreator = (TextView) row.findViewById(R.id.classcreator);
             TextView classname = (TextView) row.findViewById(R.id.classname);
 
-          /*
-           * Setting class name, code & child name
-           */
+            /*
+            * Setting class name, code & child name
+            */
+            String classCode = joinedGroups.get(position).get(0);
             String Str = joinedGroups.get(position).get(1).toUpperCase();
             classname.setText(Str);
 
-            final List<String> group = new ArrayList<String>();
-            group.add(joinedGroups.get(position).get(0));
-            group.add(Str);
-
             classcreator.setVisibility(View.VISIBLE);
 
-          /*
+            Log.d("__J", "JoinedGroups getView " + position + " mid");
+            /*
            * Setting creator name
            */
-            ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
-            delquery1.fromLocalDatastore();
-            delquery1.whereEqualTo("code", joinedGroups.get(position).get(0));
+            ParseObject codegroup = null;
+            if(Application.globalCodegroupMap != null && Application.globalCodegroupMap.get(classCode) != null){
+                Log.d("__J", "JoinedGroups getView codegroup " + classCode + " found in map");
+                codegroup = Application.globalCodegroupMap.get(classCode);
+            }
+            else {
+                ParseQuery<ParseObject> codegroupQuery = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
+                codegroupQuery.fromLocalDatastore();
+                codegroupQuery.whereEqualTo("code", joinedGroups.get(position).get(0));
 
-            String senderId = null;
-            try {
-                ParseObject obj = delquery1.getFirst();
-                if (obj != null) {
-                    String creatorName = obj.get("Creator").toString();
-
-                    if (!UtilString.isBlank(creatorName)) {
-                        Str = creatorName.trim();
-                        classcreator.setText(Str);
+                try {
+                    codegroup = codegroupQuery.getFirst();
+                    if(codegroup != null && Application.globalCodegroupMap != null){
+                        Application.globalCodegroupMap.put(classCode, codegroup);
+                        Log.d("__J", "JoinedGroups getView codegroup " + classCode + " queried and put in map");
                     }
+                } catch (ParseException e) {
                 }
-            } catch (ParseException e) {
             }
 
+            if(codegroup != null){
+                String creatorName = codegroup.getString("Creator");
+
+                if (!UtilString.isBlank(creatorName)) {
+                    Str = creatorName.trim();
+                    classcreator.setText(Str);
+                }
+            }
+
+            Log.d("__J", "JoinedGroups getView " + position + " end");
             return row;
         }
     }
