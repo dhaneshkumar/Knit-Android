@@ -10,6 +10,7 @@ import android.os.CountDownTimer;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -84,6 +85,20 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
 
 
+        verificationCodeET.setOnKeyListener(new View.OnKeyListener() {
+
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+
+                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
+                        (keyCode == KeyEvent.KEYCODE_ENTER))
+                {
+                    verify();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         String headerText;
         if(isLogin)
             headerText = "+91"+ PhoneLoginPage.phoneNumber ;
@@ -138,21 +153,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.verify:
-                verificationCode = verificationCodeET.getText().toString();
-                if(UtilString.isBlank(verificationCode) || verificationCode.length() != 4){
-                    Utility.toast("Please enter the 4-digit verification code", true);
-                }
-                else if(Utility.isInternetExist()) {
-                    Tools.hideKeyboard(this);
-                    pdialog = new ProgressDialog(activityContext);
-                    pdialog.setCancelable(true);
-                    pdialog.setCanceledOnTouchOutside(false);
-                    pdialog.setMessage("Please Wait...");
-                    pdialog.show();
-
-                    VerifyCodeTask verifyCodeTask = new VerifyCodeTask(verificationCode);
-                    verifyCodeTask.execute();
-                }
+                verify();
                 break;
 
             case android.R.id.home:
@@ -165,6 +166,23 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public void verify(){
+        verificationCode = verificationCodeET.getText().toString();
+        if(UtilString.isBlank(verificationCode) || verificationCode.length() != 4){
+            Utility.toast("Please enter the 4-digit verification code", true);
+        }
+        else if(Utility.isInternetExist()) {
+            Tools.hideKeyboard(this);
+            pdialog = new ProgressDialog(activityContext);
+            pdialog.setCancelable(true);
+            pdialog.setCanceledOnTouchOutside(false);
+            pdialog.setMessage("Please Wait...");
+            pdialog.show();
+
+            VerifyCodeTask verifyCodeTask = new VerifyCodeTask(verificationCode);
+            verifyCodeTask.execute();
+        }
+    }
     /* call from main(GUI) thread */
     public static void smsListenerVerifyTask(String code){
         pdialog = new ProgressDialog(PhoneSignUpVerfication.activityContext);
