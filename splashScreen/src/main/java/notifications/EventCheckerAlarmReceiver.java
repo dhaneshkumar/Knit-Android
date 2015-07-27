@@ -189,15 +189,8 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 continue;
             }
 
-            ParseObject classroom = null;
-            try{
-                classroom = queryInstance.getClassObject(groupCode);
-            }
-            catch (ParseException e){
-                e.printStackTrace();
-                Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() exception");
-                continue; //can't proceed
-            }
+            ParseObject classroom = Queries.getCodegroupObject(groupCode);
+
             if(classroom == null) {
                 Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid  +"classroom is null without exception");
                 continue;
@@ -276,14 +269,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 continue;
             }
 
-            ParseObject classroom = null;
-            try{
-                classroom = queryInstance.getClassObject(groupCode);
-            }
-            catch (ParseException e){
-                e.printStackTrace();
-                continue; //can't proceed
-            }
+            ParseObject classroom = Queries.getCodegroupObject(groupCode);
             if(classroom == null) continue;
 
             Date classCreationTime = classroom.getCreatedAt();

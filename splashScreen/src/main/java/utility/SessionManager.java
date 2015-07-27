@@ -189,40 +189,6 @@ public class SessionManager {
         return now.getTime();
     }
 
-
-    /*
-  * keeping new entry in code map
-  */
-    public String getClassName(String code) {
-        String className = pref.getString(code, null);
-
-        if(!UtilString.isBlank(className)) return className;
-
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.CODE_GROUP);
-        query.fromLocalDatastore();
-        query.whereEqualTo("code", code);
-
-        try {
-            ParseObject obj = query.getFirst();
-
-            if(obj != null)
-            {
-                String name = obj.getString("name");
-                if(!UtilString.isBlank(name))
-                {
-                    editor.putString(code, name);
-                    editor.commit();
-                    return name;
-                }
-            }
-        } catch (com.parse.ParseException e) {
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-
     /******************************************************************************************/
 
 

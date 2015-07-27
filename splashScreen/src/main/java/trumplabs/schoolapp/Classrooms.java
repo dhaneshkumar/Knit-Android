@@ -35,6 +35,7 @@ import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
+import utility.Queries;
 import utility.Utility;
 
 
@@ -383,25 +384,8 @@ public class Classrooms extends Fragment  {
             /*
            * Setting creator name
            */
-            ParseObject codegroup = null;
-            if(Application.globalCodegroupMap != null && Application.globalCodegroupMap.get(classCode) != null){
-                Log.d("__J", "JoinedGroups getView codegroup " + classCode + " found in map");
-                codegroup = Application.globalCodegroupMap.get(classCode);
-            }
-            else {
-                ParseQuery<ParseObject> codegroupQuery = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
-                codegroupQuery.fromLocalDatastore();
-                codegroupQuery.whereEqualTo("code", joinedGroups.get(position).get(0));
 
-                try {
-                    codegroup = codegroupQuery.getFirst();
-                    if(codegroup != null && Application.globalCodegroupMap != null){
-                        Application.globalCodegroupMap.put(classCode, codegroup);
-                        Log.d("__J", "JoinedGroups getView codegroup " + classCode + " queried and put in map");
-                    }
-                } catch (ParseException e) {
-                }
-            }
+            ParseObject codegroup = Queries.getCodegroupObject(classCode);
 
             if(codegroup != null){
                 String creatorName = codegroup.getString("Creator");

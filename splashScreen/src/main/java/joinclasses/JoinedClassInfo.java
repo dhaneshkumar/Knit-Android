@@ -39,6 +39,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
+import utility.Queries;
 import utility.Utility;
 
 /**
@@ -93,31 +94,21 @@ public class JoinedClassInfo extends MyActionBarActivity {
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         seperator = (TextView) findViewById(R.id.seperator);
 
-
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView classDetails = (TextView) findViewById(R.id.classDetails);
-
-        //get details(profile pic, assigned name) from Codegroup and User table
-        ParseQuery<ParseObject> classQuery = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
-        classQuery.fromLocalDatastore();
-        classQuery.whereEqualTo("code", classCode);
-        String teacherSenderId = null;
-//        String teacherSex = "";
 
         Typeface typeFace = Typeface.createFromAsset(getAssets(), "fonts/roboto-condensed.bold.ttf");
         profile.setTypeface(typeFace);
         classDetails.setTypeface(typeFace);
 
-        try{
-            ParseObject codegroup = classQuery.getFirst();
+        String teacherSenderId = null;
+        ParseObject codegroup = Queries.getCodegroupObject(classCode);
+        if(codegroup != null) {
             teacherName = codegroup.getString("Creator");
             teacherSenderId = codegroup.getString("senderId");
-//            teacherSex = codegroup.getString("sex");
         }
-        catch (ParseException e){
-          //  Log.d("DEBUG_JOINED_CLASS_INFO", "local query into Codegroup failed");
+        else{
             teacherName = "";
-            e.printStackTrace();
         }
 
         if(teacherSenderId != null){//set profile pic

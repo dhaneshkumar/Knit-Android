@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MemberDetails;
 import trumplabs.schoolapp.SendMessage;
@@ -52,6 +53,9 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
     public void doInBackgroundCore()
     {
+        //do this first so as to populate Application.globalCodegroupMap
+        Queries.fillCodegroupMap();
+
         Date updatedTime = null;  //last updated time of members
         ParseUser user = ParseUser.getCurrentUser();
 
@@ -221,54 +225,30 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
             return 0;
         }
 
-        ParseQuery<ParseObject> query123 = ParseQuery.getQuery(Constants.CODE_GROUP);
-        query123.fromLocalDatastore();
-        query123.whereEqualTo("code", groupCode);
+        ParseObject codegroup = Queries.getCodegroupObject(groupCode);
 
-        Log.d("MEMBER", "code" + groupCode);
-
-        List<ParseObject> l;
-        ParseObject codeGroup = null;
-        try {
-            l = query123.find();
-
-            if(l != null && l.size() > 0)
-            {
-                Log.d("MEMBER", "query count " + l.size() + " classcount=" + currentParseUser.getList(Constants.CREATED_GROUPS).size());
-                Log.d("MEMBER", l.get(0).getString("code") + ", member count="+l.get(0).getInt("count"));
-                return l.get(0).getInt("count");
-            }
-            else
-                Log.d("MEMBER", "query null");
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-            Log.d("MEMBER", "query failed");
+        if(codegroup != null)
+        {
+            Log.d("MEMBER", codegroup.getString("code") + ", member count="+codegroup.getInt("count"));
+            return codegroup.getInt("count");
         }
+        else
+            Log.d("MEMBER", "query null");
 
         return 0;
     }
 
 
     public static void setMemberCount(String groupCode, int count) throws ParseException {
+        ParseObject codegroup = Queries.getCodegroupObject(groupCode);
 
-        ParseQuery<ParseObject> query111 = ParseQuery.getQuery(Constants.CODE_GROUP);
-        query111.fromLocalDatastore();
-        query111.whereEqualTo("code", groupCode);
-
-        List<ParseObject> codeGroup = null;
-        try {
-            codeGroup = query111.find();
-
-            if(codeGroup != null && codeGroup.size() >0)
-            {
-                codeGroup.get(0).put("count",count);
-                codeGroup.get(0).pin();
-
-                Log.d("MEMBER", count + " -- mm");
-            }
-        } catch (ParseException e1) {
-            e1.printStackTrace();
-            Log.d("MEMBER", "err -- mm");
+        if(codegroup != null) {
+            codegroup.put("count", count);
+            codegroup.pinInBackground();
+            Log.d("MEMBER", "setMemberCount " + groupCode + " : success : count=" + count);
+        }
+        else{
+            Log.d("MEMBER", "setMemberCount " + groupCode + " : error");
         }
     }
 

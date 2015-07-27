@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
+import utility.Queries;
 import utility.Utility;
 
 /**
@@ -25,6 +26,17 @@ public class InviteTasks {
         ParseUser currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
             return;
+        }
+
+        String teacherName = "";
+        if(inviteType == Constants.INVITATION_P2P){
+            ParseObject codegroup = Queries.getCodegroupObject(classCode);
+            if(codegroup != null) {
+                teacherName = codegroup.getString("Creator");
+            }
+            else{
+                return; //in general won't happen
+            }
         }
 
         //Log.d(LOGTAG, inviteType + " " + inviteMode + " " + classCode);
@@ -51,8 +63,6 @@ public class InviteTasks {
             return;
         }
 
-
-
         //Log.d(LOGTAG, "pending for " + inviteType + " " + inviteMode + " " + classCode);
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
@@ -60,20 +70,8 @@ public class InviteTasks {
         parameters.put("type", inviteType);
         parameters.put("mode", inviteMode);
 
-        String teacherName = "";
         if(inviteType == Constants.INVITATION_P2P){
-            ParseQuery<ParseObject> classQuery = new ParseQuery<>(Constants.CODE_GROUP);
-            classQuery.fromLocalDatastore();
-            classQuery.whereEqualTo("code", classCode);
-
-            try{
-                ParseObject codegroup = classQuery.getFirst();
-                teacherName = codegroup.getString("Creator");
-                parameters.put("teacherName", teacherName);
-            }
-            catch (ParseException e){
-                e.printStackTrace();
-            }
+            parameters.put("teacherName", teacherName);
         }
 
         List<ArrayList<String>> data = new ArrayList<>();

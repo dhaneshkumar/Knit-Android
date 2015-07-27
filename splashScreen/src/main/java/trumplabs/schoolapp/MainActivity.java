@@ -61,6 +61,7 @@ import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
 import utility.Config;
+import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -500,26 +501,17 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                             LRU_list.add(obj.getDate("creationTime"));
 
                     }
-
-                } catch (ParseException e) {
+                }
+                catch (ParseException e) {
                     e.printStackTrace();
 
-                    ParseQuery<ParseObject> query1 = ParseQuery.getQuery(Constants.CODE_GROUP);
-                    query1.fromLocalDatastore();
-                    query1.whereEqualTo("code", tempClassList.get(i).get(0));
-                    ParseObject codeGroup = null;
-                    try {
-                        codeGroup = query1.getFirst();
+                    ParseObject codeGroup = Queries.getCodegroupObject(tempClassList.get(i).get(0));
 
-                        if(codeGroup != null)
-                        {
-                            if(codeGroup.getCreatedAt()!= null)
-                                LRU_list.add(codeGroup.getCreatedAt());
-                        }
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
+                    if(codeGroup != null)
+                    {
+                        if(codeGroup.getCreatedAt()!= null)
+                            LRU_list.add(codeGroup.getCreatedAt());
                     }
-
                 }
             }
 

@@ -338,11 +338,16 @@ public class Outbox extends Fragment {
                 //previous version support < in the version from now onwards storing class name also>
                 String groupCode = groupdetails1.getString("code");
 
-                //Retrieving from shared preferences to access fast
-                className = session.getClassName(groupCode);
-                holder.classname.setText(className);
+                ParseObject codegroup = Queries.getCodegroupObject(groupCode);
 
-
+                if(codegroup != null ) {
+                    String name = codegroup.getString("name");
+                    if(!UtilString.isBlank(name))
+                    {
+                        className = name;
+                        holder.classname.setText(className);
+                    }
+                }
             }
 
 
