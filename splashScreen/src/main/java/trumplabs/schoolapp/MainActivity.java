@@ -457,86 +457,107 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
      */
     public static void setClassListOptions()
     {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                setClassListOptionsWork();
+            }
+        };
+
+        new Thread(r).start();
+    }
+
+    //called inside worker thread
+    static void setClassListOptionsWork(){
         ParseUser currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
             return;
         }
 
-        classList = currentParseUser.getList(Constants.CREATED_GROUPS);
+        List<List<String>> tempClassList = currentParseUser.getList(Constants.CREATED_GROUPS);
 
-        if(classList == null)
-            classList = new ArrayList<>();
-        else{
+        if(tempClassList == null)
+            tempClassList = new ArrayList<>();
+        else if(tempClassList.size()>4)
+        {
+            List<List<String>> newList = new ArrayList<>();
 
-            if(classList.size()>4)
+            List<Date> LRU_list = new ArrayList<>();
+
+            for(int i=0; i< tempClassList.size(); i++)
             {
-                List<List<String>> newList = new ArrayList<>();
+                ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+                query.fromLocalDatastore();
+                query.orderByDescending("creationTime");
+                query.whereEqualTo("userId", user.getUsername());
+                query.whereEqualTo("code", tempClassList.get(i).get(0));
 
-                List<Date> LRU_list = new ArrayList<>();
+                try {
+                    ParseObject obj = query.getFirst();
 
-                for(int i=0; i< classList.size(); i++)
-                {
-                    ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-                    query.fromLocalDatastore();
-                    query.orderByDescending("creationTime");
-                    query.whereEqualTo("userId", user.getUsername());
-                    query.whereEqualTo("code", classList.get(i).get(0));
+                    if(obj != null){
+                        if(obj.getDate("creationTime") != null)
+                            LRU_list.add(obj.getDate("creationTime"));
 
+                    }
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+
+                    ParseQuery<ParseObject> query1 = ParseQuery.getQuery(Constants.CODE_GROUP);
+                    query1.fromLocalDatastore();
+                    query1.whereEqualTo("code", tempClassList.get(i).get(0));
+                    ParseObject codeGroup = null;
                     try {
-                        ParseObject obj = query.getFirst();
+                        codeGroup = query1.getFirst();
 
-                        if(obj != null){
-                            if(obj.getDate("creationTime") != null)
-                                LRU_list.add(obj.getDate("creationTime"));
-
+                        if(codeGroup != null)
+                        {
+                            if(codeGroup.getCreatedAt()!= null)
+                                LRU_list.add(codeGroup.getCreatedAt());
                         }
-
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-
-                        ParseQuery<ParseObject> query1 = ParseQuery.getQuery(Constants.CODE_GROUP);
-                        query1.fromLocalDatastore();
-                        query1.whereEqualTo("code", classList.get(i).get(0));
-                        ParseObject codeGroup = null;
-                        try {
-                            codeGroup = query1.getFirst();
-
-                            if(codeGroup != null)
-                            {
-                                if(codeGroup.getCreatedAt()!= null)
-                                    LRU_list.add(codeGroup.getCreatedAt());
-                            }
-                        } catch (ParseException e1) {
-                            e1.printStackTrace();
-                        }
-
+                    } catch (ParseException e1) {
+                        e1.printStackTrace();
                     }
+
                 }
-
-                //making a new copy of lru_list
-                List<Date> lruCopy = new ArrayList<>();
-                lruCopy.addAll(LRU_list);
-
-                Collections.sort(LRU_list, new Comparator<Date>() {
-
-                    @Override
-                    public int compare(Date d1, Date d2) {
-                        return d2.compareTo(d1);
-                    }
-                });
-
-                for(int i=0; LRU_list.size() >=4 && i<4;i++)
-                {
-                    for(int j=0; j<lruCopy.size(); j++)
-                    {
-                        if(LRU_list.get(i).compareTo(lruCopy.get(j)) == 0 ) {
-                            newList.add(0, classList.get(j));
-                        }
-                    }
-                }
-
-                classList = newList;
             }
+
+            //making a new copy of lru_list
+            List<Date> lruCopy = new ArrayList<>();
+            lruCopy.addAll(LRU_list);
+
+            Collections.sort(LRU_list, new Comparator<Date>() {
+
+                @Override
+                public int compare(Date d1, Date d2) {
+                    return d2.compareTo(d1);
+                }
+            });
+
+            for(int i=0; LRU_list.size() >=4 && i<4;i++)
+            {
+                for(int j=0; j<lruCopy.size(); j++)
+                {
+                    if(LRU_list.get(i).compareTo(lruCopy.get(j)) == 0 ) {
+                        newList.add(0, tempClassList.get(j));
+                    }
+                }
+            }
+
+            tempClassList = newList;
+        }
+
+        final List<List<String>> finalClassList = tempClassList;
+
+        if(Application.applicationHandler != null && MainActivity.floatOptionsAdapter != null){
+            Application.applicationHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    MainActivity.classList = finalClassList;
+                    MainActivity.floatOptionsAdapter.notifyDataSetChanged();
+                }
+            });
         }
     }
 
