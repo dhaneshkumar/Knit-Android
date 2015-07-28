@@ -17,6 +17,7 @@ import java.util.List;
 
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
+import utility.Config;
 import utility.PushOpen;
 import utility.SessionManager;
 
@@ -42,7 +43,7 @@ public class NotificationGenerator {
                                             String type, String action, Bundle extras) {
 
         if(type == null || action==null || groupName==null || contentText==null){
-            Log.d(LOGTAG, "Ignoring Notification : some parameters null");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "Ignoring Notification : some parameters null");
             return; //we don't cater to notifications without type or action
         }
 
@@ -73,7 +74,7 @@ public class NotificationGenerator {
         clickIntent.putExtra("action", notEntity.action);
         clickIntent.putExtra("notificationId", notEntity.notificationId);
 
-        Log.d(LOGTAG, "type=" + notEntity.type + ", action=" + notEntity.action + ", id=" + notEntity.notificationId);
+        if(Config.SHOWLOG) Log.d(LOGTAG, "type=" + notEntity.type + ", action=" + notEntity.action + ", id=" + notEntity.notificationId);
         PendingIntent clickPendingIntent = PendingIntent.getActivity( context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         // Note the use of PendingIntent.FLAG_CANCEL_CURRENT. This is important so to overwrite the extras in intent.
@@ -148,7 +149,7 @@ public class NotificationGenerator {
                 mBuilder.addAction(R.drawable.fwd, "OUTBOX", clickPendingIntent);
             }
             else if(notEntity.action.equals(Constants.Actions.INVITE_PARENT_ACTION)){
-                Log.d(LOGTAG, "special invite parent action(locally gen)");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "special invite parent action(locally gen)");
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("grpCode"));
                     clickIntent.putExtra("className", extras.getString("grpName"));
@@ -158,7 +159,7 @@ public class NotificationGenerator {
                 }
             }
             else if(notEntity.action.equals(Constants.Actions.SEND_MESSAGE_ACTION)){
-                Log.d(LOGTAG, "special send message action(locally gen)");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "special send message action(locally gen)");
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("grpCode"));
                     clickIntent.putExtra("className", extras.getString("grpName"));
@@ -171,7 +172,7 @@ public class NotificationGenerator {
                 mBuilder.addAction(R.drawable.fwd, "CREATE", clickPendingIntent);
             }
             else if(notEntity.action.equals(Constants.Actions.LIKE_ACTION) || notEntity.action.equals(Constants.Actions.CONFUSE_ACTION)){
-                Log.d(LOGTAG, "special action=" + notEntity.action);
+                if(Config.SHOWLOG) Log.d(LOGTAG, "special action=" + notEntity.action);
                 if(extras != null){
                     clickIntent.putExtra("id", extras.getString("id"));
                     PendingIntent overrideClickPendingIntent = PendingIntent.getActivity(context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
@@ -180,7 +181,7 @@ public class NotificationGenerator {
                 }
             }
             else if(notEntity.action.equals(Constants.Actions.MEMBER_ACTION)){
-                Log.d(LOGTAG, "special action=" + notEntity.action);
+                if(Config.SHOWLOG) Log.d(LOGTAG, "special action=" + notEntity.action);
                 if(extras != null){
                     clickIntent.putExtra("classCode", extras.getString("classCode"));
                     clickIntent.putExtra("className", notEntity.groupName);
@@ -191,7 +192,7 @@ public class NotificationGenerator {
             }
             else{
                 show = false;//ignore this as this might be a new type of notification - recognized in updated app
-                Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);
+                if(Config.SHOWLOG) Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);
             }
 
             if(show){
@@ -255,7 +256,7 @@ public class NotificationGenerator {
         }
         else{
             //just ignore it ! - as unknown type
-            Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);
+            if(Config.SHOWLOG) Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);
         }
     }
 
@@ -274,10 +275,10 @@ public class NotificationGenerator {
                 notificationManager.cancel(notificationId);
 
             String type = intent.getStringExtra("type");
-            Log.d(LOGTAG, "got " + NOTIFICATION_DELETED_ACTION + " for type " + type + "notid " + notificationId);
+            if(Config.SHOWLOG) Log.d(LOGTAG, "got " + NOTIFICATION_DELETED_ACTION + " for type " + type + "notid " + notificationId);
 
             if(type.equals(Constants.Notifications.NORMAL_NOTIFICATION)){
-                Log.d(LOGTAG, "clearing normal notification list");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "clearing normal notification list");
                 normalNotificationList.clear();
             }
         }

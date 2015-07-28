@@ -39,6 +39,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
+import utility.Config;
 import utility.Queries;
 import utility.Utility;
 
@@ -305,10 +306,10 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 List<List<String>> updatedJoinedGroups = ParseCloud.callFunction("leaveClass3", param);
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 if(updatedJoinedGroups == null || currentUser == null){
-                    Log.d("DEBUG_JOINED_CLASS_INFO", "UnSubscribeTask() updatedJoinedGroups/currentUser null");
+                    if(Config.SHOWLOG) Log.d("DEBUG_JOINED_CLASS_INFO", "UnSubscribeTask() updatedJoinedGroups/currentUser null");
                     return null;
                 }
-                Log.d("DEBUG_JOINED_CLASS_INFO", "UnSubscribeTask() success");
+                if(Config.SHOWLOG) Log.d("DEBUG_JOINED_CLASS_INFO", "UnSubscribeTask() success");
                 currentUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
                 currentUser.pin();
                 success = true;
@@ -358,10 +359,10 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 List<List<String>> updatedJoinedGroups = ParseCloud.callFunction("changeAssociateName3", parameters);
                 ParseUser currentUser = ParseUser.getCurrentUser();
                 if(updatedJoinedGroups == null || currentUser == null){
-                    Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() updatedJoinedGroups/currentUser null");
+                    if(Config.SHOWLOG) Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() updatedJoinedGroups/currentUser null");
                     return null;
                 }
-                Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() success with new asso name "+ newAssignedName);
+                if(Config.SHOWLOG) Log.d("DEBUG_JOINED_CLASS_INFO", "changeAssociateName() success with new asso name "+ newAssignedName);
                 currentUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
                 currentUser.pin();
                 success = true;

@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.Random;
 
 import trumplab.textslate.R;
+import utility.Config;
 import utility.ScalingUtilities;
 import utility.Utility;
 
@@ -108,7 +109,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
    */
   private void takePicture() {
 
-    Log.d("camera", "started camera.............");
+    if(Config.SHOWLOG) Log.d("camera", "started camera.............");
 
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
     Date date = new Date();
@@ -116,7 +117,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     String formattedDate = sdf.format(date);
     capturedimagename = "Capturedimage" + formattedDate + ".jpg";
 
-    Log.d("camera", capturedimagename);
+    if(Config.SHOWLOG) Log.d("camera", capturedimagename);
 
     imageFile =
         new File(Utility.getWorkingAppDir() + "/media/", "Capturedimage" + formattedDate + ".jpg");
@@ -125,16 +126,16 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
       Uri tempuri = Uri.fromFile(imageFile);
       if (tempuri != null) {
 
-          Log.d("camera", tempuri.toString());
+          if(Config.SHOWLOG) Log.d("camera", tempuri.toString());
         intent.putExtra(MediaStore.EXTRA_OUTPUT, tempuri);
         intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);   //high(1) or low(0) quality images
         startActivityForResult(intent, 100);
       }
         else
-          Log.d("camera", " tempuri null");
+          if(Config.SHOWLOG) Log.d("camera", " tempuri null");
     }
       else
-        Log.d("camera", " null imagefile ");
+        if(Config.SHOWLOG) Log.d("camera", " null imagefile ");
   }
 
   /**
@@ -222,7 +223,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
 
     public void doCrop(Uri uriOfImageToCrop) {
-        Log.d("DEBUG_PROFILE_PAGE", "into doCrop");
+        if(Config.SHOWLOG) Log.d("DEBUG_PROFILE_PAGE", "into doCrop");
         final Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setData(uriOfImageToCrop);
         intent.putExtra("outputX", 200);

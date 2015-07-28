@@ -24,6 +24,7 @@ import java.util.Objects;
 
 import BackGroundProcesses.SendPendingMessages;
 import library.UtilString;
+import utility.Config;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -56,7 +57,7 @@ public class ComposeMessageHelper {
      */
     public void sendFunction() {
 
-        Log.d(ComposeMessage.LOGTAG, "helper : sendFunction()");
+        if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "helper : sendFunction()");
         typedtxt = ComposeMessage.typedmsg.getText().toString().trim();  //message to send
 
         if (!UtilString.isBlank(typedtxt) && ComposeMessage.sendimgpreview.getVisibility() == View.GONE) {
@@ -99,7 +100,7 @@ public class ComposeMessageHelper {
             if(Outbox.groupDetails == null){
                 Outbox.groupDetails = new ArrayList<>();
             }
-            Log.d(ComposeMessage.LOGTAG, "source outside - current # outbox msgs=" + Outbox.groupDetails.size());
+            if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "source outside - current # outbox msgs=" + Outbox.groupDetails.size());
             for(ParseObject msg : messagesToSend){
                 Outbox.groupDetails.add(0, msg);
             }
@@ -108,7 +109,7 @@ public class ComposeMessageHelper {
 
             Outbox.totalOutboxMessages += messagesToSend.size(); //totalOutboxMessages would have a proper value since source is MainActivity
 
-            Log.d(ComposeMessage.LOGTAG, "source outside - added to Outbox.groupdetails #=" + messagesToSend.size() +
+            if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "source outside - added to Outbox.groupdetails #=" + messagesToSend.size() +
                     " total outbox count=" + Outbox.totalOutboxMessages + ", #visible outbox msgs=" + Outbox.groupDetails.size());
         }
 
@@ -124,7 +125,7 @@ public class ComposeMessageHelper {
                 SendMessage.groupDetails = new ArrayList<>();
             }
 
-            Log.d(ComposeMessage.LOGTAG, "source inside - current # sendmessage msgs=" + SendMessage.groupDetails.size());
+            if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "source inside - current # sendmessage msgs=" + SendMessage.groupDetails.size());
             for(ParseObject msg : messagesToSend){
                 if(msg.getString("code") != null && SendMessage.groupCode != null && msg.getString("code").equals(SendMessage.groupCode)) {
                     SendMessage.groupDetails.add(0, msg);
@@ -134,7 +135,7 @@ public class ComposeMessageHelper {
 
             SendMessage.notifyAdapter(); //just notify, as the content(new msg) has been added
 
-            Log.d(ComposeMessage.LOGTAG, "source inside - added to SendMessage.groupdetails #=" + messagesToSend.size() +
+            if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "source inside - added to SendMessage.groupdetails #=" + messagesToSend.size() +
                     " total SendMessage count=" + SendMessage.totalClassMessages + ", #visible outbox msgs=" + SendMessage.groupDetails.size());
         }
 
@@ -175,7 +176,7 @@ public class ComposeMessageHelper {
     */
     public static int sendTextMessageCloud(final ParseObject msg, final boolean isLive){
         if(!Utility.isInternetExistWithoutPopup()){
-            Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
+            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
             return 100; //not connected to internet
         }
 
@@ -265,7 +266,7 @@ public class ComposeMessageHelper {
     */
     public static int sendMultiTextMessageCloud(final List<ParseObject> batch){
         if(!Utility.isInternetExistWithoutPopup()){
-            Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
+            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
             return 100; //not connected to internet
         }
 
@@ -296,7 +297,7 @@ public class ComposeMessageHelper {
                     return -1; //unexpected error
                 }
 
-                Log.d(SendPendingMessages.LOGTAG, "sendMultiTextMessage response objectIdList=" + objectIdList);
+                if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendMultiTextMessage response objectIdList=" + objectIdList);
 
                 List<ParseObject> failedMessages = new ArrayList<>();
 
@@ -327,7 +328,7 @@ public class ComposeMessageHelper {
 
                 if(failedMessages.size() > 0) {
                     //first update created groups of user
-                    Log.d(SendPendingMessages.LOGTAG, "DELETED #classes=" + failedMessages.size());
+                    if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "DELETED #classes=" + failedMessages.size());
 
                     List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
                     try {
@@ -416,7 +417,7 @@ public class ComposeMessageHelper {
     //refer to sendTextMessageCloud
     public static int sendPicMessageCloud(final ParseObject msg, final boolean isLive) {
         if(!Utility.isInternetExistWithoutPopup()){
-            Log.d(SendPendingMessages.LOGTAG, "send pic cloud : saving cloud call when offline");
+            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send pic cloud : saving cloud call when offline");
             return 100; //not connected to internet
         }
 
@@ -444,11 +445,11 @@ public class ComposeMessageHelper {
 
         final ParseFile file = new ParseFile(imageName, data);
 
-        Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name=" + imageName + ", old=" + oldName);
+        if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name=" + imageName + ", old=" + oldName);
 
         try {
             file.save();
-            Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
+            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
             //sending message using parse cloud function
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("classcode", msg.getString("code"));
@@ -459,7 +460,7 @@ public class ComposeMessageHelper {
 
             HashMap result = ParseCloud.callFunction("sendPhotoTextMessage", params);
 
-            Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : calling cloud function success");
+            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : calling cloud function success");
             if (result != null) {
                 int retVal = 0; //success
 
@@ -541,7 +542,7 @@ public class ComposeMessageHelper {
    */
     public static int sendMultiPicMessageCloud(final List<ParseObject> batch){
         if(!Utility.isInternetExistWithoutPopup()){
-            Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
+            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
             return 100; //not connected to internet
         }
 
@@ -579,11 +580,11 @@ public class ComposeMessageHelper {
 
         final ParseFile file = new ParseFile(imageName, data);
 
-        Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name=" + imageName + ", old=" + oldName);
+        if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name=" + imageName + ", old=" + oldName);
 
         try{
             file.save();
-            Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
+            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
 
             //sending message using parse cloud function
             HashMap<String, Object> params = new HashMap<String, Object>();
@@ -603,7 +604,7 @@ public class ComposeMessageHelper {
                     return -1; //unexpected error
                 }
 
-                Log.d(SendPendingMessages.LOGTAG, "sendMultiTextMessage response objectIdList=" + objectIdList);
+                if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendMultiTextMessage response objectIdList=" + objectIdList);
 
                 List<ParseObject> failedMessages = new ArrayList<>();
 
@@ -635,7 +636,7 @@ public class ComposeMessageHelper {
 
                 if(failedMessages.size() > 0) {
                     //first update created groups of user
-                    Log.d(SendPendingMessages.LOGTAG, "DELETED #classes=" + failedMessages.size());
+                    if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "DELETED #classes=" + failedMessages.size());
 
                     List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
                     try {

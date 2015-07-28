@@ -35,11 +35,9 @@ public class PhoneLoginPageTest extends ActivityInstrumentationTestCase2<PhoneLo
     }
 
     public void testInputOnlyDigits(){
-        Log.d("TEST", "running main activity test");
         mActivity.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Log.d("TEST", "setting text");
                 phoneNumberET.performClick();
                 //phoneNumberET.setText("123456789");
             }

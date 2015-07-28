@@ -200,7 +200,7 @@ public class Classrooms extends Fragment  {
             String code = group.get(0);
             if(code != null && (code.equals(Config.defaultParentGroupCode) || code.equals(Config.defaultTeacherGroupCode))){
                 groups.remove(group);
-                Log.d("DEBUG_CLASSROOMS", "removing default group " + code + " from joined groups(Quick Hack)");
+                if(Config.SHOWLOG) Log.d("DEBUG_CLASSROOMS", "removing default group " + code + " from joined groups(Quick Hack)");
                 break;
             }
         }
@@ -251,7 +251,7 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Log.d("__C", "CreatedGroups getView " + position + " begin");
+            if(Config.SHOWLOG) Log.d("__C", "CreatedGroups getView " + position + " begin");
 
             View row = convertView;
             if (row == null) {
@@ -271,7 +271,7 @@ public class Classrooms extends Fragment  {
 
             classname1.setText(classnamestr.toUpperCase());                 //setting class name
 
-            Log.d("__C", "CreatedGroups getView " + position + " end");
+            if(Config.SHOWLOG) Log.d("__C", "CreatedGroups getView " + position + " end");
             return row;
         }
     }
@@ -362,7 +362,7 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            Log.d("__J", "JoinedGroups getView " + position + " begin");
+            if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " begin");
             View row = convertView;
             if (row == null) {
                 row = layoutinflater.inflate(R.layout.classrom_joined_item, parent, false);
@@ -380,7 +380,7 @@ public class Classrooms extends Fragment  {
 
             classcreator.setVisibility(View.VISIBLE);
 
-            Log.d("__J", "JoinedGroups getView " + position + " mid");
+            if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " mid");
             /*
            * Setting creator name
            */
@@ -396,7 +396,7 @@ public class Classrooms extends Fragment  {
                 }
             }
 
-            Log.d("__J", "JoinedGroups getView " + position + " end");
+            if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " end");
             return row;
         }
     }
@@ -407,7 +407,7 @@ public class Classrooms extends Fragment  {
             getactivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms called with = " + deletedCodes);
+                    if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms called with = " + deletedCodes);
 
                     ParseUser currentUser = ParseUser.getCurrentUser();
                     if (currentUser == null) {
@@ -424,7 +424,7 @@ public class Classrooms extends Fragment  {
 
                         List<List<String>> tempClassList = new ArrayList<>(MainActivity.classList); //new list, iterate original and remove elements from here
 
-                        Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms starting classList is " + tempClassList);
+                        if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms starting classList is " + tempClassList);
 
                         for(List<String> cls : MainActivity.classList){
                             for(String deletedClassCode : deletedCodes) {
@@ -435,7 +435,7 @@ public class Classrooms extends Fragment  {
                             }
                         }
 
-                        Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms final classList is " + tempClassList);
+                        if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms final classList is " + tempClassList);
                         MainActivity.classList = tempClassList;
                         MainActivity.floatOptionsAdapter.notifyDataSetChanged();
                     }

@@ -49,7 +49,7 @@ public class TestingUtililty {
         deleteOutbox.whereEqualTo("userId", currentParseUser.getUsername());
         try{
             List<ParseObject> msgs = deleteOutbox.find();
-            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            if(Config.SHOWLOG) Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
             ParseObject.unpinAll(msgs);
         }
         catch (ParseException e){
@@ -62,7 +62,7 @@ public class TestingUtililty {
         deleteInbox.whereEqualTo("userId", currentParseUser.getUsername());
         try{
             List<ParseObject> msgs = deleteInbox.find();
-            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            if(Config.SHOWLOG) Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
             ParseObject.unpinAll(msgs);
         }
         catch (ParseException e){
@@ -75,7 +75,7 @@ public class TestingUtililty {
         deleteLocal.whereEqualTo("userId", currentParseUser.getUsername());
         try{
             List<ParseObject> msgs = deleteLocal.find();
-            Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
+            if(Config.SHOWLOG) Log.d("_DELETE_OUTBOX_", "deleted " + msgs.size());
             ParseObject.unpinAll(msgs);
         }
         catch (ParseException e){

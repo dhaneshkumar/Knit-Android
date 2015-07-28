@@ -42,6 +42,7 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
+import utility.Config;
 import utility.Utility;
 
 /**
@@ -112,7 +113,7 @@ public class InviteVia extends MyActionBarActivity {
             dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
             dimensions.put("Invite Mode", inviteMode);
             ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
-            Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + inviteMode);
+            if(Config.SHOWLOG) Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + inviteMode);
         }
     }
 
@@ -175,7 +176,7 @@ public class InviteVia extends MyActionBarActivity {
 
         try{
             invitationList = invitationQuery.find();
-            Log.d(LOGTAG, "invitation list of size " + invitationList.size());
+            if(Config.SHOWLOG) Log.d(LOGTAG, "invitation list of size " + invitationList.size());
         }
         catch (ParseException e){
             e.printStackTrace();
@@ -433,7 +434,7 @@ public class InviteVia extends MyActionBarActivity {
                         contact.invitation = invitation;
                         try{
                             invitation.pin();
-                            Log.d(LOGTAG, "new invitation created");
+                            if(Config.SHOWLOG) Log.d(LOGTAG, "new invitation created");
 
                             if(inviteType > 0) {
                                 //track event
@@ -441,7 +442,7 @@ public class InviteVia extends MyActionBarActivity {
                                 dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
                                 dimensions.put("Invite Mode", inviteMode);
                                 ParseAnalytics.trackEventInBackground("invitedUsersCount", dimensions);
-                                Log.d(LOGTAG, "tracking invitedUsersCount type=" + inviteType + ", mode=" + inviteMode);
+                                if(Config.SHOWLOG) Log.d(LOGTAG, "tracking invitedUsersCount type=" + inviteType + ", mode=" + inviteMode);
                             }
                         }
                         catch (ParseException e){
@@ -458,7 +459,7 @@ public class InviteVia extends MyActionBarActivity {
                         contact.invitation.put(Constants.PENDING, true);
                         try{
                             contact.invitation.pin();
-                            Log.d(LOGTAG, "resent invitation updated");
+                            if(Config.SHOWLOG) Log.d(LOGTAG, "resent invitation updated");
                             Utility.toast("invitation sent !");
                         }
                         catch (ParseException e){

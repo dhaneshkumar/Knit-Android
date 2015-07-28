@@ -120,7 +120,7 @@ public class Messages extends Fragment {
                     getActivity().setIntent(intent);
 
                     if(Utility.isInternetExistWithoutPopup()) {
-                        Log.d("DEBUG_MESSAGES", "calling Inbox async task because of pushOpen flag");
+                        if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "calling Inbox async task because of pushOpen flag");
                         refreshServerMessage = true;
                         /*
                         flag set to fetch messages from server.
@@ -131,7 +131,7 @@ public class Messages extends Fragment {
                     }
                 }
                 else{
-                    Log.d("DEBUG_MESSAGES", "pushOpen flag false");
+                    if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "pushOpen flag false");
                 }
             }
         }
@@ -139,10 +139,10 @@ public class Messages extends Fragment {
 
         if(!refreshServerMessage) {//if pushOpen flag not set in intent
             if (Refresher.isSufficientGapInbox() && Utility.isInternetExistWithoutPopup()) {
-                Log.d("DEBUG_MESSAGES", "calling Inbox async task since sufficient gap");
+                if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "calling Inbox async task since sufficient gap");
                 refreshServerMessage = true; //we are calling inbox if gap is sufficient
             } else {
-                Log.d("DEBUG_MESSAGES", "skipping Inbox async : gap " + Refresher.isSufficientGapInbox());
+                if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "skipping Inbox async : gap " + Refresher.isSufficientGapInbox());
             }
         }
 
@@ -233,7 +233,7 @@ public class Messages extends Fragment {
 
 
             if(refreshServerMessage) {
-                Log.d("DEBUG_MESSAGES", "showing mPullToRefreshLayout");
+                if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "showing mPullToRefreshLayout");
                 if (mPullToRefreshLayout != null) {
                     runSwipeRefreshLayout(mPullToRefreshLayout, 10);
                 }
@@ -269,10 +269,10 @@ public class Messages extends Fragment {
                     if (totalItemCount >= totalInboxMessages) {
                         //Now no more available locally, now if not all inbox messages have been fetched, fetch more using showOldMessages cloud function and update adapter and totalInboxMessages
                         checkAndFetchOldMessages();
-                        Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
+                        if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
-                    Log.d("DEBUG_MESSAGES", "Loading more local messages");
+                    if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "Loading more local messages");
 
                     try {
                         msgs = query.getExtraLocalInboxMsgs(msgs);
@@ -293,7 +293,7 @@ public class Messages extends Fragment {
         mPullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                Log.d("DEBUG_MESSAGES_REFRESH", "On refresh called through pull down listener");
+                if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES_REFRESH", "On refresh called through pull down listener");
                 if (MainActivity.mHeaderProgressBar != null)
                     MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
@@ -304,7 +304,7 @@ public class Messages extends Fragment {
 
                 if (Utility.isInternetExist()) {
                     Utility.ls(" inbox has to sstart ... ");
-                    Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
+                    if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
 
                     if(!Inbox.isQueued) {
                         Inbox newInboxMsg = new Inbox();
@@ -465,7 +465,7 @@ public class Messages extends Fragment {
 
                 int likeCount = msgObject.getInt(Constants.GroupDetails.LIKE_COUNT);
                 int diff = newState.likeStatus - currentState.likeStatus;
-                //Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newLS" + newState.likeStatus + " curLS" + currentState.likeStatus + " likeCount"  + likeCount + " diff" + diff);
+                //if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newLS" + newState.likeStatus + " curLS" + currentState.likeStatus + " likeCount"  + likeCount + " diff" + diff);
                 int newLikeCount = likeCount + diff;
                 if(newLikeCount < 0 ) newLikeCount = 0;
 
@@ -486,7 +486,7 @@ public class Messages extends Fragment {
 
                 int confusedCount = msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT);
                 int diff = newState.confusedStatus - currentState.confusedStatus;
-                //Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newCS" + newState.confusedStatus + " curCS" + currentState.confusedStatus + " conCount"  + confusedCount + " diff" + diff);
+                //if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", msgObject.getObjectId() + " newCS" + newState.confusedStatus + " curCS" + currentState.confusedStatus + " conCount"  + confusedCount + " diff" + diff);
 
                 int newConfusedCount = confusedCount + diff;
                 if(newConfusedCount < 0 ) newConfusedCount = 0;
@@ -496,7 +496,7 @@ public class Messages extends Fragment {
                 msgObject.put(Constants.GroupDetails.CONFUSED_COUNT, newConfusedCount);
             }
 
-            Log.d("DEBUG_MESSAGES", "new status L/C = " + newState.likeStatus + "/" + newState.confusedStatus +
+            if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "new status L/C = " + newState.likeStatus + "/" + newState.confusedStatus +
                     "|| old status L/C = " + currentState.likeStatus + "/" + currentState.confusedStatus +
                     "|| new count L/C = " + msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT) + "/" + msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT) +
                     "|| synced status L/C = " + msgObject.getBoolean(Constants.GroupDetails.SYNCED_LIKE) + "/" + msgObject.getBoolean(Constants.GroupDetails.SYNCED_CONFUSING));
@@ -621,7 +621,7 @@ public class Messages extends Fragment {
             senderId = senderId.replaceAll("@", "");
             String filePath = Utility.getWorkingAppDir() + "/thumbnail/" + senderId + "_PC.jpg";
 
-            //Log.d("DEBUG_MESSAGES_DISPLAYING", "profile pic " + filePath);
+            //if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES_DISPLAYING", "profile pic " + filePath);
             File senderThumbnailFile = new File(filePath);
 
             // ///////////////////////////////////////////////////////////
@@ -646,9 +646,9 @@ public class Messages extends Fragment {
                 holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
 
                 SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                //Log.d("INBOX", "message : " + msgObject.getString("title"));
-                //Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
-                //Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
+                //if(Config.SHOWLOG) Log.d("INBOX", "message : " + msgObject.getString("title"));
+                //if(Config.SHOWLOG) Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
+                //if(Config.SHOWLOG) Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
 
             }
             else if (msgObject.get("creationTime") != null)
@@ -806,16 +806,16 @@ public class Messages extends Fragment {
 
             String role = currentParseUser.getString(Constants.ROLE);
 
-            Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
+            if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
                     + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
 
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
-                Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId + " isSignUpAccount=" + mgr.getSignUpAccount() + " tutState=" + mgr.getTutorialState(tutorialId));
+                if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId + " isSignUpAccount=" + mgr.getSignUpAccount() + " tutState=" + mgr.getTutorialState(tutorialId));
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
-                    Log.d(ShowcaseCreator.LOGTAG, "(parent) creating response tutorial");
+                    if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "(parent) creating response tutorial");
 
                     ShowcaseCreator.parentHighlightResponseButtonsNew(getactivity, holder.likeButton);
                 }
@@ -841,7 +841,7 @@ public class Messages extends Fragment {
                     else
                         Utility.ls(" option selected  ...null ");
 
-                    Log.d("DEBUG_MESSAGES", "calling Inbox execute() on refresh option click");
+                    if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "calling Inbox execute() on refresh option click");
 
                     Inbox newInboxMsg = new Inbox(msgs);
                     newInboxMsg.execute();
@@ -1039,19 +1039,19 @@ public class Messages extends Fragment {
             String username = currentParseUser.getUsername();
             String key = username + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
             if(SessionManager.getBooleanValue(key)){//if true set
-                Log.d("_FETCH_OLD", "already set in shared prefs");
+                if(Config.SHOWLOG) Log.d("_FETCH_OLD", "already set in shared prefs");
                 oldInboxFetched = true;
                 return;
             }
 
             if(!isGetMoreOldMessagesRunning){
-                Log.d("_FETCH_OLD", "spawning GetMoreOldMessages");
+                if(Config.SHOWLOG) Log.d("_FETCH_OLD", "spawning GetMoreOldMessages");
                 GetMoreOldMessages getMoreOldMessages = new GetMoreOldMessages();
                 getMoreOldMessages.execute();
                 isGetMoreOldMessagesRunning = true;
             }
             else{
-                //Log.d("_FETCH_OLD", "already running GetMoreOldMessages");
+                //if(Config.SHOWLOG) Log.d("_FETCH_OLD", "already running GetMoreOldMessages");
             }
         }
     }
@@ -1065,12 +1065,12 @@ public class Messages extends Fragment {
             extraMessages = query.getOldServerInboxMsgs();
             if(extraMessages != null){
                 if(extraMessages.size() < Config.oldMessagesPagingSize){
-                    Log.d("_FETCH_OLD", "oldInboxFetched set to true - we're done");
+                    if(Config.SHOWLOG) Log.d("_FETCH_OLD", "oldInboxFetched set to true - we're done");
                     oldInboxFetched = true;
                 }
             }
             else{
-                Log.d("_FETCH_OLD", "extraMessages null - connection failure or other error");
+                if(Config.SHOWLOG) Log.d("_FETCH_OLD", "extraMessages null - connection failure or other error");
             }
 
             return null;

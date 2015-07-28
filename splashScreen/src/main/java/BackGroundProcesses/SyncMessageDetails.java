@@ -46,10 +46,10 @@ public class SyncMessageDetails {
 
         try{
             List<ParseObject> messages = query.find();
-            Log.d("DEBUG_SYNC_STATE", "Dirty messages count " + messages.size());
+            if(Config.SHOWLOG) Log.d("DEBUG_SYNC_STATE", "Dirty messages count " + messages.size());
 
             if(messages == null || messages.size() == 0){
-                Log.d("DEBUG_SYNC_STATE", "No dirty messages. We're done");
+                if(Config.SHOWLOG) Log.d("DEBUG_SYNC_STATE", "No dirty messages. We're done");
                 return;
             }
 
@@ -70,7 +70,7 @@ public class SyncMessageDetails {
 
                 if(likeChange == 0 && confusingChange == 0){ //This should not happen as msg was marked dirty.
                                                             // No changes at all. Just move to next message
-                    Log.d("DEBUG_SYNC_STATE", "false DIRTY " + msg.getObjectId());
+                    if(Config.SHOWLOG) Log.d("DEBUG_SYNC_STATE", "false DIRTY " + msg.getObjectId());
                     msg.put(Constants.GroupDetails.DIRTY_BIT, false);
                     continue;
                 }
@@ -87,13 +87,13 @@ public class SyncMessageDetails {
                 current.add(confusing);
                 currentStateMap.put(msg.getObjectId(), current);
 
-                Log.d("DEBUG_SYNC_STATE", "new L/C = " + like + "/" + confusing +
+                if(Config.SHOWLOG) Log.d("DEBUG_SYNC_STATE", "new L/C = " + like + "/" + confusing +
                         "|| synced L/C = " + synced_like + "/" + synced_confusing +
                         "|| diff L/C = " + changes.get(0) + "/" + changes.get(1));
             }
 
             if(msgIds.size() == 0){
-                Log.d("DEBUG_SYNC_STATE", "No need to call sync : all false dirty. We're done");
+                if(Config.SHOWLOG) Log.d("DEBUG_SYNC_STATE", "No need to call sync : all false dirty. We're done");
                 return;
             }
 
@@ -127,7 +127,7 @@ public class SyncMessageDetails {
                         }
                     }
                     ParseObject.pinAll(messages);
-                    Log.d("DEBUG_SYNC_STATE", "pinned all messages");
+                    if(Config.SHOWLOG) Log.d("DEBUG_SYNC_STATE", "pinned all messages");
                 }
             }
             catch (ParseException e){
@@ -135,7 +135,7 @@ public class SyncMessageDetails {
             }
         }
         catch (ParseException e){
-            Log.d("DEBUG_SYNC_STATE", "ParseException");
+            if(Config.SHOWLOG) Log.d("DEBUG_SYNC_STATE", "ParseException");
             e.printStackTrace();
         }
     }
@@ -165,14 +165,14 @@ public class SyncMessageDetails {
         }
 
         if(msgs == null || msgs.size() == 0){
-            Log.d("DEBUG_SYNC", "no inbox messages(in GroupDetails). We're done");
+            if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "no inbox messages(in GroupDetails). We're done");
             return;
         }
 
         ArrayList<String> msgIds = new ArrayList<>();
         for(int i=0; i<msgs.size(); i++){
             msgIds.add(msgs.get(i).getObjectId());
-            //Log.d("DEBUG_SYNC", "LOCAL MSG (before) " + Utility.parseObjectToJson(msgs.get(i)));
+            //if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "LOCAL MSG (before) " + Utility.parseObjectToJson(msgs.get(i)));
         }
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
@@ -181,7 +181,7 @@ public class SyncMessageDetails {
         try{
             HashMap<String, List<Integer>> updateCountMap = ParseCloud.callFunction("updateCount2", parameters);
             if(updateCountMap != null){
-                Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : sent : " + msgs.size() + "requests ; received " + updateCountMap.size() + " updates");
+                if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : sent : " + msgs.size() + "requests ; received " + updateCountMap.size() + " updates");
 
                 for(int i=0; i<msgs.size(); i++){
                     ParseObject msg = msgs.get(i);
@@ -197,16 +197,16 @@ public class SyncMessageDetails {
                         msg.put(Constants.GroupDetails.SEEN_COUNT, counts.get(0));
                         msg.put(Constants.GroupDetails.LIKE_COUNT, counts.get(1) - synced_like + like);
                         msg.put(Constants.GroupDetails.CONFUSED_COUNT, counts.get(2) - synced_confusing + confusing);
-                        //Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
+                        //if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "Updated inbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }
 
                 ParseObject.pinAll(msgs);
-                Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : pinning over");
+                if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : pinning over");
             }
         }
         catch (ParseException e){
-            Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : parse exception while fetching updates");
+            if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "fetchLikeConfusedCountInbox : parse exception while fetching updates");
             e.printStackTrace();
         }
 
@@ -254,7 +254,7 @@ public class SyncMessageDetails {
         }
 
         if(recentSentMessages == null || recentSentMessages.size() == 0){
-            Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : no outbox messages. We're done");
+            if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : no outbox messages. We're done");
             return;
         }
 
@@ -266,7 +266,7 @@ public class SyncMessageDetails {
         }
 
         if(msgIds.size() == 0){
-            Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : list message ids empty. We're done");
+            if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : list message ids empty. We're done");
             return;
         }
 
@@ -276,7 +276,7 @@ public class SyncMessageDetails {
         try{
             HashMap<String, List<Integer>> updateCountMap = ParseCloud.callFunction("updateCount2", parameters);
             if(updateCountMap != null){
-                Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : sent : " + recentSentMessages.size() + "requests ; received " + updateCountMap.size() + " updates");
+                if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : sent : " + recentSentMessages.size() + "requests ; received " + updateCountMap.size() + " updates");
 
                 for(int i=0; i<recentSentMessages.size(); i++){
                     ParseObject msg = recentSentMessages.get(i);
@@ -285,7 +285,7 @@ public class SyncMessageDetails {
                         msg.put(Constants.GroupDetails.LIKE_COUNT, counts.get(1));
                         msg.put(Constants.GroupDetails.CONFUSED_COUNT, counts.get(2));
                         msg.put(Constants.GroupDetails.SEEN_COUNT, counts.get(0));
-                        //Log.d("DEBUG_SYNC", "Updated outbox msg " + Utility.parseObjectToJson(msg));
+                        //if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "Updated outbox msg " + Utility.parseObjectToJson(msg));
                     }
                 }
 
@@ -294,7 +294,7 @@ public class SyncMessageDetails {
         }
         catch (ParseException e){
             Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-            Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : parse exception while fetching updates");
+            if(Config.SHOWLOG) Log.d("DEBUG_SYNC", "fetchLikeConfusedCountOutbox : parse exception while fetching updates");
             e.printStackTrace();
         }
     }

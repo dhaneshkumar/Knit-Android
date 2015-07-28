@@ -7,6 +7,7 @@ import android.util.Log;
 
 import BackGroundProcesses.Refresher;
 import trumplabs.schoolapp.Application;
+import utility.Config;
 import utility.SessionManager;
 
 /**
@@ -21,7 +22,7 @@ public class RefresherAlarmReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning Refresher thread");
+        if(Config.SHOWLOG) Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning Refresher thread");
         spawnRefresherThread();
     }
 

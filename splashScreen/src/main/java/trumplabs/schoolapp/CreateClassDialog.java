@@ -29,6 +29,7 @@ import java.util.Map;
 import additionals.Invite;
 import library.UtilString;
 import trumplab.textslate.R;
+import utility.Config;
 import utility.Queries;
 import utility.Utility;
 
@@ -180,11 +181,11 @@ public class CreateClassDialog extends DialogFragment{
 
             //calling parse cloud function to create class
             HashMap<String, Object> result = null;
-            Log.d("__A", "createGroup : calling createClass3");
+            if(Config.SHOWLOG) Log.d("__A", "createGroup : calling createClass3");
             try {
                 result = ParseCloud.callFunction("createClass3", params);
             } catch (ParseException e) {
-                Log.d("__A", "createClass3 parseexception, code=" + e.getCode() + " msg=" + e.getMessage());
+                if(Config.SHOWLOG) Log.d("__A", "createClass3 parseexception, code=" + e.getCode() + " msg=" + e.getMessage());
                 Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                 e.printStackTrace();
                 return false;
@@ -221,7 +222,7 @@ public class CreateClassDialog extends DialogFragment{
 
         @Override
         protected void onPostExecute(Boolean result) {
-            Log.d("__A", "createGroup : onPostExecute()");
+            if(Config.SHOWLOG) Log.d("__A", "createGroup : onPostExecute()");
             if (result) {
                 codeTV.setText(classCode);
 

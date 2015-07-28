@@ -29,6 +29,7 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.MainActivity;
+import utility.Config;
 import utility.Utility;
 
 public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -61,7 +62,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
       oldLoginTV = (TextView) findViewById(R.id.oldLogin);
 
       if(getIntent()!=null && getIntent().getExtras() != null){
-          Log.d("DEBUG_PHONE_LOGIN", "setting phone number empty");
+          if(Config.SHOWLOG) Log.d("DEBUG_PHONE_LOGIN", "setting phone number empty");
           phoneNumber = ""; //reset as called from parent
       }
       else {//coming back from child, so restore the fields
@@ -96,7 +97,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         //override the last location by this updated current location if non-null
         if (location != null) {
             mLastLocation = location;
-            Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
                     + ", " + String.valueOf(mLastLocation.getLongitude()));
 
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -115,7 +116,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     public void onStop(){
         super.onStop();
         if(mGoogleApiClient != null) {
-            Log.d("DEBUG_LOCATION_LOGIN", "onStop() client disconnect");
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onStop() client disconnect");
             mGoogleApiClient.disconnect();
         }
     }
@@ -123,11 +124,11 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     protected synchronized void buildGoogleApiClient() {
         PackageManager pm = getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
-            Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() feature not available");
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() feature not available");
             return;
         }
 
-        Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() entered");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "buildGoogleApiClient() entered");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -137,11 +138,11 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered, first take last known location, just in case that gps location is not received");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered, first take last known location, just in case that gps location is not received");
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(mLastLocation != null){
-            Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
                     + ", " + String.valueOf(mLastLocation.getLongitude()));
         }
 
@@ -152,21 +153,21 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     public void onConnectionFailed(ConnectionResult result) {
         // At least one of the API client connect attempts failed
         // No client is connected
-        Log.d("DEBUG_LOCATION_LOGIN", "onConnectionFailed()");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnectionFailed()");
     }
 
     @Override
     public void onConnectionSuspended(int result) {
         // At least one of the API client connect attempts failed
         // No client is connected
-        Log.d("DEBUG_LOCATION_LOGIN", "onConnectionSuspended()");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnectionSuspended()");
     }
 
     @Override
     public void onPause(){
-        Log.d("DEBUG_LOCATION_LOGIN", "onPause() called");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onPause() called");
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
-            Log.d("DEBUG_LOCATION_LOGIN", "onPause() removeLocationUpdates");
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onPause() removeLocationUpdates");
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
         super.onPause();

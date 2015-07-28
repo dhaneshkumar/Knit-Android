@@ -50,6 +50,7 @@ import BackGroundProcesses.SyncMessageDetails;
 import library.UtilString;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
+import utility.Config;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -152,9 +153,9 @@ public class Outbox extends Fragment {
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
                 if (visibleItemCount + pastVisibleItems >= totalItemCount - 1) {
-                    //Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
+                    //if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
                     if (totalItemCount >= totalOutboxMessages) {
-                        Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
+                        if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
 
@@ -219,7 +220,7 @@ public class Outbox extends Fragment {
         });
 
         if(Refresher.isSufficientGapOutbox() && Utility.isInternetExistWithoutPopup()){
-            Log.d("DEBUG_MESSAGES", "calling Outbox update since sufficient gap");
+            if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "calling Outbox update since sufficient gap");
 
             if(outboxRefreshLayout!=null){
                 outboxRefreshLayout.postDelayed(new Runnable() {
@@ -237,7 +238,7 @@ public class Outbox extends Fragment {
             refreshCountInBackground();
         }
         else{
-            Log.d("DEBUG_MESSAGES", "skipping outbox update : gap " + Refresher.isSufficientGapOutbox());
+            if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "skipping outbox update : gap " + Refresher.isSufficientGapOutbox());
         }
     }
 
@@ -454,7 +455,7 @@ public class Outbox extends Fragment {
                     holder.retryButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
+                            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
                             if(Utility.isInternetExist()) {
                                 SendPendingMessages.spawnThread(true);
                                 myadapter.notifyDataSetChanged();
@@ -561,7 +562,7 @@ public class Outbox extends Fragment {
             ParseUser currentParseUser = ParseUser.getCurrentUser();
 
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && currentParseUser != null && currentParseUser.getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
-                Log.d("_TUTORIAL_", "outbox response tutorial entered");
+                if(Config.SHOWLOG) Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
                 SessionManager mgr = new SessionManager(Application.getAppContext());
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
@@ -623,7 +624,7 @@ public class Outbox extends Fragment {
                 Outbox.outboxRefreshLayout.post(new Runnable() {
                     @Override
                     public void run() {
-                        Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
+                        if(Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
                         outboxRefreshLayout.setRefreshing(false);
                         if (groupDetails == null || groupDetails.size() == 0) {
                             outboxLayout.setVisibility(View.VISIBLE);
@@ -643,7 +644,7 @@ public class Outbox extends Fragment {
             //set lastTimeOutboxSync
             Application.lastTimeOutboxSync = Calendar.getInstance().getTime();
 
-            Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox and setting lastTimeOutboxSync");
+            if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox and setting lastTimeOutboxSync");
             SyncMessageDetails.fetchLikeConfusedCountOutbox();
             //following is the onpostexecute thing
             refreshSelf();
@@ -688,7 +689,7 @@ public class Outbox extends Fragment {
 
         public static void updateOutboxTotalMessages() {
 
-            Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
+            if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
 
             //update totalOutboxMessages
             ParseUser user = ParseUser.getCurrentUser();
@@ -706,7 +707,7 @@ public class Outbox extends Fragment {
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
+            if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
         }
 
 
@@ -784,7 +785,7 @@ public class Outbox extends Fragment {
             protected void onPostExecute(Void aVoid) {
                 if (Outbox.outboxListv.getAdapter() == null) return;
                 if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
-                    Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
+                    if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
 
                     selectedMsgIndex = msgIndex;
                     Outbox.myadapter.notifyDataSetChanged();

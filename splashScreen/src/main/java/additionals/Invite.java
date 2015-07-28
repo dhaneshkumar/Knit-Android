@@ -29,6 +29,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
+import utility.Config;
 import utility.Utility;
 
 /*
@@ -178,7 +179,7 @@ public class Invite extends MyActionBarActivity{
                   dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
                   dimensions.put("Invite Mode", Constants.MODE_WHATSAPP);
                   ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
-                  Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_WHATSAPP);
+                  if(Config.SHOWLOG) Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_WHATSAPP);
 
                   Intent sendIntent = new Intent(Intent.ACTION_SEND);
                   sendIntent.setPackage("com.whatsapp");
@@ -247,7 +248,7 @@ public class Invite extends MyActionBarActivity{
               dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
               dimensions.put("Invite Mode", Constants.MODE_RECEIVE_INSTRUCTIONS);
               ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
-              Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_RECEIVE_INSTRUCTIONS);
+              if(Config.SHOWLOG) Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_RECEIVE_INSTRUCTIONS);
 
               FragmentManager fm = getSupportFragmentManager();
               RecommendationDialog recommendationDialog = new RecommendationDialog();
@@ -302,7 +303,7 @@ public class Invite extends MyActionBarActivity{
           dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
           dimensions.put("Source", source);
           ParseAnalytics.trackEventInBackground("invitePageOpenings", dimensions);
-          Log.d(LOGTAG, "tracking invitePageOpenings type=" + inviteType + ",source=" + source);
+          if(Config.SHOWLOG) Log.d(LOGTAG, "tracking invitePageOpenings type=" + inviteType + ",source=" + source);
       }
   }
 

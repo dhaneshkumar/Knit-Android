@@ -73,7 +73,7 @@ public class PushOpen extends MyActionBarActivity {
                 String className = getIntent().getExtras().getString("className");
 
                 if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
-                    Log.d("DEBUG_PUSH_OPEN", "invite parent action " + classCode + " " + className);
+                    if(Config.SHOWLOG) Log.d("DEBUG_PUSH_OPEN", "invite parent action " + classCode + " " + className);
                     i.putExtra("classCode", classCode);
                     i.putExtra("className", className);
                     i.putExtra("source", Constants.SOURCE_NOTIFICATION);
@@ -90,7 +90,7 @@ public class PushOpen extends MyActionBarActivity {
                 String className = getIntent().getExtras().getString("className");
 
                 if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
-                    Log.d("DEBUG_PUSH_OPEN", "send message action " + classCode + " " + className);
+                    if(Config.SHOWLOG) Log.d("DEBUG_PUSH_OPEN", "send message action " + classCode + " " + className);
                     i.putExtra("pushOpen", true);
                     i.putExtra("CLASS_CODE", classCode);
                     i.putExtra("CLASS_NAME", className);
@@ -141,7 +141,7 @@ public class PushOpen extends MyActionBarActivity {
                 String className = getIntent().getExtras().getString("className");
 
                 if((!UtilString.isBlank(classCode))  && (!UtilString.isBlank(className))) {
-                    Log.d("DEBUG_PUSH_OPEN", "member action " + classCode + " " + className);
+                    if(Config.SHOWLOG) Log.d("DEBUG_PUSH_OPEN", "member action " + classCode + " " + className);
                     i.putExtra("pushOpen", true);
                     i.putExtra("classCode", classCode);
                     i.putExtra("className", className);
@@ -183,7 +183,7 @@ public class PushOpen extends MyActionBarActivity {
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         int notificationId = intent.getIntExtra("notificationId", -1);
-        Log.d("DEBUG_PUSH_OPEN", type +  " " + action + " notid " + notificationId);
+        if(Config.SHOWLOG) Log.d("DEBUG_PUSH_OPEN", type +  " " + action + " notid " + notificationId);
         if(notificationId != -1)
             notificationManager.cancel(notificationId);
     }
@@ -207,7 +207,7 @@ public class PushOpen extends MyActionBarActivity {
 
                 if (codeGroupObject != null) {
                     EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.RemovalMsg, classCode, codeGroupObject.getString(Constants.Codegroup.CREATOR), codeGroupObject.getString(Constants.Codegroup.SENDER_ID), codeGroupObject.getString(Constants.Codegroup.NAME), user);
-                    Log.d("DEBUG_PUSH_OPEN", "UserRemovedTask : local message generated");
+                    if(Config.SHOWLOG) Log.d("DEBUG_PUSH_OPEN", "UserRemovedTask : local message generated");
                 }
 
                 //updating user joined_groups by calling cloud function 'getUserDetails'
@@ -231,7 +231,7 @@ public class PushOpen extends MyActionBarActivity {
                 }
             }
             else{
-                Log.d("DEBUG_PUSH_OPEN", "UserRemovedTask : classCode/className null");
+                if(Config.SHOWLOG) Log.d("DEBUG_PUSH_OPEN", "UserRemovedTask : classCode/className null");
             }
             return null;
         }

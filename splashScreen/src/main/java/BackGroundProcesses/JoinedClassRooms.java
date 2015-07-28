@@ -10,6 +10,7 @@ import java.util.Calendar;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.MainActivity;
+import utility.Config;
 import utility.Utility;
 
 /**
@@ -19,7 +20,7 @@ import utility.Utility;
 public class JoinedClassRooms{
 
   public static void doInBackgroundCore(){
-    Log.d("DEBUG_JOINED", "fetching name/pic updates and setting lastTimeJoinedSync");
+      if(Config.SHOWLOG) Log.d("DEBUG_JOINED", "fetching name/pic updates and setting lastTimeJoinedSync");
 
     //validating current user
     ParseUser user = ParseUser.getCurrentUser();

@@ -31,17 +31,17 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
   {
       isQueued = true; //enable so that another Inbox asynctask is not triggered
       myid = id++;
-      Log.d("_DEBUG_INBOX", "queued " + myid);
+      if(Config.SHOWLOG) Log.d("_DEBUG_INBOX", "queued " + myid);
       query = new Queries();
   }
 
   public void doInBackgroundCore(){
-      Log.d("_DEBUG_INBOX", "running background " + myid);
+      if(Config.SHOWLOG) Log.d("_DEBUG_INBOX", "running background " + myid);
 
     //set lastTimeInboxSync
       Application.lastTimeInboxSync = Calendar.getInstance().getTime();
 
-      Log.d("DEBUG_INBOX", "fetching new messages and setting lastTimeInboxSync");
+      if(Config.SHOWLOG) Log.d("DEBUG_INBOX", "fetching new messages and setting lastTimeInboxSync");
 
       List<ParseObject> newMsgs = query.getServerInboxMsgs();
 
@@ -68,7 +68,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
   }
 
   public void onPostExecuteHelper(){
-      Log.d("_DEBUG_INBOX", "helper leaving " + myid);
+      if(Config.SHOWLOG) Log.d("_DEBUG_INBOX", "helper leaving " + myid);
       isQueued = false; //remove queued flag.
 
       if(MainActivity.mHeaderProgressBar!=null){
@@ -97,7 +97,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
 
     //notifies the adapter also
   public static void syncOtherInboxDetails(){
-      Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
+      if(Config.SHOWLOG) Log.d("DEBUG_SEEN_HANDLER", "running seenhandler");
       SeenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
       SyncMessageDetails.syncStatus();
 
@@ -105,7 +105,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
           Messages.mPullToRefreshLayout.post(new Runnable() {
               @Override
               public void run() {
-                  //Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
+                  //if(Config.SHOWLOG) Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
                   if(Messages.myadapter != null){
                       Messages.myadapter.notifyDataSetChanged();
                   }
@@ -120,7 +120,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
             Messages.mPullToRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
+                    if(Config.SHOWLOG) Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
                     if(Messages.myadapter != null){
                         Messages.myadapter.notifyDataSetChanged();
                     }
@@ -131,7 +131,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
 
   @Override
   protected void onPostExecute(String[] result) {
-      Log.d("_DEBUG_INBOX", "asynctask leaving " + myid);
+      if(Config.SHOWLOG) Log.d("_DEBUG_INBOX", "asynctask leaving " + myid);
       isQueued = false; //remove queued flag.
 
       onPostExecuteCore();

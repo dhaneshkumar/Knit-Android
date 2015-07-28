@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import trumplabs.schoolapp.Constants;
+import utility.Config;
 import utility.Queries;
 import utility.Utility;
 
@@ -39,7 +40,7 @@ public class InviteTasks {
             }
         }
 
-        //Log.d(LOGTAG, inviteType + " " + inviteMode + " " + classCode);
+        //if(Config.SHOWLOG) Log.d(LOGTAG, inviteType + " " + inviteMode + " " + classCode);
         ParseQuery query = ParseQuery.getQuery(Constants.INVITATION);
         query.fromLocalDatastore();
         query.whereEqualTo(Constants.PENDING, true);
@@ -63,7 +64,7 @@ public class InviteTasks {
             return;
         }
 
-        //Log.d(LOGTAG, "pending for " + inviteType + " " + inviteMode + " " + classCode);
+        //if(Config.SHOWLOG) Log.d(LOGTAG, "pending for " + inviteType + " " + inviteMode + " " + classCode);
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
         parameters.put("classCode", classCode);
@@ -95,7 +96,7 @@ public class InviteTasks {
             e.printStackTrace();
         }
 
-        Log.d(LOGTAG, "type=" + inviteType + ", mode=" + inviteMode +
+        if(Config.SHOWLOG) Log.d(LOGTAG, "type=" + inviteType + ", mode=" + inviteMode +
                 ", count=" + data.size() + "/" + pendingInvitations.size() + ", RESULT=" + result);
 
         if(result) {
@@ -116,7 +117,7 @@ public class InviteTasks {
         send the invites using above method
      */
     static void sendAllPendingInvites(){
-        Log.d(LOGTAG, "sendAllPendingInvites() entered");
+        if(Config.SHOWLOG) Log.d(LOGTAG, "sendAllPendingInvites() entered");
         int[] inviteTypes = {Constants.INVITATION_P2P, Constants.INVITATION_P2T, Constants.INVITATION_T2P, Constants.INVITATION_SPREAD};
         String[] inviteModes = {Constants.MODE_PHONE, Constants.MODE_EMAIL};
 

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.parse.ParseUser;
 
 import trumplabs.schoolapp.Constants;
+import utility.Config;
 
 /**
  * It updates subscribers list of all classes of a user.
@@ -22,7 +23,7 @@ public class UpdateAllClassSubscribers  {
                 MemberList memberList = new MemberList();
                 memberList.doInBackgroundCore();
 
-                Log.d("SUBSCRIBER", "updating subscriber in a thread");
+                if(Config.SHOWLOG) Log.d("SUBSCRIBER", "updating subscriber in a thread");
             }
         }
     }

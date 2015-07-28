@@ -70,7 +70,7 @@ public class SessionManager {
    */
     public void setAppOpeningCount() {
         int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
-        Log.d("DEBUG_SESSION_MANAGER", "setAppOpeningCount from " + openingCount);
+        if(Config.SHOWLOG) Log.d("DEBUG_SESSION_MANAGER", "setAppOpeningCount from " + openingCount);
 
         openingCount++;
         editor.putInt(APP_OPENING_COUNT, openingCount);
@@ -78,14 +78,14 @@ public class SessionManager {
     }
 
     public void reSetAppOpeningCount() {
-        Log.d("DEBUG_SESSION_MANAGER", "resetAppOpeningCount");
+        if(Config.SHOWLOG) Log.d("DEBUG_SESSION_MANAGER", "resetAppOpeningCount");
         editor.putInt(APP_OPENING_COUNT, 0);
         editor.commit();
     }
 
     public int getAppOpeningCount() {
         int openingCount = pref.getInt(APP_OPENING_COUNT, 0);
-        Log.d("DEBUG_SESSION_MANAGER", "getAppOpeningCount = " + openingCount);
+        if(Config.SHOWLOG) Log.d("DEBUG_SESSION_MANAGER", "getAppOpeningCount = " + openingCount);
         return openingCount;
     }
 
@@ -172,7 +172,7 @@ public class SessionManager {
         long serverTime = time.getTime();
 
         long delta = serverTime - deviceTime;
-        Log.d("DEBUG_SESSION_MANAGER", "setCurrentTime delta is " + serverTime + "-" + deviceTime + "= " + delta);
+        if(Config.SHOWLOG) Log.d("DEBUG_SESSION_MANAGER", "setCurrentTime delta is " + serverTime + "-" + deviceTime + "= " + delta);
         editor.putLong(TIME_DELTA, delta);
         editor.commit();
     }
@@ -221,7 +221,7 @@ public class SessionManager {
 
     public static boolean getBooleanValue(String key){
         if(pref == null){
-            Log.d("_FETCH_OLD", "SM : get value for key=" + key);
+            if(Config.SHOWLOG) Log.d("_FETCH_OLD", "SM : get value for key=" + key);
             setUp();
         }
         //pref won't be null

@@ -36,7 +36,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
         String groupName = null;
 
         try {
-            Log.d("DEBUG_MY_RECEIVER", "some notification received");
+            if(Config.SHOWLOG) Log.d("DEBUG_MY_RECEIVER", "some notification received");
 
             if(jsonData != null) {
                 JSONObject json = new JSONObject(jsonData);
@@ -59,7 +59,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
                 String action = json.optString("action", null);
 
                 if(type == null || action==null || groupName==null || contentText==null){
-                    Log.d("DEBUG_MY_RECEIVER", "Ignoring Notification : some parameters null");
+                    if(Config.SHOWLOG) Log.d("DEBUG_MY_RECEIVER", "Ignoring Notification : some parameters null");
                     return; //we don't cater to notifications without type or action
                 }
 
@@ -70,7 +70,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
 
                 if(type.equals(Constants.Notifications.TRANSITION_NOTIFICATION) &&
                         (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))){
-                    Log.d(NotificationAlarmReceiver.LOGTAG, "received t=" + type + ", a=" + action + ", gname=" + groupName + ", msg=" + contentText);
+                    if(Config.SHOWLOG) Log.d(NotificationAlarmReceiver.LOGTAG, "received t=" + type + ", a=" + action + ", gname=" + groupName + ", msg=" + contentText);
                     //store in table
                     String msgId = json.optString("id", null); //required for like/confuse action
                     if(UtilString.isBlank(msgId)){
@@ -92,7 +92,7 @@ public class MyReceiver extends ParsePushBroadcastReceiver {
                 }
                 else if(type.equals(Constants.Notifications.TRANSITION_NOTIFICATION) &&
                         action.equals(Constants.Actions.MEMBER_ACTION)){
-                    Log.d(NotificationAlarmReceiver.LOGTAG, "received t=" + type + ", a=" + action + ", gname=" + groupName + ", msg=" + contentText);
+                    if(Config.SHOWLOG) Log.d(NotificationAlarmReceiver.LOGTAG, "received t=" + type + ", a=" + action + ", gname=" + groupName + ", msg=" + contentText);
                     //store in table
                     String classCode = json.optString("groupCode", null); //required for like/confuse action
                     if(UtilString.isBlank(classCode)){

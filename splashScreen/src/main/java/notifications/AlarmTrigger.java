@@ -30,7 +30,7 @@ public class AlarmTrigger {
         Calendar cal = Calendar.getInstance();
 		am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis() + Config.EVENT_CHECKER_INTERVAL / 3,
                 Config.EVENT_CHECKER_INTERVAL, sender);
-        Log.d("DEBUG_ALARM_TRIGGER",  "Scheduled event checker alarm");
+        if(Config.SHOWLOG) Log.d("DEBUG_ALARM_TRIGGER",  "Scheduled event checker alarm");
     }
 
     public static void cancelEventCheckerAlarm(Context context){
@@ -41,7 +41,7 @@ public class AlarmTrigger {
         PendingIntent sender = PendingIntent.getBroadcast(context, EVENT_CHECKER_ALARM_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         am.cancel(sender);
-        Log.d("DEBUG_ALARM_TRIGGER", "Cancelled event checker alarm");
+        if(Config.SHOWLOG) Log.d("DEBUG_ALARM_TRIGGER", "Cancelled event checker alarm");
     }
 
     public static void triggerRefresherAlarm(Context context){
@@ -55,7 +55,7 @@ public class AlarmTrigger {
         am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis() + Config.REFRESHER_INTERVAL,
                 Config.REFRESHER_INTERVAL, sender); //first trigger after refresher-interval
 
-        Log.d("DEBUG_ALARM_TRIGGER", "Scheduled refresher alarm");
+        if(Config.SHOWLOG) Log.d("DEBUG_ALARM_TRIGGER", "Scheduled refresher alarm");
 
         //But first trigger just now manually. Can't depend on alarm to trigger right now as it is inexact for repeating alarms
         RefresherAlarmReceiver.spawnRefresherThread();
@@ -69,7 +69,7 @@ public class AlarmTrigger {
         PendingIntent sender = PendingIntent.getBroadcast(context, REFRESHER_ALARM_ID, intent, PendingIntent.FLAG_CANCEL_CURRENT);
 
         am.cancel(sender);
-        Log.d("DEBUG_ALARM_TRIGGER", "Cancelled refresher alarm");
+        if(Config.SHOWLOG) Log.d("DEBUG_ALARM_TRIGGER", "Cancelled refresher alarm");
     }
 
     public static boolean isNotificationAlarmTriggered(Context context){
@@ -83,7 +83,7 @@ public class AlarmTrigger {
         //otherwise set alarm
 
         if(isNotificationAlarmTriggered(context)) {
-            Log.d(NotificationAlarmReceiver.LOGTAG, "triggerNotificationAlarm : already running");
+            if(Config.SHOWLOG) Log.d(NotificationAlarmReceiver.LOGTAG, "triggerNotificationAlarm : already running");
             return;
         }
 
@@ -97,7 +97,7 @@ public class AlarmTrigger {
         am.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(),
                 Config.NOTIFICATION_INTERVAL, sender); //first trigger now
 
-        Log.d(NotificationAlarmReceiver.LOGTAG, "triggerNotificationAlarm : scheduled notification alarm");
+        if(Config.SHOWLOG) Log.d(NotificationAlarmReceiver.LOGTAG, "triggerNotificationAlarm : scheduled notification alarm");
     }
 
     public static void cancelNotificationAlarm(Context context){
@@ -111,6 +111,6 @@ public class AlarmTrigger {
 
         sender.cancel(); //delete pending intent so that isNotificationAlarmTriggered() works as expected
 
-        Log.d(NotificationAlarmReceiver.LOGTAG, "Cancelled notification alarm");
+        if(Config.SHOWLOG) Log.d(NotificationAlarmReceiver.LOGTAG, "Cancelled notification alarm");
     }
 }

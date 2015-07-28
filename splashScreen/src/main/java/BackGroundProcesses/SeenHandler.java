@@ -28,7 +28,7 @@ public class SeenHandler{
      */
 
     public static void syncSeenJob(){
-        Log.d("DEBUG_SEEN_HANDLER", "Starting");
+        if(Config.SHOWLOG) Log.d("DEBUG_SEEN_HANDLER", "Starting");
         ParseUser user = ParseUser.getCurrentUser();
 
         if (user == null)
@@ -47,7 +47,7 @@ public class SeenHandler{
         try{
             List<ParseObject> newSeenMessages = seenQuery.find();
 
-            Log.d("DEBUG_SEEN_HANDLER", "syncSeenJob() newSeenMessages count " + newSeenMessages.size());
+            if(Config.SHOWLOG) Log.d("DEBUG_SEEN_HANDLER", "syncSeenJob() newSeenMessages count " + newSeenMessages.size());
             if(newSeenMessages.size() == 0){
                 return;
             }
@@ -62,7 +62,7 @@ public class SeenHandler{
             parameters.put("array", newSeenObjectIds);
 
             boolean result = ParseCloud.callFunction("updateSeenCount", parameters);
-            Log.d("DEBUG_SEEN_HANDLER", "syncSeenJob() : updateSeenCount result " + result);
+            if(Config.SHOWLOG) Log.d("DEBUG_SEEN_HANDLER", "syncSeenJob() : updateSeenCount result " + result);
             if(result){
                 //change seen status of messages
                 for(int i=0; i < newSeenMessages.size(); i++){

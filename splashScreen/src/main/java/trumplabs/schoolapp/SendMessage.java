@@ -239,7 +239,7 @@ public class SendMessage extends MyActionBarActivity  {
         super.onResume();
 
         /*if(Application.getCurrentActivity() != null) {
-            Log.d("__A", "currentActivity=" + Application.getCurrentActivity().getClass().getSimpleName() + "; SendMessage's name=" + SendMessage.class.getSimpleName());
+            if(Config.SHOWLOG) Log.d("__A", "currentActivity=" + Application.getCurrentActivity().getClass().getSimpleName() + "; SendMessage's name=" + SendMessage.class.getSimpleName());
         }*/
 
         //facebook ad tracking
@@ -510,7 +510,7 @@ public class SendMessage extends MyActionBarActivity  {
                     retryButton.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
+                            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "retry button clicked");
                             if(Utility.isInternetExist()) {
                                 SendPendingMessages.spawnThread(true);
                                 myadapter.notifyDataSetChanged();

@@ -129,7 +129,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
+                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
 
                 if(AccessToken.getCurrentAccessToken() != null){
                     //show progress bar
@@ -141,25 +141,25 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
 
                     String token = AccessToken.getCurrentAccessToken().getToken();
-                    Log.d("D_FB_VERIF", "access token = " + token);
+                    if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
 
                     FBVerifyTask fbVerifyTask = new FBVerifyTask(token, false); //isLogin = false
                     fbVerifyTask.execute();
                 }
                 else{
-                    Log.d("D_FB_VERIF", "access token null");
+                    if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token null");
                 }
             }
 
             @Override
             public void onCancel() {
-                Log.d("D_FB_VERIF", "logged cancelled");
+                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged cancelled");
             }
 
             @Override
             public void onError(FacebookException exception) {
                 exception.printStackTrace();
-                Log.d("D_FB_VERIF", "FacebookException");
+                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "FacebookException");
             }
         });
 
@@ -202,15 +202,15 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 try {
                     if (json != null) {
 
-                        Log.d("FB_SIGNUP", "name : " + json.getString("name"));
-                        //    Log.d("FB_SIGNUP", "email : " + json.getString("email"));
-                        Log.d("FB_SIGNUP", "id : " + json.getString("id"));
-                        Log.d("FB_SIGNUP", "Link : " + json.getString("link"));
-                        Log.d("FB_SIGNUP", "age_range : " + json.getString("age_range"));
-                        Log.d("FB_SIGNUP", "gender : " + json.getString("gender"));
-                        Log.d("FB_SIGNUP", "locale : " + json.getString("locale"));
-                        Log.d("FB_SIGNUP", "verified : " + json.getString("verified"));
-                        Log.d("FB_SIGNUP", "access token : " + AccessToken.getCurrentAccessToken());
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "name : " + json.getString("name"));
+                        //    if(Config.SHOWLOG) Log.d("FB_SIGNUP", "email : " + json.getString("email"));
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "id : " + json.getString("id"));
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "Link : " + json.getString("link"));
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "age_range : " + json.getString("age_range"));
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "gender : " + json.getString("gender"));
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "locale : " + json.getString("locale"));
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "verified : " + json.getString("verified"));
+                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "access token : " + AccessToken.getCurrentAccessToken());
 
                         // set profile pic
                         //   http://stackoverflow.com/questions/19855072/android-get-facebook-profile-picture
@@ -349,7 +349,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         //override the last location by this updated current location if non-null
         if (location != null) {
             mLastLocation = location;
-            Log.d("DEBUG_LOCATION", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
                     + ", " + String.valueOf(mLastLocation.getLongitude()));
 
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -375,11 +375,11 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     protected synchronized void buildGoogleApiClient() {
         PackageManager pm = getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
-            Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
             return;
         }
 
-        Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
@@ -392,7 +392,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
     @Override
     public void onConnected(Bundle connectionHint) {
-        Log.d("DEBUG_LOCATION", "onConnected() entered, first take last known location, just in case that gps location is not received");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnected() entered, first take last known location, just in case that gps location is not received");
 
 
 
@@ -406,7 +406,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(mLastLocation != null){
-            Log.d("DEBUG_LOCATION", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
                     + ", " + String.valueOf(mLastLocation.getLongitude()));
         }
 
@@ -417,7 +417,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // At least one of the API client connect attempts failed
         // No client is connected
-        Log.d("DEBUG_LOCATION", "onConnectionFailed()");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnectionFailed()");
 
 
         if (!mIsResolving && mShouldResolve) {
@@ -446,13 +446,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     public void onConnectionSuspended(int result) {
         // At least one of the API client connect attempts failed
         // No client is connected
-        Log.d("DEBUG_LOCATION", "onConnectionSuspended()");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnectionSuspended()");
 
     }
 
     @Override
     public void onPause(){
-        Log.d("DEBUG_LOCATION", "onPause() called");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onPause() called");
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
@@ -483,13 +483,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             param.put("number", number);
 
             //calling new function
-            Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode2() with " + number);
+            if(Config.SHOWLOG) Log.d("DEBUG_SIGNUP_SCHOOL", "calling genCode2() with " + number);
             try {
                 isValid = ParseCloud.callFunction("genCode2", param);
                 success = true;
             } catch (ParseException e) {
                 Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());
+                if(Config.SHOWLOG) Log.d("DEBUG_SIGNUP_SCHOOL", "exception with code " + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;
                 }
@@ -552,7 +552,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
         @Override
         protected Void doInBackground(Void... par) {
-            Log.d("D_FB_VERIF", "FBVerifyTask : doInBackground");
+            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "FBVerifyTask : doInBackground");
 
             //setting parameters
             HashMap<String, Object> params = new HashMap<String, Object>();
@@ -577,31 +577,31 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             PhoneSignUpVerfication.fillDetailsForSession(isLogin, params);
 
             try {
-                Log.d("D_FB_VERIF", "appEnter : calling");
+                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "appEnter : calling");
                 HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
                 String sessionToken = (String) result.get("sessionToken");
                 flag = (String) result.get("flag");
 
                 if(!UtilString.isBlank(sessionToken)){
                     try{
-                        Log.d("D_FB_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
+                        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
-                            Log.d("__A", "setting ignoreInvalidSessionCheck to false");
+                            if(Config.SHOWLOG) Log.d("__A", "setting ignoreInvalidSessionCheck to false");
                             Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
 
-                            Log.d("D_FB_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
+                            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
                             taskSuccess = true;
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
                             // The token could not be validated.
-                            Log.d("D_FB_VERIF", "parseuser become - returned user null");
+                            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "parseuser become - returned user null");
                             unexpectedError = true;
                         }
                     }
                     catch (ParseException e){
                         Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                        Log.d("D_FB_VERIF", "parseuser become - parse exception");
+                        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "parseuser become - parse exception");
                         if(e.getCode() == ParseException.CONNECTION_FAILED){
                             networkError = true;
                         }
@@ -611,12 +611,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     }
                 }
                 else{
-                    Log.d("D_FB_VERIF", "verifyCode error");
+                    if(Config.SHOWLOG) Log.d("D_FB_VERIF", "verifyCode error");
                     unexpectedError = true;
                 }
             } catch (ParseException e) {
                 Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                Log.d("D_FB_VERIF", "network error with message " + e.getMessage() + " code "  + e.getCode());
+                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "network error with message " + e.getMessage() + " code "  + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;
                 }
@@ -625,13 +625,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 }
                 e.printStackTrace();
             }
-            Log.d("D_FB_VERIF", "background : returning null");
+            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "background : returning null");
             return null;
         }
 
         @Override
         protected void onPostExecute(Void result){
-            Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess + ", flag=" + flag);
+            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess + ", flag=" + flag);
 
             if(taskSuccess){
                 SessionManager session = new SessionManager(Application.getAppContext());

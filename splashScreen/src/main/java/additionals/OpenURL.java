@@ -10,6 +10,7 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.MainActivity;
+import utility.Config;
 
 /**
  * Created by dhanesh on 19/1/15.
@@ -26,11 +27,11 @@ public class OpenURL extends MyActionBarActivity {
 
         if(getIntent().getExtras() != null) {
             String url = getIntent().getExtras().getString("URL");
-            Log.d("OPEN_URL", "url not null...");
+            if(Config.SHOWLOG) Log.d("OPEN_URL", "url not null...");
 
             if(!UtilString.isBlank(url))
             {
-                Log.d("OPEN_URL", "url not null..." + url);
+                if(Config.SHOWLOG) Log.d("OPEN_URL", "url not null..." + url);
 
                 webView.getSettings().setJavaScriptEnabled(true);
                 webView.loadUrl(url);

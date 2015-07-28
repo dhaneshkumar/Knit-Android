@@ -435,8 +435,6 @@ public class Subscribers extends MyActionBarActivity {
                 return false;
             }
 
-            Utility.ls("remove child starting in background....");
-
             //Steps :
             //remove groupCode from member's joined group
             // unsubscribe this channel from member's channels
@@ -444,7 +442,7 @@ public class Subscribers extends MyActionBarActivity {
             // send notification to user about removing from this group
             // set status to "REMOVED" table entry of memberlist
 
-            Log.d("REMOVE", "remove child starting in ");
+            if(Config.SHOWLOG) Log.d("REMOVE", "remove child starting in ");
 
             if (member != null) {
                 String type = member.getType();
@@ -452,7 +450,7 @@ public class Subscribers extends MyActionBarActivity {
                 String memberId = null;
 
 
-                Log.d("REMOVE", "removal starting..");
+                if(Config.SHOWLOG) Log.d("REMOVE", "removal starting..");
 
                 if (type.equals(MemberDetails.APP_MEMBER)) {
                     ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
@@ -461,7 +459,7 @@ public class Subscribers extends MyActionBarActivity {
                     query.whereEqualTo("userId", currentParseUser.getUsername());
                     ParseObject obj = null;
 
-                    Log.d("REMOVE", "APP Member");
+                    if(Config.SHOWLOG) Log.d("REMOVE", "APP Member");
 
                     try {
 
@@ -469,7 +467,7 @@ public class Subscribers extends MyActionBarActivity {
                         if (obj != null) {
                             memberId = obj.getString("emailId");
 
-                            Log.d("REMOVE", "obj not null");
+                            if(Config.SHOWLOG) Log.d("REMOVE", "obj not null");
                             boolean isRemoved = false;
 
                             HashMap<String, String> param = new HashMap<String, String>();
@@ -479,14 +477,14 @@ public class Subscribers extends MyActionBarActivity {
                                 param.put("emailId", memberId);
                             param.put("usertype", "app");
 
-                            Log.d("REMOVE", "calling : removeMember function");
+                            if(Config.SHOWLOG) Log.d("REMOVE", "calling : removeMember function");
 
                             isRemoved = ParseCloud.callFunction("removeMember", param);
 
-                            Log.d("REMOVE", "call over : removeMember function");
+                            if(Config.SHOWLOG) Log.d("REMOVE", "call over : removeMember function");
 
                             if(isRemoved){
-                                Log.d("REMOVE", "success - just unpin it");
+                                if(Config.SHOWLOG) Log.d("REMOVE", "success - just unpin it");
                                 obj.unpin(); //just unpin for now. Next time if it is fetched using MemberList task, it will have updated value for status column
 
                                 /*******    check whether fetched obj saved automatically or not ********/
@@ -501,13 +499,13 @@ public class Subscribers extends MyActionBarActivity {
                         }
                         else
                         {
-                            Log.d("REMOVE", "got null object");
+                            if(Config.SHOWLOG) Log.d("REMOVE", "got null object");
                         }
                     } catch (ParseException e) {
                         Utility.LogoutUtility.checkAndHandleInvalidSession(e);
                         e.printStackTrace();
 
-                        Log.d("REMOVE", "local query failed object");
+                        if(Config.SHOWLOG) Log.d("REMOVE", "local query failed object");
                     }
                 }
                 else

@@ -24,6 +24,7 @@ import java.net.URL;
 
 import library.UtilString;
 import trumplab.textslate.R;
+import utility.Config;
 import utility.Utility;
 
 /**
@@ -96,13 +97,12 @@ public class RecommendationDialog extends DialogFragment {
             }
 
             if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) && (!UtilString.isBlank(name))) {
-                Log.d(LOGTAG, "starting mailing......classCode=" + classCode + ", className="+className + ", email=" + email + ", name=" + name);
+                if(Config.SHOWLOG) Log.d( LOGTAG, "starting mailing......classCode=" + classCode + ", className="+className + ", email=" + email + ", name=" + name);
 
                 try {
 
-
                     String urlString = "http://ec2-52-26-56-243.us-west-2.compute.amazonaws.com/createPdf.php?email=" + email + "&code=" + classCode + "&name=" + name;
-                    Log.d(LOGTAG, "url is " + urlString);
+                    if(Config.SHOWLOG) Log.d( LOGTAG, "url is " + urlString);
                     URL url = new URL(urlString);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     InputStream in = new BufferedInputStream(conn.getInputStream());
@@ -113,13 +113,13 @@ public class RecommendationDialog extends DialogFragment {
                         total.append(line);
                     }
                     String response = total.toString();
-                    Log.d(LOGTAG, "response is " + response);
+                    if(Config.SHOWLOG) Log.d( LOGTAG, "response is " + response);
                     return true;
                 } catch (MalformedURLException e) {
-                    Log.d(LOGTAG, "MalformedURLException");
+                    if(Config.SHOWLOG) Log.d( LOGTAG, "MalformedURLException");
                     e.printStackTrace();
                 } catch (IOException e) {
-                    Log.d(LOGTAG, "IOException");
+                    if(Config.SHOWLOG) Log.d( LOGTAG, "IOException");
                     e.printStackTrace();
                 }
             }

@@ -45,6 +45,7 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
+import utility.Config;
 import utility.Utility;
 
 public class ProfilePage extends MyActionBarActivity implements OnClickListener {
@@ -61,7 +62,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("__A","onCreate ProfilePage");
+        if(Config.SHOWLOG) Log.d("__A","onCreate ProfilePage");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
@@ -248,7 +249,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         super.onActivityResult(requestCode, resultCode, intent);
         //RESULT_CANCELED is 0, RESULT_OK is -1
         if (requestCode == 301) {
-            Log.d("DEBUG_PROFILE_PAGE", "request code 301 with resultCode=" + resultCode);
+            if(Config.SHOWLOG) Log.d("DEBUG_PROFILE_PAGE", "request code 301 with resultCode=" + resultCode);
             switch (resultCode) {
                 case Activity.RESULT_OK:
                     Uri selectedImg = intent.getData();
@@ -258,7 +259,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     break;
             }
         } else if (requestCode == 302) {
-            Log.d("DEBUG_PROFILE_PAGE", "request code 302 with resultCode=" + resultCode);
+            if(Config.SHOWLOG) Log.d("DEBUG_PROFILE_PAGE", "request code 302 with resultCode=" + resultCode);
             switch (resultCode) {
                 case Activity.RESULT_OK:
                     File thumbnailFile = new File(filePath);
@@ -277,7 +278,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     }
 
     public void doCrop(Uri uriOfImageToCrop) {
-        Log.d("DEBUG_PROFILE_PAGE", "into doCrop");
+        if(Config.SHOWLOG) Log.d("DEBUG_PROFILE_PAGE", "into doCrop");
         final Intent intent = new Intent("com.android.camera.action.CROP");
         intent.setData(uriOfImageToCrop);
         intent.putExtra("outputX", 200);
@@ -386,7 +387,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 nameDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int whichButton) {
                         dialog.dismiss();
-                        Log.d("action", getSupportActionBar().getHeight() + " ");
+                        if(Config.SHOWLOG) Log.d("action", getSupportActionBar().getHeight() + " ");
 
                     }
                 });
@@ -491,9 +492,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
                 final ParseFile file = new ParseFile(fileName, data);
                 try {
-                    Log.d("__A", "profile pic : file.save() start");
+                    if(Config.SHOWLOG) Log.d("__A", "profile pic : file.save() start");
                     file.save();
-                    Log.d("__A", "profile pic : file.save() success");
+                    if(Config.SHOWLOG) Log.d("__A", "profile pic : file.save() success");
                     HashMap<String, Object> parameters = new HashMap<String, Object>();
                     parameters.put("pid", file);
                     boolean result = ParseCloud.callFunction("updateProfilePic", parameters);
@@ -506,7 +507,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     }
                 } catch (ParseException e) {
                     Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                    Log.d("__A", "profile pic : file.save() error code=" + e.getCode() + ", msg=" + e.getMessage());
+                    if(Config.SHOWLOG) Log.d("__A", "profile pic : file.save() error code=" + e.getCode() + ", msg=" + e.getMessage());
                     e.printStackTrace();
                 }
             }

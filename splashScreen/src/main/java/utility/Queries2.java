@@ -92,15 +92,15 @@ public class Queries2 {
             ParseObject.pinAll(codegroupEntries);
             final SessionManager sm = new SessionManager(Application.getAppContext());
             sm.setCodegroupLocalState(1, userId); //set the flag locally that outbox data is valid
-            Log.d("D_FETCH_CLASS_DETAILS", "Pinned all. State changed to 1");
+            if(Config.SHOWLOG) Log.d("D_FETCH_CLASS_DETAILS", "Pinned all. State changed to 1");
 
             //Fetch subscriber list once and for all in the same thread user for fetching all class details
-            Log.d("D_FETCH_CLASS_DETAILS", "fetching subscriber list of all created classes once");
+            if(Config.SHOWLOG) Log.d("D_FETCH_CLASS_DETAILS", "fetching subscriber list of all created classes once");
             UpdateAllClassSubscribers.updateMembers();
         }
         catch (ParseException e){
             e.printStackTrace();
-            Log.d("D_FETCH_CLASS_DETAILS", "Failed with exception");
+            if(Config.SHOWLOG) Log.d("D_FETCH_CLASS_DETAILS", "Failed with exception");
         }
     }
 }

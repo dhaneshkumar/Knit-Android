@@ -302,7 +302,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             }
         }
 
-        Log.d(LOGTAG, "selectedClassList size=" + selectedClassList.size());
+        if(Config.SHOWLOG) Log.d(LOGTAG, "selectedClassList size=" + selectedClassList.size());
         if(selectedClassList.isEmpty()){
             Utility.toast("Select target classrooms");
             return;
@@ -320,7 +320,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         Calendar cal = Calendar.getInstance();
         hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
 
-        Log.d(ComposeMessage.LOGTAG, "send() : hourOfDay=" + hourOfDay);
+        if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "send() : hourOfDay=" + hourOfDay);
 
         if (hourOfDay != -1) {
 
@@ -367,7 +367,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         composeMessageHelper.sendFunction();
 
         if(source.equals(Constants.ComposeSource.OUTSIDE)){
-            Log.d(ComposeMessage.LOGTAG, "ComposeMessage sendNow() : setting goToOutboxFlag");
+            if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "ComposeMessage sendNow() : setting goToOutboxFlag");
             MainActivity.goToOutboxFlag = true;
         }
 
@@ -431,7 +431,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Log.d("__M", "ComposeMessage getView " + position + " begin");
+            if(Config.SHOWLOG) Log.d("__M", "ComposeMessage getView " + position + " begin");
 
             View row = convertView;
             if (row == null) {
@@ -531,7 +531,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 }
             });
 
-            Log.d("__M", "ComposeMessage getView " + position + " end");
+            if(Config.SHOWLOG) Log.d("__M", "ComposeMessage getView " + position + " end");
             return row;
         }
     }

@@ -18,6 +18,7 @@ import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
+import utility.Config;
 import utility.Queries;
 import utility.Queries2;
 import utility.Utility;
@@ -46,9 +47,9 @@ public class JoinedHelper {
         if(Queries.isJoinedClassExist(classcode))
             return 2;
 
-        Log.d("join", "class joining started current.........");
-        Log.d("join", classcode);
-        Log.d("join", childname);
+        if(Config.SHOWLOG) Log.d("join", "class joining started current.........");
+        if(Config.SHOWLOG) Log.d("join", classcode);
+        if(Config.SHOWLOG) Log.d("join", childname);
 
         //setting parameters
         HashMap<String, Object> params = new HashMap<String, Object>();
@@ -60,7 +61,7 @@ public class JoinedHelper {
 
         try {
             result = ParseCloud.callFunction("joinClass3", params);
-            Log.d("join", "class joining");
+            if(Config.SHOWLOG) Log.d("join", "class joining");
         } catch (ParseException e) {
             Utility.LogoutUtility.checkAndHandleInvalidSession(e);
             e.printStackTrace();
@@ -89,7 +90,7 @@ public class JoinedHelper {
             return 0;
         }
 
-        Log.d("join", "code object not null");
+        if(Config.SHOWLOG) Log.d("join", "code object not null");
         //successfully joined the classroom
         codeGroupObject.put(Constants.USER_ID, userId);
         currentParseUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
@@ -124,7 +125,7 @@ public class JoinedHelper {
         }
 
         //locally generating joining notification and inbox msg
-        Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
+        if(Config.SHOWLOG) Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
         NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString(Constants.Codegroup.NAME), Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
         EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString(Constants.Codegroup.CREATOR), codeGroupObject.getString(Constants.Codegroup.SENDER_ID), codeGroupObject.getString(Constants.Codegroup.NAME), currentParseUser);
 

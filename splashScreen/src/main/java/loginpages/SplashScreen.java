@@ -91,7 +91,6 @@ public class SplashScreen extends MyActionBarActivity {
      * Setting parse analytics
      */
     ParseAnalytics.trackAppOpened(getIntent());
-    Log.d("mainActivity", "examine intent over");
 
 
     /*
@@ -138,8 +137,6 @@ public class SplashScreen extends MyActionBarActivity {
           sleep(1000);
 
             Constants.actionBarHeight = getSupportActionBar().getHeight();
-
-            Log.d("action", "refresher action bar :" + getSupportActionBar().getHeight());
 
           // start loginpage activity
 

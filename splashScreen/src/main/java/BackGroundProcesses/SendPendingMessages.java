@@ -19,6 +19,7 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Outbox;
 import trumplabs.schoolapp.SendMessage;
+import utility.Config;
 import utility.Utility;
 
 /**
@@ -73,16 +74,16 @@ public class SendPendingMessages {
     public static void addMessageListToQueue(List<ParseObject> msgList){
         Utility.isInternetExist(); //show toast if no internet connection once
 
-        Log.d(LOGTAG, "[GUI] addMessageToQueue() entered");
+        if(Config.SHOWLOG) Log.d(LOGTAG, "[GUI] addMessageToQueue() entered");
 
         //since job is queue won't be null, but still for safety check null
         synchronized (DATA_LOCK) {
             //add to toastMessageList
-            Log.d(LOGTAG, "[GUI] addMessageToQueue() added " + msgList.size() + " to toastMessageList");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "[GUI] addMessageToQueue() added " + msgList.size() + " to toastMessageList");
             toastMessageList.addAll(msgList);
 
             if(toastMessageList.size() > toastMessageLimit){
-                Log.d(LOGTAG, "[GUI] addMessageToQueue() removed old " + (toastMessageList.size() - toastMessageLimit) + " messages from toastMessageList");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "[GUI] addMessageToQueue() removed old " + (toastMessageList.size() - toastMessageLimit) + " messages from toastMessageList");
                 toastMessageList.subList(0, toastMessageList.size()-toastMessageLimit).clear(); //keep only toastMessageLimit messages
             }
 
@@ -90,15 +91,15 @@ public class SendPendingMessages {
                 if (pendingMessageQueue != null) {
                     pendingMessageQueue.addAll(msgList);
                     ComposeMessage.sendButtonClicked = false; //Since added to queue, hence a job is already running
-                    Log.d(LOGTAG, "[GUI] addMessageToQueue() added to queue");
+                    if(Config.SHOWLOG) Log.d(LOGTAG, "[GUI] addMessageToQueue() added to queue");
                 }
             }
             else{
-                Log.d(LOGTAG, "[GUI] addMessageToQueue() spawn new thread");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "[GUI] addMessageToQueue() spawn new thread");
                 spawnThread(true);
             }
         }
-        Log.d(LOGTAG, "[GUI] addMessageToQueue() exit");
+        if(Config.SHOWLOG) Log.d(LOGTAG, "[GUI] addMessageToQueue() exit");
     }
 
     //notifies adapters of SendMessage and Outbox
@@ -112,13 +113,13 @@ public class SendPendingMessages {
     public static void sendPendingMessages(){
 
         synchronized (DATA_LOCK){
-            Log.d(LOGTAG, "sendPendingMessages : start-LOCK acquired : begin");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : start-LOCK acquired : begin");
             if(jobRunning) {
-                Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : already one running, returning");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : already one running, returning");
                 return;
             }
 
-            Log.d(LOGTAG, "sendPendingMessages : job started");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : job started");
 
             jobRunning = true;
             ComposeMessage.sendButtonClicked = false; //Since new job has now started
@@ -137,10 +138,10 @@ public class SendPendingMessages {
                 jobRunning = false;
                 isLive = false;
                 notifyAllAdapters();
-                Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : parse exception in find pending msgs query");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : parse exception in find pending msgs query");
                 return;
             }
-            Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : end");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : start-LOCK released : end");
         }
 
         boolean abort = false; //if session_invalid error in one of the cloud calls
@@ -150,19 +151,19 @@ public class SendPendingMessages {
         while (true) {
             List<ParseObject> nextBatch = null;
             synchronized (DATA_LOCK){
-                Log.d(LOGTAG, "sendPendingMessages : loop-LOCK acquired");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : loop-LOCK acquired");
                 if(pendingMessageQueue.isEmpty() || abort){
                     jobRunning = false;
                     isLive = false;
                     //notify SendMessage adapter so that retry button may be shown/hidden
                     notifyAllAdapters();
-                    Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : queue empty or abort=" + abort);
+                    if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : queue empty or abort=" + abort);
                     return;
                 }
 
                 nextBatch = getNextBatch(pendingMessageQueue);
 
-                Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : picking next item in the queue");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : loop-LOCK released : picking next item in the queue");
             }
 
             // now try sending this message if its not null and status is pending to avoid duplicates
@@ -175,13 +176,13 @@ public class SendPendingMessages {
                 int res = -1;
                 if (!UtilString.isBlank(master.getString("title")) && UtilString.isBlank(master.getString("attachment_name"))) {
                     //title non empty, attachment empty
-                    Log.d(LOGTAG, "pending text msg content : '" + master.getString("title") + "'" + ", multicast=" + nextBatch.size());
+                    if(Config.SHOWLOG) Log.d(LOGTAG, "pending text msg content : '" + master.getString("title") + "'" + ", multicast=" + nextBatch.size());
                     res = ComposeMessageHelper.sendMultiTextMessageCloud(nextBatch);
                 }
 
                 if (!UtilString.isBlank(master.getString("attachment_name"))) {
                     //title non empty, attachment empty
-                    Log.d(LOGTAG, "pending pic msg attachment name : " + master.getString("attachment_name") + ", multicast=" + nextBatch.size());
+                    if(Config.SHOWLOG) Log.d(LOGTAG, "pending pic msg attachment name : " + master.getString("attachment_name") + ", multicast=" + nextBatch.size());
                     res = ComposeMessageHelper.sendMultiPicMessageCloud(nextBatch);
                 }
 
@@ -205,7 +206,7 @@ public class SendPendingMessages {
                     continue;
                 }
 
-                Log.d(LOGTAG, "result=" + result + " isLive=" + isLive);
+                if(Config.SHOWLOG) Log.d(LOGTAG, "result=" + result + " isLive=" + isLive);
 
                 //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null if the app is running
                 if(showToast && isLive) {
@@ -225,7 +226,7 @@ public class SendPendingMessages {
                 }
             }
             else{
-                Log.d(LOGTAG, "currentMsg is either null or duplicate(not pending)");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "currentMsg is either null or duplicate(not pending)");
             }
 
             //pending msg queue is not empty, remove this currentMsg from queue, works even if currentMsg is null(which won't happen but still)

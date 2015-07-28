@@ -56,14 +56,14 @@ public class ScalingUtilities {
         takes the path of image on sdcard, scale the image and overwrite it
      */
     public static void scaleAndSave(String srcImagePath, String dstImagePath){
-        Log.d("DEBUG_SCALING", "scaleAndSave() : scrImagePath " + srcImagePath + " dstImagePath " + dstImagePath);
+        if(utility.Config.SHOWLOG) Log.d("DEBUG_SCALING", "scaleAndSave() : scrImagePath " + srcImagePath + " dstImagePath " + dstImagePath);
         final long startTime = SystemClock.uptimeMillis();
 
         // Part 1: Decode image
         Bitmap unscaledBitmap = ScalingUtilities.decodeFile(srcImagePath,
                 outWidth, outHeight, ScalingLogic.FIT);
 
-//        Log.d("DEBUG_SCALING", "unscaled width/height " + unscaledBitmap.getWidth() + " " + unscaledBitmap.getHeight());
+//        if(Config.SHOWLOG) Log.d("DEBUG_SCALING", "unscaled width/height " + unscaledBitmap.getWidth() + " " + unscaledBitmap.getHeight());
         // Part 2: Scale image
         Bitmap scaledBitmap = ScalingUtilities.createScaledBitmap(unscaledBitmap, outWidth,
                 outHeight, ScalingLogic.FIT);
@@ -93,7 +93,7 @@ public class ScalingUtilities {
             e.printStackTrace();
         }
         // Publish results
-        Log.d("DEBUG_SCALING_UTILITIES", "Time taken: " + (stopTime - startTime)
+        if(utility.Config.SHOWLOG) Log.d("DEBUG_SCALING_UTILITIES", "Time taken: " + (stopTime - startTime)
                 + " ms. Memory used for scaling: " + memUsageKb + " kb.");
     }
     /**

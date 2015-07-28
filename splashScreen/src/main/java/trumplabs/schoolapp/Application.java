@@ -50,7 +50,7 @@ public class Application extends android.app.Application {
   @Override
   public void onCreate() 
   {
-      Log.d("__A","onCreate Application, earlier applicationHandler null=" + (applicationHandler==null));
+      if(Config.SHOWLOG) Log.d("__A","onCreate Application, earlier applicationHandler null=" + (applicationHandler==null));
 
       applicationHandler = new Handler();
 

@@ -38,6 +38,7 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Messages;
 import trumplabs.schoolapp.Outbox;
+import utility.Config;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -63,7 +64,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("DEBUG_LOCATION_LOGIN", "PhoneSignUpVerfication - onCreate()");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "PhoneSignUpVerfication - onCreate()");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.signup_verification);
@@ -193,7 +194,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         //countDownTimer.cancel();
         //smoothProgressBar.setVisibility(View.GONE);
 
-        Log.d("DEBUG_SMS_LISTENER", "triggering PhoneSignUpVerfication.VerifyCodeTask");
+        if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "triggering PhoneSignUpVerfication.VerifyCodeTask");
         VerifyCodeTask verifyCodeTask = new VerifyCodeTask(code);
         verifyCodeTask.execute();
     }
@@ -209,7 +210,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             }
         }
         else{
-            Log.d("DEBUG_SIGNUP_VER", "Can't show error as error textview NULL");
+            if(Config.SHOWLOG) Log.d("DEBUG_SIGNUP_VER", "Can't show error as error textview NULL");
         }
     }
 
@@ -305,24 +306,24 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
                 if(!UtilString.isBlank(sessionToken)){
                     try{
-                        Log.d("D_SIGNUP_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
+                        if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
-                            Log.d("__A", "setting ignoreInvalidSessionCheck to false");
+                            if(Config.SHOWLOG) Log.d("__A", "setting ignoreInvalidSessionCheck to false");
                             Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
 
-                            Log.d("D_SIGNUP_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
+                            if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
                             taskSuccess = true;
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
                             // The token could not be validated.
-                            Log.d("D_SIGNUP_VERIF", "parseuser become - returned user null");
+                            if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "parseuser become - returned user null");
                             loginError = true;
                         }
                     }
                     catch (ParseException e){
                         Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                        Log.d("D_SIGNUP_VERIF", "parseuser become - parse exception");
+                        if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "parseuser become - parse exception");
                         if(e.getCode() == ParseException.CONNECTION_FAILED){
                             networkError = true;
                         }
@@ -332,12 +333,12 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                     }
                 }
                 else{
-                    Log.d("D_SIGNUP_VERIF", "verifyCode error");
+                    if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "verifyCode error");
                     verifyError = true;
                 }
             } catch (ParseException e) {
                 Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                Log.d("D_SIGNUP_VERIF", "network error with message " + e.getMessage() + " code "  + e.getCode());
+                if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "network error with message " + e.getMessage() + " code "  + e.getCode());
                 if(e.getCode() == ParseException.CONNECTION_FAILED){
                     networkError = true;
                 }
@@ -352,7 +353,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
                 e.printStackTrace();
             }
-            Log.d("D_SIGNUP_VERIF", "background : returning null");
+            if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "background : returning null");
             return null;
         }
 
@@ -384,7 +385,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
             }
 
-            Log.d("D_SIGNUP_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
+            if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
             if(!taskSuccess){
                 if(pdialog != null){
                     pdialog.dismiss();
@@ -433,7 +434,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         ProgressDialog progressDialog;
 
         public PostLoginTask(ParseUser user, ProgressDialog progressDialog) {
-            Log.d("D_FB_VERIF", "PostLoginTask running");
+            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "PostLoginTask running");
             this.user = user;
             this.progressDialog = progressDialog;
         }
@@ -469,7 +470,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         ProgressDialog progressDialog;
 
         public PostSignUpTask(ParseUser u, ProgressDialog progressDialog) {
-            Log.d("D_FB_VERIF", "PostSignUpTask running");
+            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "PostSignUpTask running");
             currentParseUser = u;
             this.progressDialog = progressDialog;
         }

@@ -18,6 +18,7 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MemberDetails;
 import trumplabs.schoolapp.SendMessage;
 import trumplabs.schoolapp.Subscribers;
+import utility.Config;
 import utility.Queries;
 import utility.Utility;
 
@@ -107,7 +108,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
         if (updatedTime != null) {
             param.put("date", updatedTime);
-            Log.d("SUBSCRIBER_DEBUG", updatedTime.toString());
+            if(Config.SHOWLOG) Log.d("SUBSCRIBER_DEBUG", updatedTime.toString());
         }
         else
             param.put("date", user.getCreatedAt());
@@ -118,7 +119,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
         try {
             memberList = ParseCloud.callFunction("showAllSubscribers", param);
-            Log.d("SUBSCRIBER_DEBUG", "calling show all subscribers");
+            if(Config.SHOWLOG) Log.d("SUBSCRIBER_DEBUG", "calling show all subscribers");
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -133,12 +134,12 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
             //storing app members
             if (appMembersList != null) {
 
-                Log.d("DEBUG_MEMBER", "members " + appMembersList.size() );
+                if(Config.SHOWLOG) Log.d("DEBUG_MEMBER", "members " + appMembersList.size() );
 
                 for (int i = 0; i < appMembersList.size(); i++) {
                     ParseObject appMembers = appMembersList.get(i);
                     appMembers.put("userId", user.getUsername());
-                    Log.d("DEBUG_MEMBER", "members " + appMembers.getString("name") + "  :  " + appMembers.getString("status"));
+                    if(Config.SHOWLOG) Log.d("DEBUG_MEMBER", "members " + appMembers.getString("name") + "  :  " + appMembers.getString("status"));
                 }
                 try {
                     ParseObject.pinAll(appMembersList);
@@ -183,7 +184,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
         }
         else
-            Log.d("SUBSCRIBER_DEBUG", "got zero members");
+            if(Config.SHOWLOG) Log.d("SUBSCRIBER_DEBUG", "got zero members");
 
 
 
@@ -229,11 +230,11 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
         if(codegroup != null)
         {
-            Log.d("MEMBER", codegroup.getString(Constants.Codegroup.CODE) + ", member count="+codegroup.getInt(Constants.Codegroup.COUNT));
+            if(Config.SHOWLOG) Log.d("MEMBER", codegroup.getString(Constants.Codegroup.CODE) + ", member count="+codegroup.getInt(Constants.Codegroup.COUNT));
             return codegroup.getInt(Constants.Codegroup.COUNT);
         }
         else
-            Log.d("MEMBER", "query null");
+            if(Config.SHOWLOG) Log.d("MEMBER", "query null");
 
         return 0;
     }
@@ -245,10 +246,10 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
         if(codegroup != null) {
             codegroup.put(Constants.Codegroup.COUNT, count);
             codegroup.pinInBackground();
-            Log.d("MEMBER", "setMemberCount " + groupCode + " : success : count=" + count);
+            if(Config.SHOWLOG) Log.d("MEMBER", "setMemberCount " + groupCode + " : success : count=" + count);
         }
         else{
-            Log.d("MEMBER", "setMemberCount " + groupCode + " : error");
+            if(Config.SHOWLOG) Log.d("MEMBER", "setMemberCount " + groupCode + " : error");
         }
     }
 

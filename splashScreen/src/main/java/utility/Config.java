@@ -3,6 +3,10 @@ package utility;
 import trumplabs.schoolapp.Constants;
 
 public class Config {
+  /*
+    set this flag to false before release to disable log statements(which use this flag as guard)
+   */
+    public static final boolean SHOWLOG = false;
 
   /*
    * Parse Configurations

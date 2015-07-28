@@ -10,6 +10,7 @@ import android.util.Log;
 
 import loginpages.PhoneSignUpVerfication;
 import trumplabs.schoolapp.Application;
+import utility.Config;
 
 /**
  * Created by ashish on 27/2/15.
@@ -44,12 +45,12 @@ public class SmsListener extends BroadcastReceiver {
                         }
 
                         if(msgFrom.toLowerCase().contains(senderCore.toLowerCase()) && msgBody.toLowerCase().contains(endMsgContent.toLowerCase())){
-                            Log.d("DEBUG_SMS_LISTENER", "FOUND : msgBody " + msgBody + " msgFrom " + msgFrom);
+                            if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "FOUND : msgBody " + msgBody + " msgFrom " + msgFrom);
                             isListeningOn = false;
                             final String code = extractCode(msgBody);
                             if(code != null) {
                                 if (PhoneSignUpVerfication.verificationCodeET != null) {
-                                    Log.d("DEBUG_SMS_LISTENER", "posting to PhoneSignUpVerfication");
+                                    if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "posting to PhoneSignUpVerfication");
                                     PhoneSignUpVerfication.verificationCodeET.post(new Runnable() {
                                         @Override
                                         public void run() {
@@ -61,7 +62,7 @@ public class SmsListener extends BroadcastReceiver {
                             }
                         }
                         else {
-                            Log.d("DEBUG_SMS_LISTENER", "STRAY : msgBody " + msgBody + " msgFrom " + msgFrom);
+                            if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "STRAY : msgBody " + msgBody + " msgFrom " + msgFrom);
                         }
                     }
                 }catch(Exception e){
@@ -82,30 +83,30 @@ public class SmsListener extends BroadcastReceiver {
         unRegister();
         isListeningOn = true;
 
-        Log.d("DEBUG_SMS_LISTENER", "register() - called");
+        if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "register() - called");
         if(listener != null) {
             IntentFilter filter = new IntentFilter();
             filter.addAction("android.provider.Telephony.SMS_RECEIVED");
             Application.getAppContext().registerReceiver(listener, filter);
         }
         else{
-            Log.d("DEBUG_SMS_LISTENER", "register() - LISTENER NULL");
+            if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "register() - LISTENER NULL");
         }
     }
 
     public static void unRegister(){
         isListeningOn = false;
-        Log.d("DEBUG_SMS_LISTENER", "unRegister() - called");
+        if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "unRegister() - called");
         if(listener != null) {
             try{
                 Application.getAppContext().unregisterReceiver(listener);
             }
             catch (IllegalArgumentException e){
-                Log.d("DEBUG_SMS_LISTENER", "unRegister() - ALREADY NOT REGISTERED");
+                if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "unRegister() - ALREADY NOT REGISTERED");
             }
         }
         else{
-            Log.d("DEBUG_SMS_LISTENER", "unRegister() - LISTENER NULL");
+            if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "unRegister() - LISTENER NULL");
         }
     }
 }

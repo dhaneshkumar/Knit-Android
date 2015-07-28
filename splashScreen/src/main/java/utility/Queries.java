@@ -21,6 +21,8 @@ import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MemberDetails;
 
 public class Queries {
+    static final boolean SHOWLOG = false;
+
     String userId;
     List<ParseObject> msgs;
     int messageCount = Config.inboxMsgCount;
@@ -79,7 +81,7 @@ public class Queries {
             } else if (localMsgList.size() == 0) {
             } else if (msgs.size() < messageCount) {
 
-                Log.d("msg", "0000");
+                if(Config.SHOWLOG) Log.d("msg", "0000");
 
                 if (msgs.get(msgs.size() - 1).getCreatedAt() != null
                         && localMsgList.get(0).getDate("creationTime") != null) {
@@ -91,19 +93,19 @@ public class Queries {
                     }
                 }
             } else if (msgs.size() >= messageCount) {
-                Log.d("msg", "000022222222222");
+                if(Config.SHOWLOG) Log.d("msg", "000022222222222");
                 if (msgs.get(msgs.size() - 1).getCreatedAt() != null
                         && localMsgList.get(0).getDate("creationTime") != null) {
 
-                    Log.d("msg", "0000232323");
+                    if(Config.SHOWLOG) Log.d("msg", "0000232323");
                     if (msgs.get(msgs.size() - 1).getCreatedAt()
                             .compareTo(localMsgList.get(0).getDate("creationTime")) == 1) {
                         // do nothing
 
-                        Log.d("msg", "323232");
+                        if(Config.SHOWLOG) Log.d("msg", "323232");
                     } else {
 
-                        Log.d("msg", "2222");
+                        if(Config.SHOWLOG) Log.d("msg", "2222");
 
             /*
              * merge only those local msg whose creation time is greater than last cretedAt global
@@ -113,14 +115,14 @@ public class Queries {
                         msgs = mergeAllOnDate(msgs, localMsgList, false);
                     }
                 } else
-                    Log.d("msg", "0000 local - null");
+                    if(Config.SHOWLOG) Log.d("msg", "0000 local - null");
             }
         }
 
     /*
      * for(int i =0; i<msgs.size(); i++) { if(msgs.get(i).getCreatedAt()!= null)
-     * Log.d("localMessage", msgs.get(i).getString("title") + "  -- "+ msgs.get(i).getCreatedAt() );
-     * else Log.d("localMessage", msgs.get(i).getString("title") + "  -- "+
+     * if(Config.SHOWLOG) Log.d("localMessage", msgs.get(i).getString("title") + "  -- "+ msgs.get(i).getCreatedAt() );
+     * else if(Config.SHOWLOG) Log.d("localMessage", msgs.get(i).getString("title") + "  -- "+
      * msgs.get(i).getDate("creationTime") ); }
      */
 
@@ -197,7 +199,7 @@ public class Queries {
         //      Otherwise use showLatestMessagesWithLimit for login mode
 
         if(newTimeStamp == null && sessionManager.getSignUpAccount()){
-            Log.d("DBG_QUERIES_SERVER_MSGS", "timestamp null with SIGNUP mode. Using user's creation time as timestamp");
+            if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "timestamp null with SIGNUP mode. Using user's creation time as timestamp");
             newTimeStamp = user.getCreatedAt();
         }
 
@@ -206,7 +208,7 @@ public class Queries {
         //if newTimeStamp is NOT null, fetch all new messages with timestamp > newTimeStamp
 
         if(newTimeStamp == null){
-            Log.d("DBG_QUERIES_SERVER_MSGS", "timestamp null. So no messages stored. Fetching first batch of messages");
+            if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "timestamp null. So no messages stored. Fetching first batch of messages");
             HashMap<String, Object> parameters = new HashMap<String, Object>();
 
             parameters.put("limit", Config.firstTimeInboxFetchCount);
@@ -222,11 +224,11 @@ public class Queries {
                     //if size is less than expected, then set flag in shared prefs
                     if(allMessages.size() < Config.firstTimeInboxFetchCount){
                         String key = userId + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
-                        Log.d("_FETCH_OLD", "getServerInboxMsgs() : setting shared prefs _server_inbox_fetched");
+                        if(Config.SHOWLOG) Log.d("_FETCH_OLD", "getServerInboxMsgs() : setting shared prefs _server_inbox_fetched");
                         SessionManager.setBooleanValue(key, true);
                     }
 
-                    Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : fetched msgs=" + allMessages.size() + ", states=" + allStates.size());
+                    if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : fetched msgs=" + allMessages.size() + ", states=" + allStates.size());
                     //use allStates to set appropriate state for the each received message
 
                     for(int m=0; m < allMessages.size(); m++){
@@ -234,7 +236,7 @@ public class Queries {
                         List<Boolean> msgState = allStates.get(msg.getObjectId());
 
                         if(msgState != null){
-                            Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
+                            if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
 
                             msg.put(Constants.GroupDetails.LIKE, msgState.get(0));
                             msg.put(Constants.GroupDetails.CONFUSING, msgState.get(1));
@@ -253,7 +255,7 @@ public class Queries {
                         msg.put(Constants.GroupDetails.SEEN_STATUS, 0); // we assume that if msg downloaded, then must have seen
                     }
 
-                    Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
+                    if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] pinning all together");
                     ParseObject.pinAll(allMessages); //pin all the messages
                     msgList.addAll(0, allMessages);
                 }
@@ -264,7 +266,7 @@ public class Queries {
             }
         }
         else{
-            Log.d("DBG_QUERIES_SERVER_MSGS", "fetch messages greater than newTimeStamp");
+            if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "fetch messages greater than newTimeStamp");
             //fetch messages greater than newTimeStamp
             HashMap<String, Date> parameters = new HashMap<String, Date>();
 
@@ -274,7 +276,7 @@ public class Queries {
                 //just fetch, set default state(like, confused = false, false)
                 List<ParseObject> allMessages= ParseCloud.callFunction("showLatestMessages", parameters);
                 if(allMessages != null) {
-                    Log.d("DBG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
+                    if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "[time] fetched " + allMessages.size());
                     for(int i=0; i<allMessages.size(); i++){
                         ParseObject msg = allMessages.get(i);
                         msg.put(Constants.GroupDetails.LIKE, false);
@@ -327,7 +329,7 @@ public class Queries {
 
         Date oldestTimeStamp = oldestMsg.getCreatedAt();
 
-        Log.d("_FETCH_OLD", "entered input all correct. Now calling cloud fuction : showOldMessages");
+        if(Config.SHOWLOG) Log.d("_FETCH_OLD", "entered input all correct. Now calling cloud fuction : showOldMessages");
 
         HashMap<String, Object> parameters = new HashMap<String, Object>();
 
@@ -343,12 +345,12 @@ public class Queries {
 
             //since old messages, need to update their MessageState(like_status, confused_status)
             if(allMessages != null) {
-                Log.d("_FETCH_OLD", "fetched msgs=" + allMessages.size() + " fetched states=" + allStates.size());
+                if(Config.SHOWLOG) Log.d("_FETCH_OLD", "fetched msgs=" + allMessages.size() + " fetched states=" + allStates.size());
 
                 //if size is less than expected, then set flag in shared prefs
                 if(allMessages.size() < Config.oldMessagesPagingSize){
                     String key = userId + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
-                    Log.d("_FETCH_OLD", "setting shared prefs _server_inbox_fetched");
+                    if(Config.SHOWLOG) Log.d("_FETCH_OLD", "setting shared prefs _server_inbox_fetched");
                     SessionManager.setBooleanValue(key, true);
                 }
 
@@ -358,7 +360,7 @@ public class Queries {
                     List<Boolean> msgState = allStates.get(msg.getObjectId());
 
                     if(msgState != null){
-                        Log.d("_FETCH_OLD", "msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
+                        if(Config.SHOWLOG) Log.d("_FETCH_OLD", "msg state for " + msg.getObjectId() + " l=" + msgState.get(0) + ", c=" + msgState.get(1));
 
                         msg.put(Constants.GroupDetails.LIKE, msgState.get(0));
                         msg.put(Constants.GroupDetails.CONFUSING, msgState.get(1));
@@ -523,9 +525,9 @@ public class Queries {
                     ParseObject members = appMembers.get(i);
 
                  /*   if(members.getString("status") != null)
-                        Log.d("STATUS",members.getObjectId() + "-" + members.getString("status") +  "-");
+                        if(Config.SHOWLOG) Log.d("STATUS",members.getObjectId() + "-" + members.getString("status") +  "-");
                     else
-                        Log.d("STATUS", members.getObjectId() + "  :  null status");*/
+                        if(Config.SHOWLOG) Log.d("STATUS", members.getObjectId() + "  :  null status");*/
 
 
                     List<String> childList = members.getList("children_names");
@@ -683,7 +685,8 @@ public class Queries {
         Currently being called in MemberList asynctask
      */
     public static void fillCodegroupMap() {
-        Log.d("__MG", "fillCodegroupMap : begin");
+        if(Config.SHOWLOG) Log.d("__MG", "fillCodegroupMap : begin");
+
         if(Application.globalCodegroupMap == null){
             return;
         }
@@ -701,7 +704,7 @@ public class Queries {
         catch (ParseException e){
             e.printStackTrace();
         }
-        Log.d("__MG", "fillCodegroupMap : end,  mapsize=" + Application.globalCodegroupMap.size());
+        if(Config.SHOWLOG) Log.d("__MG", "fillCodegroupMap : end,  mapsize=" + Application.globalCodegroupMap.size());
     }
 
     /*
@@ -714,7 +717,7 @@ public class Queries {
         }
 
         if(Application.globalCodegroupMap != null && Application.globalCodegroupMap.get(groupCode) != null){
-            Log.d("__M", "JoinedGroups getView codegroup " + groupCode + " found in map");
+            if(Config.SHOWLOG) Log.d("__M", "JoinedGroups getView codegroup " + groupCode + " found in map");
             return Application.globalCodegroupMap.get(groupCode);
         }
 
@@ -727,7 +730,7 @@ public class Queries {
             ParseObject codegroup = query.getFirst();
             if(codegroup != null && Application.globalCodegroupMap != null){
                 Application.globalCodegroupMap.put(groupCode, codegroup);
-                Log.d("__M", "JoinedGroups getView codegroup " + groupCode + " queried and put in map");
+                if(Config.SHOWLOG) Log.d("__M", "JoinedGroups getView codegroup " + groupCode + " queried and put in map");
             }
             return codegroup;
         }

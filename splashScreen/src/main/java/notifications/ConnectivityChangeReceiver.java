@@ -33,7 +33,7 @@ public class ConnectivityChangeReceiver extends WakefulBroadcastReceiver {
 
     @Override
     public void onReceive(final Context context, Intent intent) {
-        Log.d(LOGTAG, "onReceive() : entered");
+        if(Config.SHOWLOG) Log.d(LOGTAG, "onReceive() : entered");
 
         ParseUser currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
@@ -46,11 +46,11 @@ public class ConnectivityChangeReceiver extends WakefulBroadcastReceiver {
 
         if(role.equalsIgnoreCase(Constants.TEACHER)) {
             if (Utility.isInternetExistWithoutPopup()){
-                Log.d(LOGTAG, "onReceive() : connected");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "onReceive() : connected");
                 SendPendingMessages.spawnThread(false);
             }
             else{
-                Log.d(LOGTAG, "onReceive() : not connected");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "onReceive() : not connected");
             }
         }
     }

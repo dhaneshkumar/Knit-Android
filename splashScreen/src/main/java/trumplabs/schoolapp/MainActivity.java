@@ -101,7 +101,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static boolean goToOutboxFlag = false; //when returns from Message Composer, go directly to Outbox
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d("__A","onCreate MainActivity");
+        if(Config.SHOWLOG) Log.d("__A","onCreate MainActivity");
 
         //testing tutorial TODO comment following line before release
         //TestingUtililty.testingTutorial();
@@ -331,7 +331,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     supportInvalidateOptionsMenu();
                     fragmentVisible = arg0;
 
-                    Log.d("__TEMP__", "onPageSelected " + fragmentVisible + "["+Outbox.responseTutorialShown + "," + Messages.responseTutorialShown + "]");
+                    if(Config.SHOWLOG) Log.d("__TEMP__", "onPageSelected " + fragmentVisible + "["+Outbox.responseTutorialShown + "," + Messages.responseTutorialShown + "]");
                     if(fragmentVisible == 0 && !Outbox.responseTutorialShown && Outbox.myadapter != null){
                         Outbox.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
                     }
@@ -559,9 +559,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         super.onResume();
         Application.mainActivityVisible = true;
         AppEventsLogger.activateApp(this, Config.FB_APP_ID);
-        Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() : goToOutboxFlag=" + goToOutboxFlag);
+        if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() : goToOutboxFlag=" + goToOutboxFlag);
         if(goToOutboxFlag){
-            Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() : going to outbox tab");
+            if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "MainActivity onResume() : going to outbox tab");
             goToOutboxFlag = false;
             if(viewpager != null) {
                 viewpager.setCurrentItem(0, false); //0th is the outbox tab
@@ -625,11 +625,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            //Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
+            //if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "teacher create: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
 
             if(Application.mainActivityVisible && !MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
                 MainActivity.signUpShowcaseShown = true;
-                Log.d(ShowcaseCreator.LOGTAG, "teacher create: creating showcase");
+                if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "teacher create: creating showcase");
                 ShowcaseCreator.teacherHighlightCreate(this, createClassActionView, joinClassActionView); //show now
             }
 
@@ -672,10 +672,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 }
             });
 
-            Log.d(ShowcaseCreator.LOGTAG, "parent join: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
+            if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "parent join: flag=" + signUpShowcaseShown + ", signup flag=" + Constants.IS_SIGNUP);
             if(Application.mainActivityVisible && !MainActivity.signUpShowcaseShown && Constants.IS_SIGNUP && !ShowcaseView.isVisible) {
                 MainActivity.signUpShowcaseShown = true;
-                Log.d(ShowcaseCreator.LOGTAG, "parent join:  creataing the showcase");
+                if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "parent join:  creataing the showcase");
                 ShowcaseCreator.parentHighlightJoin(this, joinClassActionView, joinedClassesActionView); //show now
             }
 

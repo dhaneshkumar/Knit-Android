@@ -70,7 +70,7 @@ public class Utility extends MyActionBarActivity {
         ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
 
         if(parseInstallation == null){ //this should never ever happen
-            Log.d("DEBUG_UTILITY", "checkParseInstallation : getCurrentInstallation() returned null");
+            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstallation : getCurrentInstallation() returned null");
             return false;
         }
 
@@ -81,7 +81,7 @@ public class Utility extends MyActionBarActivity {
         }
 
         //Since neither id nor objectId set, call the cloud function.
-        Log.d("DEBUG_UTILITY", "checkParseInstalltion : calling appInstallation cloud function");
+        if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstalltion : calling appInstallation cloud function");
         HashMap<String, Object> param = new HashMap<String, Object>();
         param.put("deviceType", "android");
         param.put("installationId", parseInstallation.getInstallationId());
@@ -90,11 +90,11 @@ public class Utility extends MyActionBarActivity {
             String id = ParseCloud.callFunction("appInstallation", param);
             parseInstallation.put("id", id);
             parseInstallation.pin();
-            Log.d("DEBUG_UTILITY", "checkParseInstalltion : success cloud function with id " + id);
+            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstalltion : success cloud function with id " + id);
             return true;
         }
         catch (com.parse.ParseException e){
-            Log.d("DEBUG_UTILITY", "checkParseInstallation : failure cloud function");
+            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstallation : failure cloud function");
             e.printStackTrace();
             return false;
         }
@@ -134,9 +134,9 @@ public class Utility extends MyActionBarActivity {
             param.put("installationId", pi.getInstallationId());
 
             try{
-                Log.d("DEBUG_UTILITY", "logout() - appLogout before calling");
+                if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "logout() - appLogout before calling");
                 boolean logoutSuccess = ParseCloud.callFunction("appExit", param);
-                Log.d("DEBUG_UTILITY", "logout() - appLogout returned with" + logoutSuccess);
+                if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "logout() - appLogout returned with" + logoutSuccess);
                 success = true;
                 return null;
             }
@@ -151,7 +151,7 @@ public class Utility extends MyActionBarActivity {
         protected void onPostExecute(Void result){
             //UI thread
             if(success) {
-                Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
+                if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "logout() : launching Signup activity = " + success);
                 LogoutUtility.performLogoutAction();
             }
             else{
@@ -179,13 +179,13 @@ public class Utility extends MyActionBarActivity {
     public static void toast(String str, boolean isNullUserOK) {
 
         if(ParseUser.getCurrentUser() == null && !isNullUserOK){
-            Log.d("__A", "toast : parseUser null, hence ignoring content=" + str);
+            if(Config.SHOWLOG) Log.d("__A", "toast : parseUser null, hence ignoring content=" + str);
             return;
         }
 
         //see if app is visible, i.e current activity not null
         if(Application.getCurrentActivity() == null){
-            Log.d("__A", "toast : app not visible, hence ignoring content=" + str);
+            if(Config.SHOWLOG) Log.d("__A", "toast : app not visible, hence ignoring content=" + str);
             return;
         }
 
@@ -340,7 +340,7 @@ public class Utility extends MyActionBarActivity {
         String fname = filepath.substring(filepath.lastIndexOf("/") + 1);
         String targetPath = Utility.getWorkingAppDir() + "/media/" + fname;
 
-        Log.d("DEBUG_UTILITY", "savePicInAppFolder calling for a gallery image");
+        if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "savePicInAppFolder calling for a gallery image");
         ScalingUtilities.scaleAndSave(filepath, targetPath);
     }
 
@@ -431,7 +431,7 @@ public class Utility extends MyActionBarActivity {
 
     //update current time(sync with server now - needed for first time e.g login, signup)
     public static void updateCurrentTime(){
-        Log.d("DEBUG_UTILITY", "using updateCurrentTime() during login/signup");
+        if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "using updateCurrentTime() during login/signup");
         SessionManager session = new SessionManager(Application.getAppContext());
 
         HashMap<String, Date> parameters = new HashMap<String, Date>();
@@ -441,18 +441,18 @@ public class Utility extends MyActionBarActivity {
                 session.setCurrentTime(now);
             }
             else{
-                Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "getServerTime failed - Date null");
+                if(Config.SHOWLOG) Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "getServerTime failed - Date null");
             }
         }
         catch (com.parse.ParseException e){
-            Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "getServerTime failed - ParseException");
+            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "getServerTime failed - ParseException");
             e.printStackTrace();
         }
     }
 
     //update current time (but in background as not urgent)
     public static void updateCurrentTimeInBackground(){
-        Log.d("DEBUG_UTILITY", "using updateCurrentTimeInBackground()");
+        if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "using updateCurrentTimeInBackground()");
         final SessionManager session = new SessionManager(Application.getAppContext());
 
         HashMap<String, Date> parameters = new HashMap<String, Date>();
@@ -465,7 +465,7 @@ public class Utility extends MyActionBarActivity {
                     session.setCurrentTime(currentTime);
                 }
                 else{
-                    Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME_BACK", "getServerTime failed");
+                    if(Config.SHOWLOG) Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME_BACK", "getServerTime failed");
                 }
             }
         });
@@ -550,7 +550,7 @@ public class Utility extends MyActionBarActivity {
         */
         public static boolean checkAndHandleInvalidSession(ParseException e){
             if(e != null && e.getCode() == ParseException.INVALID_SESSION_TOKEN){
-                Log.d("__A", "checkAndHandleInvalidSession : calling static logout() : my caller=" + TestingUtililty.getCaller());
+                if(Config.SHOWLOG) Log.d("__A", "checkAndHandleInvalidSession : calling static logout() : my caller=" + TestingUtililty.getCaller());
                 logout();
                 return true;
             }
@@ -560,11 +560,11 @@ public class Utility extends MyActionBarActivity {
         //can call from non-UI thread
         //default called from everywhere(along with checkAndHandleInvalidSession)
         public static void logout() {
-            Log.d("__A", "static logout called : my caller=" + TestingUtililty.getCaller());
+            if(Config.SHOWLOG) Log.d("__A", "static logout called : my caller=" + TestingUtililty.getCaller());
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    Log.d("__A", "logout() : inside job");
+                    if(Config.SHOWLOG) Log.d("__A", "logout() : inside job");
                     Utility.toast("Session expired. Please login again !", true);
                     performLogoutAction();
                 }
@@ -572,11 +572,11 @@ public class Utility extends MyActionBarActivity {
 
             if(!getIgnoreInvalidSessionCheck() && Application.applicationHandler != null){
                 setIgnoreInvalidSessionCheck();
-                Log.d("__A", "logout() : posting the job");
+                if(Config.SHOWLOG) Log.d("__A", "logout() : posting the job");
                 Application.applicationHandler.post(r);
             }
             else{
-                Log.d("__A", "logout() : SKIPPING posting the job");
+                if(Config.SHOWLOG) Log.d("__A", "logout() : SKIPPING posting the job");
             }
         }
 
@@ -587,7 +587,7 @@ public class Utility extends MyActionBarActivity {
             resetLocalData(); //clear all the flags(general & user specific), stop alarms
             //do this first before unpinning or logout current user
 
-            Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
+            if(Config.SHOWLOG) Log.d("__A", "checkAndHandleInvalidSession : unpinning current user");
             ParseUser currentUser = ParseUser.getCurrentUser();
             if(currentUser != null){
                 currentUser.unpinInBackground();

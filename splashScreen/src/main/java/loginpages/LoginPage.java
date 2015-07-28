@@ -35,6 +35,7 @@ import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
+import utility.Config;
 import utility.SessionManager;
 import utility.Tools;
 import utility.Utility;
@@ -125,7 +126,7 @@ public class LoginPage extends MyActionBarActivity {
     loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
       @Override
       public void onSuccess(LoginResult loginResult) {
-        Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
+        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
 
         if (AccessToken.getCurrentAccessToken() != null) {
          /* //show progress bar
@@ -137,24 +138,24 @@ public class LoginPage extends MyActionBarActivity {
 
 
           String token = AccessToken.getCurrentAccessToken().getToken();
-          Log.d("D_FB_VERIF", "access token = " + token);
+          if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
 
           FBVerifyTask fbVerifyTask = new FBVerifyTask(token, false); //isLogin = false
           fbVerifyTask.execute();*/
         } else {
-          Log.d("D_FB_VERIF", "access token null");
+          if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token null");
         }
       }
 
       @Override
       public void onCancel() {
-        Log.d("D_FB_VERIF", "logged cancelled");
+        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged cancelled");
       }
 
       @Override
       public void onError(FacebookException exception) {
         exception.printStackTrace();
-        Log.d("D_FB_VERIF", "FacebookException");
+        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "FacebookException");
       }
     });
 
@@ -224,17 +225,17 @@ public class LoginPage extends MyActionBarActivity {
             }
           } else {
             // The token could not be validated.
-            Log.d(LOGTAG, "parseuser become - returned user null");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "parseuser become - returned user null");
           }
         }
         else{
-          Log.d(LOGTAG, "verifyCode result not correct");
+          if(Config.SHOWLOG) Log.d(LOGTAG, "verifyCode result not correct");
         }
       }
       catch (ParseException e){
         Utility.LogoutUtility.checkAndHandleInvalidSession(e);
 
-        Log.d(LOGTAG, "verifyCode/becomeUser ParseException, error-code=" + e.getCode());
+        if(Config.SHOWLOG) Log.d(LOGTAG, "verifyCode/becomeUser ParseException, error-code=" + e.getCode());
         if(e.getCode() == ParseException.CONNECTION_FAILED){
           networkError = true;
         }
