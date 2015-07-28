@@ -53,6 +53,7 @@ import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
+import utility.ImageCache;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -579,72 +580,16 @@ public class SendMessage extends MyActionBarActivity  {
                 msgtxtcontent.setVisibility(View.VISIBLE);
             }
             timestampview.setText(timestampmsg);
-
             uploadprogressbar.setVisibility(View.GONE);
+
             // /////////////////////////////////////////////
+
             if (!UtilString.isBlank(imagepath)) {
-
-                /*
-                Showoing the attached image
-                 */
                 imgmsgview.setVisibility(View.VISIBLE);
-                uploadprogressbar.setTag("Progress");
-                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
-                if (imgFile.exists() && !thumbnailFile.exists())
-                    Utility.createThumbnail(SendMessage.this, imagepath);
-                if (imgFile.exists()) {
-                    // image file present locally then display it
-                    Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                ParseFile imagefile = (ParseFile) msg.get("attachment");
 
-                    imgmsgview.setTag(imgFile.getAbsolutePath());
-                    imgmsgview.setImageBitmap(myBitmap);
-                    timestampview.setText(timestampmsg);
-                } else {
-                    // else download image from server and then display it
-                    ParseFile imagefile = (ParseFile) msg.get("attachment");
-                    uploadprogressbar.setVisibility(View.VISIBLE);
-                    imagefile.getDataInBackground(new GetDataCallback() {
-                        public void done(byte[] data, ParseException e) {
-                            if (e == null) {
-                                // ////Image download successful
-                                FileOutputStream fos;
-                                try {
-                                    fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                                    try {
-                                        fos.write(data);
-                                    } catch (IOException e1) {
-                                        e1.printStackTrace();
-                                    } finally {
-                                        try {
-                                            fos.close();
-                                        } catch (IOException e1) {
-                                            e1.printStackTrace();
-                                        }
-                                    }
-
-                                } catch (FileNotFoundException e2) {
-                                    e2.printStackTrace();
-                                }
-
-                                // //////////////////////////////////////////
-                                Utility.createThumbnail(SendMessage.this, imagepath);
-                                Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                                imgmsgview.setImageBitmap(mynewBitmap);
-                                uploadprogressbar.setVisibility(View.GONE);
-                                // Might be a problem when net is too slow :/
-                            } else {
-                                // Image not downloaded
-                                uploadprogressbar.setVisibility(View.GONE);
-                            }
-                        }
-                    });
-
-                    imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                    imgmsgview.setImageBitmap(null);
-                    // imgmsgview.setVisibility(View.GONE);
-
-                }
+                //following utility function takes care of displaying image in the holder
+                ImageCache.loadBitmap(imagepath, imgmsgview, SendMessage.this, uploadprogressbar, imagefile);
             } else {
                 imgmsgview.setVisibility(View.GONE);
             }

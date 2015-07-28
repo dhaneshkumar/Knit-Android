@@ -541,8 +541,10 @@ public class Outbox extends Fragment {
                 holder.imgmsgview.setVisibility(View.VISIBLE);
 
                 holder.uploadprogressbar.setTag("Progress");
+
                 File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
                 final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
+
                 if (imgFile.exists() && !thumbnailFile.exists())
                     Utility.createThumbnail(getActivity(), imagepath);
                 if (imgFile.exists()) {
