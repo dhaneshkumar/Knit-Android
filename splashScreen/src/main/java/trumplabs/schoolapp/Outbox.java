@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -75,6 +76,8 @@ public class Outbox extends Fragment {
     private static ProgressBar loadingBar;
     private static int selectedMsgIndex = -1;
 
+    private LruCache<String, Bitmap> mMemoryCache;
+
     //handle notification
     private static String action; //LIKE/CONFUSE
     private static String id; //msg object id
@@ -129,6 +132,23 @@ public class Outbox extends Fragment {
         outboxListv.setLayoutManager(mLayoutManager);
         myadapter = new RecycleAdapter();
         outboxListv.setAdapter(myadapter);
+
+        /*
+        * Setting up LRU Cache for images
+        */
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        // Use 1/8th of the available memory for this memory cache.
+        final int cacheSize = maxMemory / 8;
+
+        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+            /*
+             * The cache size will be measured in kilobytes rather than number of items.
+             */
+                return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
+            }
+        };
 
         emptyBackground.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -242,6 +262,41 @@ public class Outbox extends Fragment {
         }
     }
 
+
+    /*
+     * LRU Functions *************************************************
+     */
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+
+        if (key != null && bitmap != null) {
+            if (getBitmapFromMemCache(key) == null) {
+                mMemoryCache.put(key, bitmap);
+            }
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return mMemoryCache.get(key);
+    }
+
+
+    public void loadBitmap(String imageKey, ImageView mImageView) {
+
+        final Bitmap bitmap = getBitmapFromMemCache(imageKey);
+        if (bitmap != null) {
+            if(Config.SHOWLOG) Log.d("__O", "cached image " + imageKey);
+            mImageView.setImageBitmap(bitmap);
+        } else {
+            if(Config.SHOWLOG) Log.d("__O", "loading from disk image " + imageKey);
+            Bitmap myBitmap = BitmapFactory.decodeFile(imageKey);
+            mImageView.setImageBitmap(myBitmap);
+            addBitmapToMemoryCache(imageKey, myBitmap);
+        }
+    }
+
+    /**
+     * ********************* LRU END ******************************
+     */
     public static void notifyAdapter(){
         if(outboxListv != null){
             outboxListv.post(new Runnable() {
@@ -492,10 +547,11 @@ public class Outbox extends Fragment {
                     Utility.createThumbnail(getActivity(), imagepath);
                 if (imgFile.exists()) {
                     // if image file present locally
-                    Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                    //Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+                    loadBitmap(thumbnailFile.getAbsolutePath(), holder.imgmsgview);
                     holder.imgmsgview.setTag(imgFile.getAbsolutePath());
-                    holder.imgmsgview.setImageBitmap(myBitmap);
                 } else {
+                    if(Config.SHOWLOG) Log.d("__O", "downloading image " + imagepath);
                     // else we Have to download image from server
                     ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
                     holder.uploadprogressbar.setVisibility(View.VISIBLE);
@@ -618,181 +674,181 @@ public class Outbox extends Fragment {
         }*/
 
 
-        //Refresh the layout. For e.g if outbox messages have changed
-        public static void refreshSelf() {
-            if (Outbox.outboxRefreshLayout != null) {
-                Outbox.outboxRefreshLayout.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        if(Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
-                        outboxRefreshLayout.setRefreshing(false);
-                        if (groupDetails == null || groupDetails.size() == 0) {
-                            outboxLayout.setVisibility(View.VISIBLE);
-                        } else {
-                            outboxLayout.setVisibility(View.GONE);
-                        }
-
-                        if (Outbox.myadapter != null) {
-                            Outbox.myadapter.notifyDataSetChanged();
-                        }
-                    }
-                });
-            }
-        }
-
-        public static void refreshCountCore() {
-            //set lastTimeOutboxSync
-            Application.lastTimeOutboxSync = Calendar.getInstance().getTime();
-
-            if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox and setting lastTimeOutboxSync");
-            SyncMessageDetails.fetchLikeConfusedCountOutbox();
-            //following is the onpostexecute thing
-            refreshSelf();
-        }
-
-        //update like/confused/seen count for sent messages in a background thread
-        public static void refreshCountInBackground() {
-            Runnable r = new Runnable() {
+    //Refresh the layout. For e.g if outbox messages have changed
+    public static void refreshSelf() {
+        if (Outbox.outboxRefreshLayout != null) {
+            Outbox.outboxRefreshLayout.post(new Runnable() {
                 @Override
                 public void run() {
-                    refreshCountCore();
-                }
-            };
-
-            Thread t = new Thread(r);
-            t.setPriority(Thread.MIN_PRIORITY);
-            t.start();
-        }
-
-        /*
-    stop swipe refreshlayout
-     */
-        public static void runSwipeRefreshLayout(final SwipeRefreshLayout outboxRefreshLayout, final int seconds) {
-
-            if (outboxRefreshLayout == null)
-                return;
-
-            outboxRefreshLayout.setRefreshing(true);
-            if (MainActivity.mHeaderProgressBar != null)
-                MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
-
-            //start handler for 10 secs.  <to stop refreshbar>
-            final Handler h = new Handler() {
-                @Override
-                public void handleMessage(Message message) {
-
+                    if(Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
                     outboxRefreshLayout.setRefreshing(false);
-                }
-            };
-            h.sendMessageDelayed(new Message(), seconds * 1000);
-        }
-
-        public static void updateOutboxTotalMessages() {
-
-            if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
-
-            //update totalOutboxMessages
-            ParseUser user = ParseUser.getCurrentUser();
-
-            if (user == null) {
-                Utility.LogoutUtility.logout();
-                return;
-            }
-
-            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-            query.fromLocalDatastore();
-            query.whereEqualTo("userId", user.getUsername());
-            try {
-                totalOutboxMessages = query.count();
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
-            if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
-        }
-
-
-        static class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void> {
-            List<ParseObject> msgs;
-
-            @Override
-            protected Void doInBackground(Void... params) {
-                //Outbox.needLoading = false; //clear needLoading flag so that not called twice when Outbox is loaded along with MainActivty and also this flag is set on viewpager change
-
-                //retrieving lcoally stored outbox messges
-                msgs = Queries.getLocalOutbox();
-
-                updateOutboxTotalMessages();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (msgs == null) {
-                    msgs = new ArrayList<ParseObject>();
-                }
-
-                groupDetails = msgs;
-
-                if (Outbox.myadapter != null) {
-                    Outbox.myadapter.notifyDataSetChanged();
-                }
-
-                if (outboxLayout != null && emptyBackground != null && loadingBar != null) {
-                    if (groupDetails.size() == 0){
+                    if (groupDetails == null || groupDetails.size() == 0) {
                         outboxLayout.setVisibility(View.VISIBLE);
-                        emptyBackground.setVisibility(View.VISIBLE);
-                        loadingBar.setVisibility(View.GONE);
-                    }
-                    else {
+                    } else {
                         outboxLayout.setVisibility(View.GONE);
-                        emptyBackground.setVisibility(View.GONE);
-                        loadingBar.setVisibility(View.VISIBLE);
+                    }
+
+                    if (Outbox.myadapter != null) {
+                        Outbox.myadapter.notifyDataSetChanged();
                     }
                 }
-                super.onPostExecute(aVoid);
+            });
+        }
+    }
 
-                if (action != null && id != null) {
-                    //handle the notification in asynctask
-                    NotificationHandler notificationHandler = new NotificationHandler();
-                    notificationHandler.execute();
-                }
+    public static void refreshCountCore() {
+        //set lastTimeOutboxSync
+        Application.lastTimeOutboxSync = Calendar.getInstance().getTime();
+
+        if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "running fetchLikeConfusedCountOutbox and setting lastTimeOutboxSync");
+        SyncMessageDetails.fetchLikeConfusedCountOutbox();
+        //following is the onpostexecute thing
+        refreshSelf();
+    }
+
+    //update like/confused/seen count for sent messages in a background thread
+    public static void refreshCountInBackground() {
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                refreshCountCore();
             }
+        };
+
+        Thread t = new Thread(r);
+        t.setPriority(Thread.MIN_PRIORITY);
+        t.start();
+    }
+
+    /*
+stop swipe refreshlayout
+ */
+    public static void runSwipeRefreshLayout(final SwipeRefreshLayout outboxRefreshLayout, final int seconds) {
+
+        if (outboxRefreshLayout == null)
+            return;
+
+        outboxRefreshLayout.setRefreshing(true);
+        if (MainActivity.mHeaderProgressBar != null)
+            MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
+
+        //start handler for 10 secs.  <to stop refreshbar>
+        final Handler h = new Handler() {
+            @Override
+            public void handleMessage(Message message) {
+
+                outboxRefreshLayout.setRefreshing(false);
+            }
+        };
+        h.sendMessageDelayed(new Message(), seconds * 1000);
+    }
+
+    public static void updateOutboxTotalMessages() {
+
+        if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "updating total outbox count");
+
+        //update totalOutboxMessages
+        ParseUser user = ParseUser.getCurrentUser();
+
+        if (user == null) {
+            Utility.LogoutUtility.logout();
+            return;
         }
 
-        static class NotificationHandler extends AsyncTask<Void, Void, Void> {
-            int msgIndex = -1;
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+        query.fromLocalDatastore();
+        query.whereEqualTo("userId", user.getUsername());
+        try {
+            totalOutboxMessages = query.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "count is " + totalOutboxMessages);
+    }
 
-            @Override
-            protected Void doInBackground(Void... params) {
-                if (groupDetails == null) return null;
 
-                if (action != null && id != null &&
-                        (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))) {
-                    action = null; //action not used hereafter. Avoid duplicate asynctask invocations
+    static class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void> {
+        List<ParseObject> msgs;
 
-                    for (int i = 0; i < groupDetails.size(); i++) {
-                        ParseObject msg = groupDetails.get(i);
-                        if (msg.getString("objectId") != null && msg.getString("objectId").equals(id)) {
-                            msgIndex = i;
-                            break;
-                        }
-                    }
-                }
-                return null;
+        @Override
+        protected Void doInBackground(Void... params) {
+            //Outbox.needLoading = false; //clear needLoading flag so that not called twice when Outbox is loaded along with MainActivty and also this flag is set on viewpager change
+
+            //retrieving lcoally stored outbox messges
+            msgs = Queries.getLocalOutbox();
+
+            updateOutboxTotalMessages();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (msgs == null) {
+                msgs = new ArrayList<ParseObject>();
             }
 
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                if (Outbox.outboxListv.getAdapter() == null) return;
-                if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
-                    if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
+            groupDetails = msgs;
 
-                    selectedMsgIndex = msgIndex;
-                    Outbox.myadapter.notifyDataSetChanged();
-                    Outbox.outboxListv.smoothScrollToPosition(msgIndex);
-                    action = null;
-                    id = null; //do not repeat
+            if (Outbox.myadapter != null) {
+                Outbox.myadapter.notifyDataSetChanged();
+            }
+
+            if (outboxLayout != null && emptyBackground != null && loadingBar != null) {
+                if (groupDetails.size() == 0){
+                    outboxLayout.setVisibility(View.VISIBLE);
+                    emptyBackground.setVisibility(View.VISIBLE);
+                    loadingBar.setVisibility(View.GONE);
                 }
+                else {
+                    outboxLayout.setVisibility(View.GONE);
+                    emptyBackground.setVisibility(View.GONE);
+                    loadingBar.setVisibility(View.VISIBLE);
+                }
+            }
+            super.onPostExecute(aVoid);
+
+            if (action != null && id != null) {
+                //handle the notification in asynctask
+                NotificationHandler notificationHandler = new NotificationHandler();
+                notificationHandler.execute();
             }
         }
     }
+
+    static class NotificationHandler extends AsyncTask<Void, Void, Void> {
+        int msgIndex = -1;
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            if (groupDetails == null) return null;
+
+            if (action != null && id != null &&
+                    (action.equals(Constants.Actions.LIKE_ACTION) || action.equals(Constants.Actions.CONFUSE_ACTION))) {
+                action = null; //action not used hereafter. Avoid duplicate asynctask invocations
+
+                for (int i = 0; i < groupDetails.size(); i++) {
+                    ParseObject msg = groupDetails.get(i);
+                    if (msg.getString("objectId") != null && msg.getString("objectId").equals(id)) {
+                        msgIndex = i;
+                        break;
+                    }
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            if (Outbox.outboxListv.getAdapter() == null) return;
+            if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
+                if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
+
+                selectedMsgIndex = msgIndex;
+                Outbox.myadapter.notifyDataSetChanged();
+                Outbox.outboxListv.smoothScrollToPosition(msgIndex);
+                action = null;
+                id = null; //do not repeat
+            }
+        }
+    }
+}
