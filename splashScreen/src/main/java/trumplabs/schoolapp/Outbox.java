@@ -52,6 +52,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
 import utility.Config;
+import utility.ImageCache;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -75,8 +76,6 @@ public class Outbox extends Fragment {
     private static ImageView emptyBackground;
     private static ProgressBar loadingBar;
     private static int selectedMsgIndex = -1;
-
-    private LruCache<String, Bitmap> mMemoryCache;
 
     //handle notification
     private static String action; //LIKE/CONFUSE
@@ -132,23 +131,6 @@ public class Outbox extends Fragment {
         outboxListv.setLayoutManager(mLayoutManager);
         myadapter = new RecycleAdapter();
         outboxListv.setAdapter(myadapter);
-
-        /*
-        * Setting up LRU Cache for images
-        */
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        // Use 1/8th of the available memory for this memory cache.
-        final int cacheSize = maxMemory / 8;
-
-        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-            /*
-             * The cache size will be measured in kilobytes rather than number of items.
-             */
-                return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
-            }
-        };
 
         emptyBackground.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -262,41 +244,6 @@ public class Outbox extends Fragment {
         }
     }
 
-
-    /*
-     * LRU Functions *************************************************
-     */
-    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-
-        if (key != null && bitmap != null) {
-            if (getBitmapFromMemCache(key) == null) {
-                mMemoryCache.put(key, bitmap);
-            }
-        }
-    }
-
-    public Bitmap getBitmapFromMemCache(String key) {
-        return mMemoryCache.get(key);
-    }
-
-
-    public void loadBitmap(String imageKey, ImageView mImageView) {
-
-        final Bitmap bitmap = getBitmapFromMemCache(imageKey);
-        if (bitmap != null) {
-            if(Config.SHOWLOG) Log.d("__O", "cached image " + imageKey);
-            mImageView.setImageBitmap(bitmap);
-        } else {
-            if(Config.SHOWLOG) Log.d("__O", "loading from disk image " + imageKey);
-            Bitmap myBitmap = BitmapFactory.decodeFile(imageKey);
-            mImageView.setImageBitmap(myBitmap);
-            addBitmapToMemoryCache(imageKey, myBitmap);
-        }
-    }
-
-    /**
-     * ********************* LRU END ******************************
-     */
     public static void notifyAdapter(){
         if(outboxListv != null){
             outboxListv.post(new Runnable() {
@@ -528,78 +475,22 @@ public class Outbox extends Fragment {
             /*
             Retrieving image attachment if exist
              */
-            final String imagepath;
+            final String imageName;
             if (groupdetails1.containsKey("attachment_name"))
-                imagepath = groupdetails1.getString("attachment_name");
+                imageName = groupdetails1.getString("attachment_name");
             else
-                imagepath = "";
+                imageName = "";
 
             holder.uploadprogressbar.setVisibility(View.GONE);
 
             //If image attachment exist, display image
-            if (!UtilString.isBlank(imagepath)) {
+            if (!UtilString.isBlank(imageName)) {
                 holder.imgmsgview.setVisibility(View.VISIBLE);
 
-                holder.uploadprogressbar.setTag("Progress");
+                ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
 
-                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
-
-                if (imgFile.exists() && !thumbnailFile.exists())
-                    Utility.createThumbnail(getActivity(), imagepath);
-                if (imgFile.exists()) {
-                    // if image file present locally
-                    //Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                    loadBitmap(thumbnailFile.getAbsolutePath(), holder.imgmsgview);
-                    holder.imgmsgview.setTag(imgFile.getAbsolutePath());
-                } else {
-                    if(Config.SHOWLOG) Log.d("__O", "downloading image " + imagepath);
-                    // else we Have to download image from server
-                    ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
-                    holder.uploadprogressbar.setVisibility(View.VISIBLE);
-                    imagefile.getDataInBackground(new GetDataCallback() {
-                        public void done(byte[] data, ParseException e) {
-                            if (e == null) {
-                                // ////Image download successful
-                                FileOutputStream fos;
-                                try {
-                                    //store image
-                                    fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                                    try {
-                                        fos.write(data);
-                                    } catch (IOException e1) {
-                                        e1.printStackTrace();
-                                    } finally {
-                                        try {
-                                            fos.close();
-                                        } catch (IOException e1) {
-                                            e1.printStackTrace();
-                                        }
-                                    }
-                                } catch (FileNotFoundException e2) {
-                                    e2.printStackTrace();
-                                }
-
-                                Utility.createThumbnail(myActivity, imagepath);
-                                Bitmap mynewBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                                holder.imgmsgview.setImageBitmap(mynewBitmap);
-                                holder.uploadprogressbar.setVisibility(View.GONE);
-                                // Might be a problem when net is too slow :/
-                            } else {
-                                // Image not downloaded
-                                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                                holder.uploadprogressbar.setVisibility(View.GONE);
-                            }
-                        }
-                    });
-
-                    holder.imgmsgview.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                    holder.imgmsgview.setImageBitmap(null);
-
-                    // imgmsgview.setVisibility(View.GONE);
-
-
-                }
+                //following utility function takes care of displaying image in the holder
+                ImageCache.loadBitmap(imageName, holder.imgmsgview, getActivity(), holder.uploadprogressbar, imagefile);
 
                 holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -610,8 +501,6 @@ public class Outbox extends Fragment {
                         startActivity(imgintent);
                     }
                 });
-
-
             } else {
                 holder.imgmsgview.setVisibility(View.GONE);
             }

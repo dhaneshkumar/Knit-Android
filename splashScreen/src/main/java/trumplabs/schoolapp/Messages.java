@@ -53,6 +53,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
 import utility.Config;
+import utility.ImageCache;
 import utility.Queries;
 import utility.SessionManager;
 import utility.Utility;
@@ -71,7 +72,6 @@ public class Messages extends Fragment {
     public static SwipeRefreshLayout mPullToRefreshLayout;
     private LinearLayout inemptylayout;
     private Queries query  ;
-    private LruCache<String, Bitmap> mMemoryCache;
     String userId;
     public static int totalInboxMessages; //total pinned messages in inbox
     LinearLayout mainLayout;
@@ -155,25 +155,6 @@ public class Messages extends Fragment {
                 joinClassDialog.show(fm, "Join Class");
             }
         });
-
-
-        /*
-         * Setting up LRU Cache for images
-         */
-        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
-        // Use 1/8th of the available memory for this memory cache.
-        final int cacheSize = maxMemory / 8;
-
-        mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
-            @Override
-            protected int sizeOf(String key, Bitmap bitmap) {
-            /*
-             * The cache size will be measured in kilobytes rather than number of items.
-             */
-                return bitmap.getRowBytes() * bitmap.getHeight() / 1024;
-            }
-        };
-
 
         /*
         Recycler view handling
@@ -330,39 +311,6 @@ public class Messages extends Fragment {
             }
         });
     }
-
-    /*
-     * LRU Functions *************************************************
-     */
-    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-
-        if (key != null && bitmap != null) {
-            if (getBitmapFromMemCache(key) == null) {
-                mMemoryCache.put(key, bitmap);
-            }
-        }
-    }
-
-    public Bitmap getBitmapFromMemCache(String key) {
-        return mMemoryCache.get(key);
-    }
-
-
-    public void loadBitmap(String imageKey, ImageView mImageView) {
-
-        final Bitmap bitmap = getBitmapFromMemCache(imageKey);
-        if (bitmap != null) {
-            mImageView.setImageBitmap(bitmap);
-        } else {
-            Bitmap myBitmap = BitmapFactory.decodeFile(imageKey);
-            mImageView.setImageBitmap(myBitmap);
-            addBitmapToMemoryCache(imageKey, myBitmap);
-        }
-    }
-
-    /**
-     * ********************* LRU END ******************************
-     */
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -620,11 +568,11 @@ public class Messages extends Fragment {
             File senderThumbnailFile = new File(filePath);
 
             // ///////////////////////////////////////////////////////////
-            final String imagepath;
+            final String imageName;
             if (msgObject.containsKey("attachment_name"))
-                imagepath = msgObject.getString("attachment_name");
+                imageName = msgObject.getString("attachment_name");
             else
-                imagepath = "";
+                imageName = "";
 
       /*
        * Setting group name and sender name
@@ -695,7 +643,7 @@ public class Messages extends Fragment {
                 });
             }
 
-            if (!imagepath.equals(""))
+            if (!imageName.equals(""))
             {
                 holder.imgframelayout.setVisibility(View.VISIBLE);
                 holder.imgframelayout.setOnClickListener(new OnClickListener() {
@@ -705,31 +653,32 @@ public class Messages extends Fragment {
                         Intent imgintent = new Intent();
                         imgintent.setAction(Intent.ACTION_VIEW);
                         imgintent.setDataAndType(
-                                Uri.parse("file://" + Utility.getWorkingAppDir() + "/media/" + imagepath),
+                                Uri.parse("file://" + Utility.getWorkingAppDir() + "/media/" + imageName),
                                 "image/*");
                         startActivity(imgintent);
                     }
                 });
 
-                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imagepath);
-                final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imagepath);
+                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imageName);
+                final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imageName);
                 if (imgFile.exists() && !thumbnailFile.exists())
-                    Utility.createThumbnail(getActivity(), imagepath);
+                    Utility.createThumbnail(getActivity(), imageName);
 
                 // Utility.toast(Utility.getWorkingAppDir() + "/thumbnail/" +
                 // imagepath);
 
                 if (imgFile.exists()) {
                     // image file present locally
-
                     holder.uploadprogressbar.setVisibility(View.GONE);
                     holder.faildownload.setVisibility(View.GONE);
                     holder.imgframelayout.setTag(imgFile.getAbsolutePath());
 
-                    loadBitmap(thumbnailFile.getAbsolutePath(), holder.imgmsgview);
+                    ImageCache.loadBitmapSimple(imageName, holder.imgmsgview);
 
                 } else {
                     if(Utility.isInternetExist()) {
+                        if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
+
                         // Have to download image from server
                         ParseFile imagefile = (ParseFile) msgObject.get("attachment");
                         holder.uploadprogressbar.setVisibility(View.VISIBLE);
@@ -740,18 +689,13 @@ public class Messages extends Fragment {
                                     // ////Image download successful
                                     FileOutputStream fos;
                                     try {
-                                        fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                                        fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imageName);
                                         try {
                                             fos.write(data);
+                                            Utility.createThumbnail(getActivity(), imageName);
 
-                                            // Utility.toast("images downloaded in media folder");
-                                            // Utility.toast(Utility.getWorkingAppDir()
-                                            // + "/media/" + imagepath);
+                                            ImageCache.loadBitmapSimple(imageName, holder.imgmsgview);
 
-                                            Utility.createThumbnail(getActivity(), imagepath);
-                                            Bitmap mynewBitmap =
-                                                    BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-                                            holder.imgmsgview.setImageBitmap(mynewBitmap);
                                             holder.uploadprogressbar.setVisibility(View.GONE);
                                             holder.faildownload.setVisibility(View.GONE);
                                             myadapter.notifyDataSetChanged();
@@ -779,7 +723,7 @@ public class Messages extends Fragment {
                             }
                         });
 
-                        holder.imgframelayout.setTag(Utility.getWorkingAppDir() + "/media/" + imagepath);
+                        holder.imgframelayout.setTag(Utility.getWorkingAppDir() + "/media/" + imageName);
                         holder.imgmsgview.setImageBitmap(null);
                     } else {
                         holder.uploadprogressbar.setVisibility(View.GONE);
@@ -787,7 +731,6 @@ public class Messages extends Fragment {
                     }
                 }
             } else
-
             {
                 holder.imgframelayout.setVisibility(View.GONE);
             }

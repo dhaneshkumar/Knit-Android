@@ -461,11 +461,11 @@ public class SendMessage extends MyActionBarActivity  {
             }
 
 
-            final String imagepath;
+            final String imageName;
             if (msg.containsKey("attachment_name"))
-                imagepath = msg.getString("attachment_name");
+                imageName = msg.getString("attachment_name");
             else
-                imagepath = "";
+                imageName = "";
 
             // initialize all the view components
             final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
@@ -584,12 +584,12 @@ public class SendMessage extends MyActionBarActivity  {
 
             // /////////////////////////////////////////////
 
-            if (!UtilString.isBlank(imagepath)) {
+            if (!UtilString.isBlank(imageName)) {
                 imgmsgview.setVisibility(View.VISIBLE);
                 ParseFile imagefile = (ParseFile) msg.get("attachment");
 
                 //following utility function takes care of displaying image in the holder
-                ImageCache.loadBitmap(imagepath, imgmsgview, SendMessage.this, uploadprogressbar, imagefile);
+                ImageCache.loadBitmap(imageName, imgmsgview, SendMessage.this, uploadprogressbar, imagefile);
             } else {
                 imgmsgview.setVisibility(View.GONE);
             }
@@ -641,7 +641,6 @@ public class SendMessage extends MyActionBarActivity  {
                 }
             }
         });
-
 
         /*
         Setting options on clicking a list view item

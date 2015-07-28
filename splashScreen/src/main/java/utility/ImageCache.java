@@ -22,7 +22,7 @@ import java.io.IOException;
  * Created by ashish on 28/7/15.
  */
 public class ImageCache {
-    static final String LOGTAG = "__IC";
+    public static final String LOGTAG = "__IC";
     //global cache
     private static LruCache<String, Bitmap> mMemoryCache;
 
@@ -30,7 +30,10 @@ public class ImageCache {
         if(Config.SHOWLOG) Log.d(LOGTAG, "initializing");
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+
         // Use 1/8th of the available memory for this memory cache.
+        // cache thumbnails(size ~20 KB) - i.e 50 thumbnails per MB
+
         final int cacheSize = maxMemory / 8;
 
         mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
@@ -90,7 +93,6 @@ public class ImageCache {
         //if imgFile exists but not thumbnail
         if (imgFile.exists()) {
             if(!thumbnailFile.exists()) {
-                if(Config.SHOWLOG) Log.d(LOGTAG, "creating thumbnail : " + imageName);
                 Utility.createThumbnail(currentActivity, imageName);
             }
 
@@ -152,6 +154,29 @@ public class ImageCache {
                     }
                 }
             });
+        }
+    }
+
+    public static void loadBitmapSimple(String imageName, ImageView mImageView) {
+        if(mMemoryCache == null){
+            initialize();
+        }
+
+        if(mMemoryCache == null){//this won't happen
+            return;
+        }
+
+        final Bitmap bitmap = getBitmapFromMemCache(imageName); //key imageName
+        if (bitmap != null) {
+            if(Config.SHOWLOG) Log.d(LOGTAG, "(m) cached image thumbnail : " + imageName);
+            mImageView.setImageBitmap(bitmap);
+        } else {
+            if(Config.SHOWLOG) Log.d(LOGTAG, "(m) loading from disk : " + imageName);
+            String thumbnailPath = Utility.getWorkingAppDir() + "/thumbnail/" + imageName;
+
+            Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailPath);
+            mImageView.setImageBitmap(myBitmap);
+            addBitmapToMemoryCache(imageName, myBitmap); //key imageName
         }
     }
 }
