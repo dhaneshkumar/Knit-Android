@@ -8,14 +8,21 @@
     android:layout_height="match_parent">
 
     <com.google.android.gms.common.SignInButton
-    android:id="@+id/sign_in_button"
-    android:layout_width="208dp"
+        android:id="@+id/sign_in_button"
+        android:layout_width="208dp"
         android:layout_gravity="center_horizontal"
-    android:layout_height="48dp" />
+        android:layout_height="48dp" />
 
     <com.facebook.login.widget.LoginButton
+        xmlns:fb="http://schemas.android.com/apk/res-auto"
         android:id="@+id/login_button"
         android:layout_width="200dp"
+        android:paddingTop="12dp"
+        fb:login_text=""
+        fb:logout_text=""
+        android:contentDescription="Log In"
+        android:scaleType="centerInside"
+        android:paddingBottom="12dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="16dp"
@@ -32,59 +39,59 @@
         android:background="@color/white"
         >
 
-    <Spinner
-        android:id="@+id/mr_spinner"
-        style="@style/Widget.AppCompat.Spinner"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:entries="@array/title"
-        android:background="@drawable/apptheme_spinner_default_holo_light"
-        android:paddingRight="1dp"
-        android:textColor="@color/black"
-        android:prompt="@string/prompt_choice"
-        android:visibility="gone"
-        android:textSize="16sp" >
-        <requestFocus />
+        <Spinner
+            android:id="@+id/mr_spinner"
+            style="@style/Widget.AppCompat.Spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:entries="@array/title"
+            android:background="@drawable/apptheme_spinner_default_holo_light"
+            android:paddingRight="1dp"
+            android:textColor="@color/black"
+            android:prompt="@string/prompt_choice"
+            android:visibility="gone"
+            android:textSize="16sp" >
+            <requestFocus />
 
-    </Spinner>
+        </Spinner>
 
-    <EditText
-        android:id="@+id/displaynameid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Your Name"
-        android:paddingLeft="16dp"
-        android:paddingRight="1dp"
-        android:background="@drawable/apptheme_edit_text_holo_light"
-        android:inputType="textCapWords"
-        android:textColor="@color/black"
-        android:layout_marginTop="16dp"
-        android:textSize="16sp" />
+        <EditText
+            android:id="@+id/displaynameid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Your Name"
+            android:paddingLeft="16dp"
+            android:paddingRight="1dp"
+            android:background="@drawable/apptheme_edit_text_holo_light"
+            android:inputType="textCapWords"
+            android:textColor="@color/black"
+            android:layout_marginTop="16dp"
+            android:textSize="16sp" />
 
-    <EditText
-        android:id="@+id/phoneid"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:hint="Mobile"
-        android:background="@drawable/apptheme_edit_text_holo_light"
-        android:paddingLeft="16dp"
-        android:paddingRight="1dp"
-        android:inputType="number"
-        android:maxLength="10"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        <EditText
+            android:id="@+id/phoneid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="Mobile"
+            android:background="@drawable/apptheme_edit_text_holo_light"
+            android:paddingLeft="16dp"
+            android:paddingRight="1dp"
+            android:inputType="number"
+            android:maxLength="10"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="0dp"
-        android:textSize="11sp"
-        android:textColor="@color/grey_light"
-        android:layout_marginLeft="4dp"
-        android:text="*You may receive a verification call/sms on this number"
-        />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:textSize="11sp"
+            android:textColor="@color/grey_light"
+            android:layout_marginLeft="4dp"
+            android:text="*You may receive a verification call/sms on this number"
+            />
 
-</LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>

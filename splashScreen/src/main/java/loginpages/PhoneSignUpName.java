@@ -30,7 +30,9 @@ import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -38,6 +40,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -50,6 +53,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import additionals.SmsListener;
@@ -90,7 +94,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
     /* Should we automatically resolve ConnectionResults when possible? */
     private boolean mShouldResolve = false;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -168,10 +171,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             @Override
             public void onClick(View v) {
 
-                if (mGoogleApiClient.isConnected()) {
-                    Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                    mGoogleApiClient.disconnect();
-                }
 
                 onSignInClicked();
             }
@@ -269,6 +268,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 onBackPressed();
                 break;
             case R.id.next:
+
+                if (mGoogleApiClient.isConnected()) {
+                    Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
+                    mGoogleApiClient.disconnect();
+                }
+
                 next();
                 break;
             default:
@@ -384,9 +389,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addApi(Plus.API)
                 .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
                 .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+                .addApi(Plus.API)
                 .build();
     }
 
@@ -403,6 +408,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         GetIdTokenTask getIdTokenTask = new GetIdTokenTask();
         getIdTokenTask.execute();
 
+        RetrieveTokenTask retrieveTokenTask = new RetrieveTokenTask();
+        retrieveTokenTask.execute();
+
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if(mLastLocation != null){
@@ -411,6 +419,22 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         }
 
         createLocationRequest();
+
+        if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+            String personName = currentPerson.getDisplayName();
+            Person.Image personPhoto = currentPerson.getImage();
+            String personGooglePlusProfile = currentPerson.getUrl();
+
+            String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
+
+            String t = "login";
+            Log.d(t, "name : " + personName);
+            Log.d(t, "url : " + personGooglePlusProfile);
+            Log.d(t, "email : " + email);
+        }
+
+
     }
 
     @Override
@@ -558,7 +582,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             HashMap<String, Object> params = new HashMap<String, Object>();
 
             if(!isLogin) {
-                params.put("token", token);
+                params.put("accessToken", token);
                 params.put("role", PhoneSignUpName.role);
                 String emailId = Utility.getAccountEmail();
                 if(emailId != null){
@@ -692,11 +716,38 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         protected String doInBackground(Void... params) {
             String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
             Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-            String SERVER_CLIENT_ID = "838906570879-f5ttgrrsl65579b0jhibb5j20mck7la4.apps.googleusercontent.com";
+            String SERVER_CLIENT_ID = "838906570879-nujge366mj36s29elltobjnehh9e1a5j.apps.googleusercontent.com";
 
-            String scopes = "audience:server:client_id:" + SERVER_CLIENT_ID; // Not the app's client ID.
+            List<String> scopeList = Arrays.asList(new String[]{
+                    "https://www.googleapis.com/auth/plus.login",
+                    "https://www.googleapis.com/auth/userinfo.email"
+            });
+
+            //String scope = String.format("audience:server:client_id:%s:api_scope:%s", SERVER_CLIENT_ID, TextUtils.join(" ", scopeList));
+            String scope = String.format("audience:server:client_id:%s", SERVER_CLIENT_ID);
+            //   String scopes = "oauth2:server:client_id:" + SERVER_CLIENT_ID; // Not the app's client ID.
+
+
+            String scopesString = Scopes.PLUS_LOGIN;
+          /*
+            String scopes = "oauth2:server:client_id:" + Consts.GOOGLE_PLUS_SERVER_CLIENT_ID + ":api_scope:" + scopesString;
+            OR
+            String scopes = "audience:server:client_id:" + Consts.GOOGLE_PLUS_SERVER_CLIENT_ID;*/
+
+            // .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
+            //.addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+
+
             try {
-                return GoogleAuthUtil.getToken(getApplicationContext(), account, scopes);
+                return GoogleAuthUtil.getToken(getApplicationContext(), account, scope);
+            } catch (UserRecoverableAuthException e) {
+                // Requesting an authorization code will always throw
+                // UserRecoverableAuthException on the first call to GoogleAuthUtil.getToken
+                // because the user must consent to offline access to their data.  After
+                // consent is granted control is returned to your activity in onActivityResult
+                // and the second call to GoogleAuthUtil.getToken will succeed.
+                startActivityForResult(e.getIntent(), RC_SIGN_IN);
+                return null;
             } catch (IOException e) {
                 Log.e(TAG, "Error retrieving ID token.", e);
                 return null;
@@ -710,7 +761,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         protected void onPostExecute(String result) {
             Log.i(TAG, "ID token: " + result);
             if (result != null) {
-                Utility.toast("got Token");
+                //Utility.toast("got Token");
                 // Successfully retrieved ID Token
                 // ...
             } else {
@@ -718,6 +769,35 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 // ...
             }
         }
-
     }
+
+        class RetrieveTokenTask extends AsyncTask<String, Void, String> {
+
+            @Override
+            protected String doInBackground(String... params) {
+                String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);;
+                String scopes = "oauth2:profile email";
+                String token = null;
+
+                Log.i(TAG, "Access token:  starting...." );
+                try {
+                    token = GoogleAuthUtil.getToken(getApplicationContext(), accountName, scopes);
+                } catch (IOException e) {
+                    Log.e(TAG, e.getMessage());
+                } catch (UserRecoverableAuthException e) {
+                    startActivityForResult(e.getIntent(), RC_SIGN_IN);
+                } catch (GoogleAuthException e) {
+                    Log.e(TAG, e.getMessage());
+                }
+                return token;
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                Log.i(TAG, "Access token: " + s);
+            }
+        }
+
+
 }

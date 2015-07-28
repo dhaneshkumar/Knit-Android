@@ -26,6 +26,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.facebook.login.LoginManager;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -594,6 +595,9 @@ public class Utility extends MyActionBarActivity {
             }
 
             ParseUser.logOut(); //NOTE : does not throw exception, make currentUser null
+
+            //fb logout
+            LoginManager.getInstance().logOut();
 
             //Needed because MainActivity page-adapter's count will change because user has become null
             if(MainActivity.myAdapter != null){

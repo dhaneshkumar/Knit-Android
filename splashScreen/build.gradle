@@ -25,7 +25,9 @@ android {
     }
 }
 
-repositories { mavenCentral() }
+repositories {
+    mavenCentral()
+}
 
 dependencies {
     compile project(':library')
