@@ -5,8 +5,6 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -31,17 +29,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.software.shell.fab.ActionButton;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -68,7 +61,9 @@ public class SendMessage extends MyActionBarActivity  {
     private ArrayList<ParseObject> selectedlistitems; // To delete selected messages
     public static String groupCode;      //class-code
     public static List<ParseObject> groupDetails;     // List of group messages
-    private static String grpName;        //class-name
+
+    String grpName;        //class-name
+
     private Queries query;
     public static LinearLayout progressLayout;
     private SessionManager session;
@@ -116,6 +111,7 @@ public class SendMessage extends MyActionBarActivity  {
         progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
         inviteLayout = (RelativeLayout) findViewById(R.id.inviteLayout);
         memberLayout = (RelativeLayout) findViewById(R.id.memberLayout);
+        //todo remove this as not used
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         memberCountTV = (TextView) findViewById(R.id.memberCount);
         memberLabelTV = (TextView) findViewById(R.id.memberLabel);

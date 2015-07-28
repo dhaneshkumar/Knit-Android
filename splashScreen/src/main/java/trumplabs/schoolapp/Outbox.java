@@ -2,8 +2,6 @@ package trumplabs.schoolapp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
@@ -14,7 +12,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -29,17 +26,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -70,11 +62,12 @@ public class Outbox extends Fragment {
     private LinearLayoutManager mLayoutManager;
     SessionManager session;
     private static SwipeRefreshLayout outboxRefreshLayout;
-    public static LinearLayout outboxLayout;
+    static LinearLayout outboxLayout;
     public static int totalOutboxMessages = 15; //total pinned outbox messages(across all classes)
     private Typeface typeface;
-    private static ImageView emptyBackground;
-    private static ProgressBar loadingBar;
+    ImageView emptyBackground;
+    ProgressBar loadingBar;
+
     private static int selectedMsgIndex = -1;
 
     //handle notification
@@ -183,10 +176,6 @@ public class Outbox extends Fragment {
             @Override
             public void onRefresh() {
 
-                //hiding main activity's progress bar
-                if (MainActivity.mHeaderProgressBar != null)
-                    MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
-
                 // mHeaderProgressBar.setVisibility(View.GONE);
 
                 if (Utility.isInternetExist()) {
@@ -245,11 +234,13 @@ public class Outbox extends Fragment {
     }
 
     public static void notifyAdapter(){
-        if(outboxListv != null){
-            outboxListv.post(new Runnable() {
+        if(Application.applicationHandler != null){
+            Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    myadapter.notifyDataSetChanged();
+                    if(myadapter != null){
+                        myadapter.notifyDataSetChanged();
+                    }
                 }
             });
         }
@@ -267,7 +258,7 @@ public class Outbox extends Fragment {
     /**
      * Holder class to hold all elements of an item
      */
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    class ViewHolder extends RecyclerView.ViewHolder {
         TextView timestampmsg;
         ImageView pendingClockIcon;
         TextView classimage;
@@ -307,7 +298,7 @@ public class Outbox extends Fragment {
     /**
      * Adapter for recycleview of outbox
      */
-    public class RecycleAdapter extends RecyclerView.Adapter<ViewHolder> {
+    class RecycleAdapter extends RecyclerView.Adapter<ViewHolder> {
 
 
         @Override
@@ -567,11 +558,11 @@ public class Outbox extends Fragment {
 
     //Refresh the layout. For e.g if outbox messages have changed
     public static void refreshSelf() {
-        if (Outbox.outboxRefreshLayout != null) {
-            Outbox.outboxRefreshLayout.post(new Runnable() {
+        if (Application.applicationHandler != null) {
+            Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
+                    if (Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
                     outboxRefreshLayout.setRefreshing(false);
                     if (groupDetails == null || groupDetails.size() == 0) {
                         outboxLayout.setVisibility(View.VISIBLE);
@@ -620,8 +611,6 @@ stop swipe refreshlayout
             return;
 
         outboxRefreshLayout.setRefreshing(true);
-        if (MainActivity.mHeaderProgressBar != null)
-            MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
         //start handler for 10 secs.  <to stop refreshbar>
         final Handler h = new Handler() {
@@ -658,7 +647,7 @@ stop swipe refreshlayout
     }
 
 
-    static class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void> {
+    class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void> {
         List<ParseObject> msgs;
 
         @Override
@@ -706,7 +695,7 @@ stop swipe refreshlayout
         }
     }
 
-    static class NotificationHandler extends AsyncTask<Void, Void, Void> {
+    class NotificationHandler extends AsyncTask<Void, Void, Void> {
         int msgIndex = -1;
 
         @Override
@@ -730,7 +719,7 @@ stop swipe refreshlayout
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (Outbox.outboxListv.getAdapter() == null) return;
+            if (Outbox.outboxListv == null || Outbox.outboxListv.getAdapter() == null) return;
             if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
                 if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
 

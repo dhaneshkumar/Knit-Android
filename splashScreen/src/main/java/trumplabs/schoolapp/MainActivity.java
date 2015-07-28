@@ -69,7 +69,7 @@ import utility.Utility;
  * This Activity shows home page of our app. It contains three fragments outbox, inbox and classrooms.
  */
 public class MainActivity extends MyActionBarActivity implements TabListener {
-    public static ViewPager viewpager;
+    ViewPager viewpager;
     public static TextView tab1Icon;
     public static TextView tab2Icon;
     public static TextView tab3Icon;
@@ -78,9 +78,11 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     private int screenwidth;
     private static String role;
     public static LinearLayout progressBarLayout;
-    public static SmoothProgressBar mHeaderProgressBar;
+    SmoothProgressBar mHeaderProgressBar;
     public static MyAdapter myAdapter;
-    public static SessionManager sessionManager;
+
+    SessionManager sessionManager;
+
     private ListView action_menu_list;
     private RelativeLayout action_menu;
     public static List<List<String >> classList;
@@ -123,7 +125,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         tab2Icon = (TextView) findViewById(R.id.tab2Icon);
         tab3Icon = (TextView) findViewById(R.id.tab3Icon);
         progressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
+
+        //todo remove this from layout also as NOT used
         mHeaderProgressBar = (SmoothProgressBar) findViewById(R.id.ptr_progress);
+
         action_menu = (RelativeLayout) findViewById(R.id.action_menu);
         action_menu_list = (ListView) findViewById(R.id.action_menu_list);
 
@@ -332,10 +337,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     fragmentVisible = arg0;
 
                     if(Config.SHOWLOG) Log.d("__TEMP__", "onPageSelected " + fragmentVisible + "["+Outbox.responseTutorialShown + "," + Messages.responseTutorialShown + "]");
-                    if(fragmentVisible == 0 && !Outbox.responseTutorialShown && Outbox.myadapter != null){
+                    if(role.equals(Constants.TEACHER) && fragmentVisible == 0 && !Outbox.responseTutorialShown && Outbox.myadapter != null){
                         Outbox.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
                     }
-                    if(fragmentVisible == 2 && !Messages.responseTutorialShown && Messages.myadapter != null){
+                    if(role.equals(Constants.TEACHER) && fragmentVisible == 2 && !Messages.responseTutorialShown && Messages.myadapter != null){
                         Messages.myadapter.notifyDataSetChanged(); //so as to show the tutorial if not shown
                     }
                 }
@@ -743,7 +748,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         return super.onOptionsItemSelected(item);
     }
 
-    public static class MyAdapter extends FragmentPagerAdapter {
+    public class MyAdapter extends FragmentPagerAdapter {
 
         public MyAdapter(FragmentManager fm) {
             super(fm);

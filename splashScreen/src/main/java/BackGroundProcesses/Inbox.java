@@ -71,8 +71,8 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
       if(Config.SHOWLOG) Log.d("_DEBUG_INBOX", "helper leaving " + myid);
       isQueued = false; //remove queued flag.
 
-      if(MainActivity.mHeaderProgressBar!=null){
-          MainActivity.mHeaderProgressBar.post(new Runnable() {
+      if(Application.applicationHandler != null){
+          Application.applicationHandler.post(new Runnable() {
               @Override
               public void run() {
                   onPostExecuteCore();
@@ -84,8 +84,6 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
   public void onPostExecuteCore(){
       Constants.updatedTimestamp = false;
 
-      if(MainActivity.mHeaderProgressBar != null)
-          MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
       if (MainActivity.progressBarLayout != null)
           MainActivity.progressBarLayout.setVisibility(View.GONE);
 
@@ -101,8 +99,8 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
       SeenHandler.syncSeenJob(); //don't run as async task as already this is in a background thread.
       SyncMessageDetails.syncStatus();
 
-      if(Messages.mPullToRefreshLayout != null){
-          Messages.mPullToRefreshLayout.post(new Runnable() {
+      if(Application.applicationHandler != null){
+          Application.applicationHandler.post(new Runnable() {
               @Override
               public void run() {
                   //if(Config.SHOWLOG) Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");
@@ -116,8 +114,8 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
     //doesn't notify the adapter
     public void fetchLikeConfusedCountInbox(){
         SyncMessageDetails.fetchLikeConfusedCountInbox();
-        if(Messages.mPullToRefreshLayout != null){
-            Messages.mPullToRefreshLayout.post(new Runnable() {
+        if(Application.applicationHandler != null){
+            Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if(Config.SHOWLOG) Log.d("DEBUG_AFTER_INBOX_COUNT_REFRESH", "Notifying Messages.myadapter");

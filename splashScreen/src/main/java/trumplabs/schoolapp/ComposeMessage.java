@@ -72,7 +72,6 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                                 //"INSIDE" inside the particular class page
     //will be used by ComposeMessageHelper to decide what all things to update on sending a message
 
-
     /* offline msg flags*/
     public static boolean sendButtonClicked = false; //to show status 'sending' in msg items when background sender job is NOT running & is about to get start(i.e jobRunning flag not set)
     //this is a quick hack because thread is spawned only when message has been pinned locally(after slight delay), however message is shown in the list immediately.

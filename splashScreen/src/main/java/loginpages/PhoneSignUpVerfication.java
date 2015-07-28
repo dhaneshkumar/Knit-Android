@@ -454,7 +454,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             //Switching to MainActivity
             Intent intent = new Intent(Application.getAppContext(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             Application.getAppContext().startActivity(intent);
 
             //Analytics to measure total successful logins
@@ -506,7 +506,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Outbox.responseTutorialShown = false;
 
             Intent intent = new Intent(Application.getAppContext(), MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             intent.putExtra("flag", "SIGNUP");
             if (currentParseUser.getString("role").equals(Constants.TEACHER))

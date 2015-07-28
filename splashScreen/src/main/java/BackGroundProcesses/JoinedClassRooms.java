@@ -37,8 +37,8 @@ public class JoinedClassRooms{
   }
 
   public static void onPostExecuteHelper(){
-      if(MainActivity.mHeaderProgressBar != null){
-          MainActivity.mHeaderProgressBar.post(new Runnable() {
+      if(Application.applicationHandler != null){
+          Application.applicationHandler.post(new Runnable() {
               @Override
               public void run() {
                 onPostExecuteCore();
@@ -50,8 +50,5 @@ public class JoinedClassRooms{
   static void onPostExecuteCore(){
       if (Classrooms.joinedClassAdapter != null)
           Classrooms.joinedClassAdapter.notifyDataSetChanged();
-
-      if (MainActivity.mHeaderProgressBar != null)
-          MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
   }
 }

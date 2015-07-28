@@ -2,8 +2,6 @@ package trumplabs.schoolapp;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,7 +11,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.util.LruCache;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PopupMenu;
@@ -66,14 +63,14 @@ public class Messages extends Fragment {
 
     public static List<ParseObject> msgs;
     protected LayoutInflater layoutinflater;
-    private static RecyclerView listv;
+    RecyclerView listv;
     private LinearLayoutManager mLayoutManager;
     public static RecyclerView.Adapter myadapter;
     public static SwipeRefreshLayout mPullToRefreshLayout;
     private LinearLayout inemptylayout;
     private Queries query  ;
     String userId;
-    public static int totalInboxMessages; //total pinned messages in inbox
+    static int totalInboxMessages; //total pinned messages in inbox
     LinearLayout mainLayout;
     boolean refreshServerMessage;
     private ImageView inbox_messages_bg;
@@ -270,9 +267,6 @@ public class Messages extends Fragment {
             @Override
             public void onRefresh() {
                 if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES_REFRESH", "On refresh called through pull down listener");
-                if (MainActivity.mHeaderProgressBar != null)
-                    MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
-
 
                 Utility.ls(" pull to refresh starting ... ");
                 // mHeaderProgressBar.setVisibility(View.GONE);
@@ -863,9 +857,6 @@ public class Messages extends Fragment {
                 }
             }, 1000);
         }
-
-        if (MainActivity.mHeaderProgressBar != null)
-            MainActivity.mHeaderProgressBar.setVisibility(View.GONE);
 
         //start handler for 10 secs.  <to stop refreshbar>
         final Handler h = new Handler() {
