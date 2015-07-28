@@ -14,12 +14,9 @@
         android:layout_height="48dp" />
 
     <com.facebook.login.widget.LoginButton
-        xmlns:fb="http://schemas.android.com/apk/res-auto"
         android:id="@+id/login_button"
         android:layout_width="200dp"
         android:paddingTop="12dp"
-        fb:login_text=""
-        fb:logout_text=""
         android:contentDescription="Log In"
         android:scaleType="centerInside"
         android:paddingBottom="12dp"
