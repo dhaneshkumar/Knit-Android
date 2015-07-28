@@ -549,9 +549,15 @@ public class SendMessage extends MyActionBarActivity  {
                 //previous version support < in the version from now onwards storing class name also>
                 String groupCode = msg.getString("code");
 
-                //Retrieving from shared preferences to access fast
-                className =session.getClassName(groupCode);
-                classNameTV.setText(className);
+                ParseObject codegroup = Queries.getCodegroupObject(groupCode);
+                if(codegroup != null ) {
+                    String name = codegroup.getString(Constants.Codegroup.NAME);
+                    if(!UtilString.isBlank(name))
+                    {
+                        className = name;
+                        classNameTV.setText(className);
+                    }
+                }
             }
 
 

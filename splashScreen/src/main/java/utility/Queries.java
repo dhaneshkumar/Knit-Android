@@ -675,35 +675,65 @@ public class Queries {
         return appCount + smsCount;
     }
 
-    public ParseObject getClassObject(String groupCode) throws ParseException{
-        ParseQuery query = ParseQuery.getQuery(Constants.CODE_GROUP);
+    /*
+        The ultimate optimization to avoid Codegroup queries. This takes only 1 s.
+        Fill the Application.globalCodegroupMap on start of app with all the codegroups
+        (irrespective of whether they belong to that user or not - no filter makes it even faster)
+
+        Currently being called in MemberList asynctask
+     */
+    public static void fillCodegroupMap() {
+        Log.d("__MG", "fillCodegroupMap : begin");
+        if(Application.globalCodegroupMap == null){
+            return;
+        }
+
+        ParseQuery query = ParseQuery.getQuery(Constants.Codegroup.TABLE);
         query.fromLocalDatastore();
-        //query.whereEqualTo("userId", userId); // Not needed as it doesn't matter. All will have same Timestamp
-        query.whereEqualTo("code", groupCode);
-        query.setLimit(1);
+        try{
+            List<ParseObject> codegroupList = query.find();
+            if(codegroupList != null){
+                for(ParseObject codegroup : codegroupList){
+                    Application.globalCodegroupMap.put(codegroup.getString(Constants.Codegroup.CODE), codegroup);
+                }
+            }
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
+        Log.d("__MG", "fillCodegroupMap : end,  mapsize=" + Application.globalCodegroupMap.size());
+    }
 
-        List<ParseObject> objects = query.find();
-        if(objects != null && objects.size() > 0){
-            return objects.get(0);
+    /*
+        Optimization : Use this whenever you need codegroup object.
+        If it is present in Application.globalCodegroupMap then we can avoid query in Codegroup table
+     */
+    public static ParseObject getCodegroupObject(String groupCode){
+        if(groupCode == null){
+            return null;
         }
 
-        Log.d("DEBUG_QUERIES_GET_CLASS_OBJECT", "[ ^" + groupCode + "^ ] Not found locally. Fetching from Server");
-
-        //not found locally
-        ParseQuery serverQuery = ParseQuery.getQuery(Constants.CODE_GROUP);
-        serverQuery.whereEqualTo("code", groupCode);
-        serverQuery.setLimit(1);
-
-        List<ParseObject> serverObjects = serverQuery.find();
-        if(serverObjects != null && serverObjects.size() > 0){
-            /*for(int i=0; i<objects.size(); i++){
-                Log.d("DEBUG_QUERIES_GET_CLASS_OBJECT", "[ ^" + objects.get(i).getString("code") + "^ ]");
-            }*/
-            serverObjects.get(0).pinInBackground();
-            return serverObjects.get(0);
+        if(Application.globalCodegroupMap != null && Application.globalCodegroupMap.get(groupCode) != null){
+            Log.d("__M", "JoinedGroups getView codegroup " + groupCode + " found in map");
+            return Application.globalCodegroupMap.get(groupCode);
         }
 
-        Log.d("DEBUG_QUERIES_GET_CLASS_OBJECT", "[ ^" + groupCode + "^ ] Not found even on server");
+        //not found in map, now query Codegroup table
+        ParseQuery query = ParseQuery.getQuery(Constants.Codegroup.TABLE);
+        query.fromLocalDatastore();
+        query.whereEqualTo(Constants.Codegroup.CODE, groupCode);
+
+        try{
+            ParseObject codegroup = query.getFirst();
+            if(codegroup != null && Application.globalCodegroupMap != null){
+                Application.globalCodegroupMap.put(groupCode, codegroup);
+                Log.d("__M", "JoinedGroups getView codegroup " + groupCode + " queried and put in map");
+            }
+            return codegroup;
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
 
         return null;
     }

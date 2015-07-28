@@ -499,7 +499,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     boolean result = ParseCloud.callFunction("updateProfilePic", parameters);
 
                     if (result) {
-                        //TODO call cloud function updateProfilePic
                         currentParseUser.put("pid", file);
                         currentParseUser.pin();
                         success = true;

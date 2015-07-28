@@ -37,16 +37,16 @@ public class Constants {
     public static final String LIKE_COUNT = "like_count";
     public static final String CONFUSED_COUNT = "confused_count";
     public static final String SEEN_COUNT = "seen_count";
-    public static final String LIKE = "like"; //local
-    public static final String CONFUSING = "confusing"; //local
-    public static final String SYNCED_LIKE = "synced_like"; //local like status last synced
-    public static final String SYNCED_CONFUSING = "synced_confusing"; //local
-    public static final String DIRTY_BIT = "dirty_bit"; //local
-    public static final String SEEN_STATUS = "seen_status"; //local  0(seen locally) or 1(synced)
-
     public static final String NAME = "name";
     public static final String CODE = "code";
 
+    //local fields
+    public static final String LIKE = "like"; //current like status
+    public static final String CONFUSING = "confusing"; //current confuse status
+    public static final String SYNCED_LIKE = "synced_like"; //last synced like status
+    public static final String SYNCED_CONFUSING = "synced_confusing"; //last synced confused status
+    public static final String DIRTY_BIT = "dirty_bit"; //whether msg is dirty (like/confuse status)
+    public static final String SEEN_STATUS = "seen_status"; //0(seen locally) or 1(synced)
   }
   /*
    * Invitation table
@@ -80,8 +80,17 @@ public class Constants {
    */
   public static final String MESSAGE_NEEDERS= "Messageneeders";
 
-    // codegroup
-    public static  final String CODE_GROUP = "Codegroup";
+  // codegroup table
+  public static class Codegroup{
+    public static final String TABLE = "Codegroup";
+    public static final String CODE = "code";
+    public static final String NAME = "name";
+    public static final String CREATOR = "Creator";
+    public static final String SENDER_ID = "senderId";
+    public static final String SENDER_PIC = "senderPic";
+    //local
+    public static final String COUNT = "count";
+  }
 
     //group members
     public static final String GROUP_MEMBERS = "GroupMembers";
@@ -125,6 +134,7 @@ public class Constants {
 
     public static int actionBarHeight = 0;
     public static final String SENT_MESSAGES_TABLE = "SentMessages";
+    public static final String BATCH_ID = "batch_id"; //SentMessages table : type 'long', used to group multi-cast messages
 
     public static boolean IS_SIGNUP = false;
 

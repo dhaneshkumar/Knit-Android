@@ -7,10 +7,14 @@ import android.util.Log;
 
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.PushService;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
+
 import android.os.Handler;
 
 import utility.Config;
@@ -36,6 +40,9 @@ public class Application extends android.app.Application {
 
     public static Handler applicationHandler;
 
+    public static ConcurrentHashMap<String, ParseObject> globalCodegroupMap; //code => Codegroup object
+    //avoid unnecessary queries on Codegroup (in Classrooms, ComposeMessage pages)
+
   public Application() {
 	  Parse.enableLocalDatastore(this);
   }
@@ -46,6 +53,8 @@ public class Application extends android.app.Application {
       Log.d("__A","onCreate Application, earlier applicationHandler null=" + (applicationHandler==null));
 
       applicationHandler = new Handler();
+
+      globalCodegroupMap = new ConcurrentHashMap<>();
 
     super.onCreate();
 

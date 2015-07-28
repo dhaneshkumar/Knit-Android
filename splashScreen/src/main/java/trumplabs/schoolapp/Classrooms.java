@@ -28,12 +28,14 @@ import com.parse.ParseUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import BackGroundProcesses.SendPendingMessages;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinedClassInfo;
 import library.ExpandableListView;
 import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
+import utility.Queries;
 import utility.Utility;
 
 
@@ -249,6 +251,8 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
+            Log.d("__C", "CreatedGroups getView " + position + " begin");
+
             View row = convertView;
             if (row == null) {
                 row = layoutinflater.inflate(R.layout.classroom_created_item, parent, false);
@@ -267,6 +271,7 @@ public class Classrooms extends Fragment  {
 
             classname1.setText(classnamestr.toUpperCase());                 //setting class name
 
+            Log.d("__C", "CreatedGroups getView " + position + " end");
             return row;
         }
     }
@@ -316,7 +321,6 @@ public class Classrooms extends Fragment  {
         });
     }
 
-
     class JoinedClassAdapter extends BaseAdapter {
 
         @Override
@@ -358,6 +362,7 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
+            Log.d("__J", "JoinedGroups getView " + position + " begin");
             View row = convertView;
             if (row == null) {
                 row = layoutinflater.inflate(R.layout.classrom_joined_item, parent, false);
@@ -366,49 +371,44 @@ public class Classrooms extends Fragment  {
             TextView classcreator = (TextView) row.findViewById(R.id.classcreator);
             TextView classname = (TextView) row.findViewById(R.id.classname);
 
-          /*
-           * Setting class name, code & child name
-           */
+            /*
+            * Setting class name, code & child name
+            */
+            String classCode = joinedGroups.get(position).get(0);
             String Str = joinedGroups.get(position).get(1).toUpperCase();
             classname.setText(Str);
 
-            final List<String> group = new ArrayList<String>();
-            group.add(joinedGroups.get(position).get(0));
-            group.add(Str);
-
             classcreator.setVisibility(View.VISIBLE);
 
-          /*
+            Log.d("__J", "JoinedGroups getView " + position + " mid");
+            /*
            * Setting creator name
            */
-            ParseQuery<ParseObject> delquery1 = new ParseQuery<ParseObject>(Constants.CODE_GROUP);
-            delquery1.fromLocalDatastore();
-            delquery1.whereEqualTo("code", joinedGroups.get(position).get(0));
 
-            String senderId = null;
-            try {
-                ParseObject obj = delquery1.getFirst();
-                if (obj != null) {
-                    String creatorName = obj.get("Creator").toString();
+            ParseObject codegroup = Queries.getCodegroupObject(classCode);
 
-                    if (!UtilString.isBlank(creatorName)) {
-                        Str = creatorName.trim();
-                        classcreator.setText(Str);
-                    }
+            if(codegroup != null){
+                String creatorName = codegroup.getString(Constants.Codegroup.CREATOR);
+
+                if (!UtilString.isBlank(creatorName)) {
+                    Str = creatorName.trim();
+                    classcreator.setText(Str);
                 }
-            } catch (ParseException e) {
             }
 
+            Log.d("__J", "JoinedGroups getView " + position + " end");
             return row;
         }
     }
 
     //can be called from anywhere
-    public static void refreshCreatedClassrooms(final String deletedClassCode){
+    public static void refreshCreatedClassrooms(final List<String> deletedCodes){
         if(getactivity != null && createdClassAdapter != null && MainActivity.floatOptionsAdapter != null){
             getactivity.runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
+                    Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms called with = " + deletedCodes);
+
                     ParseUser currentUser = ParseUser.getCurrentUser();
                     if (currentUser == null) {
                         return;
@@ -420,20 +420,24 @@ public class Classrooms extends Fragment  {
                     createdClassAdapter.notifyDataSetChanged();
 
                     //remove this class from MainActivity's floating classList
-                    if (MainActivity.classList != null && deletedClassCode != null){
-                        int removeIndex = -1;
-                        for(int i=0; i<MainActivity.classList.size(); i++){
-                            List<String> cls = MainActivity.classList.get(i);
-                            if(cls != null && cls.size() > 1 && cls.get(0).equalsIgnoreCase(deletedClassCode)){
-                                removeIndex = i;
-                                break;
+                    if (MainActivity.classList != null && deletedCodes != null){
+
+                        List<List<String>> tempClassList = new ArrayList<>(MainActivity.classList); //new list, iterate original and remove elements from here
+
+                        Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms starting classList is " + tempClassList);
+
+                        for(List<String> cls : MainActivity.classList){
+                            for(String deletedClassCode : deletedCodes) {
+                                if (cls != null && cls.size() > 1 && cls.get(0).equalsIgnoreCase(deletedClassCode)) {
+                                    tempClassList.remove(cls);
+                                    break;
+                                }
                             }
                         }
 
-                        if(removeIndex >= 0 && removeIndex < MainActivity.classList.size()){
-                            MainActivity.classList.remove(removeIndex);
-                            MainActivity.floatOptionsAdapter.notifyDataSetChanged();
-                        }
+                        Log.d(SendPendingMessages.LOGTAG, "refreshCreatedClassrooms final classList is " + tempClassList);
+                        MainActivity.classList = tempClassList;
+                        MainActivity.floatOptionsAdapter.notifyDataSetChanged();
                     }
                 }
             });

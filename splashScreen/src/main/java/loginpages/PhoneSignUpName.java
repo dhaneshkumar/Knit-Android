@@ -704,6 +704,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         super.onBackPressed();
 
         Intent intent = new Intent(PhoneSignUpName.this, Signup.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
 
