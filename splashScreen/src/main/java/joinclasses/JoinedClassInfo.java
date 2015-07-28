@@ -104,8 +104,8 @@ public class JoinedClassInfo extends MyActionBarActivity {
         String teacherSenderId = null;
         ParseObject codegroup = Queries.getCodegroupObject(classCode);
         if(codegroup != null) {
-            teacherName = codegroup.getString("Creator");
-            teacherSenderId = codegroup.getString("senderId");
+            teacherName = codegroup.getString(Constants.Codegroup.CREATOR);
+            teacherSenderId = codegroup.getString(Constants.Codegroup.SENDER_ID);
         }
         else{
             teacherName = "";

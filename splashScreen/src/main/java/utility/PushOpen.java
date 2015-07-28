@@ -206,7 +206,7 @@ public class PushOpen extends MyActionBarActivity {
                 ParseObject codeGroupObject = Queries.getCodegroupObject(classCode);
 
                 if (codeGroupObject != null) {
-                    EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.RemovalMsg, classCode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), user);
+                    EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.RemovalMsg, classCode, codeGroupObject.getString(Constants.Codegroup.CREATOR), codeGroupObject.getString(Constants.Codegroup.SENDER_ID), codeGroupObject.getString(Constants.Codegroup.NAME), user);
                     Log.d("DEBUG_PUSH_OPEN", "UserRemovedTask : local message generated");
                 }
 

@@ -126,7 +126,6 @@ public class ComposeMessageHelper {
 
             Log.d(ComposeMessage.LOGTAG, "source inside - current # sendmessage msgs=" + SendMessage.groupDetails.size());
             for(ParseObject msg : messagesToSend){
-                //TODO add only if its code equal to current SendMessage instance's codegroup
                 if(msg.getString("code") != null && SendMessage.groupCode != null && msg.getString("code").equals(SendMessage.groupCode)) {
                     SendMessage.groupDetails.add(0, msg);
                     SendMessage.totalClassMessages++; //increment one by one only for the concerned messages

@@ -80,8 +80,17 @@ public class Constants {
    */
   public static final String MESSAGE_NEEDERS= "Messageneeders";
 
-    // codegroup
-    public static  final String CODE_GROUP = "Codegroup";
+  // codegroup table
+  public static class Codegroup{
+    public static final String TABLE = "Codegroup";
+    public static final String CODE = "code";
+    public static final String NAME = "name";
+    public static final String CREATOR = "Creator";
+    public static final String SENDER_ID = "senderId";
+    public static final String SENDER_PIC = "senderPic";
+    //local
+    public static final String COUNT = "count";
+  }
 
     //group members
     public static final String GROUP_MEMBERS = "GroupMembers";

@@ -341,7 +341,7 @@ public class Outbox extends Fragment {
                 ParseObject codegroup = Queries.getCodegroupObject(groupCode);
 
                 if(codegroup != null ) {
-                    String name = codegroup.getString("name");
+                    String name = codegroup.getString(Constants.Codegroup.NAME);
                     if(!UtilString.isBlank(name))
                     {
                         className = name;

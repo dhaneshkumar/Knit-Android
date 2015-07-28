@@ -229,8 +229,8 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
 
         if(codegroup != null)
         {
-            Log.d("MEMBER", codegroup.getString("code") + ", member count="+codegroup.getInt("count"));
-            return codegroup.getInt("count");
+            Log.d("MEMBER", codegroup.getString(Constants.Codegroup.CODE) + ", member count="+codegroup.getInt(Constants.Codegroup.COUNT));
+            return codegroup.getInt(Constants.Codegroup.COUNT);
         }
         else
             Log.d("MEMBER", "query null");
@@ -243,7 +243,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
         ParseObject codegroup = Queries.getCodegroupObject(groupCode);
 
         if(codegroup != null) {
-            codegroup.put("count", count);
+            codegroup.put(Constants.Codegroup.COUNT, count);
             codegroup.pinInBackground();
             Log.d("MEMBER", "setMemberCount " + groupCode + " : success : count=" + count);
         }

@@ -32,7 +32,7 @@ public class InviteTasks {
         if(inviteType == Constants.INVITATION_P2P){
             ParseObject codegroup = Queries.getCodegroupObject(classCode);
             if(codegroup != null) {
-                teacherName = codegroup.getString("Creator");
+                teacherName = codegroup.getString(Constants.Codegroup.CREATOR);
             }
             else{
                 return; //in general won't happen

@@ -210,7 +210,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             Long interval = now.getTime() - classCreationTime.getTime();
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
             if(interval > teacherNoSubInterval){
-                String className = classroom.getString("name"); //get class name
+                String className = classroom.getString(Constants.Codegroup.NAME); //get class name
 
                 if(className == null || className.isEmpty()){
                     className = groupCode;
@@ -280,7 +280,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             Long interval = now.getTime() - classCreationTime.getTime();
             Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " class creation interval " + interval/(Constants.MINUTE_MILLISEC) + "minutes");
             if(interval > teacherNoMsgInterval){
-                String className = classroom.getString("name"); //get class name
+                String className = classroom.getString(Constants.Codegroup.NAME); //get class name
 
                 if(className == null || className.isEmpty()){
                     className = groupCode;

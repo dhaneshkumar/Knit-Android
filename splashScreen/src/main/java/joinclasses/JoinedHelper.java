@@ -91,7 +91,7 @@ public class JoinedHelper {
 
         Log.d("join", "code object not null");
         //successfully joined the classroom
-        codeGroupObject.put("userId", userId);
+        codeGroupObject.put(Constants.USER_ID, userId);
         currentParseUser.put(Constants.JOINED_GROUPS, updatedJoinedGroups);
         try {
             currentParseUser.pin();
@@ -103,8 +103,8 @@ public class JoinedHelper {
         /*
          * download profile pic of teacher locally
         */
-        String senderId = codeGroupObject.getString("senderId");
-        ParseFile senderPic = codeGroupObject.getParseFile("senderPic");
+        String senderId = codeGroupObject.getString(Constants.Codegroup.SENDER_ID);
+        ParseFile senderPic = codeGroupObject.getParseFile(Constants.Codegroup.SENDER_PIC);
 
         if (!UtilString.isBlank(senderId)) {
             senderId = senderId.replaceAll("@", "");
@@ -125,8 +125,8 @@ public class JoinedHelper {
 
         //locally generating joining notification and inbox msg
         Log.d("DEBUG_JOINED_HELPER", "generating notification and local message");
-        NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString("name"), Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
-        EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString("Creator"), codeGroupObject.getString("senderId"), codeGroupObject.getString("name"), currentParseUser);
+        NotificationGenerator.generateNotification(Application.getAppContext(), utility.Config.welcomeMsg, codeGroupObject.getString(Constants.Codegroup.NAME), Constants.Notifications.NORMAL_NOTIFICATION, Constants.Actions.INBOX_ACTION);
+        EventCheckerAlarmReceiver.generateLocalMessage(utility.Config.welcomeMsg, classcode, codeGroupObject.getString(Constants.Codegroup.CREATOR), codeGroupObject.getString(Constants.Codegroup.SENDER_ID), codeGroupObject.getString(Constants.Codegroup.NAME), currentParseUser);
 
         if(oldMessages != null)
         {

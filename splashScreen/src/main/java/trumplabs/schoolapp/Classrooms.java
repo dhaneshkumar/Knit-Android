@@ -388,7 +388,7 @@ public class Classrooms extends Fragment  {
             ParseObject codegroup = Queries.getCodegroupObject(classCode);
 
             if(codegroup != null){
-                String creatorName = codegroup.getString("Creator");
+                String creatorName = codegroup.getString(Constants.Codegroup.CREATOR);
 
                 if (!UtilString.isBlank(creatorName)) {
                     Str = creatorName.trim();

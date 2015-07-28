@@ -194,7 +194,7 @@ public class CreateClassDialog extends DialogFragment{
                 return false;
 
             ParseObject codeGroupObject = (ParseObject) result.get("codegroup");
-            List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS); //todo change the key name acc
+            List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
 
             ParseUser currentUser = ParseUser.getCurrentUser();
             if(codeGroupObject == null || updatedCreatedGroups == null || currentUser == null)
@@ -212,10 +212,10 @@ public class CreateClassDialog extends DialogFragment{
             }
 
             //retrieving class-code
-            classCode = codeGroupObject.getString("code");
+            classCode = codeGroupObject.getString(Constants.Codegroup.CODE);
 
             //retrieving class name
-            className = codeGroupObject.getString("name");
+            className = codeGroupObject.getString(Constants.Codegroup.NAME);
             return true;
         }
 

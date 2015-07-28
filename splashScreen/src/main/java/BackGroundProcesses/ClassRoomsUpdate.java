@@ -56,10 +56,10 @@ public class ClassRoomsUpdate {
                 joinedClassCodes.add(joinedClasses.get(i).get(0));
             }
 
-            ParseQuery joinedQuery = new ParseQuery(Constants.CODE_GROUP);
+            ParseQuery joinedQuery = new ParseQuery(Constants.Codegroup.TABLE);
             joinedQuery.fromLocalDatastore();
             joinedQuery.whereEqualTo(Constants.USER_ID, user.getUsername());
-            joinedQuery.whereContainedIn("code", joinedClassCodes);
+            joinedQuery.whereContainedIn(Constants.Codegroup.CODE, joinedClassCodes);
 
             try{
                 List<ParseObject> joinedGroups = joinedQuery.find();
@@ -70,7 +70,7 @@ public class ClassRoomsUpdate {
 
                 ArrayList<String> joinedSenderIds = new ArrayList<>();
                 for(int i=0; i<joinedGroups.size(); i++){
-                    joinedSenderIds.add(joinedGroups.get(i).getString("senderId"));
+                    joinedSenderIds.add(joinedGroups.get(i).getString(Constants.Codegroup.SENDER_ID));
                     //Log.d("DEBUG_CLASS_ROOMS_UPDATE", i + joinedGroups.get(i).getString("senderId"));
                 }
 
@@ -167,16 +167,16 @@ public class ClassRoomsUpdate {
 
             if(nameChanged) {//query Codegroup and change "Creator" in Codegroup table(where senderId = username)
                 Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : updating Codegroup table for senderId = " + username);
-                ParseQuery classQuery = new ParseQuery(Constants.CODE_GROUP);
+                ParseQuery classQuery = new ParseQuery(Constants.Codegroup.TABLE);
                 classQuery.fromLocalDatastore();
-                classQuery.whereEqualTo("senderId", username);
+                classQuery.whereEqualTo(Constants.Codegroup.SENDER_ID, username);
                 classQuery.whereEqualTo(Constants.USER_ID, currentUserName);
 
                 List<ParseObject> classList = classQuery.find();
                 if (classList != null) {
                     for (int i = 0; i < classList.size(); i++) {
                         ParseObject oldClass = classList.get(i);
-                        oldClass.put("Creator", newName);
+                        oldClass.put(Constants.Codegroup.CREATOR, newName);
                     }
                     ParseObject.pinAll(classList);
                 }

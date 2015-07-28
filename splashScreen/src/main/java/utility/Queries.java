@@ -688,13 +688,13 @@ public class Queries {
             return;
         }
 
-        ParseQuery query = ParseQuery.getQuery(Constants.CODE_GROUP);
+        ParseQuery query = ParseQuery.getQuery(Constants.Codegroup.TABLE);
         query.fromLocalDatastore();
         try{
             List<ParseObject> codegroupList = query.find();
             if(codegroupList != null){
                 for(ParseObject codegroup : codegroupList){
-                    Application.globalCodegroupMap.put(codegroup.getString("code"), codegroup);
+                    Application.globalCodegroupMap.put(codegroup.getString(Constants.Codegroup.CODE), codegroup);
                 }
             }
         }
@@ -719,9 +719,9 @@ public class Queries {
         }
 
         //not found in map, now query Codegroup table
-        ParseQuery query = ParseQuery.getQuery(Constants.CODE_GROUP);
+        ParseQuery query = ParseQuery.getQuery(Constants.Codegroup.TABLE);
         query.fromLocalDatastore();
-        query.whereEqualTo("code", groupCode);
+        query.whereEqualTo(Constants.Codegroup.CODE, groupCode);
 
         try{
             ParseObject codegroup = query.getFirst();

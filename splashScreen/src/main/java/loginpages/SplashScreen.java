@@ -69,7 +69,7 @@ public class SplashScreen extends MyActionBarActivity {
         isRefresherAlarmTriggered = true;
     }
 
-        //trigger notification alarm (TODO take care of boot issues)
+        //trigger notification alarm
         AlarmTrigger.triggerNotificationAlarm(Application.getAppContext());
 
      /*
