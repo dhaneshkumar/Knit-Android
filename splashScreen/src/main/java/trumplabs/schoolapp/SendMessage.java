@@ -254,9 +254,9 @@ public class SendMessage extends MyActionBarActivity  {
     }
 
     public static void notifyAdapter(){
-        //view.post
-        if(SendMessage.contentLayout != null) {
-            SendMessage.contentLayout.post(new Runnable() {
+        //applicationHandler.post
+        if(Application.applicationHandler != null) {
+            Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (myadapter != null) {

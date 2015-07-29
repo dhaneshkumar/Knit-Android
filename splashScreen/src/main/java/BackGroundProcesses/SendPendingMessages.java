@@ -49,6 +49,12 @@ public class SendPendingMessages {
             return;
         }
 
+        synchronized (DATA_LOCK) {
+            if (jobRunning) {
+                return;
+            }
+        }
+
         Runnable r = new Runnable() {
             @Override
             public void run() {
