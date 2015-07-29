@@ -287,7 +287,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         phoneNumber = phoneNumberET.getText().toString();
         if (UtilString.isBlank(displayName))
             Utility.toast("Incorrect Display Name", true);
-        else if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10)
+        else if (!Utility.isNumberValid(phoneNumber))
             Utility.toast("Incorrect Mobile Number", true);
         else if(Utility.isInternetExist()) {
             //Changing first letter to caps

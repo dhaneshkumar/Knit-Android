@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.facebook.FacebookSdk;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
@@ -46,10 +47,12 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
   protected void onCreate(android.os.Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+      FacebookSdk.sdkInitialize(getApplicationContext());
+
     setContentView(R.layout.phone_login_page);
 
 
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+      getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
       ParseUser user = ParseUser.getCurrentUser();
     if (user != null) {
@@ -206,7 +209,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     void next(){
         phoneNumber = phoneNumberET.getText().toString();
-        if (UtilString.isBlank(phoneNumber) || phoneNumber.length() != 10) {
+        if (!Utility.isNumberValid(phoneNumber)) {
             Utility.toast("Incorrect Mobile Number", true);
         }
         else if(Utility.isInternetExist()) {

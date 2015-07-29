@@ -526,6 +526,19 @@ public class Utility extends MyActionBarActivity {
         return (count > 1 ? "s" : "");
     }
 
+    /*
+        Check if given number is valid if following conditions satisfy:
+        i.e is not blank
+            is of exactly 10 digits
+            first digit is >= 7
+     */
+    public static boolean isNumberValid(String phoneNumber){
+        if(!UtilString.isBlank(phoneNumber) && phoneNumber.length() == 10 &&
+                Character.getNumericValue(phoneNumber.charAt(0)) >= 7){
+            return true;
+        }
+        return false;
+    }
 
     public static class LogoutUtility{
         //flag so that checkAndHandleInvalidSession does not run multiple times(i.e run only once until next login)
