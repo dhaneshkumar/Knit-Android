@@ -57,6 +57,10 @@ public class ScalingUtilities {
      */
     public static void scaleAndSave(String srcImagePath, String dstImagePath){
         if(utility.Config.SHOWLOG) Log.d("DEBUG_SCALING", "scaleAndSave() : scrImagePath " + srcImagePath + " dstImagePath " + dstImagePath);
+        if(srcImagePath != null && dstImagePath != null){
+            if(utility.Config.SHOWLOG) Log.d("DEBUG_SCALING", "scaleAndSave() : " + srcImagePath.equals(dstImagePath));
+        }
+
         final long startTime = SystemClock.uptimeMillis();
 
         // Part 1: Decode image

@@ -330,20 +330,6 @@ public class Utility extends MyActionBarActivity {
         return false;
     }
 
-    public static void savePicInAppFolder(String filepath) {
-
-        if (filepath == null) {
-            Utility.toast("path null");
-            return;
-        }
-
-        String fname = filepath.substring(filepath.lastIndexOf("/") + 1);
-        String targetPath = Utility.getWorkingAppDir() + "/media/" + fname;
-
-        if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "savePicInAppFolder calling for a gallery image");
-        ScalingUtilities.scaleAndSave(filepath, targetPath);
-    }
-
     // Creating the thumbnail of the image in media folder
     public static void createThumbnail(Activity getactivity, String fname) {
         Display mDisplay = getactivity.getWindowManager().getDefaultDisplay();
@@ -401,6 +387,17 @@ public class Utility extends MyActionBarActivity {
             }
         }
         return Environment.getExternalStorageDirectory() + "/" + appName;
+    }
+
+    /*
+        Use this to give a unique name to captured or picked image before storing 'media' folder
+        This will be unique globally across all users, all devices, any time (assuming parse installation id is unique across all devices)
+     */
+    public static String getUniqueImageName(){
+        String installationId = ParseInstallation.getCurrentInstallation().getInstallationId();
+        Long timeInMillis = new Date().getTime();
+
+        return installationId + "_" + timeInMillis + ".jpg";
     }
 
     public static String classColourCode(String className) {

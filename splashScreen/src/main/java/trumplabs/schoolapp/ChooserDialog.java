@@ -41,12 +41,11 @@ import utility.Utility;
  */
 public class ChooserDialog extends DialogFragment implements OnClickListener {
   File imageFile;
-  String capturedimagename;
+  String imageFileName;
   CommunicatorInterface activity;
   Activity currentActivity;
   boolean flag = false;
     boolean profileCall;  //It tells about caller activity : SendMessage(false) or ProfilePage(true)
-    String filePath;
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -112,30 +111,18 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     if(Config.SHOWLOG) Log.d("camera", "started camera.............");
 
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    Date date = new Date();
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-    String formattedDate = sdf.format(date);
-    capturedimagename = "Capturedimage" + formattedDate + ".jpg";
+    imageFileName = Utility.getUniqueImageName();
 
-    if(Config.SHOWLOG) Log.d("camera", capturedimagename);
+    if(Config.SHOWLOG) Log.d("camera", imageFileName);
 
-    imageFile =
-        new File(Utility.getWorkingAppDir() + "/media/", "Capturedimage" + formattedDate + ".jpg");
+    imageFile = new File(Utility.getWorkingAppDir() + "/media/", imageFileName);
 
-    if (imageFile != null) {
-      Uri tempuri = Uri.fromFile(imageFile);
-      if (tempuri != null) {
+    Uri tempUri = Uri.fromFile(imageFile);
 
-          if(Config.SHOWLOG) Log.d("camera", tempuri.toString());
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, tempuri);
-        intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);   //high(1) or low(0) quality images
-        startActivityForResult(intent, 100);
-      }
-        else
-          if(Config.SHOWLOG) Log.d("camera", " tempuri null");
-    }
-      else
-        if(Config.SHOWLOG) Log.d("camera", " null imagefile ");
+    if(Config.SHOWLOG) Log.d("camera", tempUri.toString());
+    intent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
+    intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);   //high(1) or low(0) quality images
+    startActivityForResult(intent, 100);
   }
 
   /**
@@ -151,22 +138,14 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         case Activity.RESULT_OK:
           if (imageFile != null && imageFile.exists()) {
 
-              filePath = Utility.getWorkingAppDir() + "/media/" + capturedimagename;
+              String filePath = Utility.getWorkingAppDir() + "/media/" + imageFileName;
 
-              Utility.savePicInAppFolder(filePath);
-              Utility.createThumbnail(getActivity(), capturedimagename);
+              ScalingUtilities.scaleAndSave(filePath, filePath);
 
-            /*  if(profileCall) {
-                  Uri selectedImg = intent.getData();
+              Utility.createThumbnail(getActivity(), imageFileName);
 
-                 // doCrop(selectedImg);
-              }*/
-
-
-
-              activity.sendImagePic(capturedimagename);
+              activity.sendImagePic(imageFileName);
           }
-
 
           break;
         case Activity.RESULT_CANCELED:
@@ -178,7 +157,6 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
           Uri selectedImage = intent.getData();
           currentActivity = getActivity();
-
 
           // changing visibility option of progressbar and imageview
 
@@ -195,52 +173,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
           loadImage loadimage = new loadImage(selectedImage);
           loadimage.execute();
 
-
           break;
         case Activity.RESULT_CANCELED:
           break;
       }
     }
-    else if (requestCode == 110) {
-          switch (resultCode) {
-              case Activity.RESULT_OK:
-                  if (imageFile != null && imageFile.exists()) {
-
-                      activity.sendImagePic(capturedimagename);
-                  }
-
-
-                  break;
-              case Activity.RESULT_CANCELED:
-                  break;
-          }
-
-
-
-      }
-      getDialog().dismiss();
+    getDialog().dismiss();
   }
-
-
-    public void doCrop(Uri uriOfImageToCrop) {
-        if(Config.SHOWLOG) Log.d("DEBUG_PROFILE_PAGE", "into doCrop");
-        final Intent intent = new Intent("com.android.camera.action.CROP");
-        intent.setData(uriOfImageToCrop);
-        intent.putExtra("outputX", 200);
-        intent.putExtra("outputY", 200);
-        intent.putExtra("aspectX", 1);
-        intent.putExtra("aspectY", 1);
-        intent.putExtra("scale", true);
-        intent.putExtra("noFaceDetection", true);
-
-        File file = new File(filePath);
-        if (file.exists())
-            file.delete();
-        intent.putExtra("output", Uri.fromFile(file));
-        startActivityForResult(intent, 110);
-    }
-
-
 
   public interface CommunicatorInterface {
     void sendImagePic(String imgname);
@@ -261,108 +200,63 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     @Override
     protected Void doInBackground(Void... params) {
 
-      Cursor cursor = currentActivity.getContentResolver().query(uri, null, null, null, null);
-
       boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
-        String tempTargetPath = null;
-        String targetPath = null;
-        String fileName = null;
 
-      if (cursor != null) {
-        cursor.moveToFirst();
+      imageName = Utility.getUniqueImageName();
 
-        // _display_name contains image name
-        int columnIndex = cursor.getColumnIndex("_display_name");
+      String imagePath = Utility.getWorkingAppDir() + "/media/" + imageName;
 
-        fileName = cursor.getString(columnIndex);
+      //Storing file locally in /media folder
+      ParcelFileDescriptor parcelFileDescriptor = null;
+      try {
+        parcelFileDescriptor = currentActivity.getContentResolver().openFileDescriptor(uri, "r");
+      } catch (FileNotFoundException e1) {
+      }
 
-        /*
-         * photos app assign name of each image as image.jpg. So we randomly assigning same name to
-         * it
-         */
-        if (fileName == null || fileName.trim().equals("image.jpg")) {
-            Random rand = new Random();
-            fileName = rand.nextInt(9000000) + 1000000 + "";
-          fileName += ".jpg";
-        }
+      if (parcelFileDescriptor != null) {
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
 
-        imageName = fileName;
-        tempTargetPath = Utility.getWorkingAppDir() + "/media/" + fileName + "_temp.jpg";
-        targetPath = Utility.getWorkingAppDir() + "/media/" + fileName;
+        if (fileDescriptor != null) {
+          InputStream inputStream = new FileInputStream(fileDescriptor);
+          BufferedInputStream reader = new BufferedInputStream(inputStream);
 
-        /*
-         * Storing file locally in /media folder
-         */
-
-        ParcelFileDescriptor parcelFileDescriptor = null;
-        try {
-          parcelFileDescriptor = currentActivity.getContentResolver().openFileDescriptor(uri, "r");
-        } catch (FileNotFoundException e1) {
-        }
-
-        if (parcelFileDescriptor != null) {
-          FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-
-          if (fileDescriptor != null) {
-            InputStream inputStream = new FileInputStream(fileDescriptor);
-
-            if (inputStream != null) {
-              BufferedInputStream reader = new BufferedInputStream(inputStream);
-
-              // Create an output stream to a file that you want to save to
-
-              if (reader != null) {
-                BufferedOutputStream outStream;
-                try {
-                  outStream = new BufferedOutputStream(new FileOutputStream(tempTargetPath));
-                  byte[] buf = new byte[2048];
-                  int len;
-                  while ((len = reader.read(buf)) > 0) {
-                    outStream.write(buf, 0, len);
-                  }
-
-                  if (outStream != null)
-                    outStream.close();
-
-
-                    retrieveSuccess = true;
-
-
-
-                } catch (FileNotFoundException e) {
-                } catch (IOException e) {
-                }
-                finally {
-                    cursor.close();
-                }
-              }
+          // Create an output stream to a file that you want to save to
+          BufferedOutputStream outStream;
+          try {
+            outStream = new BufferedOutputStream(new FileOutputStream(imagePath));
+            byte[] buf = new byte[2048];
+            int len;
+            while ((len = reader.read(buf)) > 0) {
+              outStream.write(buf, 0, len);
             }
-          }
-        } else
-          flag = true;
 
+            if (outStream != null)
+              outStream.close();
+
+            retrieveSuccess = true;
+
+          } catch (FileNotFoundException e) {
+          } catch (IOException e) {
+          }
+        }
       } else
         flag = true;
 
-      if(retrieveSuccess){
-          ScalingUtilities.scaleAndSave(tempTargetPath, targetPath); //overwrite
-          // creating thumbnail of that image
-          Utility.createThumbnail(currentActivity, fileName);
-          //delete the temporary image file from knit/media folder
-          File tempImageFile = new File(tempTargetPath);
-          if(tempImageFile.exists()){
-              tempImageFile.delete();
-          }
+      if (retrieveSuccess) {
+        ScalingUtilities.scaleAndSave(imagePath, imagePath); //overwrite
+        // creating thumbnail of that image
+        Utility.createThumbnail(currentActivity, imageName);
+      }
+      else{
+        Utility.toast("Failed to load image!");
       }
 
       return null;
     }
 
-
     @Override
     protected void onPostExecute(Void res) {
       activity.sendImagePic(imageName);
-
 
       // changing visibility option
         if(!profileCall) {
@@ -371,10 +265,6 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
             if (ComposeMessage.sendimgpreview != null) {
                 ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
-
-              /*  //setting 'send button' color to blue
-                if(ComposeMessage.sendmsgbutton != null)
-                    ComposeMessage.sendmsgbutton.setImageResource(R.drawable.send);*/
             }
         }
 
