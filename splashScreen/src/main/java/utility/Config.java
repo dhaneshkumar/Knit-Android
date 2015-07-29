@@ -40,8 +40,9 @@ public class Config {
 
   /*
   5. Set flag to detect invalid number.  #true : knit & #false for testing
+    Note now invalid number detection is now local i.e numbers must be 10 digit with 1st digit >= 7
    */
-  public static final boolean DETECT_INVALID_NUMBER = true;
+  public static final boolean DETECT_INVALID_NUMBER = false;
 
 /*
   6. Set alarm configuration like repeat duration, notification stale period - used in AlarmTrigger, NotificationAlarmReceiver

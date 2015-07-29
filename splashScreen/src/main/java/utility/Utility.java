@@ -50,6 +50,7 @@ import loginpages.Signup;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 
 public class Utility extends MyActionBarActivity {
@@ -255,8 +256,6 @@ public class Utility extends MyActionBarActivity {
     }
 
     public static String convertTimeStamp(Date d1){
-
-
         String result;
 
         if (d1 != null) {
@@ -269,16 +268,16 @@ public class Utility extends MyActionBarActivity {
 
             long diff = d2.getTime() - d1.getTime();
 
-            long diffMinutes = diff / (60 * 1000) % 60;
-            long diffHours = diff / (60 * 60 * 1000) % 24;
-            long diffDays = diff / (24 * 60 * 60 * 1000);
+            long diffMinutes = (diff / Constants.MINUTE_MILLISEC) % 60;
+            long diffHours = (diff / Constants.HOUR_MILLISEC) % 24;
+            long diffDays = diff / Constants.DAY_MILLISEC;
 
             if (diffDays != 0) {
-                result = diffDays + " days ago";
+                result = diffDays + " day" + Utility.getPluralSuffix((int)diffDays) + " ago";
             } else if (diffHours != 0) {
-                result = diffHours + " hrs ago";
+                result = diffHours + " hr" + Utility.getPluralSuffix((int)diffHours) + " ago";
             } else if (diffMinutes != 0) {
-                result = diffMinutes + " mins ago";
+                result = diffMinutes + " min" + Utility.getPluralSuffix((int) diffMinutes) + " ago";
 
                 if (diffMinutes < 3)
                     result = "just now";
@@ -530,11 +529,13 @@ public class Utility extends MyActionBarActivity {
         Check if given number is valid if following conditions satisfy:
         i.e is not blank
             is of exactly 10 digits
-            first digit is >= 7
+            first digit is >= 7 (check only if Config.DETECT_INVALID_NUMBER is true)
      */
     public static boolean isNumberValid(String phoneNumber){
-        if(!UtilString.isBlank(phoneNumber) && phoneNumber.length() == 10 &&
-                Character.getNumericValue(phoneNumber.charAt(0)) >= 7){
+        if(!UtilString.isBlank(phoneNumber) && phoneNumber.length() == 10){
+            if(Config.DETECT_INVALID_NUMBER && Character.getNumericValue(phoneNumber.charAt(0)) < 7){
+                return false;
+            }
             return true;
         }
         return false;
