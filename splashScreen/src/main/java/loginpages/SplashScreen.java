@@ -3,7 +3,6 @@ package loginpages;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
@@ -36,6 +35,7 @@ public class SplashScreen extends MyActionBarActivity {
   LinearLayout logoLayout;
   Animation animationFadeIn;
   private Handler mHandler = new Handler();
+
 
     static boolean isRefresherAlarmTriggered = false; //flag telling whether alarm for event checker has been triggered or not
 
