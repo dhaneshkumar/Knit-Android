@@ -67,6 +67,8 @@ public class JoinClassDialog extends DialogFragment {
 
     ParseUser currentParseUser;
 
+    final String WRONG_CLASS_CODE_MSG = "Wrong class code !";
+
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         //Creating new dialog box
@@ -164,7 +166,7 @@ public class JoinClassDialog extends DialogFragment {
 
                     //validating code format
                     if (code.length() != 7) {
-                        Utility.toast("Enter Correct Class Code");
+                        Utility.toast(WRONG_CLASS_CODE_MSG);
                         return;
                     }
 
@@ -210,10 +212,10 @@ public class JoinClassDialog extends DialogFragment {
                     }
                 }
                 else if(UtilString.isBlank(codeET.getText().toString())) {
-                    Utility.toast("Enter correct class-code");
+                    Utility.toast(WRONG_CLASS_CODE_MSG);
                 }
                 else {
-                    Utility.toast("Enter correct child name");
+                    Utility.toast("Enter child name");
                 }
             }
         });
@@ -338,7 +340,7 @@ public class JoinClassDialog extends DialogFragment {
 
             if (result) {
                 if(getActivity()!=null)
-                    Utility.toast("ClassRoom Joined");
+                    Utility.toast("Classroom Joined");
 
                 //Refreshing joined class adapter
                 Classrooms.joinedGroups = currentParseUser.getList(Constants.JOINED_GROUPS);
@@ -409,9 +411,9 @@ public class JoinClassDialog extends DialogFragment {
 
             } else {
                 if (classExist)
-                    Utility.toast("Class room Already added.");
+                    Utility.toast("Classroom already joined.");
                 else if(classCodeNotExist)
-                    Utility.toast("Entered class-code doesn't exist. \n Please enter correct code");
+                    Utility.toast(WRONG_CLASS_CODE_MSG);
                 else
                     Utility.toast("Sorry, Something went wrong. Try Again.");
             }

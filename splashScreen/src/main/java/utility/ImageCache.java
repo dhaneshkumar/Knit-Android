@@ -179,4 +179,5 @@ public class ImageCache {
             addBitmapToMemoryCache(imageName, myBitmap); //key imageName
         }
     }
+
 }
