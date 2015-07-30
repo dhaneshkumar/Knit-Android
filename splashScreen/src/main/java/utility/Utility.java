@@ -332,6 +332,9 @@ public class Utility extends MyActionBarActivity {
 
     // Creating the thumbnail of the image in media folder
     public static void createThumbnail(Activity getactivity, String fname) {
+        if(getactivity == null){
+            return;
+        }
         Display mDisplay = getactivity.getWindowManager().getDefaultDisplay();
         float width = mDisplay.getWidth();
         float height = mDisplay.getHeight();

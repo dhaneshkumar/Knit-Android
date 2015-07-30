@@ -238,17 +238,24 @@ public class Messages extends Fragment {
                 int totalItemCount = mLayoutManager.getItemCount();
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
+                //if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "onScrolled : v=" + visibleItemCount + ", p=" + pastVisibleItems + ", t=" + totalItemCount + ", i=" + totalInboxMessages);
                 if (visibleItemCount + pastVisibleItems >= totalItemCount - 2) {
                     if (totalItemCount >= totalInboxMessages) {
                         //Now no more available locally, now if not all inbox messages have been fetched, fetch more using showOldMessages cloud function and update adapter and totalInboxMessages
                         checkAndFetchOldMessages();
-                        if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
+                        //if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
                     if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "Loading more local messages");
 
                     try {
-                        msgs = query.getExtraLocalInboxMsgs(msgs);
+                        boolean gotExtraMsgs = query.getExtraLocalInboxMsgs(msgs);
+                        //if no extra msgs added, then (just for safety), set totalInboxMessages to totalItemCount
+                        //otherwise repeatedly getExtraLocalInboxMsgs will be called unnecessarily
+                        if(!gotExtraMsgs){
+                            if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "gotExtraMsgs=false, setting totalInboxMessges");
+                            totalInboxMessages = totalItemCount;
+                        }
                         myadapter.notifyDataSetChanged();
                     } catch (ParseException e) {
                         e.printStackTrace();
@@ -637,7 +644,7 @@ public class Messages extends Fragment {
                 });
             }
 
-            if (!imageName.equals(""))
+            if (!UtilString.isBlank(imageName))
             {
                 holder.imgframelayout.setVisibility(View.VISIBLE);
                 holder.imgframelayout.setOnClickListener(new OnClickListener() {
@@ -653,76 +660,63 @@ public class Messages extends Fragment {
                     }
                 });
 
-                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imageName);
-                final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imageName);
-                if (imgFile.exists() && !thumbnailFile.exists())
-                    Utility.createThumbnail(getActivity(), imageName);
-
-                // Utility.toast(Utility.getWorkingAppDir() + "/thumbnail/" +
-                // imagepath);
-
-                if (imgFile.exists()) {
-                    // image file present locally
-                    holder.uploadprogressbar.setVisibility(View.GONE);
-                    holder.faildownload.setVisibility(View.GONE);
-                    holder.imgframelayout.setTag(imgFile.getAbsolutePath());
-
-                    ImageCache.loadBitmapSimple(imageName, holder.imgmsgview);
-
-                } else {
-                    if(Utility.isInternetExist()) {
-                        if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
-
-                        // Have to download image from server
-                        ParseFile imagefile = (ParseFile) msgObject.get("attachment");
-                        holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                final Runnable onSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.faildownload.setVisibility(View.GONE);
-                        imagefile.getDataInBackground(new GetDataCallback() {
-                            public void done(byte[] data, ParseException e) {
-                                if (e == null) {
-                                    // ////Image download successful
-                                    FileOutputStream fos;
-                                    try {
-                                        fos = new FileOutputStream(Utility.getWorkingAppDir() + "/media/" + imageName);
-                                        try {
-                                            fos.write(data);
-                                            Utility.createThumbnail(getActivity(), imageName);
+                    }
+                };
 
-                                            ImageCache.loadBitmapSimple(imageName, holder.imgmsgview);
-
-                                            holder.uploadprogressbar.setVisibility(View.GONE);
-                                            holder.faildownload.setVisibility(View.GONE);
-                                            myadapter.notifyDataSetChanged();
-                                        } catch (IOException e1) {
-                                            e1.printStackTrace();
-                                        } finally {
-                                            try {
-                                                fos.close();
-                                            } catch (IOException e1) {
-                                                e1.printStackTrace();
-                                            }
-                                        }
-                                    } catch (FileNotFoundException e2) {
-                                        e2.printStackTrace();
-                                    }
-                                    // //////////////////////////////////////////
-
-                                    // might be problem
-                                } else {
-                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                                    // Image not downloaded
-                                    holder.uploadprogressbar.setVisibility(View.GONE);
-                                    holder.faildownload.setVisibility(View.VISIBLE);
-                                }
-                            }
-                        });
-
-                        holder.imgframelayout.setTag(Utility.getWorkingAppDir() + "/media/" + imageName);
-                        holder.imgmsgview.setImageBitmap(null);
-                    } else {
+                final Runnable onFailRunnable = new Runnable() {
+                    @Override
+                    public void run() {
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.faildownload.setVisibility(View.VISIBLE);
                     }
+                };
+
+                //show progress bar
+                holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                holder.faildownload.setVisibility(View.GONE);
+
+                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imageName);
+                holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
+                holder.imgframelayout.setTag(imgFile.getAbsolutePath());
+
+                if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
+                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
+                    onSuccessRunnable.run();
+                }
+                else if (imgFile.exists()) {
+                    // image file present locally
+                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                    writeLoadAndShowTask.execute();
+                } else if(Utility.isInternetExistWithoutPopup()) {
+                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
+
+                    // Have to download image from server
+                    ParseFile imagefile = msgObject.getParseFile("attachment");
+                    if(imagefile != null) {
+                        imagefile.getDataInBackground(new GetDataCallback() {
+                            public void done(byte[] data, ParseException e) {
+                                if (e == null) {
+                                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                    writeLoadAndShowTask.execute();
+                                } else {
+                                    //ParseException check for invalid session
+                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                                    onFailRunnable.run();
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        onFailRunnable.run();
+                    }
+                }
+                else {
+                    onFailRunnable.run();
                 }
             } else
             {
@@ -738,8 +732,8 @@ public class Messages extends Fragment {
 
             String role = currentParseUser.getString(Constants.ROLE);
 
-            if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
-                    + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
+            //if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "(parent)checking response tutorial, location=" + position + ", flag=" + responseTutorialShown
+            //        + ", role=" + role + ", fragVisible=" + MainActivity.fragmentVisible);
 
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
