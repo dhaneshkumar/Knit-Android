@@ -24,9 +24,10 @@ public class JoinedClassRooms{
 
     //validating current user
     ParseUser user = ParseUser.getCurrentUser();
-    if (user == null)
-    {
-        Utility.LogoutUtility.logout(); return;}
+    if (user == null) {
+        Utility.LogoutUtility.logout();
+        return;
+    }
 
 
     String userId = user.getUsername();

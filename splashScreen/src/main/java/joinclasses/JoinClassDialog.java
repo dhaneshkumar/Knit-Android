@@ -153,6 +153,12 @@ public class JoinClassDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
 
+                ParseUser user = ParseUser.getCurrentUser();
+                if(user == null){
+                    Utility.LogoutUtility.logout();
+                    return;
+                }
+
                 if(! role.equals(Constants.STUDENT))
                     childName = childET.getText().toString();
 
@@ -184,15 +190,12 @@ public class JoinClassDialog extends DialogFragment {
                     //Check CAN_JOIN_OWN_CLASS flag. If set nothing to check.
                     //Otherwise if attempt to join a created class, then deny.
                     if(!Config.CAN_JOIN_OWN_CLASS && role.equals(Constants.TEACHER)){
-                        ParseUser user = ParseUser.getCurrentUser();
-                        if(user != null) {
-                            List<ArrayList<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
-                            if (createdGroups != null && !createdGroups.isEmpty()) {
-                                for (int i = 0; i < createdGroups.size(); i++) {
-                                    if (createdGroups.get(i).get(0).equalsIgnoreCase(code)) {
-                                        Utility.toast("You can't join your own class");
-                                        return;
-                                    }
+                        List<ArrayList<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+                        if (createdGroups != null && !createdGroups.isEmpty()) {
+                            for (int i = 0; i < createdGroups.size(); i++) {
+                                if (createdGroups.get(i).get(0).equalsIgnoreCase(code)) {
+                                    Utility.toast("You can't join your own class");
+                                    return;
                                 }
                             }
                         }

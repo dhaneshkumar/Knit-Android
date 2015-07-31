@@ -60,6 +60,10 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
         Date updatedTime = null;  //last updated time of members
         ParseUser user = ParseUser.getCurrentUser();
 
+        if(user == null){
+            return;
+        }
+
         //retrieving last updated time of app members
         ParseQuery<ParseObject> appQuery = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
         appQuery.fromLocalDatastore();

@@ -163,9 +163,10 @@ public class Messages extends Fragment {
 
         ParseUser currentParseUser = ParseUser.getCurrentUser();
 
-        if (currentParseUser == null)
-            {
-                Utility.LogoutUtility.logout(); return;}
+        if (currentParseUser == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
         userId = currentParseUser.getUsername();
 
@@ -246,14 +247,14 @@ public class Messages extends Fragment {
                         //if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
-                    if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "Loading more local messages");
+                    if (Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "Loading more local messages");
 
                     try {
                         boolean gotExtraMsgs = query.getExtraLocalInboxMsgs(msgs);
                         //if no extra msgs added, then (just for safety), set totalInboxMessages to totalItemCount
                         //otherwise repeatedly getExtraLocalInboxMsgs will be called unnecessarily
-                        if(!gotExtraMsgs){
-                            if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "gotExtraMsgs=false, setting totalInboxMessges");
+                        if (!gotExtraMsgs) {
+                            if (Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "gotExtraMsgs=false, setting totalInboxMessges");
                             totalInboxMessages = totalItemCount;
                         }
                         myadapter.notifyDataSetChanged();
@@ -273,7 +274,7 @@ public class Messages extends Fragment {
         mPullToRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES_REFRESH", "On refresh called through pull down listener");
+                if (Config.SHOWLOG) Log.d("DEBUG_MESSAGES_REFRESH", "On refresh called through pull down listener");
 
                 Utility.ls(" pull to refresh starting ... ");
                 // mHeaderProgressBar.setVisibility(View.GONE);
@@ -281,9 +282,9 @@ public class Messages extends Fragment {
 
                 if (Utility.isInternetExist()) {
                     Utility.ls(" inbox has to sstart ... ");
-                    if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
+                    if (Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "calling Inbox execute() pull to refresh");
 
-                    if(!Inbox.isQueued) {
+                    if (!Inbox.isQueued) {
                         Inbox newInboxMsg = new Inbox();
                         newInboxMsg.execute();
                     }
@@ -868,33 +869,33 @@ public class Messages extends Fragment {
     public static void updateInboxTotalCount(){
         ParseUser user = ParseUser.getCurrentUser();
 
-        if (user != null) {
-            int totalMessages = 0;
-            ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
-            query.fromLocalDatastore();
-            query.whereEqualTo("userId", user.getUsername());
-            try {
-                totalMessages += query.count();
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
-            queryLocal.fromLocalDatastore();
-            queryLocal.whereEqualTo("userId", user.getUsername());
-            try {
-                totalMessages += queryLocal.count();
-            } catch (ParseException e) {
-                e.printStackTrace();
-                return;
-            }
-
-            Messages.totalInboxMessages = totalMessages;
+        if (user == null) {
+            Utility.LogoutUtility.logout();
+            return;
         }
-        else
-        {
-            Utility.LogoutUtility.logout(); return;}
+
+        int totalMessages = 0;
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
+        query.fromLocalDatastore();
+        query.whereEqualTo("userId", user.getUsername());
+        try {
+            totalMessages += query.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        ParseQuery<ParseObject> queryLocal = ParseQuery.getQuery("LocalMessages");
+        queryLocal.fromLocalDatastore();
+        queryLocal.whereEqualTo("userId", user.getUsername());
+        try {
+            totalMessages += queryLocal.count();
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Messages.totalInboxMessages = totalMessages;
     }
 
     class GetLocalInboxMsgInBackground extends AsyncTask<Void, Void, Void>

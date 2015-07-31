@@ -203,7 +203,7 @@ public class CreateClassDialog extends DialogFragment{
 
             //successfully created your class
             //locally saving codegroup(of that class) and updated user object
-            codeGroupObject.put("userId", user.getUsername());
+            codeGroupObject.put("userId", currentUser.getUsername());
             currentUser.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
             try {
                 currentUser.pin();
@@ -224,6 +224,10 @@ public class CreateClassDialog extends DialogFragment{
         protected void onPostExecute(Boolean result) {
             if(Config.SHOWLOG) Log.d("__A", "createGroup : onPostExecute()");
             if (result) {
+                if(user == null){
+                    return;
+                }
+
                 codeTV.setText(classCode);
 
                 Classrooms.createdGroups = user.getList(Constants.CREATED_GROUPS);

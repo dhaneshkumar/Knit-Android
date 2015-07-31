@@ -91,16 +91,15 @@ public class RecommendationDialog extends DialogFragment {
         @Override
         protected Boolean doInBackground(Void... params) {
             ParseUser user = ParseUser.getCurrentUser();
-            String name = null;
-            if(user != null) {
-                name = user.getString("name");
+            if(user == null) {
+                return null;
             }
+            String name = user.getString("name");
 
             if((!UtilString.isBlank(classCode)) && (!UtilString.isBlank(className)) && (!UtilString.isBlank(name))) {
                 if(Config.SHOWLOG) Log.d( LOGTAG, "starting mailing......classCode=" + classCode + ", className="+className + ", email=" + email + ", name=" + name);
 
                 try {
-
                     String urlString = "http://ec2-52-26-56-243.us-west-2.compute.amazonaws.com/createPdf.php?email=" + email + "&code=" + classCode + "&name=" + name;
                     if(Config.SHOWLOG) Log.d( LOGTAG, "url is " + urlString);
                     URL url = new URL(urlString);

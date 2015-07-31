@@ -23,100 +23,98 @@ public class Refresher {
 
         freshUser = ParseUser.getCurrentUser();
 
-        if (freshUser != null) {
+        if(freshUser == null){
+            return;
+        }
 
-            final SessionManager sm = new SessionManager(Application.getAppContext());
-            //Utility.checkParseInstallation(); //important for upgrade issues. This will be called first time app is launched after update
-      /*
-       * Storing current time stamp
-       */
 
-            if(Application.isAppForeground()) {
-                    Utility.updateCurrentTimeInBackground();
-            }
+        final SessionManager sm = new SessionManager(Application.getAppContext());
+        //Utility.checkParseInstallation(); //important for upgrade issues. This will be called first time app is launched after update
 
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER",  "calling background tasks");
+        /*
+        * Storing current time stamp
+        */
+
+        if(Application.isAppForeground()) {
+                Utility.updateCurrentTimeInBackground();
+        }
+
+        if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER",  "calling background tasks");
         /*
          * Updating inbox msgs
          */
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "Attempting calling Inbox execute()");
+        if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "Attempting calling Inbox execute()");
 
-            Inbox.syncOtherInboxDetails(); //called always in background but sends only dirty data
-            // (modified like, seen, confused status) if any
-            // this should be called before fetching like/confused counts
+        Inbox.syncOtherInboxDetails(); //called always in background but sends only dirty data
+        // (modified like, seen, confused status) if any
+        // this should be called before fetching like/confused counts
 
-            if((Application.isAppForeground() && isSufficientGapInbox())) { //or if just signed in
-                if(!Inbox.isQueued) { //if not already queued
-                    Inbox newInboxTask = new Inbox();
-                    newInboxTask.doInBackgroundCore();
-                    newInboxTask.onPostExecuteHelper(); //done
-                    newInboxTask.fetchLikeConfusedCountInbox();
-                }
+        if((Application.isAppForeground() && isSufficientGapInbox())) { //or if just signed in
+            if(!Inbox.isQueued) { //if not already queued
+                Inbox newInboxTask = new Inbox();
+                newInboxTask.doInBackgroundCore();
+                newInboxTask.onPostExecuteHelper(); //done
+                newInboxTask.fetchLikeConfusedCountInbox();
             }
-            else{
-                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher skipping inbox update : visible " + Application.isAppForeground() + " gap " +  isSufficientGapInbox());
-            }
-
-           /*
-            *   Updating counts for outbox messages only if main activity visible and sufficent gap since last update
-            */
-            if((Application.isAppForeground() && isSufficientGapOutbox())) {
-                Outbox.refreshCountCore();
-            }
-            else{
-                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher skipping Outbox update : visible " + Application.isAppForeground() + " gap " + isSufficientGapOutbox());
-            }
-
-            /*
-                Update total count of outbox messages
-             */
-            Outbox.updateOutboxTotalMessages(); //simple local function
-
-             /*
-             * Updating joined classes teacher details(name, profile pic) if gap is larger than Config.joinedClassUpdateGap
-             */
-            if(!Application.joinedSyncOnce) {
-                Application.joinedSyncOnce = true;
-                JoinedClassRooms.doInBackgroundCore();
-                JoinedClassRooms.onPostExecuteHelper();
-            }
-            else{
-                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher joined classes update - done once");
-            }
-
-            //Refresh local outbox data, if not in valid state, clear and fetch new.
-            //If already present then no need to fetch outbox messages
-            if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
-                if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
-                    if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
-                    //no need to do in seperate thread. Already this is running in a background thread
-                    OutboxMsgFetch.fetchOutboxMessages();
-                }
-                else{
-                    if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
-                }
-            }
-
-            //Fetch codegroup details if not yet fetched after reinstallation
-            if(sm.getCodegroupLocalState(freshUser.getUsername()) == 0){
-                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "fetching Codegroup info for the first and last time");
-                Queries2.fetchAllClassDetails();
-            }
-            else{
-                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
-            }
-
-            //Send all pending invites
-            InviteTasks.sendAllPendingInvites();
-
-            //Send all pending messages
-            SendPendingMessages.spawnThread(false); //direct call since already in a thread
         }
-        else {
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "User NULL");
-            SessionManager session = new SessionManager(Application.getAppContext());
-            session.reSetAppOpeningCount();
+        else{
+            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher skipping inbox update : visible " + Application.isAppForeground() + " gap " +  isSufficientGapInbox());
         }
+
+       /*
+        *   Updating counts for outbox messages only if main activity visible and sufficent gap since last update
+        */
+        if((Application.isAppForeground() && isSufficientGapOutbox())) {
+            Outbox.refreshCountCore();
+        }
+        else{
+            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher skipping Outbox update : visible " + Application.isAppForeground() + " gap " + isSufficientGapOutbox());
+        }
+
+        /*
+            Update total count of outbox messages
+         */
+        Outbox.updateOutboxTotalMessages(); //simple local function
+
+         /*
+         * Updating joined classes teacher details(name, profile pic) if gap is larger than Config.joinedClassUpdateGap
+         */
+        if(!Application.joinedSyncOnce) {
+            Application.joinedSyncOnce = true;
+            JoinedClassRooms.doInBackgroundCore();
+            JoinedClassRooms.onPostExecuteHelper();
+        }
+        else{
+            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher joined classes update - done once");
+        }
+
+        //Refresh local outbox data, if not in valid state, clear and fetch new.
+        //If already present then no need to fetch outbox messages
+        if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
+            if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
+                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
+                //no need to do in seperate thread. Already this is running in a background thread
+                OutboxMsgFetch.fetchOutboxMessages();
+            }
+            else{
+                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
+            }
+        }
+
+        //Fetch codegroup details if not yet fetched after reinstallation
+        if(sm.getCodegroupLocalState(freshUser.getUsername()) == 0){
+            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "fetching Codegroup info for the first and last time");
+            Queries2.fetchAllClassDetails();
+        }
+        else{
+            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
+        }
+
+        //Send all pending invites
+        InviteTasks.sendAllPendingInvites();
+
+        //Send all pending messages
+        SendPendingMessages.spawnThread(false); //direct call since already in a thread
 
         if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "Leaving Refresher Thread");
     }

@@ -48,6 +48,11 @@ public class ComposeMessageHelper {
         this.selectedClassList = classList;
 
         user = ParseUser.getCurrentUser();
+        if(user == null){
+            Utility.LogoutUtility.logout();
+            return;
+        }
+
         userId = user.getUsername();
         sender = user.getString(Constants.NAME);
         session = new SessionManager(Application.getAppContext());
@@ -57,6 +62,10 @@ public class ComposeMessageHelper {
     Send messages to subscribers
      */
     public void sendFunction() {
+        if(user == null){
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
         if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "helper : sendFunction()");
         typedtxt = ComposeMessage.typedmsg.getText().toString().trim();  //message to send

@@ -36,69 +36,70 @@ public class ClassRoomsUpdate {
     public static void fetchUpdates(){
 
         ParseUser user = ParseUser.getCurrentUser();
-        if(user != null){
-            SessionManager sm = new SessionManager(Application.getAppContext());
-            //check if Codegroup data has been fetched or not yet. If not just return
-            if(sm.getCodegroupLocalState(user.getUsername()) == 0){
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Codegroup data not yet availabe locally. So returning");
+        if(user == null){
+            return;
+        }
+        SessionManager sm = new SessionManager(Application.getAppContext());
+        //check if Codegroup data has been fetched or not yet. If not just return
+        if(sm.getCodegroupLocalState(user.getUsername()) == 0){
+            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Codegroup data not yet availabe locally. So returning");
+            return;
+        }
+
+        List<List<String>> joinedClasses = Classrooms.getJoinedGroups(user); //won't be null
+        if(joinedClasses.size() == 0){
+            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is 0");
+            return; //We're done. No joined groups
+        }
+
+        if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is " + joinedClasses.size());
+
+        ArrayList<String> joinedClassCodes = new ArrayList<String>();
+        for(int i=0; i<joinedClasses.size(); i++){
+            joinedClassCodes.add(joinedClasses.get(i).get(0));
+        }
+
+        ParseQuery joinedQuery = new ParseQuery(Constants.Codegroup.TABLE);
+        joinedQuery.fromLocalDatastore();
+        joinedQuery.whereEqualTo(Constants.USER_ID, user.getUsername());
+        joinedQuery.whereContainedIn(Constants.Codegroup.CODE, joinedClassCodes);
+
+        try{
+            List<ParseObject> joinedGroups = joinedQuery.find();
+            if(joinedGroups == null || joinedGroups.size() == 0){
+                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Zero code group size");
                 return;
             }
 
-            List<List<String>> joinedClasses = Classrooms.getJoinedGroups(user); //won't be null
-            if(joinedClasses.size() == 0){
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is 0");
-                return; //We're done. No joined groups
+            ArrayList<String> joinedSenderIds = new ArrayList<>();
+            for(int i=0; i<joinedGroups.size(); i++){
+                joinedSenderIds.add(joinedGroups.get(i).getString(Constants.Codegroup.SENDER_ID));
+                //if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", i + joinedGroups.get(i).getString("senderId"));
             }
 
-            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is " + joinedClasses.size());
-
-            ArrayList<String> joinedClassCodes = new ArrayList<String>();
-            for(int i=0; i<joinedClasses.size(); i++){
-                joinedClassCodes.add(joinedClasses.get(i).get(0));
-            }
-
-            ParseQuery joinedQuery = new ParseQuery(Constants.Codegroup.TABLE);
-            joinedQuery.fromLocalDatastore();
-            joinedQuery.whereEqualTo(Constants.USER_ID, user.getUsername());
-            joinedQuery.whereContainedIn(Constants.Codegroup.CODE, joinedClassCodes);
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("joinedObjectIds", joinedSenderIds);
 
             try{
-                List<ParseObject> joinedGroups = joinedQuery.find();
-                if(joinedGroups == null || joinedGroups.size() == 0){
-                    if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Zero code group size");
-                    return;
-                }
+                List<Map<String, Object>>  resultUsers = ParseCloud.callFunction("getUpdatesUserDetail", parameters);
+                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "fetchUpdates() : result Users size " + resultUsers.size());
 
-                ArrayList<String> joinedSenderIds = new ArrayList<>();
-                for(int i=0; i<joinedGroups.size(); i++){
-                    joinedSenderIds.add(joinedGroups.get(i).getString(Constants.Codegroup.SENDER_ID));
-                    //if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", i + joinedGroups.get(i).getString("senderId"));
-                }
+                //now iterate in the list and update the User table and put dirty mark for those whose profile pic has changed
+                //Also update Codegroup table if name has changed
 
-                HashMap<String, Object> parameters = new HashMap<String, Object>();
-                parameters.put("joinedObjectIds", joinedSenderIds);
-
-                try{
-                    List<Map<String, Object>>  resultUsers = ParseCloud.callFunction("getUpdatesUserDetail", parameters);
-                    if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "fetchUpdates() : result Users size " + resultUsers.size());
-
-                    //now iterate in the list and update the User table and put dirty mark for those whose profile pic has changed
-                    //Also update Codegroup table if name has changed
-
-                    for (int u=0; u<resultUsers.size(); u++){
-                        Map<String, Object> userInfo = resultUsers.get(u);
-                        updateUser(user.getUsername(), userInfo);
-                    }
-                }
-                catch (ParseException e1){
-                    if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "getUpdatesUserDetails() failed");
-                    e1.printStackTrace();
+                for (int u=0; u<resultUsers.size(); u++){
+                    Map<String, Object> userInfo = resultUsers.get(u);
+                    updateUser(user.getUsername(), userInfo);
                 }
             }
-            catch (ParseException e){
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "local Codegroup query failed");
-                e.printStackTrace();
+            catch (ParseException e1){
+                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "getUpdatesUserDetails() failed");
+                e1.printStackTrace();
             }
+        }
+        catch (ParseException e){
+            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "local Codegroup query failed");
+            e.printStackTrace();
         }
     }
 

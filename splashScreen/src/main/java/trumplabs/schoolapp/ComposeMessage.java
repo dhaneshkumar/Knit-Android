@@ -430,7 +430,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if(Config.SHOWLOG) Log.d("__M", "ComposeMessage getView " + position + " begin");
+            //if(Config.SHOWLOG) Log.d("__M", "ComposeMessage getView " + position + " begin");
 
             View row = convertView;
             if (row == null) {
@@ -525,7 +525,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 }
             });
 
-            if(Config.SHOWLOG) Log.d("__M", "ComposeMessage getView " + position + " end");
+            //if(Config.SHOWLOG) Log.d("__M", "ComposeMessage getView " + position + " end");
             return row;
         }
     }

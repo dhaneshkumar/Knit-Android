@@ -556,6 +556,10 @@ public class Outbox extends Fragment {
             //if a) first msg, b) is a teacher & c) already not shown
             ParseUser currentParseUser = ParseUser.getCurrentUser();
 
+            if(currentParseUser == null){
+                return;
+            }
+
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && currentParseUser != null && currentParseUser.getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 if(Config.SHOWLOG) Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
@@ -615,12 +619,17 @@ public class Outbox extends Fragment {
 
     //Refresh the layout. For e.g if outbox messages have changed
     public static void refreshSelf() {
-        if (Application.applicationHandler != null) {
+        if (Application.applicationHandler != null && outboxRefreshLayout != null && outboxLayout != null) {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
+                    if(outboxRefreshLayout == null || outboxLayout == null){
+                        return;
+                    }
+
                     outboxRefreshLayout.setRefreshing(false);
+
                     if (groupDetails == null || groupDetails.size() == 0) {
                         outboxLayout.setVisibility(View.VISIBLE);
                     } else {

@@ -31,9 +31,10 @@ public class SeenHandler{
         if(Config.SHOWLOG) Log.d("DEBUG_SEEN_HANDLER", "Starting");
         ParseUser user = ParseUser.getCurrentUser();
 
-        if (user == null)
-            {
-                Utility.LogoutUtility.logout(); return;}
+        if (user == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
         String username = user.getUsername();
 

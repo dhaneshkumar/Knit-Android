@@ -653,6 +653,7 @@ public class Utility extends MyActionBarActivity {
             //cancel all alarms set. Very first thing to do
             AlarmTrigger.cancelEventCheckerAlarm(_context);
             AlarmTrigger.cancelRefresherAlarm(_context);
+            AlarmTrigger.cancelNotificationAlarm(_context);
 
             SessionManager session = new SessionManager(_context);
             session.reSetAppOpeningCount();

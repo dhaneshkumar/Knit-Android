@@ -126,9 +126,10 @@ public class SendMessage extends MyActionBarActivity  {
         ParseUser userObject = ParseUser.getCurrentUser();
 
         //checking parse user null or not
-        if (userObject == null)
-        {
-            Utility.LogoutUtility.logout(); return;}
+        if (userObject == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
 
         groupDetails = new ArrayList<>(); //important since now its static variable so need to reset
