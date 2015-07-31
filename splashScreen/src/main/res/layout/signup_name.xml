@@ -17,8 +17,6 @@
         android:id="@+id/login_button"
         android:layout_width="200dp"
         android:paddingTop="12dp"
-        android:contentDescription="Log In"
-        android:scaleType="centerInside"
         android:paddingBottom="12dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

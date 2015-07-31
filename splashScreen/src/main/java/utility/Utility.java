@@ -27,6 +27,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.login.LoginManager;
+import com.google.android.gms.plus.Plus;
 import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -612,6 +613,23 @@ public class Utility extends MyActionBarActivity {
 
             //fb logout
             LoginManager.getInstance().logOut();
+
+            //google logout
+
+            if(ProfilePage.mGoogleApiClient != null && ProfilePage.mGoogleApiClient.isConnected())
+            {
+                //removing old user credentials
+                Plus.AccountApi.clearDefaultAccount(ProfilePage.mGoogleApiClient);
+                ProfilePage.mGoogleApiClient.disconnect();
+                ProfilePage.mGoogleApiClient.connect();
+
+                Log.d("google logout", "google log out success");
+            }
+            else if(!ProfilePage.mGoogleApiClient.isConnected())
+            {
+                Log.d("PROFILE_GOOGLE", "google client not connected");
+            }
+
 
             //Needed because MainActivity page-adapter's count will change because user has become null
             if(MainActivity.myAdapter != null){
