@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
+import BackGroundProcesses.MemberList;
 import BackGroundProcesses.SendPendingMessages;
 import library.UtilString;
 import utility.Config;
@@ -171,95 +172,6 @@ public class ComposeMessageHelper {
     /*always called in thread for background sending
      return values
         0 : success,
-        100 : network error (so abort queue),
-        -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
-    */
-    public static int sendTextMessageCloud(final ParseObject msg, final boolean isLive){
-        if(!Utility.isInternetExistWithoutPopup()){
-            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
-            return 100; //not connected to internet
-        }
-
-        //if live, then only show "sent" toast
-        //sending message using parse cloud function
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("classcode", msg.getString("code"));
-        params.put("classname", msg.getString("name"));
-        params.put("message", msg.getString("title"));
-
-        try{
-            HashMap result = ParseCloud.callFunction("sendTextMessage", params);
-            if (result != null) {
-                int retVal = 0; //success
-                Date createdAt = (Date) result.get("createdAt");
-                String objectId = (String) result.get("messageId");
-
-                if (createdAt != null) {
-
-                    //update msg and pin
-                    msg.put("objectId", objectId);
-                    msg.put("pending", false);
-                    msg.put("creationTime", createdAt);
-
-                    try {
-                        msg.pin();
-                    } catch (ParseException err) {
-                        err.printStackTrace();
-                    }
-                }
-                else{
-                    retVal = 200; //class has been deleted
-                    //error that class does not exist
-
-                    //first update created groups of user
-                    List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
-                    try{
-                        ParseUser user = ParseUser.getCurrentUser();
-                        if(user != null && updatedCreatedGroups != null){
-                            user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
-                            user.pin();
-                        }
-                    }
-                    catch (ParseException err){
-                        err.printStackTrace();
-                    }
-
-                    //Notify created classrooms adapter
-                    Classrooms.refreshCreatedClassrooms(Arrays.asList(new String[]{msg.getString(Constants.GroupDetails.CODE)}));
-
-                    //unpin the message,
-                    msg.unpin();
-                    //delete the message from lists
-                    if(SendMessage.groupDetails != null){
-                        SendMessage.groupDetails.remove(msg);
-                    }
-                    if(Outbox.groupDetails != null){
-                        Outbox.groupDetails.remove(msg);
-                    }
-                }
-
-                //notify outbox and class page adapter
-                SendMessage.notifyAdapter();
-                Outbox.notifyAdapter();
-                return retVal; //success
-            }
-            return -1; //unexpected error
-        }
-        catch (ParseException e){
-            if(Utility.LogoutUtility.checkAndHandleInvalidSession(e)){
-                return ParseException.INVALID_SESSION_TOKEN;
-            }
-            else if(e.getCode() == ParseException.CONNECTION_FAILED){
-                return 100; //network error
-            }
-            e.printStackTrace();
-            return -1;
-        }
-    }
-
-    /*always called in thread for background sending
-     return values
-        0 : success,
         100 : network error
         ParseException.INVALID_SESSION_TOKEN(209) : invalid session token
         -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
@@ -274,9 +186,12 @@ public class ComposeMessageHelper {
 
         List<String> classcodes = new ArrayList<>();
         List<String> classnames = new ArrayList<>();
+        List<Boolean> checkmemberFlagArray = new ArrayList<>();
         for(int i=0; i<batch.size(); i++){
-            classcodes.add(batch.get(i).getString("code"));
+            String code = batch.get(i).getString("code");
+            classcodes.add(code);
             classnames.add(batch.get(i).getString("name"));
+            checkmemberFlagArray.add(MemberList.getMemberCount(code) < 1);
         }
 
         //if live, then only show "sent" toast
@@ -284,6 +199,8 @@ public class ComposeMessageHelper {
         HashMap<String, Object> params = new HashMap<String, Object>();
         params.put("classcode", classcodes);
         params.put("classname", classnames);
+        params.put("checkmember", checkmemberFlagArray);
+
         params.put("message", master.getString("title"));
 
         try{
@@ -320,20 +237,28 @@ public class ComposeMessageHelper {
                     msg.pinInBackground();
                 }
 
+                List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
+
                 if(failedMessages.size() == batch.size()){
-                    retVal = 200; //only if all fail
-                    //class has been deleted
-                    //error that class does not exist
+                    //only if all fail
+                    if(updatedCreatedGroups != null){
+                        //class has been deleted
+                        retVal = 200;
+                    }
+                    else {
+                        //no members error hence
+                        retVal = 201;
+                    }
                 }
 
                 if(failedMessages.size() > 0) {
                     //first update created groups of user
-                    if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "DELETED #classes=" + failedMessages.size());
+                    if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "FAILED #classes=" + failedMessages.size());
 
-                    List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
                     try {
                         ParseUser user = ParseUser.getCurrentUser();
                         if (user != null && updatedCreatedGroups != null) {
+                            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "setting Created_groups in the user");
                             user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
                             user.pin();
                         }
@@ -414,124 +339,6 @@ public class ComposeMessageHelper {
         pinAndNotify(messagesToSend);
     }
 
-    //refer to sendTextMessageCloud
-    public static int sendPicMessageCloud(final ParseObject msg, final boolean isLive) {
-        if(!Utility.isInternetExistWithoutPopup()){
-            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send pic cloud : saving cloud call when offline");
-            return 100; //not connected to internet
-        }
-
-        //don't have attachement, objectid
-        //update creationTime, pending
-        String imageName = null;
-        if (msg.containsKey("attachment_name"))
-            imageName = msg.getString("attachment_name");
-
-        if (imageName == null) return -1; //no attachment
-
-        byte[] data = null;
-        try {
-            RandomAccessFile f = new RandomAccessFile(Utility.getWorkingAppDir() + "/media/" + imageName, "r");
-            data = new byte[(int) f.length()];
-            f.read(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return -1; //io exception
-        }
-
-        String oldName = imageName;
-        imageName = imageName.replaceAll("[^a-zA-Z0-9_\\.]", "");
-        imageName = "i" + imageName;
-
-        final ParseFile file = new ParseFile(imageName, data);
-
-        if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name=" + imageName + ", old=" + oldName);
-
-        try {
-            file.save();
-            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
-            //sending message using parse cloud function
-            HashMap<String, Object> params = new HashMap<String, Object>();
-            params.put("classcode", msg.getString("code"));
-            params.put("classname", msg.getString("name"));
-            params.put("message", msg.getString("title")); //won't be null
-            params.put("filename", msg.getString("attachment_name"));
-            params.put("parsefile", file);
-
-            HashMap result = ParseCloud.callFunction("sendPhotoTextMessage", params);
-
-            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : calling cloud function success");
-            if (result != null) {
-                int retVal = 0; //success
-
-                Date createdAt = (Date) result.get("createdAt");
-                String objectId = (String) result.get("messageId");
-
-                if(createdAt != null) {
-                    //update msg and pin
-                    msg.put("objectId", objectId);
-                    msg.put("pending", false);
-                    msg.put("creationTime", createdAt);
-                    msg.put("attachment", file);
-
-                    //saving locally
-                    try {
-                        msg.pin();
-                    } catch (ParseException e1) {
-                        e1.printStackTrace();
-                    }
-                }
-                else{
-                    retVal = 200; //class has been deleted
-                    //error that class does not exist
-
-                    //first update created groups of user
-                    List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
-                    try{
-                        ParseUser user = ParseUser.getCurrentUser();
-                        if(user != null && updatedCreatedGroups != null){
-                            user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
-                            user.pin();
-                        }
-                    }
-                    catch (ParseException err){
-                        err.printStackTrace();
-                    }
-
-                    //Notify created classrooms adapter
-                    Classrooms.refreshCreatedClassrooms(Arrays.asList(new String[]{msg.getString(Constants.GroupDetails.CODE)}));
-
-                    //unpin the message,
-                    msg.unpin();
-                    //delete the message from lists
-                    if(SendMessage.groupDetails != null){
-                        SendMessage.groupDetails.remove(msg);
-                    }
-                    if(Outbox.groupDetails != null){
-                        Outbox.groupDetails.remove(msg);
-                    }
-                }
-
-                SendMessage.notifyAdapter();
-                //just notify outbox - no new query or updating count (since an old message just got new status)
-                Outbox.notifyAdapter();
-                return retVal;
-            }
-
-            return -1;
-        }
-        catch(ParseException esave){
-            if(Utility.LogoutUtility.checkAndHandleInvalidSession(esave)){
-                return ParseException.INVALID_SESSION_TOKEN;
-            }
-            else if(esave.getCode() == ParseException.CONNECTION_FAILED){
-                return 100;
-            }
-            esave.printStackTrace();
-            return -1;
-            //Utility.toast("Sorry, sending failed now. We'll send it next time you're online");
-        }
-    }
 
     /*always called in thread for background sending
     return values
@@ -550,9 +357,12 @@ public class ComposeMessageHelper {
 
         List<String> classcodes = new ArrayList<>();
         List<String> classnames = new ArrayList<>();
+        List<Boolean> checkmemberFlagArray = new ArrayList<>();
         for(int i=0; i<batch.size(); i++){
-            classcodes.add(batch.get(i).getString("code"));
+            String code = batch.get(i).getString("code");
+            classcodes.add(code);
             classnames.add(batch.get(i).getString("name"));
+            checkmemberFlagArray.add(MemberList.getMemberCount(code) < 1);
         }
 
         /* image file work */
@@ -590,6 +400,8 @@ public class ComposeMessageHelper {
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("classcode", classcodes);
             params.put("classname", classnames);
+            params.put("checkmember", checkmemberFlagArray);
+
             params.put("message", master.getString("title"));
             params.put("filename", master.getString("attachment_name"));
             params.put("parsefile", file);
@@ -628,17 +440,23 @@ public class ComposeMessageHelper {
                     msg.pinInBackground();
                 }
 
+                List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
                 if(failedMessages.size() == batch.size()){
-                    retVal = 200; //only if all fail
-                    //class has been deleted
-                    //error that class does not exist
+                    //only if all fail
+                    if(updatedCreatedGroups != null){
+                        //class has been deleted
+                        retVal = 200;
+                    }
+                    else {
+                        //no members error hence
+                        retVal = 201;
+                    }
                 }
 
                 if(failedMessages.size() > 0) {
                     //first update created groups of user
-                    if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "DELETED #classes=" + failedMessages.size());
+                    if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "FAILED #classes=" + failedMessages.size());
 
-                    List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
                     try {
                         ParseUser user = ParseUser.getCurrentUser();
                         if (user != null && updatedCreatedGroups != null) {

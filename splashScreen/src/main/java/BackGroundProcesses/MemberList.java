@@ -171,11 +171,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
                 if(updatedLocalMemberList != null)
                 {
                     memberCount = updatedLocalMemberList.size();
-                    try {
-                        setMemberCount(groupCode, memberCount);  //updating codegroup entry
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    setMemberCount(groupCode, memberCount);  //updating codegroup entry
                 }
             }
 
@@ -220,7 +216,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
     }
 
 
-    public static int getMemberCount(String groupCode) throws ParseException {
+    public static int getMemberCount(String groupCode){
         ParseUser currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser == null){
             return 0;
@@ -240,7 +236,7 @@ public class MemberList extends AsyncTaskProxy<Void, Void, String[]> {
     }
 
 
-    public static void setMemberCount(String groupCode, int count) throws ParseException {
+    public static void setMemberCount(String groupCode, int count) {
         ParseObject codegroup = Queries.getCodegroupObject(groupCode);
 
         if(codegroup != null) {

@@ -223,8 +223,12 @@ public class SendPendingMessages {
                             public void run() {
                                 if (result == 0) {
                                     Utility.toast("Notification Sent");
-                                } else if (result == 200) { //class has been deleted
+                                }
+                                else if (result == 200) { //class has been deleted
                                     Utility.toast("Class " + className + " has already been deleted");
+                                }
+                                else if (result == 201) { //no subscribers in class
+                                    Utility.toast("Class " + className + " has no members");
                                 }
                             }
                         });

@@ -196,13 +196,9 @@ public class SendMessage extends MyActionBarActivity  {
 
         //FacebookSdk.sdkInitialize(getApplicationContext());
 
-        try {
-            int memberCount = MemberList.getMemberCount(groupCode);
-            memberCountTV.setText(memberCount+"");
-            memberLabelTV.setText("Member" + Utility.getPluralSuffix(memberCount));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        int memberCount = MemberList.getMemberCount(groupCode);
+        memberCountTV.setText(memberCount+"");
+        memberLabelTV.setText("Member" + Utility.getPluralSuffix(memberCount));
 
 
         //Initializing compose button

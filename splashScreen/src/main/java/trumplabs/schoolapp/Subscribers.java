@@ -110,13 +110,7 @@ public class Subscribers extends MyActionBarActivity {
             classNameTV.setText(className);
 
         //setting member count
-        int memberCount = 0;
-
-        try {
-            memberCount = MemberList.getMemberCount(classCode);
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        int memberCount = MemberList.getMemberCount(classCode);
 
         if(memberCount == 0)
             emptyTV.setVisibility(View.VISIBLE);

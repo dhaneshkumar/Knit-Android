@@ -449,14 +449,9 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             final List<String> item = classList.get(position);
             className.setText(item.get(1));
 
-            try {
-                int memberCount = MemberList.getMemberCount(item.get(0));
+            int memberCount = MemberList.getMemberCount(item.get(0));
 
-                memberCountTV.setText(memberCount+" Member" + Utility.getPluralSuffix(memberCount));
-
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            memberCountTV.setText(memberCount+" Member" + Utility.getPluralSuffix(memberCount));
 
             if(item.size()>2)
             {
