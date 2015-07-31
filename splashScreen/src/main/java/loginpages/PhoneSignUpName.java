@@ -157,6 +157,22 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             @Override
             public void onCancel() {
                 if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged cancelled");
+
+                if(AccessToken.getCurrentAccessToken() != null){
+                    //show progress bar
+                    pdialog = new ProgressDialog(activityContext);
+                    pdialog.setCancelable(true);
+                    pdialog.setCanceledOnTouchOutside(false);
+                    pdialog.setMessage("Please Wait...");
+                    pdialog.show();
+
+
+                    String token = AccessToken.getCurrentAccessToken().getToken();
+                    if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
+
+                    FBVerifyTask fbVerifyTask = new FBVerifyTask(token, false); //isLogin = false
+                    fbVerifyTask.execute();
+                }
             }
 
             @Override
@@ -268,12 +284,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 onBackPressed();
                 break;
             case R.id.next:
-
-                if (mGoogleApiClient.isConnected()) {
-                    Plus.AccountApi.clearDefaultAccount(mGoogleApiClient);
-                    mGoogleApiClient.disconnect();
-                }
-
                 next();
                 break;
             default:
@@ -399,17 +409,16 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     public void onConnected(Bundle connectionHint) {
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnected() entered, first take last known location, just in case that gps location is not received");
 
-
-
-       Utility.toast("Yo. Signed IN to account");
-
         mShouldResolve = false;
 
-        GetIdTokenTask getIdTokenTask = new GetIdTokenTask();
-        getIdTokenTask.execute();
+        pdialog = new ProgressDialog(activityContext);
+        pdialog.setCancelable(true);
+        pdialog.setCanceledOnTouchOutside(false);
+        pdialog.setMessage("Please Wait...");
+        pdialog.show();
 
-        RetrieveTokenTask retrieveTokenTask = new RetrieveTokenTask();
-        retrieveTokenTask.execute();
+        GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
+        googleVerifyTask.execute();
 
 
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
@@ -557,7 +566,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         }
     }
 
-    class FBVerifyTask extends AsyncTask<Void, Void, Void> {
+    public static class FBVerifyTask extends AsyncTask<Void, Void, Void> {
         Boolean networkError = false; //parse exception
         Boolean unexpectedError = false;
 
@@ -590,7 +599,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 }
             }
             else{
-                params.put("number", PhoneLoginPage.phoneNumber);
+                params.put("accessToken", token);
             }
 
             //appInstallation params - devicetype, installationId
@@ -694,6 +703,10 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             }
             else if(unexpectedError){
                 Utility.toast("Oops ! some error occured.", true);
+
+                if(pdialog != null){
+                    pdialog.dismiss();
+                }
             }
         }
     }
@@ -798,6 +811,207 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 Log.i(TAG, "Access token: " + s);
             }
         }
+
+    class GoogleVerifyTask extends AsyncTask<Void, Void, Void> {
+        Boolean networkError = false; //parse exception
+        Boolean unexpectedError = false;
+        Boolean taskSuccess = false;
+        boolean isLogin;
+        String idToken = "";
+        String accessToken = "";
+        String SERVER_CLIENT_ID = "838906570879-nujge366mj36s29elltobjnehh9e1a5j.apps.googleusercontent.com";
+
+        //response
+        String flag;
+
+        public GoogleVerifyTask(boolean isLogin){//code to verify. Number will be taken from relevant activity
+            this.isLogin = isLogin;
+        }
+
+        @Override
+        protected Void doInBackground(Void... par) {
+            Log.d("D_GOOGLE_VERIF", "FBVerifyTask : doInBackground");
+
+
+            /*
+            Retrieving idToken
+             */
+            String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
+            Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
+
+            List<String> scopeList = Arrays.asList(new String[]{
+                    "https://www.googleapis.com/auth/plus.login",
+                    "https://www.googleapis.com/auth/userinfo.email"
+            });
+
+            //String scope = String.format("audience:server:client_id:%s:api_scope:%s", SERVER_CLIENT_ID, TextUtils.join(" ", scopeList));
+            String scope = String.format("audience:server:client_id:%s", SERVER_CLIENT_ID);
+
+            try {
+                idToken =  GoogleAuthUtil.getToken(Application.getAppContext(), account, scope);
+            } catch (UserRecoverableAuthException e) {
+                // Requesting an authorization code will always throw
+                // UserRecoverableAuthException on the first call to GoogleAuthUtil.getToken
+                // because the user must consent to offline access to their data.  After
+                // consent is granted control is returned to your activity in onActivityResult
+                // and the second call to GoogleAuthUtil.getToken will succeed.
+                startActivityForResult(e.getIntent(), RC_SIGN_IN);
+                return null;
+            } catch (IOException e) {
+                return null;
+            } catch (GoogleAuthException e) {
+                return null;
+            }
+
+             /*
+            Retrieving accessToken
+             */
+            String scopes = "oauth2:profile email";
+
+            Log.i("D_GOOGLE_VERIFY", "Access token:  starting...." );
+            try {
+                accessToken = GoogleAuthUtil.getToken(getApplicationContext(), accountName, scopes);
+            } catch (IOException e) {
+                Log.e(TAG, e.getMessage());
+            } catch (UserRecoverableAuthException e) {
+                startActivityForResult(e.getIntent(), RC_SIGN_IN);
+            } catch (GoogleAuthException e) {
+                Log.e(TAG, e.getMessage());
+            }
+
+            if(!UtilString.isBlank(accessToken) && !UtilString.isBlank(idToken)) {
+
+                Log.d("D_GOOGLE_VERIFY", "accessToken : " + accessToken);
+                Log.d("D_GOOGLE_VERIFY", "idToken : " + idToken);
+
+                //setting parameters
+                HashMap<String, Object> params = new HashMap<String, Object>();
+
+                if (!isLogin) {
+                    params.put("accessToken", accessToken);
+                    params.put("idToken", idToken);
+                    params.put("role", PhoneSignUpName.role);
+                    String emailId = Utility.getAccountEmail();
+                    if (emailId != null) {
+                        params.put("email", emailId);
+                    }
+                } else {
+                    params.put("accessToken", accessToken);
+                    params.put("idToken", idToken);
+                }
+
+                //appInstallation params - devicetype, installationId
+                params.put("deviceType", "android");
+                params.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
+
+                //Sessions save params - os, model, location(lat, long)
+                PhoneSignUpVerfication.fillDetailsForSession(isLogin, params);
+
+                try {
+                    Log.d("D_GOOGLE_VERIFY", "appEnter : calling");
+                    HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
+                    String sessionToken = (String) result.get("sessionToken");
+                    flag = (String) result.get("flag");
+
+                    if (!UtilString.isBlank(sessionToken)) {
+                        try {
+                            Log.d("D_GOOGLE_VERIFY", "parseuser become calling " + ParseUser.getCurrentUser());
+                            ParseUser user = ParseUser.become(sessionToken);
+                            if (user != null) {
+                                Log.d("__A", "setting ignoreInvalidSessionCheck to false");
+                                Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
+
+                                Log.d("D_GOOGLE_VERIFY", "parseuser become - returned user correct with given token=" + sessionToken + ", currentsessiontoken=" + user.getSessionToken());
+                                taskSuccess = true;
+                            /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
+                            } else {
+                                // The token could not be validated.
+                                Log.d("D_GOOGLE_VERIFY", "parseuser become - returned user null");
+                                unexpectedError = true;
+                            }
+                        } catch (ParseException e) {
+                            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                            Log.d("D_GOOGLE_VERIFY", "parseuser become - parse exception");
+                            if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                                networkError = true;
+                            } else {
+                                unexpectedError = true;
+                            }
+                        }
+                    } else {
+                        Log.d("D_GOOGLE_VERIFY", "verifyCode error");
+                        unexpectedError = true;
+                    }
+                } catch (ParseException e) {
+                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                    Log.d("D_GOOGLE_VERIFY", "network error with message " + e.getMessage() + " code " + e.getCode());
+                    if (e.getCode() == ParseException.CONNECTION_FAILED) {
+                        networkError = true;
+                    } else {
+                        unexpectedError = true;
+                    }
+                    e.printStackTrace();
+                }
+            }
+            else
+            {
+                if(UtilString.isBlank(accessToken))
+                    Log.d("D_GOOGLE_VERIFY", "accessToken is null");
+                if(UtilString.isBlank(idToken))
+                    Log.d("D_GOOGLE_VERIFY", "idToken is null");
+            }
+            Log.d("D_GOOGLE_VERIFY", "background : returning null");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess + ", flag=" + flag);
+
+            if(taskSuccess){
+                SessionManager session = new SessionManager(Application.getAppContext());
+                ParseUser user = ParseUser.getCurrentUser();
+                //If user has joined any class then locally saving it in session manager
+                if(user != null && user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
+                    session.setHasUserJoinedClass();
+                }
+
+                Log.d("fblogin", "starting fb");
+
+                if(flag != null && flag.equals("logIn")){
+                    isLogin = true;
+                }
+
+                if(isLogin){
+                    PhoneSignUpVerfication.PostLoginTask postLoginTask = new PhoneSignUpVerfication.PostLoginTask(user, pdialog);
+                    postLoginTask.execute();
+
+                    Log.d("fblogin", "starting fb login activity");
+                }
+                else {
+                    session.setSignUpAccount();
+
+                    // The current user is now set to user. Do registration in default class
+                    PhoneSignUpVerfication.PostSignUpTask postSignUpTask = new PhoneSignUpVerfication.PostSignUpTask(user, pdialog);
+                    postSignUpTask.execute();
+                }
+            }
+
+            if(!taskSuccess){
+                if(pdialog != null){
+                    pdialog.dismiss();
+                }
+                //hide progress bar
+            }
+
+            if(networkError){
+                Utility.toast("Connection failure", true);
+            }
+            else if(unexpectedError){
+                Utility.toast("Oops ! some error occured.", true);
+            }
+        }
+    }
 
 
 }

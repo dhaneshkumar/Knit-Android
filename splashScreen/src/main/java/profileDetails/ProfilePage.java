@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -25,6 +26,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Scope;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.plus.Plus;
 import com.parse.FunctionCallback;
 import com.parse.GetDataCallback;
 import com.parse.ParseCloud;
@@ -48,7 +54,8 @@ import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.Utility;
 
-public class ProfilePage extends MyActionBarActivity implements OnClickListener {
+public class ProfilePage extends MyActionBarActivity implements OnClickListener , GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
     private ImageView profileimgview;
     private TextView name_textView;
     private TextView phone_textView;
@@ -59,6 +66,18 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     public static LinearLayout profileLayout;
 
     ParseUser currentParseUser;
+
+    public static GoogleApiClient mGoogleApiClient = null;
+
+    /* Request code used to invoke sign in user interactions. */
+    private static final int RC_SIGN_IN = 0;
+
+    /* Is there a ConnectionResult resolution in progress? */
+    private boolean mIsResolving = false;
+    private String TAG = "PROFILE_GOOGLE_LOGIN";
+
+    /* Should we automatically resolve ConnectionResults when possible? */
+    private boolean mShouldResolve = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +115,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             Utility.LogoutUtility.logout();
             return;
         }
+
+        buildGoogleApiClient();
 
         userId = currentParseUser.getUsername();
 
@@ -150,6 +171,20 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
       //  FacebookSdk.sdkInitialize(getApplicationContext());
     }
+
+    protected synchronized void buildGoogleApiClient() {
+
+        Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
+                .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+                .addApi(Plus.API)
+                .build();
+    }
+
 
     void setProfilePic(){
 
@@ -274,6 +309,15 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 case Activity.RESULT_CANCELED:
                     break;
             }
+        }
+        else if (requestCode == RC_SIGN_IN) {
+            // If the error resolution was not successful we should not resolve further.
+            if (resultCode != RESULT_OK) {
+                mShouldResolve = false;
+            }
+
+            mIsResolving = false;
+            mGoogleApiClient.connect();
         }
     }
 
@@ -454,6 +498,57 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         Intent intent = new Intent(ProfilePage.this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Log.d(TAG, "connected to google account");
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+        Log.d(TAG, "failed to connect to google account");
+        if (!mIsResolving && mShouldResolve) {
+            if (connectionResult.hasResolution()) {
+                try {
+                    connectionResult.startResolutionForResult(this, RC_SIGN_IN);
+                    mIsResolving = true;
+                } catch (IntentSender.SendIntentException e) {
+                    mIsResolving = false;
+                    mGoogleApiClient.connect();
+                }
+            } else {
+                // Could not resolve the connection result, show the user an
+                // error dialog.
+                //showErrorDialog(connectionResult);
+                Utility.toast("Can't resolve error. Try Again !");
+            }
+        } else {
+            // Show the signed-out UI
+            //  showSignedOutUI();
+        }
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.connect();
+        }
+    }
+
+    @Override
+    public void onStop(){
+        super.onStop();
+        if(mGoogleApiClient != null) {
+            mGoogleApiClient.disconnect();
+        }
     }
 
     class UpdateProfilePicTask extends AsyncTask<Void, Void, Void>
