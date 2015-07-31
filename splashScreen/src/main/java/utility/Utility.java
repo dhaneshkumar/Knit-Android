@@ -333,6 +333,7 @@ public class Utility extends MyActionBarActivity {
 
     // Creating the thumbnail of the image in media folder
     public static void createThumbnail(Activity getactivity, String fname) {
+        Log.d("__TH", "starting for fname=" + fname);
         if(getactivity == null){
             return;
         }
@@ -346,10 +347,12 @@ public class Utility extends MyActionBarActivity {
             imgframedimen = height;
         Bitmap b = null;
 
+        int roundedFrameDimension = (int) Math.round(imgframedimen);
         try {
             b = ThumbnailUtils.extractThumbnail(
-                    BitmapFactory.decodeFile(getWorkingAppDir() + "/media/" + fname),
-                            (int) Math.round(imgframedimen), (int) Math.round(imgframedimen));
+                    decodeSampledBitmapFromFile(getWorkingAppDir() + "/media/" + fname, roundedFrameDimension, roundedFrameDimension),
+                    roundedFrameDimension,
+                    roundedFrameDimension);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -364,6 +367,47 @@ public class Utility extends MyActionBarActivity {
             outstream.close();
         } catch (Exception e) {
         }
+        Log.d("__TH", "ending for fname=" + fname);
+    }
+
+    public static Bitmap decodeSampledBitmapFromFile(String filePath,
+                                                         int reqWidth, int reqHeight) {
+
+        // First decode with inJustDecodeBounds=true to check dimensions
+        final BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(filePath, options); //sets the size in options.outHeight, options.outWidth
+
+        // Calculate inSampleSize
+        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+        Log.d("__TH", "sample size=" + options.inSampleSize + ", fname=" + filePath + ", reqDim=" + reqWidth);
+
+        // Decode bitmap with inSampleSize set
+        options.inJustDecodeBounds = false;
+        return BitmapFactory.decodeFile(filePath, options);
+    }
+
+    public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+        // Raw height and width of image
+        final int height = options.outHeight;
+        final int width = options.outWidth;
+        int inSampleSize = 1;
+
+        if (height > reqHeight || width > reqWidth) {
+
+            final int halfHeight = height / 2;
+            final int halfWidth = width / 2;
+
+            // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+            // height and width larger than the requested height and width.
+            while ((halfHeight / inSampleSize) > reqHeight
+                    && (halfWidth / inSampleSize) > reqWidth) {
+                inSampleSize *= 2;
+            }
+        }
+
+        return inSampleSize;
     }
 
     // Return the path to App Directory
