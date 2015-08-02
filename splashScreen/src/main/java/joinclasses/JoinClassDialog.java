@@ -354,12 +354,13 @@ public class JoinClassDialog extends DialogFragment {
                 {
                     //USEr has joined class atleast once : setting flag for that
                     sessionManager.setHasUserJoinedClass();
-
                     //Adding an extra tab
                     MainActivity.tab3Icon.setVisibility(View.VISIBLE);
                     MainActivity.tab1Icon.setText("SENT");
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 0, LinearLayout.LayoutParams.WRAP_CONTENT, 3);
                     MainActivity.tab1Icon.setLayoutParams(layoutParams);
+
+                    MainActivity.numTabsToShow = 3;
                     MainActivity.myAdapter.notifyDataSetChanged();
                 }
 

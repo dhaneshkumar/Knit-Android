@@ -180,8 +180,8 @@ public class Messages extends Fragment {
         /*
         If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
          */
-        String role = currentParseUser.getString("role");
-        if(role.equals("teacher"))
+        String role = currentParseUser.getString(Constants.ROLE);
+        if(role.equals(Constants.TEACHER))
         {
             GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
             getLocalInboxMsg.execute();

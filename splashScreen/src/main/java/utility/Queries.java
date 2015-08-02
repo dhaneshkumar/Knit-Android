@@ -774,9 +774,8 @@ public class Queries {
         query.orderByAscending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", userId);
 
-        if (role.equals("parent"))
-            query.whereEqualTo("role", "Parent"); // role stored in faq is "Parent" where in user table -
-        // "parent"
+        if (role.equals(Constants.PARENT))
+            query.whereEqualTo("role", "Parent"); // role stored in faq is "Parent" where in user table : "parent"
 
         List<ParseObject> msgs = query.find();
 

@@ -226,7 +226,7 @@ public class SyncMessageDetails {
             return;
         }
 
-        if(!parseObject.getString("role").equalsIgnoreCase("teacher")){
+        if(!parseObject.getString(Constants.ROLE).equalsIgnoreCase(Constants.TEACHER)){
             return;
         }
 

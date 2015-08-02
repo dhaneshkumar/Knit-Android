@@ -33,14 +33,13 @@ public class ImageCache {
             return;
         }
 
-        if(Config.SHOWLOG) Log.d(LOGTAG, "initializing");
-
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
         // Use 1/8th of the available memory for this memory cache.
         // cache thumbnails(size ~20 KB) - i.e 50 thumbnails per MB
 
         final int cacheSize = maxMemory / 8;
+        if(Config.SHOWLOG) Log.d(LOGTAG, "initializing to cache size of " + cacheSize + " KB");
 
         mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
@@ -54,7 +53,13 @@ public class ImageCache {
     }
 
     private static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+
         if (key != null && bitmap != null) {
+            if(Config.SHOWLOG) Log.d(LOGTAG, "(i) adding to cache key=" + key +
+                    ", rows=" + bitmap.getRowBytes() +
+                    ", h=" + bitmap.getHeight() +
+                    ", size=" + bitmap.getRowBytes()*bitmap.getHeight()/1024);
+
             if (getBitmapFromMemCache(key) == null) {
                 mMemoryCache.put(key, bitmap);
             }

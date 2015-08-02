@@ -70,6 +70,7 @@ import utility.Utility;
  */
 public class MainActivity extends MyActionBarActivity implements TabListener {
     ViewPager viewpager;
+    public static int numTabsToShow; //in case of teacher, no of tabs to show (2 if none joined, 3 otherwise)
     public static TextView tab1Icon;
     public static TextView tab2Icon;
     public static TextView tab3Icon;
@@ -103,7 +104,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static boolean goToOutboxFlag = false; //when returns from Message Composer, go directly to Outbox
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(Config.SHOWLOG) Log.d("__A","onCreate MainActivity");
+        if(Config.SHOWLOG) Log.d("__AA","onCreate MainActivity");
 
         //testing tutorial TODO comment following line before release
         //TestingUtililty.testingTutorial();
@@ -205,6 +206,13 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         final FragmentManager fragmentmanager = getSupportFragmentManager();
 
+        if(sessionManager.getHasUserJoinedClass()){
+            numTabsToShow = 3;
+        }
+        else{
+            numTabsToShow = 2;
+        }
+
         myAdapter = new MyAdapter(fragmentmanager);
         viewpager.setAdapter(myAdapter);
 
@@ -212,10 +220,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Utility.isInternetExist();
 
         //Set the number of pages that should be retained to either side of the current page
-        if(sessionManager.getHasUserJoinedClass())
+        //if(sessionManager.getHasUserJoinedClass())
             viewpager.setOffscreenPageLimit(2);
-        else
-            viewpager.setOffscreenPageLimit(1);
+        //else
+        //    viewpager.setOffscreenPageLimit(1);
 
 
         //Initializing compose button
@@ -316,7 +324,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             });
 
 
-            if(sessionManager.getHasUserJoinedClass()) {
+            if(numTabsToShow == 3) {
                 tab3Icon.setVisibility(View.VISIBLE);
             }
             else {
@@ -352,7 +360,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 /*
                 scrolling from one tab to other
                  */
-                    if(sessionManager.getHasUserJoinedClass()) {
+                    if(numTabsToShow == 3) {
 
                         if (position == 0) {
                             params.width = screenwidth * 5 / 13;
@@ -589,7 +597,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         MenuInflater inflater = getMenuInflater();
 
-        if (role.equals("teacher"))
+        if (role.equals(Constants.TEACHER))
             inflater.inflate(R.menu.mainactivity_for_teachers, menu);
         else
             inflater.inflate(R.menu.mainactivity_for_parents, menu);
@@ -762,9 +770,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         public Fragment getItem(int arg0) {
 
             Fragment fragment = null;
-            if (role.equals("teacher")) {
+            if (role.equals(Constants.TEACHER)) {
 
-                if(sessionManager.getHasUserJoinedClass()) {
+                if(numTabsToShow == 3) {
                     switch (arg0) {
                         case 0:
                             fragment = new Outbox();
@@ -799,12 +807,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         @Override
         public int getCount() {
-            if (role.equals("teacher")) {
-
-                if(sessionManager.getHasUserJoinedClass())
-                    return 3;
-                else
-                    return 2;
+            if (role.equals(Constants.TEACHER)) {
+                return numTabsToShow;
             } else
                 return 1;
         }

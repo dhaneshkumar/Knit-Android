@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import trumplabs.schoolapp.Application;
+import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
 import utility.Config;
 import utility.Queries2;
@@ -90,7 +91,7 @@ public class Refresher {
 
         //Refresh local outbox data, if not in valid state, clear and fetch new.
         //If already present then no need to fetch outbox messages
-        if(freshUser.getString("role").equalsIgnoreCase("teacher")) {
+        if(freshUser.getString(Constants.ROLE).equalsIgnoreCase(Constants.TEACHER)) {
             if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
                 if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
                 //no need to do in seperate thread. Already this is running in a background thread

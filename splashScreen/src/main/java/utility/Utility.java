@@ -392,6 +392,9 @@ public class Utility extends MyActionBarActivity {
         // Raw height and width of image
         final int height = options.outHeight;
         final int width = options.outWidth;
+
+        Log.d("__TH", "raw h=" + height + ", w=" + width);
+
         int inSampleSize = 1;
 
         if (height > reqHeight || width > reqWidth) {
@@ -659,7 +662,6 @@ public class Utility extends MyActionBarActivity {
             LoginManager.getInstance().logOut();
 
             //google logout
-
             if(ProfilePage.mGoogleApiClient != null && ProfilePage.mGoogleApiClient.isConnected())
             {
                 //removing old user credentials
@@ -669,16 +671,15 @@ public class Utility extends MyActionBarActivity {
 
                 Log.d("google logout", "google log out success");
             }
-            else if(!ProfilePage.mGoogleApiClient.isConnected())
+            else if(ProfilePage.mGoogleApiClient != null && !ProfilePage.mGoogleApiClient.isConnected())
             {
                 Log.d("PROFILE_GOOGLE", "google client not connected");
             }
 
-
-            //Needed because MainActivity page-adapter's count will change because user has become null
+            /*//Not needed anymore because tab count won't change dynamically
             if(MainActivity.myAdapter != null){
                 MainActivity.myAdapter.notifyDataSetChanged();
-            }
+            }*/
 
             //launch login activity
             startLoginActivity();

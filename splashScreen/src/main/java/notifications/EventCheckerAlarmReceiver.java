@@ -85,10 +85,10 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
 
     public void checkForEvents(){
 
-        if(user.getString("role").equalsIgnoreCase("parent")){
+        if(user.getString(Constants.ROLE).equalsIgnoreCase(Constants.PARENT)){
             parentNoActivity();
         }
-        if(user.getString("role").equalsIgnoreCase("teacher")){
+        if(user.getString(Constants.ROLE).equalsIgnoreCase(Constants.TEACHER)){
             teacherNoActivity();
             teacherNoSub();
             teacherNoMsg();
