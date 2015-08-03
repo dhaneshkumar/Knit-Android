@@ -102,6 +102,10 @@ public class TestingUtililty {
     }
 
     public static void makeCurrentUserNull(){
+        if(!BuildConfig.DEBUG){
+            return;
+        }
+
         ParseUser currentParseUser = ParseUser.getCurrentUser();
         if(currentParseUser != null){
             currentParseUser.unpinInBackground();
@@ -118,5 +122,19 @@ public class TestingUtililty {
         }
 
         return "NONE";
+    }
+
+    //create intentional delay while doing something(for testing, e.g loading of images)
+    static void sleep(int millis){
+        if(!BuildConfig.DEBUG){
+            return;
+        }
+
+        try{
+            Thread.sleep(millis);
+        }
+        catch (InterruptedException e){
+            e.printStackTrace();
+        }
     }
 }

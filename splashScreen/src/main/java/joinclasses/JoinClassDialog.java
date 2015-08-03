@@ -67,6 +67,8 @@ public class JoinClassDialog extends DialogFragment {
 
     ParseUser currentParseUser;
 
+    final String WRONG_CLASS_CODE_MSG = "Wrong class code !";
+
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         //Creating new dialog box
@@ -151,6 +153,12 @@ public class JoinClassDialog extends DialogFragment {
             @Override
             public void onClick(View v) {
 
+                ParseUser user = ParseUser.getCurrentUser();
+                if(user == null){
+                    Utility.LogoutUtility.logout();
+                    return;
+                }
+
                 if(! role.equals(Constants.STUDENT))
                     childName = childET.getText().toString();
 
@@ -164,7 +172,7 @@ public class JoinClassDialog extends DialogFragment {
 
                     //validating code format
                     if (code.length() != 7) {
-                        Utility.toast("Enter Correct Class Code");
+                        Utility.toast(WRONG_CLASS_CODE_MSG);
                         return;
                     }
 
@@ -182,15 +190,12 @@ public class JoinClassDialog extends DialogFragment {
                     //Check CAN_JOIN_OWN_CLASS flag. If set nothing to check.
                     //Otherwise if attempt to join a created class, then deny.
                     if(!Config.CAN_JOIN_OWN_CLASS && role.equals(Constants.TEACHER)){
-                        ParseUser user = ParseUser.getCurrentUser();
-                        if(user != null) {
-                            List<ArrayList<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
-                            if (createdGroups != null && !createdGroups.isEmpty()) {
-                                for (int i = 0; i < createdGroups.size(); i++) {
-                                    if (createdGroups.get(i).get(0).equalsIgnoreCase(code)) {
-                                        Utility.toast("You can't join your own class");
-                                        return;
-                                    }
+                        List<ArrayList<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+                        if (createdGroups != null && !createdGroups.isEmpty()) {
+                            for (int i = 0; i < createdGroups.size(); i++) {
+                                if (createdGroups.get(i).get(0).equalsIgnoreCase(code)) {
+                                    Utility.toast("You can't join your own class");
+                                    return;
                                 }
                             }
                         }
@@ -210,10 +215,10 @@ public class JoinClassDialog extends DialogFragment {
                     }
                 }
                 else if(UtilString.isBlank(codeET.getText().toString())) {
-                    Utility.toast("Enter correct class-code");
+                    Utility.toast(WRONG_CLASS_CODE_MSG);
                 }
                 else {
-                    Utility.toast("Enter correct child name");
+                    Utility.toast("Enter child name");
                 }
             }
         });
@@ -338,7 +343,7 @@ public class JoinClassDialog extends DialogFragment {
 
             if (result) {
                 if(getActivity()!=null)
-                    Utility.toast("ClassRoom Joined");
+                    Utility.toast("Classroom Joined");
 
                 //Refreshing joined class adapter
                 Classrooms.joinedGroups = currentParseUser.getList(Constants.JOINED_GROUPS);
@@ -349,12 +354,13 @@ public class JoinClassDialog extends DialogFragment {
                 {
                     //USEr has joined class atleast once : setting flag for that
                     sessionManager.setHasUserJoinedClass();
-
                     //Adding an extra tab
                     MainActivity.tab3Icon.setVisibility(View.VISIBLE);
                     MainActivity.tab1Icon.setText("SENT");
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams( 0, LinearLayout.LayoutParams.WRAP_CONTENT, 3);
                     MainActivity.tab1Icon.setLayoutParams(layoutParams);
+
+                    MainActivity.numTabsToShow = 3;
                     MainActivity.myAdapter.notifyDataSetChanged();
                 }
 
@@ -409,9 +415,9 @@ public class JoinClassDialog extends DialogFragment {
 
             } else {
                 if (classExist)
-                    Utility.toast("Class room Already added.");
+                    Utility.toast("Classroom already joined.");
                 else if(classCodeNotExist)
-                    Utility.toast("Entered class-code doesn't exist. \n Please enter correct code");
+                    Utility.toast(WRONG_CLASS_CODE_MSG);
                 else
                     Utility.toast("Sorry, Something went wrong. Try Again.");
             }

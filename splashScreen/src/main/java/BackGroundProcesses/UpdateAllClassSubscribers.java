@@ -16,15 +16,16 @@ public class UpdateAllClassSubscribers  {
     public static void updateMembers()
     {
         ParseUser user = ParseUser.getCurrentUser();
-        if(user != null)
-        {
-            if(user.getString("role").equals(Constants.TEACHER))
-            {
-                MemberList memberList = new MemberList();
-                memberList.doInBackgroundCore();
+        if(user == null){
+            return;
+        }
 
-                if(Config.SHOWLOG) Log.d("SUBSCRIBER", "updating subscriber in a thread");
-            }
+        if(user.getString("role").equals(Constants.TEACHER))
+        {
+            MemberList memberList = new MemberList();
+            memberList.doInBackgroundCore();
+
+            if(Config.SHOWLOG) Log.d("SUBSCRIBER", "updating subscriber in a thread");
         }
     }
 

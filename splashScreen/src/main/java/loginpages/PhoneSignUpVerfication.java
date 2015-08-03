@@ -481,7 +481,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Utility.updateCurrentTime();
 
             //set inbox fetch flag. We dont need to fetch old messages in this account
-            SessionManager.setBooleanValue(currentParseUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
+            if(currentParseUser != null) {
+                SessionManager.setBooleanValue(currentParseUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
+            }
 
             return null;
         }

@@ -125,29 +125,28 @@ public class InviteTasks {
         ArrayList<String> joinedClassCodes = new ArrayList<>();
 
         ParseUser user = ParseUser.getCurrentUser();
-        if(user != null){
-            List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
-            if(createdGroups != null) {
-                for (List<String> group : createdGroups) {
-                    String code = group.get(0);
-                    if(code != null){
-                        createdClassCodes.add(code);
-                    }
-                }
-            }
+        if(user == null){
+            return;
+        }
 
-            List<List<String>> joinedGroups = user.getList(Constants.JOINED_GROUPS);
-            if(joinedGroups != null) {
-                for (List<String> group : joinedGroups) {
-                    String code = group.get(0);
-                    if(code != null){
-                        joinedClassCodes.add(code);
-                    }
+        List<List<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+        if(createdGroups != null) {
+            for (List<String> group : createdGroups) {
+                String code = group.get(0);
+                if(code != null){
+                    createdClassCodes.add(code);
                 }
             }
         }
-        else{
-            return; //won't happen
+
+        List<List<String>> joinedGroups = user.getList(Constants.JOINED_GROUPS);
+        if(joinedGroups != null) {
+            for (List<String> group : joinedGroups) {
+                String code = group.get(0);
+                if(code != null){
+                    joinedClassCodes.add(code);
+                }
+            }
         }
 
         //Now we have all the 3 variables that can vary

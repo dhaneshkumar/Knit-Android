@@ -3,6 +3,7 @@ package utility;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.view.View;
@@ -27,7 +28,10 @@ public class ImageCache {
     private static LruCache<String, Bitmap> mMemoryCache;
 
     public static void initialize(){
-        if(Config.SHOWLOG) Log.d(LOGTAG, "initializing");
+        if(mMemoryCache != null){
+            //if(Config.SHOWLOG) Log.d(LOGTAG, "already initialized");
+            return;
+        }
 
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
 
@@ -35,6 +39,7 @@ public class ImageCache {
         // cache thumbnails(size ~20 KB) - i.e 50 thumbnails per MB
 
         final int cacheSize = maxMemory / 8;
+        if(Config.SHOWLOG) Log.d(LOGTAG, "initializing to cache size of " + cacheSize + " KB");
 
         mMemoryCache = new LruCache<String, Bitmap>(cacheSize) {
             @Override
@@ -48,7 +53,13 @@ public class ImageCache {
     }
 
     private static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+
         if (key != null && bitmap != null) {
+            if(Config.SHOWLOG) Log.d(LOGTAG, "(i) adding to cache key=" + key +
+                    ", rows=" + bitmap.getRowBytes() +
+                    ", h=" + bitmap.getHeight() +
+                    ", size=" + bitmap.getRowBytes()*bitmap.getHeight()/1024);
+
             if (getBitmapFromMemCache(key) == null) {
                 mMemoryCache.put(key, bitmap);
             }
@@ -59,124 +70,122 @@ public class ImageCache {
         return mMemoryCache.get(key);
     }
 
-    /*
-        Call from UI-thread only as it directly modifies GUI
-        how ?
-            - check if already in cache
-            - if file exists but not thumbnail, create thumbnail, add to cache
-            - if file and thumbnail both exists, add to cache
-            - if file not present, download file, create thumbnail, add to cache
-     */
-    public static void loadBitmap(final String imageName, final ImageView mImageView, final Activity currentActivity,
-                                  final ProgressBar downloadProgressBar, ParseFile imageParseFile) {
-        if(mMemoryCache == null){
-            initialize();
-        }
+    //call fron UI-thread
+    public static boolean showIfInCache(String imageName, ImageView mImageView){
+        initialize();
 
-        if(mMemoryCache == null){//this won't happen
-            return;
-        }
-
-        //setup
-        final File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imageName);
-        final File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imageName);
-        mImageView.setTag(imgFile.getAbsolutePath()); //tag is original file path
-        mImageView.setImageBitmap(null); //initialize it with this
-
-        final Bitmap bitmap = getBitmapFromMemCache(imageName); //key is just file name(not path)
-        if (bitmap != null) {
-            if(Config.SHOWLOG) Log.d(LOGTAG, "cached image thumbnail : " + imageName);
+        Bitmap bitmap = getBitmapFromMemCache(imageName);
+        if(bitmap != null){
             mImageView.setImageBitmap(bitmap);
-            return;
+            return true;
+        }
+        return false;
+    }
+
+    /*
+        Required :
+            * imageName file must be present in 'media' folder
+            Or
+            * data non-null(so that we can create the file)
+
+        How:
+            * Writes data to file(if non-null)
+            * Creates thumbnail (if not already present)
+            * Creates the bitmap, add to cache.
+            * onPostExecute() : run uiWork and also set the bitmap to mImageView
+     */
+    public static class WriteLoadAndShowTask extends AsyncTask<Void, Void, Void>{
+        byte[] data;
+        String imageName;
+        ImageView mImageView;
+        Activity attachedActivity;
+        Runnable uiWork;
+
+        Bitmap bitmap;
+
+        public WriteLoadAndShowTask(byte[] data, String imageName, ImageView mImageView, Activity activity, Runnable uiWork){
+            this.data = data;
+            this.imageName = imageName;
+            this.mImageView = mImageView;
+            this.attachedActivity = activity;
+            this.uiWork = uiWork;
+
+            this.bitmap = null;
         }
 
-        //if imgFile exists but not thumbnail
-        if (imgFile.exists()) {
-            if(!thumbnailFile.exists()) {
-                Utility.createThumbnail(currentActivity, imageName);
-            }
+        @Override
+        protected Void doInBackground(Void... params) {
+            initialize();
 
-            if(Config.SHOWLOG) Log.d(LOGTAG, "loading from disk : " + imageName);
-            //now thumbnail present
-            Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-            mImageView.setImageBitmap(myBitmap);
+            bitmap = getBitmapFromMemCache(imageName); //key imageName
+            if(bitmap == null){
+                String imagePath = Utility.getWorkingAppDir() + "/media/" + imageName;
 
-            addBitmapToMemoryCache(imageName, myBitmap); //key is just file name(not path)
-        }
-        else if(imageParseFile != null){
-            if(Config.SHOWLOG) Log.d(LOGTAG, "downloading data : " + imageName);
-            downloadProgressBar.setVisibility(View.VISIBLE);
-            imageParseFile.getDataInBackground(new GetDataCallback() {
-                @Override
-                public void done(byte[] data, ParseException e) {
-                    if (e == null) {
-                        //Image download successful
-                        FileOutputStream fos;
-                        try {
-                            //store image
-                            fos = new FileOutputStream(imgFile.getAbsoluteFile());
-                            try {
-                                fos.write(data);
-                            } catch (IOException e1) {
-                                e1.printStackTrace();
-                            } finally {
-                                try {
-                                    fos.close();
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
-                                }
-                            }
-                        } catch (FileNotFoundException e2) {
-                            e2.printStackTrace();
-                        }
-
-                        if(Config.SHOWLOG) Log.d(LOGTAG, "download over : " + imageName);
-
-                        Utility.createThumbnail(currentActivity, imageName);
-                        //now thumbnail present
-                        Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
-
-                        if(mImageView != null) {
-                            mImageView.setImageBitmap(myBitmap);
-                        }
-
-                        addBitmapToMemoryCache(imageName, myBitmap); //key is just file name(not path)
-
-                        if(downloadProgressBar != null){
-                            downloadProgressBar.setVisibility(View.GONE);
-                        }
-                    } else {
-                        // Image not downloaded
-                        Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                        if(downloadProgressBar != null){
-                            downloadProgressBar.setVisibility(View.GONE);
-                        }
-                    }
+                //first write to file if data not null
+                if(data != null){
+                    writeToDisk(data, imagePath);
                 }
-            });
+
+                //Here imgFile should exist (either already exists or data written to the file above)
+                final File imgFile = new File(imagePath);
+                if(!imgFile.exists()){//shouldn't happen
+                    return null;
+                }
+
+                String thumbnailPath = Utility.getWorkingAppDir() + "/thumbnail/" + imageName;
+                final File thumbnailFile = new File(thumbnailPath);
+                if(!thumbnailFile.exists()) {
+                    Utility.createThumbnail(attachedActivity, imageName);
+                }
+
+                //Here thumbnailFile should exist (either already exists or created above)
+                if(Config.SHOWLOG) Log.d(LOGTAG, "(i) loading from disk : " + imageName);
+
+                //dummy time taking
+                //TestingUtililty.sleep(1000);
+
+                bitmap = BitmapFactory.decodeFile(thumbnailPath);
+                addBitmapToMemoryCache(imageName, bitmap); //key imageName
+            }
+            else{
+                //if(Config.SHOWLOG) Log.d(LOGTAG, "(i) cached image thumbnail : " + imageName);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if(mImageView != null){
+                mImageView.setImageBitmap(bitmap);
+            }
+            uiWork.run();
         }
     }
 
-    public static void loadBitmapSimple(String imageName, ImageView mImageView) {
-        if(mMemoryCache == null){
-            initialize();
+    /*
+        Writes data to specified file.
+        Returns true on success, false otherwise
+     */
+    static boolean writeToDisk(byte[] data, String filePath){
+        FileOutputStream fos;
+        try {
+            fos = new FileOutputStream(filePath);
+            try {
+                fos.write(data);
+                return true;
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            } finally {
+                try {
+                    fos.close();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        } catch (FileNotFoundException e2) {
+            e2.printStackTrace();
         }
 
-        if(mMemoryCache == null){//this won't happen
-            return;
-        }
-
-        final Bitmap bitmap = getBitmapFromMemCache(imageName); //key imageName
-        if (bitmap != null) {
-            if(Config.SHOWLOG) Log.d(LOGTAG, "(m) cached image thumbnail : " + imageName);
-            mImageView.setImageBitmap(bitmap);
-        } else {
-            if(Config.SHOWLOG) Log.d(LOGTAG, "(m) loading from disk : " + imageName);
-            String thumbnailPath = Utility.getWorkingAppDir() + "/thumbnail/" + imageName;
-
-            Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailPath);
-            mImageView.setImageBitmap(myBitmap);
-            addBitmapToMemoryCache(imageName, myBitmap); //key imageName
-        }
+        return false; //some error
     }
 }

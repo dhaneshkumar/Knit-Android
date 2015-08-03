@@ -72,7 +72,7 @@
                 android:id="@+id/code"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter Class Code"
+                android:hint="Class Code"
                 android:inputType="textCapCharacters|textNoSuggestions"
                 android:paddingLeft="16dp"
                 android:paddingRight="1dp"

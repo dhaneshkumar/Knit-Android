@@ -391,11 +391,14 @@ public class Queries {
         return null; //when cloud function fails or returns null
     }
 
-
-    public List<ParseObject> getExtraLocalInboxMsgs(List<ParseObject> msgs) throws ParseException {
+    /*
+        returns true if success (i.e atleast 1 new message added)
+                false otherwise, in that case caller should update totalInboxMessages = item count
+     */
+    public boolean getExtraLocalInboxMsgs(List<ParseObject> msgs) throws ParseException {
 
         if (msgs == null)
-            return null;
+            return false;
 
         if (msgs.size() > 0 && msgs.get(msgs.size() - 1) != null) {
 
@@ -404,7 +407,6 @@ public class Queries {
             else
                 oldTimeStamp = msgs.get(msgs.size() - 1).getDate("creationTime");
             // To make infinite inbox , remove above line and join a new class :P
-
         }
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GroupDetails.TABLE);
@@ -419,12 +421,12 @@ public class Queries {
         List<ParseObject> msgList1 = query.find();
 
         // appending extra objects to the end of list
-        if (msgList1 != null) {
+        if (msgList1 != null && msgList1.size() > 0) {
             msgs.addAll(msgList1);
-            // Utility.toast(msgList1.size()+"");
+            return true;
         }
-        return msgs;
 
+        return false; //error
     }
 
     // **********************CREATE CLASS MESSAGES QUERY******************
@@ -772,9 +774,8 @@ public class Queries {
         query.orderByAscending(Constants.TIMESTAMP);
         query.whereEqualTo("userId", userId);
 
-        if (role.equals("parent"))
-            query.whereEqualTo("role", "Parent"); // role stored in faq is "Parent" where in user table -
-        // "parent"
+        if (role.equals(Constants.PARENT))
+            query.whereEqualTo("role", "Parent"); // role stored in faq is "Parent" where in user table : "parent"
 
         List<ParseObject> msgs = query.find();
 

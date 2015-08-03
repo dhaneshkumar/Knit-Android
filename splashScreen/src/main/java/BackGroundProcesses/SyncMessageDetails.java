@@ -27,9 +27,10 @@ public class SyncMessageDetails {
     public static void syncStatus(){
         ParseUser user = ParseUser.getCurrentUser();
         if (user == null) {
-            {
-                Utility.LogoutUtility.logout(); return;}
+            Utility.LogoutUtility.logout();
+            return;
         }
+
 
         String username = user.getUsername();
 
@@ -220,10 +221,12 @@ public class SyncMessageDetails {
     public static void fetchLikeConfusedCountOutbox(){
         ParseUser parseObject = ParseUser.getCurrentUser();
 
-        if (parseObject == null)
-            {
-                Utility.LogoutUtility.logout(); return;}
-        if(!parseObject.getString("role").equalsIgnoreCase("teacher")){
+        if (parseObject == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
+
+        if(!parseObject.getString(Constants.ROLE).equalsIgnoreCase(Constants.TEACHER)){
             return;
         }
 

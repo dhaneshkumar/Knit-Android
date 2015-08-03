@@ -29,12 +29,14 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.software.shell.fab.ActionButton;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -124,9 +126,10 @@ public class SendMessage extends MyActionBarActivity  {
         ParseUser userObject = ParseUser.getCurrentUser();
 
         //checking parse user null or not
-        if (userObject == null)
-        {
-            Utility.LogoutUtility.logout(); return;}
+        if (userObject == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
 
         groupDetails = new ArrayList<>(); //important since now its static variable so need to reset
@@ -194,13 +197,9 @@ public class SendMessage extends MyActionBarActivity  {
 
         //FacebookSdk.sdkInitialize(getApplicationContext());
 
-        try {
-            int memberCount = MemberList.getMemberCount(groupCode);
-            memberCountTV.setText(memberCount+"");
-            memberLabelTV.setText("Member" + Utility.getPluralSuffix(memberCount));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        int memberCount = MemberList.getMemberCount(groupCode);
+        memberCountTV.setText(memberCount+"");
+        memberLabelTV.setText("Member" + Utility.getPluralSuffix(memberCount));
 
 
         //Initializing compose button
@@ -442,15 +441,15 @@ public class SendMessage extends MyActionBarActivity  {
             } else {
             }
 
-            final ParseObject msg = groupDetails.get(position);  //selected object
+            final ParseObject msgObject = groupDetails.get(position);  //selected object
             String stringmsg = (String) getItem(position);      //selected messages
 
             //retrieving the message sent time
             String timestampmsg = "";
-            Date cdate = (Date) msg.get("creationTime");
+            Date cdate = (Date) msgObject.get("creationTime");
             timestampmsg = Utility.convertTimeStamp(cdate);
 
-            boolean pending = msg.getBoolean("pending"); //if this key is not available (for older messages)
+            boolean pending = msgObject.getBoolean("pending"); //if this key is not available (for older messages)
             //get pending "false" & that's what we want
             if(pending){
                 timestampmsg = "pending..";
@@ -458,8 +457,8 @@ public class SendMessage extends MyActionBarActivity  {
 
 
             final String imageName;
-            if (msg.containsKey("attachment_name"))
-                imageName = msg.getString("attachment_name");
+            if (msgObject.containsKey("attachment_name"))
+                imageName = msgObject.getString("attachment_name");
             else
                 imageName = "";
 
@@ -524,9 +523,9 @@ public class SendMessage extends MyActionBarActivity  {
                 retryButton.setVisibility(View.GONE);
             }
 
-            int likeCount = Utility.nonNegative(msg.getInt(Constants.GroupDetails.LIKE_COUNT));
-            int confusedCount = Utility.nonNegative(msg.getInt(Constants.GroupDetails.CONFUSED_COUNT));
-            int seenCount = Utility.nonNegative(msg.getInt(Constants.GroupDetails.SEEN_COUNT));
+            int likeCount = Utility.nonNegative(msgObject.getInt(Constants.GroupDetails.LIKE_COUNT));
+            int confusedCount = Utility.nonNegative(msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT));
+            int seenCount = Utility.nonNegative(msgObject.getInt(Constants.GroupDetails.SEEN_COUNT));
             if(seenCount < likeCount + confusedCount){ //for consistency(SC >= LC + CC) - might not be correct though
                 seenCount = likeCount + confusedCount;
             }
@@ -537,14 +536,14 @@ public class SendMessage extends MyActionBarActivity  {
 
             String className= null;
             //setting class name
-            if(msg.getString("name") != null) {
-                classNameTV.setText(msg.getString("name"));
-                className = msg.getString("name");
+            if(msgObject.getString("name") != null) {
+                classNameTV.setText(msgObject.getString("name"));
+                className = msgObject.getString("name");
             }
             else
             {
                 //previous version support < in the version from now onwards storing class name also>
-                String groupCode = msg.getString("code");
+                String groupCode = msgObject.getString("code");
 
                 ParseObject codegroup = Queries.getCodegroupObject(groupCode);
                 if(codegroup != null ) {
@@ -581,17 +580,80 @@ public class SendMessage extends MyActionBarActivity  {
             // /////////////////////////////////////////////
 
             if (!UtilString.isBlank(imageName)) {
+                final String imageFilePath = Utility.getWorkingAppDir() + "/media/" + imageName;
                 imgmsgview.setVisibility(View.VISIBLE);
-                ParseFile imagefile = (ParseFile) msg.get("attachment");
+                imgmsgview.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent imgintent = new Intent();
+                        imgintent.setAction(Intent.ACTION_VIEW);
+                        imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
+                        startActivity(imgintent);
+                    }
+                });
 
-                //following utility function takes care of displaying image in the holder
-                ImageCache.loadBitmap(imageName, imgmsgview, SendMessage.this, uploadprogressbar, imagefile);
+
+                final Runnable onSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadprogressbar.setVisibility(View.GONE);
+                    }
+                };
+
+                final Runnable onFailRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadprogressbar.setVisibility(View.GONE);
+                    }
+                };
+
+                //to override previous recycled view
+                uploadprogressbar.setVisibility(View.VISIBLE);
+                imgmsgview.setImageBitmap(null);
+
+                File imgFile = new File(imageFilePath);
+                imgmsgview.setTag(imgFile.getAbsolutePath());
+
+                if(ImageCache.showIfInCache(imageName, imgmsgview)){
+                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(s) already cached : " + imageName);
+                    onSuccessRunnable.run();
+                }
+                else if (imgFile.exists()) {
+                    // image file present locally
+                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                    writeLoadAndShowTask.execute();
+                } else if(Utility.isInternetExistWithoutPopup()) {
+                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
+
+                    // Have to download image from server
+                    ParseFile imagefile = msgObject.getParseFile("attachment");
+                    if(imagefile != null) {
+                        imagefile.getDataInBackground(new GetDataCallback() {
+                            public void done(byte[] data, ParseException e) {
+                                if (e == null) {
+                                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                                    writeLoadAndShowTask.execute();
+                                } else {
+                                    //ParseException check for invalid session
+                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                                    onFailRunnable.run();
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        onFailRunnable.run();
+                    }
+                }
+                else {
+                    onFailRunnable.run();
+                }
             } else {
                 imgmsgview.setVisibility(View.GONE);
             }
 
             row.setBackgroundColor(getResources().getColor(R.color.transparent));
-            if (ACTION_MODE_NO == 1 && selectedlistitems.contains(msg)) {
+            if (ACTION_MODE_NO == 1 && selectedlistitems.contains(msgObject)) {
                 row.setBackgroundColor(getResources().getColor(R.color.highlightcolor));
             }
             return row;

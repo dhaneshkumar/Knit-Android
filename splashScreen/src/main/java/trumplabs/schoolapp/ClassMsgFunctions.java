@@ -125,9 +125,10 @@ public class ClassMsgFunctions {
         //update SendMessage.totalClassMessages
         ParseUser user = ParseUser.getCurrentUser();
 
-        if (user == null)
-        {
-            Utility.LogoutUtility.logout(); return;}
+        if (user == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
         query.fromLocalDatastore();

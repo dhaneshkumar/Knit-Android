@@ -247,9 +247,6 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         // creating thumbnail of that image
         Utility.createThumbnail(currentActivity, imageName);
       }
-      else{
-        Utility.toast("Failed to load image!");
-      }
 
       return null;
     }

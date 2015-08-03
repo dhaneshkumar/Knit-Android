@@ -120,9 +120,10 @@ public class Classrooms extends Fragment  {
 
 
         ParseUser parseObject = ParseUser.getCurrentUser();
-        if (parseObject == null)
-            {
-                Utility.LogoutUtility.logout(); return;}
+        if (parseObject == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
 
         //show create class option only for teachers
@@ -251,7 +252,7 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            if(Config.SHOWLOG) Log.d("__C", "CreatedGroups getView " + position + " begin");
+            //if(Config.SHOWLOG) Log.d("__C", "CreatedGroups getView " + position + " begin");
 
             View row = convertView;
             if (row == null) {
@@ -271,7 +272,7 @@ public class Classrooms extends Fragment  {
 
             classname1.setText(classnamestr.toUpperCase());                 //setting class name
 
-            if(Config.SHOWLOG) Log.d("__C", "CreatedGroups getView " + position + " end");
+            //if(Config.SHOWLOG) Log.d("__C", "CreatedGroups getView " + position + " end");
             return row;
         }
     }
@@ -362,7 +363,7 @@ public class Classrooms extends Fragment  {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " begin");
+            //if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " begin");
             View row = convertView;
             if (row == null) {
                 row = layoutinflater.inflate(R.layout.classrom_joined_item, parent, false);
@@ -380,7 +381,7 @@ public class Classrooms extends Fragment  {
 
             classcreator.setVisibility(View.VISIBLE);
 
-            if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " mid");
+            //if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " mid");
             /*
            * Setting creator name
            */
@@ -396,7 +397,7 @@ public class Classrooms extends Fragment  {
                 }
             }
 
-            if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " end");
+            //if(Config.SHOWLOG) Log.d("__J", "JoinedGroups getView " + position + " end");
             return row;
         }
     }

@@ -26,12 +26,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.parse.GetDataCallback;
 import com.parse.ParseException;
 import com.parse.ParseFile;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -150,7 +152,7 @@ public class Outbox extends Fragment {
                 if (visibleItemCount + pastVisibleItems >= totalItemCount - 1) {
                     //if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
                     if (totalItemCount >= totalOutboxMessages) {
-                        if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
+                        //if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
 
@@ -311,12 +313,12 @@ public class Outbox extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
-            ParseObject groupdetails1 = groupDetails.get(position);
+            ParseObject msgObject = groupDetails.get(position);
 
-            if (groupdetails1 == null) return;
+            if (msgObject == null) return;
 
             //setting message in view
-            String msg = groupdetails1.getString("title");
+            String msg = msgObject.getString("title");
             if (msg == null || msg.trim().equals(""))
                 holder.msgtxtcontent.setVisibility(View.GONE);
             else
@@ -325,12 +327,12 @@ public class Outbox extends Fragment {
 
             String className = null;
             //setting class name
-            if (groupdetails1.getString("name") != null) {
-                holder.classname.setText(groupdetails1.getString("name"));
-                className = groupdetails1.getString("name");
+            if (msgObject.getString("name") != null) {
+                holder.classname.setText(msgObject.getString("name"));
+                className = msgObject.getString("name");
             } else {
                 //previous version support < in the version from now onwards storing class name also>
-                String groupCode = groupdetails1.getString("code");
+                String groupCode = msgObject.getString("code");
 
                 ParseObject codegroup = Queries.getCodegroupObject(groupCode);
 
@@ -345,9 +347,9 @@ public class Outbox extends Fragment {
             }
 
 
-            int likeCount = Utility.nonNegative(groupdetails1.getInt(Constants.GroupDetails.LIKE_COUNT));
-            int confusedCount = Utility.nonNegative(groupdetails1.getInt(Constants.GroupDetails.CONFUSED_COUNT));
-            int seenCount = Utility.nonNegative(groupdetails1.getInt(Constants.GroupDetails.SEEN_COUNT));
+            int likeCount = Utility.nonNegative(msgObject.getInt(Constants.GroupDetails.LIKE_COUNT));
+            int confusedCount = Utility.nonNegative(msgObject.getInt(Constants.GroupDetails.CONFUSED_COUNT));
+            int seenCount = Utility.nonNegative(msgObject.getInt(Constants.GroupDetails.SEEN_COUNT));
             if (seenCount < likeCount + confusedCount) {//for consistency(SC >= LC + CC) - might not be correct though
                 seenCount = likeCount + confusedCount;
             }
@@ -365,10 +367,10 @@ public class Outbox extends Fragment {
             Retrieving timestamp
              */
             String timestampmsg = "";
-            Date cdate = groupdetails1.getCreatedAt();
+            Date cdate = msgObject.getCreatedAt();
 
             if (cdate == null)
-                cdate = (Date) groupdetails1.get("creationTime");
+                cdate = (Date) msgObject.get("creationTime");
 
             //finding difference of current & createdAt timestamp
             timestampmsg = Utility.convertTimeStamp(cdate);
@@ -418,7 +420,7 @@ public class Outbox extends Fragment {
                 }
             }
 
-            boolean pending = groupdetails1.getBoolean("pending"); //if this key is not available (for older messages)
+            boolean pending = msgObject.getBoolean("pending"); //if this key is not available (for older messages)
             if (pending) {
                 holder.timestampmsg.setVisibility(View.GONE);
                 holder.pendingClockIcon.setVisibility(View.VISIBLE);
@@ -467,37 +469,96 @@ public class Outbox extends Fragment {
             Retrieving image attachment if exist
              */
             final String imageName;
-            if (groupdetails1.containsKey("attachment_name"))
-                imageName = groupdetails1.getString("attachment_name");
+            if (msgObject.containsKey("attachment_name"))
+                imageName = msgObject.getString("attachment_name");
             else
                 imageName = "";
 
+
+            //for text messages when recycled
             holder.uploadprogressbar.setVisibility(View.GONE);
 
             //If image attachment exist, display image
             if (!UtilString.isBlank(imageName)) {
+                final String imageFilePath = Utility.getWorkingAppDir() + "/media/" + imageName;
                 holder.imgmsgview.setVisibility(View.VISIBLE);
-
-                ParseFile imagefile = (ParseFile) groupdetails1.get("attachment");
-
-                //following utility function takes care of displaying image in the holder
-                ImageCache.loadBitmap(imageName, holder.imgmsgview, getActivity(), holder.uploadprogressbar, imagefile);
-
                 holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Intent imgintent = new Intent();
                         imgintent.setAction(Intent.ACTION_VIEW);
-                        imgintent.setDataAndType(Uri.parse("file://" + (String) holder.imgmsgview.getTag()), "image/*");
+                        imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
                         startActivity(imgintent);
                     }
                 });
+
+
+                final Runnable onSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                    }
+                };
+
+                final Runnable onFailRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                    }
+                };
+
+                //to override previous recycled view
+                holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                holder.imgmsgview.setImageBitmap(null);
+
+                File imgFile = new File(imageFilePath);
+                holder.imgmsgview.setTag(imgFile.getAbsolutePath());
+
+                if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
+                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(o) already cached : " + imageName);
+                    onSuccessRunnable.run();
+                }
+                else if (imgFile.exists()) {
+                    // image file present locally
+                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                    writeLoadAndShowTask.execute();
+                } else if(Utility.isInternetExistWithoutPopup()) {
+                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(o) downloading data : " + imageName);
+
+                    // Have to download image from server
+                    ParseFile imagefile = msgObject.getParseFile("attachment");
+                    if(imagefile != null) {
+                        imagefile.getDataInBackground(new GetDataCallback() {
+                            public void done(byte[] data, ParseException e) {
+                                if (e == null) {
+                                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                    writeLoadAndShowTask.execute();
+                                } else {
+                                    //ParseException check for invalid session
+                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                                    onFailRunnable.run();
+                                }
+                            }
+                        });
+                    }
+                    else{
+                        onFailRunnable.run();
+                    }
+                }
+                else {
+                    onFailRunnable.run();
+                }
+
             } else {
                 holder.imgmsgview.setVisibility(View.GONE);
             }
 
             //if a) first msg, b) is a teacher & c) already not shown
             ParseUser currentParseUser = ParseUser.getCurrentUser();
+
+            if(currentParseUser == null){
+                return;
+            }
 
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && currentParseUser != null && currentParseUser.getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 if(Config.SHOWLOG) Log.d("_TUTORIAL_", "outbox response tutorial entered");
@@ -558,12 +619,17 @@ public class Outbox extends Fragment {
 
     //Refresh the layout. For e.g if outbox messages have changed
     public static void refreshSelf() {
-        if (Application.applicationHandler != null) {
+        if (Application.applicationHandler != null && outboxRefreshLayout != null && outboxLayout != null) {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
                     if (Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
+                    if(outboxRefreshLayout == null || outboxLayout == null){
+                        return;
+                    }
+
                     outboxRefreshLayout.setRefreshing(false);
+
                     if (groupDetails == null || groupDetails.size() == 0) {
                         outboxLayout.setVisibility(View.VISIBLE);
                     } else {

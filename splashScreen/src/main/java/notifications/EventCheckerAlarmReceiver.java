@@ -85,10 +85,10 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
 
     public void checkForEvents(){
 
-        if(user.getString("role").equalsIgnoreCase("parent")){
+        if(user.getString(Constants.ROLE).equalsIgnoreCase(Constants.PARENT)){
             parentNoActivity();
         }
-        if(user.getString("role").equalsIgnoreCase("teacher")){
+        if(user.getString(Constants.ROLE).equalsIgnoreCase(Constants.TEACHER)){
             teacherNoActivity();
             teacherNoSub();
             teacherNoMsg();
@@ -172,15 +172,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
             }
 
 
-            int memberCount = 0;
-            try{
-                memberCount = MemberList.getMemberCount(groupCode);
-            }
-            catch (ParseException e){
-                e.printStackTrace();
-                if(Config.SHOWLOG) Log.d("DEBUG_ALARM_RECEIVER", "exception getting count " + memberCount);
-                continue; //can't proceed further
-            }
+            int memberCount = MemberList.getMemberCount(groupCode);
 
             if(Config.SHOWLOG) Log.d("DEBUG_ALARM_RECEIVER", "member count " + memberCount);
 

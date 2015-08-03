@@ -54,13 +54,6 @@ public class SplashScreen extends MyActionBarActivity {
     animationFadeIn = AnimationUtils.loadAnimation(this, R.anim.fadein);
     logoLayout.startAnimation(animationFadeIn);
 
-        ParseUser freshUser = ParseUser.getCurrentUser();
-
-        /*if(freshUser != null) {
-            Utility.updateCurrentTimeInBackground(freshUser);
-            freshUser.fetchInBackground();
-        }*/
-
     /*
      * Set refresher alarm to update everything in background
      */

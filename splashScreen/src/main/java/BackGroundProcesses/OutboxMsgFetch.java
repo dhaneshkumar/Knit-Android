@@ -29,9 +29,10 @@ public class OutboxMsgFetch{
         //do this for the first few(=Config.outboxRefreshLimit
         ParseUser parseObject = ParseUser.getCurrentUser();
 
-        if (parseObject == null)
-            {
-                Utility.LogoutUtility.logout(); return;}
+        if (parseObject == null) {
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
         String userId = parseObject.getUsername();
 
