@@ -95,4 +95,6 @@ public class Config {
 
     public static long inboxOutboxUpdateGap = 15 * Constants.MINUTE_MILLISEC; //time gap between two updates of inbox/outbox to be called in when app is foreground
     public static long joinedClassUpdateGap = 60 *12 * Constants.MINUTE_MILLISEC; //time gap between two updates of joined class details i.e name, profile pic. can be called in background refresher thread
+
+    public static String googleApikey = "AIzaSyBYTCxqkHkWVaPphwQKrc6n2j0R53KKNog";
 }

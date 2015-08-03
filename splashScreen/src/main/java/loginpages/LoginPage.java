@@ -14,14 +14,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.facebook.AccessToken;
-import com.facebook.CallbackManager;
-import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
-import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
-import com.google.android.gms.common.SignInButton;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
@@ -52,24 +44,17 @@ public class LoginPage extends MyActionBarActivity {
   String passwd;
   TextView logText;
   Activity activity;
-  boolean signUpFlag = false;
   LinearLayout mainLayuot;
-  CallbackManager callbackManager;
 
-  public static String emailidtoset = "";
-  public static String passwordtoset = "";
   public static int count = 0;// for the sake of dummy data
 
   protected void onCreate(android.os.Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-
-    //intializing facebook sdk
-    FacebookSdk.sdkInitialize(getApplicationContext());
-    callbackManager = CallbackManager.Factory.create();
-
     setContentView(R.layout.loginfirst_layout);
 
     mainLayuot = (LinearLayout) findViewById(R.id.mainLayout);
+
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
     ParseUser user = ParseUser.getCurrentUser();
     if (user != null) {
@@ -87,8 +72,6 @@ public class LoginPage extends MyActionBarActivity {
     progressLayout = (LinearLayout) findViewById(R.id.progresslayout);
     logText = (TextView) findViewById(R.id.logText);
 
-    LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
-    SignInButton googleSignInButton = (SignInButton) findViewById(R.id.sign_in_button);
 
     signin_btn.setOnClickListener(new OnClickListener() {
 
@@ -121,44 +104,6 @@ public class LoginPage extends MyActionBarActivity {
       }
     });
 
-
-    // Callback registration
-    loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
-      @Override
-      public void onSuccess(LoginResult loginResult) {
-        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
-
-        if (AccessToken.getCurrentAccessToken() != null) {
-         /* //show progress bar
-          pdialog = new ProgressDialog(activityContext);
-          pdialog.setCancelable(true);
-          pdialog.setCanceledOnTouchOutside(false);
-          pdialog.setMessage("Please Wait...");
-          pdialog.show();
-
-
-          String token = AccessToken.getCurrentAccessToken().getToken();
-          if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
-
-          FBVerifyTask fbVerifyTask = new FBVerifyTask(token, false); //isLogin = false
-          fbVerifyTask.execute();*/
-        } else {
-          if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token null");
-        }
-      }
-
-      @Override
-      public void onCancel() {
-        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged cancelled");
-      }
-
-      @Override
-      public void onError(FacebookException exception) {
-        exception.printStackTrace();
-        if(Config.SHOWLOG) Log.d("D_FB_VERIF", "FacebookException");
-      }
-    });
-
   }
 
   @Override
@@ -176,6 +121,10 @@ public class LoginPage extends MyActionBarActivity {
           ForgotPassword forgotpassdialog = new ForgotPassword();
           forgotpassdialog.show(fm, "Forgot Password?");
         }
+        break;
+
+      case android.R.id.home:
+        onBackPressed();
         break;
 
       default:
