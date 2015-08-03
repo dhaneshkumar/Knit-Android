@@ -219,6 +219,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 //generateLocalMessage(text, Constants.DEFAULT_NAME);
                 if(Config.SHOWLOG) Log.d("DEBUG_ALARM_RECEIVER", "teacherNoSub() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
+                break; //at one time show no subscriber notification for one class only at a time
             }
         }
     }
@@ -288,6 +289,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
                 //generateLocalMessage(teacherNoMsgContent + className, Constants.DEFAULT_NAME);
                 if(Config.SHOWLOG) Log.d("DEBUG_ALARM_RECEIVER", "teacherNoMsg() " + eventid + " state changed to true");
                 session.setAlarmEventState(eventid, true);
+                break; //at one time show no msg notification for one class only at a time
             }
         }
     }
