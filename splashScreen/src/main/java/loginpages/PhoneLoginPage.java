@@ -183,6 +183,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
             callLocationApi = false;
         }
+
     }
 
     private void onSignInClicked() {
