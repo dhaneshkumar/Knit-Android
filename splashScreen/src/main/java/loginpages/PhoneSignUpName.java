@@ -188,14 +188,36 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     private void onSignInClicked() {
         // User clicked the sign-in button, so begin the sign-in process and automatically
         // attempt to resolve any errors that occur.
-        mShouldResolve = true;
-        mGoogleApiClient.connect();
+
+        if(Utility.isInternetExist()) {
+
+            mShouldResolve = true;
+
+            Log.d("google", "sign in button clicked");
+
+            if (mGoogleApiClient.isConnected()) {
+                Log.d("google", "already connected");
+
+                pdialog = new ProgressDialog(activityContext);
+                pdialog.setCancelable(true);
+                pdialog.setCanceledOnTouchOutside(false);
+                pdialog.setMessage("Please Wait...");
+                pdialog.show();
+
+                GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
+                googleVerifyTask.execute();
+            } else
+                Log.d("google", "not connected");
+
+
+            mGoogleApiClient.connect();
+        }
 
 
         // Show a message to the user that we are signing in.
        // mStatusTextView.setText(R.string.signing_in);
 
-        Utility.toast("Signing in to google account");
+
     }
 
 
@@ -839,7 +861,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                 Log.d("D_GOOGLE_VERIFY", "parseuser become - returned user correct with given token=" + sessionToken + ", currentsessiontoken=" + user.getSessionToken());
                                 taskSuccess = true;
 
-                                if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                                if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
                                     Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
                                     final String url = currentPerson.getImage().getUrl();
 
@@ -863,6 +885,10 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
 
                                     Log.d(TAG, "url : " + url);
+                                }
+                                else if(!mGoogleApiClient.isConnected()){
+                                    mIsResolving = true;
+                                    mGoogleApiClient.connect();
                                 }
 
 

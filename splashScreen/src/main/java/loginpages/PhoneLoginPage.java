@@ -183,15 +183,33 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
             callLocationApi = false;
         }
+
     }
 
     private void onSignInClicked() {
         // User clicked the sign-in button, so begin the sign-in process and automatically
         // attempt to resolve any errors that occur.
-        mShouldResolve = true;
 
-        if(Utility.isInternetExist())
+        if(Utility.isInternetExist()) {
+            mShouldResolve = true;
+
+            if (mGoogleApiClient.isConnected()) {
+                Log.d("google", "already connected");
+
+                pdialog = new ProgressDialog(activityContext);
+                pdialog.setCancelable(true);
+                pdialog.setCanceledOnTouchOutside(false);
+                pdialog.setMessage("Please Wait...");
+                pdialog.show();
+
+                GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
+                googleVerifyTask.execute();
+            } else
+                Log.d("google", "not connected");
+
+
             mGoogleApiClient.connect();
+        }
     }
 
 
@@ -519,7 +537,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                                 Log.d("D_GOOGLE_VERIFY", "parseuser become - returned user correct with given token=" + sessionToken + ", currentsessiontoken=" + user.getSessionToken());
                                 taskSuccess = true;
 
-                                if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                                if (mGoogleApiClient.isConnected() && Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
                                     Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
                                     final String url = currentPerson.getImage().getUrl();
 
