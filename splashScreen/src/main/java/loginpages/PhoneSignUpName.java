@@ -24,15 +24,12 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -47,9 +44,6 @@ import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -59,6 +53,7 @@ import java.util.Map;
 import additionals.SmsListener;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
+import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -84,7 +79,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     static GoogleApiClient mGoogleApiClient = null;
     static Location mLastLocation = null;
     CallbackManager callbackManager;
-    String TAG = "google_login";
+    static String TAG = "google_login";
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -146,7 +141,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     String token = AccessToken.getCurrentAccessToken().getToken();
                     if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
 
-                    FBVerifyTask fbVerifyTask = new FBVerifyTask(token, false); //isLogin = false
+                    String fbUserId = AccessToken.getCurrentAccessToken().getUserId();
+
+                    FBVerifyTask fbVerifyTask = new FBVerifyTask(token, fbUserId, false); //isLogin = false
                     fbVerifyTask.execute();
                 }
                 else{
@@ -158,21 +155,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             public void onCancel() {
                 if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged cancelled");
 
-                if(AccessToken.getCurrentAccessToken() != null){
-                    //show progress bar
-                    pdialog = new ProgressDialog(activityContext);
-                    pdialog.setCancelable(true);
-                    pdialog.setCanceledOnTouchOutside(false);
-                    pdialog.setMessage("Please Wait...");
-                    pdialog.show();
-
-
-                    String token = AccessToken.getCurrentAccessToken().getToken();
-                    if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
-
-                    FBVerifyTask fbVerifyTask = new FBVerifyTask(token, false); //isLogin = false
-                    fbVerifyTask.execute();
-                }
             }
 
             @Override
@@ -194,11 +176,14 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
     }
 
+
+
     private void onSignInClicked() {
         // User clicked the sign-in button, so begin the sign-in process and automatically
         // attempt to resolve any errors that occur.
         mShouldResolve = true;
         mGoogleApiClient.connect();
+
 
         // Show a message to the user that we are signing in.
        // mStatusTextView.setText(R.string.signing_in);
@@ -206,44 +191,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         Utility.toast("Signing in to google account");
     }
 
-
-    public void RequestData(){
-
-        GraphRequest request = GraphRequest.newMeRequest(AccessToken.getCurrentAccessToken(), new GraphRequest.GraphJSONObjectCallback() {
-            @Override
-            public void onCompleted(JSONObject object, GraphResponse response) {
-
-                JSONObject json = response.getJSONObject();
-                try {
-                    if (json != null) {
-
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "name : " + json.getString("name"));
-                        //    if(Config.SHOWLOG) Log.d("FB_SIGNUP", "email : " + json.getString("email"));
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "id : " + json.getString("id"));
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "Link : " + json.getString("link"));
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "age_range : " + json.getString("age_range"));
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "gender : " + json.getString("gender"));
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "locale : " + json.getString("locale"));
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "verified : " + json.getString("verified"));
-                        if(Config.SHOWLOG) Log.d("FB_SIGNUP", "access token : " + AccessToken.getCurrentAccessToken());
-
-                        // set profile pic
-                        //   http://stackoverflow.com/questions/19855072/android-get-facebook-profile-picture
-
-                        String token = AccessToken.getCurrentAccessToken().getToken();
-
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,link,email,picture, gender, age_range, locale, verified, location");
-        request.setParameters(parameters);
-        request.executeAsync();
-    }
 
     void resetFields(){
         displayName = "";
@@ -374,20 +321,36 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     @Override
     public void onStart(){
         super.onStart();
+
+        Log.d(TAG, "calling onStart()");
         if(mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
+            if(Utility.isInternetExistWithoutPopup())
+                mGoogleApiClient.connect();
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "calling onDestroy()");
+        if(mGoogleApiClient != null)
+            mGoogleApiClient.disconnect();
     }
 
     @Override
     public void onStop(){
         super.onStop();
-        if(mGoogleApiClient != null) {
+        Log.d(TAG, "calling onStop()");
+       /* if(mGoogleApiClient != null) {
             mGoogleApiClient.disconnect();
         }
+        */
+
     }
 
     protected synchronized void buildGoogleApiClient() {
+
+        Log.d(TAG, "Initializing api client build");
         PackageManager pm = getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
             if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
@@ -409,6 +372,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     public void onConnected(Bundle connectionHint) {
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnected() entered, first take last known location, just in case that gps location is not received");
 
+        Log.d(TAG, "calling onConnected");
+
         mShouldResolve = false;
 
         pdialog = new ProgressDialog(activityContext);
@@ -429,20 +394,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
         createLocationRequest();
 
-        if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
-            Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
-            String personName = currentPerson.getDisplayName();
-            Person.Image personPhoto = currentPerson.getImage();
-            String personGooglePlusProfile = currentPerson.getUrl();
-
-            String email = Plus.AccountApi.getAccountName(mGoogleApiClient);
-
-            String t = "login";
-            Log.d(t, "name : " + personName);
-            Log.d(t, "url : " + personGooglePlusProfile);
-            Log.d(t, "email : " + email);
-        }
-
 
     }
 
@@ -452,6 +403,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         // No client is connected
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnectionFailed()");
 
+        Log.d(TAG, "calling onConnectionFailed");
 
         if (!mIsResolving && mShouldResolve) {
             if (connectionResult.hasResolution()) {
@@ -479,12 +431,16 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     public void onConnectionSuspended(int result) {
         // At least one of the API client connect attempts failed
         // No client is connected
+
+        Log.d(TAG, "calling onConnectionSuspended");
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnectionSuspended()");
 
     }
 
     @Override
     public void onPause(){
+
+        Log.d(TAG, "calling onPause()");
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onPause() called");
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
@@ -574,12 +530,14 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
         String token;
         boolean isLogin;
+        String fbUserId;
 
         //response
         String flag;
 
-        public FBVerifyTask(String token, boolean isLogin){//code to verify. Number will be taken from relevant activity
+        public FBVerifyTask(String token, String fbUserId, boolean isLogin){//code to verify. Number will be taken from relevant activity
             this.token = token;
+            this.fbUserId = fbUserId;
             this.isLogin = isLogin;
         }
 
@@ -625,6 +583,33 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
                             if(Config.SHOWLOG) Log.d("D_FB_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
                             taskSuccess = true;
+
+                            Log.d(TAG, "fbUserId : " + fbUserId);
+
+                            if(!UtilString.isBlank(fbUserId))
+                            {
+                                final String url = "https://graph.facebook.com/"  + fbUserId + "/picture?type=large";
+
+                                Log.d(TAG, "url : " + url);
+
+
+                                //call refresher
+                                Runnable r = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            ProfilePage.setSocialProfilePic(url);
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                };
+                                Thread t = new Thread(r);
+                                t.setPriority(Thread.MIN_PRIORITY);
+                                t.start();
+                            }
+
+
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
                             // The token could not be validated.
@@ -708,6 +693,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     pdialog.dismiss();
                 }
             }
+
+
+
         }
     }
 
@@ -720,97 +708,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(intent);
     }
-
-
-
-    private class GetIdTokenTask extends AsyncTask<Void, Void, String> {
-
-        @Override
-        protected String doInBackground(Void... params) {
-            String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
-            Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
-            String SERVER_CLIENT_ID = "838906570879-nujge366mj36s29elltobjnehh9e1a5j.apps.googleusercontent.com";
-
-            List<String> scopeList = Arrays.asList(new String[]{
-                    "https://www.googleapis.com/auth/plus.login",
-                    "https://www.googleapis.com/auth/userinfo.email"
-            });
-
-            //String scope = String.format("audience:server:client_id:%s:api_scope:%s", SERVER_CLIENT_ID, TextUtils.join(" ", scopeList));
-            String scope = String.format("audience:server:client_id:%s", SERVER_CLIENT_ID);
-            //   String scopes = "oauth2:server:client_id:" + SERVER_CLIENT_ID; // Not the app's client ID.
-
-
-            String scopesString = Scopes.PLUS_LOGIN;
-          /*
-            String scopes = "oauth2:server:client_id:" + Consts.GOOGLE_PLUS_SERVER_CLIENT_ID + ":api_scope:" + scopesString;
-            OR
-            String scopes = "audience:server:client_id:" + Consts.GOOGLE_PLUS_SERVER_CLIENT_ID;*/
-
-            // .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
-            //.addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
-
-
-            try {
-                return GoogleAuthUtil.getToken(getApplicationContext(), account, scope);
-            } catch (UserRecoverableAuthException e) {
-                // Requesting an authorization code will always throw
-                // UserRecoverableAuthException on the first call to GoogleAuthUtil.getToken
-                // because the user must consent to offline access to their data.  After
-                // consent is granted control is returned to your activity in onActivityResult
-                // and the second call to GoogleAuthUtil.getToken will succeed.
-                startActivityForResult(e.getIntent(), RC_SIGN_IN);
-                return null;
-            } catch (IOException e) {
-                Log.e(TAG, "Error retrieving ID token.", e);
-                return null;
-            } catch (GoogleAuthException e) {
-                Log.e(TAG, "Error retrieving ID token.", e);
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(String result) {
-            Log.i(TAG, "ID token: " + result);
-            if (result != null) {
-                //Utility.toast("got Token");
-                // Successfully retrieved ID Token
-                // ...
-            } else {
-                // There was some error getting the ID Token
-                // ...
-            }
-        }
-    }
-
-        class RetrieveTokenTask extends AsyncTask<String, Void, String> {
-
-            @Override
-            protected String doInBackground(String... params) {
-                String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);;
-                String scopes = "oauth2:profile email";
-                String token = null;
-
-                Log.i(TAG, "Access token:  starting...." );
-                try {
-                    token = GoogleAuthUtil.getToken(getApplicationContext(), accountName, scopes);
-                } catch (IOException e) {
-                    Log.e(TAG, e.getMessage());
-                } catch (UserRecoverableAuthException e) {
-                    startActivityForResult(e.getIntent(), RC_SIGN_IN);
-                } catch (GoogleAuthException e) {
-                    Log.e(TAG, e.getMessage());
-                }
-                return token;
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                Log.i(TAG, "Access token: " + s);
-            }
-        }
 
     class GoogleVerifyTask extends AsyncTask<Void, Void, Void> {
         Boolean networkError = false; //parse exception
@@ -830,7 +727,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
         @Override
         protected Void doInBackground(Void... par) {
-            Log.d("D_GOOGLE_VERIF", "FBVerifyTask : doInBackground");
+            Log.d(TAG, "Google VerifyTask : doInBackground");
 
 
             /*
@@ -888,17 +785,15 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 HashMap<String, Object> params = new HashMap<String, Object>();
 
                 if (!isLogin) {
-                    params.put("accessToken", accessToken);
-                    params.put("idToken", idToken);
                     params.put("role", PhoneSignUpName.role);
                     String emailId = Utility.getAccountEmail();
                     if (emailId != null) {
                         params.put("email", emailId);
                     }
-                } else {
-                    params.put("accessToken", accessToken);
-                    params.put("idToken", idToken);
                 }
+
+                params.put("accessToken", accessToken);
+                params.put("idToken", idToken);
 
                 //appInstallation params - devicetype, installationId
                 params.put("deviceType", "android");
@@ -923,6 +818,34 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
                                 Log.d("D_GOOGLE_VERIFY", "parseuser become - returned user correct with given token=" + sessionToken + ", currentsessiontoken=" + user.getSessionToken());
                                 taskSuccess = true;
+
+                                if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                                    Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+                                    final String url = currentPerson.getImage().getUrl();
+
+                                    if(!UtilString.isBlank(url))
+                                    {
+                                        //call refresher
+                                        Runnable r = new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    ProfilePage.setSocialProfilePic(url);
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        };
+                                        Thread t = new Thread(r);
+                                        t.setPriority(Thread.MIN_PRIORITY);
+                                        t.start();
+                                    }
+
+
+                                    Log.d(TAG, "url : " + url);
+                                }
+
+
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                             } else {
                                 // The token could not be validated.
@@ -968,6 +891,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         protected void onPostExecute(Void result) {
             Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess + ", flag=" + flag);
 
+
+
+
             if(taskSuccess){
                 SessionManager session = new SessionManager(Application.getAppContext());
                 ParseUser user = ParseUser.getCurrentUser();
@@ -995,6 +921,10 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     PhoneSignUpVerfication.PostSignUpTask postSignUpTask = new PhoneSignUpVerfication.PostSignUpTask(user, pdialog);
                     postSignUpTask.execute();
                 }
+
+
+
+
             }
 
             if(!taskSuccess){
@@ -1008,8 +938,16 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 Utility.toast("Connection failure", true);
             }
             else if(unexpectedError){
-                Utility.toast("Oops ! some error occured.", true);
+                Utility.toast("Oops ! some error occured. Restart and Try Again", true);
+
+                if(pdialog != null){
+                    pdialog.dismiss();
+                }
+
             }
+
+
+
         }
     }
 

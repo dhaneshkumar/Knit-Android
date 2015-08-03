@@ -42,7 +42,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
+import java.net.URL;
 import java.util.HashMap;
 
 import baseclasses.MyActionBarActivity;
@@ -606,8 +609,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                     e.printStackTrace();
                 }
             }
-            else{
-            }
 
             return null;
         }
@@ -635,4 +636,89 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             }
         }
     }
+
+
+
+    public static void setSocialProfilePic(String imagelink) throws IOException {
+        Log.d("google", "called profile update");
+
+        //Resizing image size to 200*200
+        int index = imagelink.indexOf("?sz=");
+        if(index >0)
+        {
+            imagelink = imagelink.substring(0,index+4) + "200";
+        }
+
+        Log.d("google", imagelink);
+
+        URL url = new URL (imagelink);
+        InputStream input = url.openStream();
+        String userString = ParseUser.getCurrentUser().getUsername().replaceAll("@", "");
+        String filepath  = Utility.getWorkingAppDir() + "/thumbnail/" + userString + "_PC.jpg";
+
+        try {
+            OutputStream output = new FileOutputStream(filepath);
+            try {
+                byte[] buffer = new byte[1024];
+                int bytesRead = 0;
+                while ((bytesRead = input.read(buffer, 0, buffer.length)) >= 0) {
+                    output.write(buffer, 0, bytesRead);
+                }
+            }
+            finally {
+                output.close();
+            }
+
+            Log.d("google", "profile pic updated...");
+        }
+
+        finally {
+            input.close();
+        }
+
+
+        byte[] data = null;
+        try {
+            RandomAccessFile f = new RandomAccessFile(filepath, "r");
+            data = new byte[(int) f.length()];
+            f.read(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (data == null) {
+            return ;
+        }
+
+        int slashindex = filepath.lastIndexOf("/");
+        String fileName = (filepath).substring(slashindex + 1);// image file //
+
+        final ParseFile file = new ParseFile(fileName, data);
+        try {
+            if(Config.SHOWLOG) Log.d("__A", "profile pic : file.save() start");
+            file.save();
+            if(Config.SHOWLOG) Log.d("__A", "profile pic : file.save() success");
+            HashMap<String, Object> parameters = new HashMap<String, Object>();
+            parameters.put("pid", file);
+            boolean result = ParseCloud.callFunction("updateProfilePic", parameters);
+
+
+            ParseUser currentParseUser = ParseUser.getCurrentUser();
+            if (result) {
+                currentParseUser.put("pid", file);
+                currentParseUser.pin();
+            }
+
+            Log.d("google", "profile pic uploaded to parse...");
+        } catch (ParseException e) {
+            e.printStackTrace();
+            Log.d("google", "profile pic uploading to parse failed...");
+        }
+
+
+    }
+
+
+
+
 }

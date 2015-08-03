@@ -156,6 +156,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:textStyle="italic"
+                android:paddingRight="8dp"
+                android:paddingLeft="8dp"
                 android:text="Already a member?"
                 android:textColor="@color/black"
                 android:id="@+id/member"

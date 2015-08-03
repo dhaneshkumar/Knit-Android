@@ -36,6 +36,7 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.plus.Plus;
+import com.google.android.gms.plus.model.people.Person;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -50,6 +51,7 @@ import java.util.Map;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
+import profileDetails.ProfilePage;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -145,7 +147,9 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                     String token = AccessToken.getCurrentAccessToken().getToken();
                     Log.d("D_FB_VERIF", "access token = " + token);
 
-                    PhoneSignUpName.FBVerifyTask fbVerifyTask = new PhoneSignUpName.FBVerifyTask(token, true); //isLogin = false
+                    String fbUserId = AccessToken.getCurrentAccessToken().getUserId();
+
+                    PhoneSignUpName.FBVerifyTask fbVerifyTask = new PhoneSignUpName.FBVerifyTask(token, fbUserId, true); //isLogin = false
                     fbVerifyTask.execute();
                 } else {
                     Log.d("D_FB_VERIF", "access token null");
@@ -156,21 +160,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             public void onCancel() {
                 Log.d("D_FB_VERIF", "logged cancelled");
 
-                if (AccessToken.getCurrentAccessToken() != null) {
-                    //show progress bar
-                    pdialog = new ProgressDialog(activityContext);
-                    pdialog.setCancelable(true);
-                    pdialog.setCanceledOnTouchOutside(false);
-                    pdialog.setMessage("Please Wait...");
-                    pdialog.show();
-
-
-                    String token = AccessToken.getCurrentAccessToken().getToken();
-                    Log.d("D_FB_VERIF", "access token = " + token);
-
-                    PhoneSignUpName.FBVerifyTask fbVerifyTask = new PhoneSignUpName.FBVerifyTask(token, true); //isLogin = false
-                    fbVerifyTask.execute();
-                }
             }
 
             @Override
@@ -193,12 +182,9 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         // User clicked the sign-in button, so begin the sign-in process and automatically
         // attempt to resolve any errors that occur.
         mShouldResolve = true;
-        mGoogleApiClient.connect();
 
-        // Show a message to the user that we are signing in.
-        // mStatusTextView.setText(R.string.signing_in);
-
-        Utility.toast("Signing in to google account");
+        if(Utility.isInternetExist())
+            mGoogleApiClient.connect();
     }
 
 
@@ -218,8 +204,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         else
             callbackManager.onActivityResult(requestCode, resultCode, data);
     }
-
-
 
 
 
@@ -250,17 +234,26 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     public void onStart(){
         super.onStart();
         if(mGoogleApiClient != null) {
-            mGoogleApiClient.connect();
+            if(Utility.isInternetExistWithoutPopup())
+                 mGoogleApiClient.connect();
         }
     }
 
     @Override
     public void onStop(){
         super.onStop();
-        if(mGoogleApiClient != null) {
+       // if(mGoogleApiClient != null) {
             if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onStop() client disconnect");
+            //mGoogleApiClient.disconnect();
+        //}
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onDestroy() client disconnect");
+        if(mGoogleApiClient != null)
             mGoogleApiClient.disconnect();
-        }
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -507,6 +500,31 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
                                 Log.d("D_GOOGLE_VERIFY", "parseuser become - returned user correct with given token=" + sessionToken + ", currentsessiontoken=" + user.getSessionToken());
                                 taskSuccess = true;
+
+                                if (Plus.PeopleApi.getCurrentPerson(mGoogleApiClient) != null) {
+                                    Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
+                                    final String url = currentPerson.getImage().getUrl();
+
+                                    if(!UtilString.isBlank(url))
+                                    {
+                                        //call refresher
+                                        Runnable r = new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                try {
+                                                    ProfilePage.setSocialProfilePic(url);
+                                                } catch (IOException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        };
+                                        Thread t = new Thread(r);
+                                        t.setPriority(Thread.MIN_PRIORITY);
+                                        t.start();
+                                    }
+
+                                }
+
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                             } else {
                                 // The token could not be validated.
@@ -593,6 +611,9 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             }
             else if(unexpectedError){
                 Utility.toast("Oops ! some error occured.", true);
+                if(pdialog != null){
+                    pdialog.dismiss();
+                }
             }
         }
     }
