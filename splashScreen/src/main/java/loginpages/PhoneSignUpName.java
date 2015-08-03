@@ -80,6 +80,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     static Location mLastLocation = null;
     CallbackManager callbackManager;
     static String TAG = "google_login";
+    boolean callLocationApi = true;
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -119,6 +120,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         else{//on press back from next activity. Use previous values to show
             displayNameET.setText(displayName);
             phoneNumberET.setText(phoneNumber);
+        }
+
+        PackageManager pm = getPackageManager();
+        if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
+            callLocationApi = false;
         }
 
         buildGoogleApiClient();
@@ -298,12 +305,15 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     /*********** Location Detection methods ****************/
 
     protected void createLocationRequest() {
-        LocationRequest mLocationRequest = new LocationRequest();
-        mLocationRequest.setInterval(1000);
-        mLocationRequest.setFastestInterval(1000);
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        if(callLocationApi) {
+            LocationRequest mLocationRequest = new LocationRequest();
+            mLocationRequest.setInterval(1000);
+            mLocationRequest.setFastestInterval(1000);
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
     }
 
     @Override
@@ -351,10 +361,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     protected synchronized void buildGoogleApiClient() {
 
         Log.d(TAG, "Initializing api client build");
-        PackageManager pm = getPackageManager();
-        if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
-            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
 
+        if (!callLocationApi)
+        {
             mGoogleApiClient = new GoogleApiClient.Builder(this)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
@@ -395,15 +404,16 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
         googleVerifyTask.execute();
 
+        if(callLocationApi) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                if (Config.SHOWLOG)
+                    Log.d("DEBUG_LOCATION", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
+                            + ", " + String.valueOf(mLastLocation.getLongitude()));
+            }
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if(mLastLocation != null){
-            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
-                    + ", " + String.valueOf(mLastLocation.getLongitude()));
+            createLocationRequest();
         }
-
-        createLocationRequest();
-
 
     }
 
@@ -452,7 +462,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
         Log.d(TAG, "calling onPause()");
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onPause() called");
-        if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected() && callLocationApi) {
             LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
         }
         super.onPause();
