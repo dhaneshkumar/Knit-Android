@@ -354,18 +354,28 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         PackageManager pm = getPackageManager();
         if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
             if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
-            return;
+
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
+                    .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+                    .addApi(Plus.API)
+                    .build();
+        }
+        else {
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
+                    .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+                    .addApi(Plus.API)
+                    .build();
         }
 
-        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(LocationServices.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
-                .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
-                .addApi(Plus.API)
-                .build();
+
     }
 
     @Override
