@@ -48,9 +48,9 @@ public class Config {
   6. Set alarm configuration like repeat duration, notification stale period - used in AlarmTrigger, NotificationAlarmReceiver
  */
   public static final long NOTIFICATION_STALE_PERIOD = 1 * Constants.DAY_MILLISEC; //consider it stale after a day
-  public final static long EVENT_CHECKER_INTERVAL = 30 * Constants.MINUTE_MILLISEC; //30 minutes
+  public final static long EVENT_CHECKER_INTERVAL = 1 * Constants.HOUR_MILLISEC; //1 hour
   public final static long REFRESHER_INTERVAL = 15 * Constants.MINUTE_MILLISEC; //15 minutes
-  public final static long NOTIFICATION_INTERVAL = 1 * Constants.HOUR_MILLISEC; //1 hours
+  public final static long NOTIFICATION_INTERVAL = 1 * Constants.HOUR_MILLISEC; //1 hour
 
   /*************************************************************************************************************/
 

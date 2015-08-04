@@ -285,18 +285,13 @@ public class ComposeMessageHelper {
 
                     //unpin the message,
                     ParseObject.unpinAll(failedMessages);
-                    //delete the message from lists
-                    if (SendMessage.groupDetails != null) {
-                        SendMessage.groupDetails.removeAll(failedMessages);
-                    }
-                    if (Outbox.groupDetails != null) {
-                        Outbox.groupDetails.removeAll(failedMessages);
-                    }
+                    //delete the message from lists, moved to SendMessage.notifyAdapter & Outbox.notifyAdapter
+
                 }
 
                 //notify outbox and class page adapter
-                SendMessage.notifyAdapter();
-                Outbox.notifyAdapter();
+                SendMessage.notifyAdapter(failedMessages);
+                Outbox.notifyAdapter(failedMessages);
                 return retVal; //success
             }
             return -1; //unexpected error
@@ -486,18 +481,12 @@ public class ComposeMessageHelper {
 
                     //unpin the message,
                     ParseObject.unpinAll(failedMessages);
-                    //delete the message from lists
-                    if (SendMessage.groupDetails != null) {
-                        SendMessage.groupDetails.removeAll(failedMessages);
-                    }
-                    if (Outbox.groupDetails != null) {
-                        Outbox.groupDetails.removeAll(failedMessages);
-                    }
+                    //delete the message from lists, moved to SendMessage.notifyAdapter & Outbox.notifyAdapter
                 }
 
                 //notify outbox and class page adapter
-                SendMessage.notifyAdapter();
-                Outbox.notifyAdapter();
+                SendMessage.notifyAdapter(failedMessages);
+                Outbox.notifyAdapter(failedMessages);
                 return retVal; //success
             }
             return -1; //unexpected error

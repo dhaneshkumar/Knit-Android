@@ -253,12 +253,20 @@ public class SendMessage extends MyActionBarActivity  {
     }
 
     public static void notifyAdapter(){
+        notifyAdapter(null);
+    }
+
+    //used if called in background thread because groupDetails should not change without notifyDataSetChanged
+    public static void notifyAdapter(final List<ParseObject> msgsToRemove){
         //applicationHandler.post
         if(Application.applicationHandler != null) {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (myadapter != null) {
+                    if (groupDetails != null && myadapter != null) {
+                        if(msgsToRemove != null){
+                            groupDetails.removeAll(msgsToRemove);
+                        }
                         myadapter.notifyDataSetChanged();//just notify the pending->sent change
                     }
                 }

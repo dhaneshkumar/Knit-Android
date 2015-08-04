@@ -236,18 +236,26 @@ public class Outbox extends Fragment {
     }
 
     public static void notifyAdapter(){
-        if(Application.applicationHandler != null){
+        notifyAdapter(null);
+    }
+
+    //used if called in background thread because groupDetails should not change(atleast msgs removed) without notifyDataSetChanged
+    public static void notifyAdapter(final List<ParseObject> msgsToRemove){
+        //applicationHandler.post
+        if(Application.applicationHandler != null) {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if(myadapter != null){
-                        myadapter.notifyDataSetChanged();
+                    if (groupDetails != null && myadapter != null) {
+                        if(msgsToRemove != null){
+                            groupDetails.removeAll(msgsToRemove);
+                        }
+                        myadapter.notifyDataSetChanged();//just notify the pending->sent change
                     }
                 }
             });
         }
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

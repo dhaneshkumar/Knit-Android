@@ -89,7 +89,7 @@ public class ImageCache {
             * data non-null(so that we can create the file)
 
         How:
-            * Writes data to file(if non-null)
+            * Writes data to file(if data non-null)
             * Creates thumbnail (if not already present)
             * Creates the bitmap, add to cache.
             * onPostExecute() : run uiWork and also set the bitmap to mImageView
