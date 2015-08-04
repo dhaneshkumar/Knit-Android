@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="trumplab.textslate"
-    android:versionCode="30"
-    android:versionName="4.1.2.1">
+    android:versionCode="31"
+    android:versionName="4.1.2.1.1">
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="22" />
@@ -45,6 +45,7 @@
             android:value="@integer/google_play_services_version" />
 
         <meta-data android:name="com.facebook.sdk.ApplicationId"  android:value="@string/FB_APP_id"/>
+        <meta-data android:name="LOCALYTICS_APP_KEY" android:value="24695b617d02a08993a389c-3b91a63a-3a68-11e5-8299-003e57fecdee"/>
 
         <activity
             android:name="loginpages.SplashScreen"

@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.localytics.android.Localytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -459,8 +460,16 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        //testing local notifications TODO comment following line before release
-        //TestingUtililty.testingLocalNotification();
+        // If you're using Localytics Push Messaging
+        Localytics.registerPush("76237");
+
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent)
+    {
+        super.onNewIntent(intent);
+        setIntent(intent);
     }
 
     /**
