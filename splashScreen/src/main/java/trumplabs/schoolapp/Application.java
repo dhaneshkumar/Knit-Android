@@ -3,8 +3,10 @@ package trumplabs.schoolapp;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.Handler;
 import android.util.Log;
 
+import com.localytics.android.*;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseObject;
@@ -12,10 +14,7 @@ import com.parse.ParseUser;
 import com.parse.PushService;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
-
-import android.os.Handler;
 
 import utility.Config;
 
@@ -83,6 +82,16 @@ public class Application extends android.app.Application {
 	// Specify an Activity to handle all pushes by   default.
 	//PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class);
 	PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class,getResources().getIdentifier("notifications", "drawable", getPackageName()));
+
+
+
+      // Register LocalyticsActivityLifecycleCallbacks
+      int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+      if (currentapiVersion >= 14) {
+          registerActivityLifecycleCallbacks(
+                  new LocalyticsActivityLifecycleCallbacks(this));
+      }
+
   }
   
   

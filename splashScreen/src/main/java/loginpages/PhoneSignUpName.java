@@ -766,12 +766,20 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 // consent is granted control is returned to your activity in onActivityResult
                 // and the second call to GoogleAuthUtil.getToken will succeed.
                 startActivityForResult(e.getIntent(), RC_SIGN_IN);
+                e.printStackTrace();
                 return null;
             } catch (IOException e) {
+                e.printStackTrace();
                 return null;
             } catch (GoogleAuthException e) {
+                e.printStackTrace();
                 return null;
             }
+
+            if(idToken != null)
+                Log.d(TAG, "idToken : " + idToken);
+            else
+                Log.d(TAG, "idToken null");
 
              /*
             Retrieving accessToken
@@ -785,6 +793,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 Log.e(TAG, e.getMessage());
             } catch (UserRecoverableAuthException e) {
                 startActivityForResult(e.getIntent(), RC_SIGN_IN);
+                e.printStackTrace();
             } catch (GoogleAuthException e) {
                 Log.e(TAG, e.getMessage());
             }
