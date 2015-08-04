@@ -43,7 +43,7 @@
   	  	    android:id="@+id/button_forgotpass"
   	  	    android:layout_width="wrap_content"
   	  	    android:layout_height="wrap_content"
-  	  	    android:text="Send"
+  	  	    android:text="SEND"
   	  	    android:padding="16dp"
   	  	    android:layout_gravity="right"
  	  	    android:textStyle="bold"

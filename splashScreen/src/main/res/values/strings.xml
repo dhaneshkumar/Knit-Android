@@ -12,7 +12,6 @@
     <string name="inbox_instructions">Receive messages from your joined classrooms in this feed.</string>
     <string name="outbox_instrunctions">Keep track of all your sent messages here at one place.</string>
     <string name="com_facebook_loginview_log_out_button">Log in with Facebook</string><!-- Overriding fb logout text after -->
-
     <string-array name="optionschoice">
 		<item>Copy</item>
 		<item>Share</item>

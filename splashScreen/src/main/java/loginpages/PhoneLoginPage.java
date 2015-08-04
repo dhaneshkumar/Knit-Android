@@ -110,8 +110,11 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
+        setGooglePlusButtonText(signInButton, "Log in with Google +");
 
         loginButton.setReadPermissions(Arrays.asList("email"));
+
+        getSupportActionBar().setTitle("Log In");
 
 
         if (getIntent() != null && getIntent().getExtras() != null) {
@@ -194,6 +197,23 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() location feature not available");
         }
 
+    }
+
+    //changing google login button text
+    protected void setGooglePlusButtonText(SignInButton signInButton, String buttonText) {
+        // Find the TextView that is inside of the SignInButton and set its text
+        for (int i = 0; i < signInButton.getChildCount(); i++) {
+            View v = signInButton.getChildAt(i);
+
+            if (v instanceof TextView) {
+                TextView tv = (TextView) v;
+                tv.setText(buttonText);
+
+                if(android.os.Build.VERSION.SDK_INT >=14)
+                    tv.setAllCaps(false);
+                return;
+            }
+        }
     }
 
     private void onSignInClicked() {
