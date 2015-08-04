@@ -102,6 +102,7 @@ public class ImageCache {
         Runnable uiWork;
 
         Bitmap bitmap;
+        String initialTag;
 
         public WriteLoadAndShowTask(byte[] data, String imageName, ImageView mImageView, Activity activity, Runnable uiWork){
             this.data = data;
@@ -111,6 +112,7 @@ public class ImageCache {
             this.uiWork = uiWork;
 
             this.bitmap = null;
+            this.initialTag = (String) mImageView.getTag();
         }
 
         @Override
@@ -156,9 +158,15 @@ public class ImageCache {
         @Override
         protected void onPostExecute(Void result) {
             if(mImageView != null){
-                mImageView.setImageBitmap(bitmap);
+                String currentTag = (String) mImageView.getTag();
+                if(initialTag != null && currentTag != null && !(initialTag.equals(currentTag))){
+                    if(Config.SHOWLOG) Log.d(LOGTAG, "(i) tag not same for " + imageName + ". Skip : (a) setting bitmap and (b) doing uiWork");
+                }
+                else {
+                    mImageView.setImageBitmap(bitmap);
+                    uiWork.run();
+                }
             }
-            uiWork.run();
         }
     }
 

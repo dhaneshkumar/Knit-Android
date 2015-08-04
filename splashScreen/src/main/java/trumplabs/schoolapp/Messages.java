@@ -684,6 +684,7 @@ public class Messages extends Fragment {
                 File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imageName);
                 holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
                 holder.imgframelayout.setTag(imgFile.getAbsolutePath());
+                holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
                 if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
