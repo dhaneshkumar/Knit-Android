@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Html;
@@ -524,10 +525,16 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
     static void fillDetailsForSession(final boolean login, HashMap<String, Object> params){
         String model = "NA";
-        if (android.os.Build.MODEL != null)
+        if (Build.MODEL != null)
             model = android.os.Build.MODEL;
+
+        String os = "Android";
+        if(Build.VERSION.RELEASE != null){
+            os += " " + Build.VERSION.RELEASE;
+        }
+
         params.put("model", model);
-        params.put("os", "ANDROID");
+        params.put("os", os);
 
         if(login){
             if (PhoneLoginPage.mLastLocation != null) {
