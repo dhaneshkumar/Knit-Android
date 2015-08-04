@@ -71,12 +71,12 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     static GoogleApiClient mGoogleApiClient = null;
     static GoogleApiClient mLocationGoogleApiClient = null;
+    boolean callLocationApi = false;
 
     static Location mLastLocation = null;
     CallbackManager callbackManager;
     static ProgressDialog pdialog;
     static Context activityContext;
-    boolean callLocationApi = false;
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -213,7 +213,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                 pdialog.setMessage("Please Wait...");
                 pdialog.show();
 
-                GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
+                GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(true);
                 googleVerifyTask.execute();
             }
             else {
@@ -259,8 +259,9 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         //override the last location by this updated current location if non-null
         if (location != null) {
             mLastLocation = location;
-            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
-                    + ", " + String.valueOf(mLastLocation.getLongitude()));
+            if (Config.SHOWLOG)
+                Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
+                        + ", " + String.valueOf(mLastLocation.getLongitude()));
 
             LocationServices.FusedLocationApi.removeLocationUpdates(mLocationGoogleApiClient, this);
         }
@@ -270,7 +271,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     public void onStart(){
         super.onStart();
         if(mLocationGoogleApiClient != null) {
-            if(Utility.isInternetExistWithoutPopup())
+            if (Utility.isInternetExistWithoutPopup())
                 mLocationGoogleApiClient.connect();
         }
     }
@@ -460,7 +461,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         @Override
         protected Void doInBackground(Void... par) {
             Log.d("D_GOOGLE_VERIF", "FBVerifyTask : doInBackground");
-
 
             /*
             Retrieving idToken

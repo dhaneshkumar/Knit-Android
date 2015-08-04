@@ -77,10 +77,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     static ProgressDialog pdialog;
 
     static GoogleApiClient mGoogleApiClient = null;
+    static GoogleApiClient mLocationGoogleApiClient = null;
+    boolean callLocationApi = false;
+
     static Location mLastLocation = null;
     CallbackManager callbackManager;
     static String TAG = "google_login";
-    boolean callLocationApi = true;
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -121,14 +123,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             displayNameET.setText(displayName);
             phoneNumberET.setText(phoneNumber);
         }
-
-        PackageManager pm = getPackageManager();
-        if (!pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION) || !pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK)) {
-            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() feature not available");
-            callLocationApi = false;
-        }
-
-        buildGoogleApiClient();
 
         // Callback registration
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
@@ -176,13 +170,25 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             @Override
             public void onClick(View v) {
 
-
                 onSignInClicked();
             }
         });
 
-    }
+        PackageManager pm = getPackageManager();
+        if(pm.hasSystemFeature(PackageManager.FEATURE_LOCATION)){
+            if(pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_NETWORK) || pm.hasSystemFeature(PackageManager.FEATURE_LOCATION_GPS)){
+                callLocationApi = true;
+            }
+        }
 
+        if(callLocationApi){
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() gps/network feature available");
+            buildLocationGoogleApiClient();
+        }
+        else{
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() location feature not available");
+        }
+    }
 
 
     private void onSignInClicked() {
@@ -190,14 +196,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         // attempt to resolve any errors that occur.
 
         if(Utility.isInternetExist()) {
+            if (mGoogleApiClient == null){
+                buildGoogleApiClient();
+            }
 
-            mShouldResolve = true;
-
-            Log.d("google", "sign in button clicked");
-
-            if (mGoogleApiClient.isConnected()) {
+            if(mGoogleApiClient.isConnected()) {
                 Log.d("google", "already connected");
-
                 pdialog = new ProgressDialog(activityContext);
                 pdialog.setCancelable(true);
                 pdialog.setCanceledOnTouchOutside(false);
@@ -206,20 +210,14 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
                 GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
                 googleVerifyTask.execute();
-            } else
+            }
+            else {
                 Log.d("google", "not connected");
-
-
-            mGoogleApiClient.connect();
+                mShouldResolve = true;
+                mGoogleApiClient.connect();
+            }
         }
-
-
-        // Show a message to the user that we are signing in.
-       // mStatusTextView.setText(R.string.signing_in);
-
-
     }
-
 
     void resetFields(){
         displayName = "";
@@ -327,15 +325,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     /*********** Location Detection methods ****************/
 
     protected void createLocationRequest() {
+        //mLocationGoogleApiClient is not null and is connected
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(1000);
+        mLocationRequest.setFastestInterval(1000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
-        if(callLocationApi) {
-            LocationRequest mLocationRequest = new LocationRequest();
-            mLocationRequest.setInterval(1000);
-            mLocationRequest.setFastestInterval(1000);
-            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-        }
+        LocationServices.FusedLocationApi.requestLocationUpdates(mLocationGoogleApiClient, mLocationRequest, this);
     }
 
     @Override
@@ -343,100 +339,86 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         //override the last location by this updated current location if non-null
         if (location != null) {
             mLastLocation = location;
-            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
-                    + ", " + String.valueOf(mLastLocation.getLongitude()));
+            if (Config.SHOWLOG)
+                Log.d("DEBUG_LOCATION", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
+                        + ", " + String.valueOf(mLastLocation.getLongitude()));
 
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+            LocationServices.FusedLocationApi.removeLocationUpdates(mLocationGoogleApiClient, this);
         }
     }
 
     @Override
     public void onStart(){
         super.onStart();
+        if(mLocationGoogleApiClient != null) {
+            mLocationGoogleApiClient.connect();
+        }
+    }
 
-        Log.d(TAG, "calling onStart()");
-        if(mGoogleApiClient != null) {
-            if(Utility.isInternetExistWithoutPopup())
-                mGoogleApiClient.connect();
+    @Override
+    public void onStop(){
+        super.onStop();
+        if(mLocationGoogleApiClient != null) {
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onStop() client disconnect");
+            if(mLocationGoogleApiClient.isConnected()) {
+                LocationServices.FusedLocationApi.removeLocationUpdates(mLocationGoogleApiClient, this);
+            }
+            mLocationGoogleApiClient.disconnect();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG, "calling onDestroy()");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onDestroy() client disconnect");
         if(mGoogleApiClient != null)
             mGoogleApiClient.disconnect();
     }
 
-    @Override
-    public void onStop(){
-        super.onStop();
-        Log.d(TAG, "calling onStop()");
-       /* if(mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
-        }
-        */
-
+    protected synchronized void buildLocationGoogleApiClient() {
+        mLocationGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addApi(LocationServices.API)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
     }
 
     protected synchronized void buildGoogleApiClient() {
-
-        Log.d(TAG, "Initializing api client build");
-
-        if (!callLocationApi)
-        {
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
-                    .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
-                    .addApi(Plus.API)
-                    .build();
-        }
-        else {
-            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "buildGoogleApiClient() entered");
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(LocationServices.API)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
-                    .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
-                    .addApi(Plus.API)
-                    .build();
-        }
-
-
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
+                .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+                .addApi(Plus.API)
+                .build();
     }
 
     @Override
     public void onConnected(Bundle connectionHint) {
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnected() entered, first take last known location, just in case that gps location is not received");
 
-        Log.d(TAG, "calling onConnected");
+        if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            mShouldResolve = false;
 
-        mShouldResolve = false;
+            pdialog = new ProgressDialog(activityContext);
+            pdialog.setCancelable(true);
+            pdialog.setCanceledOnTouchOutside(false);
+            pdialog.setMessage("Please Wait...");
+            pdialog.show();
 
-        pdialog = new ProgressDialog(activityContext);
-        pdialog.setCancelable(true);
-        pdialog.setCanceledOnTouchOutside(false);
-        pdialog.setMessage("Please Wait...");
-        pdialog.show();
-
-        GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
-        googleVerifyTask.execute();
-
-        if(callLocationApi) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
-                if (Config.SHOWLOG)
-                    Log.d("DEBUG_LOCATION", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
-                            + ", " + String.valueOf(mLastLocation.getLongitude()));
-            }
-
-            createLocationRequest();
+            GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
+            googleVerifyTask.execute();
         }
 
+        if(mLocationGoogleApiClient != null && mLocationGoogleApiClient.isConnected()) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mLocationGoogleApiClient);
+            if (mLastLocation != null) {
+                if (Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnected() entered, last known location=" + String.valueOf(mLastLocation.getLatitude())
+                        + ", " + String.valueOf(mLastLocation.getLongitude()));
+            }
+
+            createLocationRequest(); //mLocationGoogleApiClient is not null and is connected
+        }
     }
 
     @Override
@@ -445,7 +427,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         // No client is connected
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnectionFailed()");
 
-        Log.d(TAG, "calling onConnectionFailed");
+        if(mGoogleApiClient == null){//this failure was for mLocationGoogleApiClient, so ignore
+            return;
+        }
+
+        if(mGoogleApiClient.isConnected()){ //this failure was for mLocationGoogleApiClient, so ignore
+            return;
+        }
 
         if (!mIsResolving && mShouldResolve) {
             if (connectionResult.hasResolution()) {
@@ -453,7 +441,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     connectionResult.startResolutionForResult(this, RC_SIGN_IN);
                     mIsResolving = true;
                 } catch (IntentSender.SendIntentException e) {
-                    Log.e(TAG, "Could not resolve ConnectionResult.", e);
                     mIsResolving = false;
                     mGoogleApiClient.connect();
                 }
@@ -463,9 +450,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 //showErrorDialog(connectionResult);
                 Utility.toast("Can't resolve error. Try Again !");
             }
-        } else {
-            // Show the signed-out UI
-            //  showSignedOutUI();
         }
     }
 
@@ -477,17 +461,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         Log.d(TAG, "calling onConnectionSuspended");
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onConnectionSuspended()");
 
-    }
-
-    @Override
-    public void onPause(){
-
-        Log.d(TAG, "calling onPause()");
-        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION", "onPause() called");
-        if(mGoogleApiClient != null && mGoogleApiClient.isConnected() && callLocationApi) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-        super.onPause();
     }
 
     /********* end of Location Detection methods ******/
@@ -736,8 +709,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 }
             }
 
-
-
         }
     }
 
@@ -937,9 +908,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         protected void onPostExecute(Void result) {
             Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess + ", flag=" + flag);
 
-
-
-
             if(taskSuccess){
                 SessionManager session = new SessionManager(Application.getAppContext());
                 ParseUser user = ParseUser.getCurrentUser();
@@ -967,10 +935,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     PhoneSignUpVerfication.PostSignUpTask postSignUpTask = new PhoneSignUpVerfication.PostSignUpTask(user, pdialog);
                     postSignUpTask.execute();
                 }
-
-
-
-
             }
 
             if(!taskSuccess){
@@ -989,13 +953,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 if(pdialog != null){
                     pdialog.dismiss();
                 }
-
             }
-
-
 
         }
     }
-
 
 }
