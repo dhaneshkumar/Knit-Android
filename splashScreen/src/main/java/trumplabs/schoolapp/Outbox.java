@@ -559,6 +559,7 @@ public class Outbox extends Fragment {
 
             } else {
                 holder.imgmsgview.setVisibility(View.GONE);
+                holder.imgmsgview.setTag(""); //reset to empty
             }
 
             //if a) first msg, b) is a teacher & c) already not shown

@@ -723,6 +723,7 @@ public class Messages extends Fragment {
             } else
             {
                 holder.imgframelayout.setVisibility(View.GONE);
+                holder.imgmsgview.setTag(""); //reset to empty
             }
 
             //if a) first msg, b) already not shown, c) either non-teacher or fragment # visible is 2 (ie. Messages tab)

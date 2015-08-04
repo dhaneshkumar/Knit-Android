@@ -583,6 +583,8 @@ public class SendMessage extends MyActionBarActivity  {
                 msgtxtcontent.setVisibility(View.VISIBLE);
             }
             timestampview.setText(timestampmsg);
+
+            //for text messages when recycled
             uploadprogressbar.setVisibility(View.GONE);
 
             // /////////////////////////////////////////////
@@ -658,6 +660,7 @@ public class SendMessage extends MyActionBarActivity  {
                 }
             } else {
                 imgmsgview.setVisibility(View.GONE);
+                imgmsgview.setTag(""); //reset to empty
             }
 
             row.setBackgroundColor(getResources().getColor(R.color.transparent));
