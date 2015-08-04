@@ -2,72 +2,100 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
+    android:padding="@dimen/signup_margin"
     android:layout_width="match_parent"
     android:background="@color/lightbackgroundcolor"
     android:layout_height="match_parent">
-
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="208dp"
-        android:layout_marginTop="32dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_height="48dp" />
-
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
-        android:layout_width="200dp"
-        android:paddingTop="12dp"
-        android:paddingBottom="12dp"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="16dp"
-        android:layout_marginBottom="30dp" />
-
-    <TextView
-        android:id="@+id/internetbar"
-        android:layout_width="match_parent"
-        android:layout_height="24dp"
-        android:background="@color/internetbarcolor"
-        android:gravity="center"
-        android:text="No internet Connection"
-        android:textColor="@color/white"
-        android:visibility="gone" />
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:padding="@dimen/signup_margin"
-        android:background="@color/lightbackgroundcolor"
-        android:layout_height="match_parent">
-
-
-    <EditText
-        android:id="@+id/phone_id"
-        android:layout_width="200dp"
-        android:layout_height="wrap_content"
-        android:hint="10-digit Mobile Number"
-        android:layout_gravity="center_horizontal"
-        android:background="@drawable/apptheme_edit_text_holo_light"
+        android:background="@color/white"
         android:paddingLeft="16dp"
-        android:paddingRight="1dp"
-        android:inputType="number"
-        android:maxLength="10"
-        android:textColor="@color/black"
-        android:textSize="16sp" />
+        android:paddingRight="16dp"
+        android:paddingBottom="32dp"
+        android:paddingTop="20dp"
+        android:layout_height="wrap_content">
 
-    <TextView
-        android:id="@+id/oldLogin"
-        android:layout_width="wrap_content"
-        android:text="Are you an old user, \n Login via Email"
-        android:paddingTop="16dp"
-        android:gravity="center"
-        android:layout_gravity="right"
-        android:layout_marginTop="32dp"
-        android:textColor="@color/buttoncolor"
-        android:paddingBottom="16dp"
-        android:paddingLeft="16dp"
-        android:textSize="14sp"
-        android:layout_height="wrap_content" />
-</LinearLayout>
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/sign_in_button"
+            android:layout_width="match_parent"
+            android:layout_gravity="center_horizontal"
+            android:layout_height="54dp" />
+
+        <com.facebook.login.widget.LoginButton
+            android:id="@+id/login_button"
+            android:layout_width="match_parent"
+            android:paddingTop="14dp"
+            android:paddingBottom="14dp"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="36dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="3"
+                android:background="#dddddd"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="OR"
+                android:gravity="center"
+                android:textSize="16sp"
+                />
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="3"
+                android:background="#dddddd"
+                />
+        </LinearLayout>
+
+
+
+
+        <EditText
+            android:id="@+id/phone_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter 10-digit Mobile Number"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/apptheme_edit_text_holo_light"
+            android:paddingLeft="16dp"
+            android:layout_marginTop="30dp"
+            android:paddingRight="1dp"
+            android:inputType="number"
+            android:maxLength="10"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/oldLogin"
+            android:layout_width="wrap_content"
+            android:text="Are you an old user, \n Login via Email"
+            android:paddingTop="16dp"
+            android:gravity="center"
+            android:layout_gravity="right"
+            android:layout_marginTop="32dp"
+            android:textColor="@color/buttoncolor"
+            android:paddingBottom="16dp"
+            android:paddingLeft="16dp"
+            android:textSize="14sp"
+            android:layout_height="wrap_content" />
     </LinearLayout>
+</LinearLayout>
