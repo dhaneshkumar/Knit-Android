@@ -111,7 +111,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         LoginButton loginButton = (LoginButton) findViewById(R.id.login_button);
         SignInButton signInButton = (SignInButton) findViewById(R.id.sign_in_button);
 
-        setGooglePlusButtonText(signInButton, "Log in with Google +");
+        setGooglePlusButtonText(signInButton, "Log in with Google");
         loginButton.setReadPermissions(Arrays.asList("email"));
 
         getSupportActionBar().setTitle("Sign Up");

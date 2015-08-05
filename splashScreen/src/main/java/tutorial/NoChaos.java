@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import loginpages.PhoneSignUpName;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Constants;
 
 /**
  * Created by Dhanesh on 1/17/2015.
@@ -32,7 +33,16 @@ public class NoChaos extends Fragment {
         TextView no_chaos_skip = (TextView) getActivity().findViewById(R.id.no_chaos_skip);
         LinearLayout no_chaos_next = (LinearLayout) getActivity().findViewById(R.id.no_chaos_next);
 
+        TextView no_chaos_content = (TextView) getActivity().findViewById(R.id.no_chaos_content);
+
+
+
         final String role = getActivity().getIntent().getExtras().getString("role");
+
+        if(role.equals(Constants.PARENT))
+            no_chaos_content.setText("Parents can either like the message or express confusion. That way, never lose track of real information.");
+        else if(role.equals(Constants.STUDENT))
+            no_chaos_content.setText("Students can either like the message or express confusion. That way, never lose track of real information.");
 
         no_chaos_skip.setOnClickListener(new View.OnClickListener() {
             @Override

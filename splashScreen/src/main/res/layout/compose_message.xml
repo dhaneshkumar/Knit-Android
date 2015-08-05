@@ -70,13 +70,19 @@
             android:background="#e1e1e1"
             />
 
-        <ListView
+        <library.ExpandableListView
             android:id="@+id/classeslistview"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone"
             />
 
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/contentLayout"
+    android:orientation="vertical"
+    >
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -130,6 +136,7 @@
                 android:layout_marginLeft="16dp"
                 android:background="@drawable/cancel"
                 />
+        </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
