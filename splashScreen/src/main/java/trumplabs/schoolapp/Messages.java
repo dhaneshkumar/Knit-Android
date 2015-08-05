@@ -684,6 +684,7 @@ public class Messages extends Fragment {
                 File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imageName);
                 holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
                 holder.imgframelayout.setTag(imgFile.getAbsolutePath());
+                holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
                 if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
@@ -722,6 +723,7 @@ public class Messages extends Fragment {
             } else
             {
                 holder.imgframelayout.setVisibility(View.GONE);
+                holder.imgmsgview.setTag(""); //reset to empty
             }
 
             //if a) first msg, b) already not shown, c) either non-teacher or fragment # visible is 2 (ie. Messages tab)
