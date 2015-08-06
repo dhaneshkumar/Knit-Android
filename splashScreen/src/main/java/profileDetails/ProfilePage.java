@@ -133,7 +133,15 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         if (!UtilString.isBlank(name))
             name_textView.setText(name);
 
-        phone_textView.setText(userId);
+
+
+        if(!UtilString.isBlank(userId)) {
+            if (userId.length() == 10 || userId.contains("@"))
+                phone_textView.setText(userId);
+            else
+                editPhone.setVisibility(View.GONE);
+        }
+
 
     /*
      * set Profile Pic.

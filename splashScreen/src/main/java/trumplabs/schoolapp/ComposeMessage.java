@@ -26,11 +26,9 @@ import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.io.File;
@@ -40,6 +38,7 @@ import java.util.List;
 
 import BackGroundProcesses.MemberList;
 import baseclasses.MyActionBarActivity;
+import library.ExpandableListView;
 import trumplab.textslate.R;
 import utility.Config;
 import utility.Tools;
@@ -66,6 +65,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     public static ImageView sendimgview;
     private ImageView removebutton;
     private Typeface typeface;
+    private LinearLayout contentLayout;
 
     public static String source = Constants.ComposeSource.OUTSIDE;
                                 //"OUTSIDE" i.e from MainActivity
@@ -88,7 +88,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         setContentView(R.layout.compose_message);
 
         sendTo = (RelativeLayout) findViewById(R.id.sendTo);
-        final ListView classeslistview = (ListView) findViewById(R.id.classeslistview);
+        final ExpandableListView classeslistview = (ExpandableListView) findViewById(R.id.classeslistview);
         selectedClassTV = (WebView) findViewById(R.id.selectedClass);
         selectedClassTV.loadUrl("file:///android_asset/selectClass.html");
         selectedClassTV.getSettings().setJavaScriptEnabled(true);
@@ -100,6 +100,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         sendimgview = (ImageView) findViewById(R.id.attachedimg);
         removebutton = (ImageView) findViewById(R.id.removebutton);
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+        contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setTitle("New Message");
@@ -200,6 +201,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                     selectedClassTV.setVisibility(View.GONE);
                     classTextView.setVisibility(View.VISIBLE);
                     doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_mode_edit));
+                    contentLayout.setVisibility(View.VISIBLE);
 
                 }
                 else {
@@ -210,6 +212,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                        selectedClassTV.setVisibility(View.VISIBLE);
                        classTextView.setVisibility(View.GONE);
                        doneImageView.setBackgroundDrawable(getResources().getDrawable(R.drawable.ic_action_tick));
+                       contentLayout.setVisibility(View.GONE);
 
                    }
                     else {
@@ -226,6 +229,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
         SelectClassAdapter selectClassAdapter = new SelectClassAdapter();
         classeslistview.setAdapter(selectClassAdapter);
+        classeslistview.setExpanded(true);
 
         //on click show full image
         sendimgview.setOnClickListener(new View.OnClickListener() {
