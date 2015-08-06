@@ -175,11 +175,14 @@ public class Utility extends MyActionBarActivity {
         toast(str, false); //by default user shouldn't be null while showing toast
     }
 
+    public static void toast(String str, boolean isNullUserOK) {
+        toast(str, isNullUserOK, 17);
+    }
     /*
         @param str Content to show as toast
         @param isNullUserOK whether while showing this toast, null user is acceptable e.g during signup/login process
      */
-    public static void toast(String str, boolean isNullUserOK) {
+    public static void toast(String str, boolean isNullUserOK, int fontSize) {
 
         if(ParseUser.getCurrentUser() == null && !isNullUserOK){
             if(Config.SHOWLOG) Log.d("__A", "toast : parseUser null, hence ignoring content=" + str);
@@ -217,7 +220,7 @@ public class Utility extends MyActionBarActivity {
         TextView tv = new TextView(Application.getAppContext());
         // set the TextView properties like color, size etc
         tv.setTextColor(Color.WHITE);
-        tv.setTextSize(17);
+        tv.setTextSize(fontSize);
         tv.setPadding(50, 20, 50, 20);
         tv.setLayoutParams(new LayoutParams(width, height/8));
         tv.setGravity(Gravity.CENTER);

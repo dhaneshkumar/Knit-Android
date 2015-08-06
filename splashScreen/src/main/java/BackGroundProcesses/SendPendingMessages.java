@@ -2,7 +2,6 @@ package BackGroundProcesses;
 
 import android.util.Log;
 
-import com.parse.Parse;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -16,7 +15,6 @@ import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.ComposeMessage;
 import trumplabs.schoolapp.ComposeMessageHelper;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 import trumplabs.schoolapp.Outbox;
 import trumplabs.schoolapp.SendMessage;
 import utility.Config;
@@ -225,10 +223,10 @@ public class SendPendingMessages {
                                     Utility.toast("Notification Sent");
                                 }
                                 else if (result == 200) { //class has been deleted
-                                    Utility.toast("Class " + className + " has already been deleted");
+                                    Utility.toast("Class " + className + " has already been deleted", false, 15);
                                 }
                                 else if (result == 201) { //no subscribers in class
-                                    Utility.toast("You can't send message to class " + className + " as it has no members");
+                                    Utility.toast("You can't send message to class " + className + " as it has no members", false, 15);
                                 }
                             }
                         });
