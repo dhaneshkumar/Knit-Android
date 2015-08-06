@@ -430,6 +430,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             GoogleVerifyTask googleVerifyTask = new GoogleVerifyTask(false);
             googleVerifyTask.execute();
         }
+        else if(mGoogleApiClient == null){
+            Log.d("google", "null client");
+        }
 
         if(mLocationGoogleApiClient != null && mLocationGoogleApiClient.isConnected()) {
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mLocationGoogleApiClient);

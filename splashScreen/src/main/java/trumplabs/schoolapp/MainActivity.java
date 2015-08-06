@@ -35,7 +35,6 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.localytics.android.Localytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;

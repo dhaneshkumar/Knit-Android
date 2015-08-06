@@ -6,7 +6,7 @@ public class Config {
   /*
     set this flag to false before release to disable log statements(which use this flag as guard)
    */
-    public static final boolean SHOWLOG = true;
+    public static final boolean SHOWLOG = false;
 
   /*
    * Parse Configurations
@@ -36,13 +36,13 @@ public class Config {
   4. Set flag to allow to join his own class.  # false : Knit & #true for testing
    */
   //flag to show teacher can join his own class or not
-  public static final boolean CAN_JOIN_OWN_CLASS = true;
+  public static final boolean CAN_JOIN_OWN_CLASS = false;
 
   /*
   5. Set flag to detect invalid number.  #true : knit & #false for testing
     Note now invalid number detection is now local i.e numbers must be 10 digit with 1st digit >= 7
    */
-  public static final boolean DETECT_INVALID_NUMBER = false;
+  public static final boolean DETECT_INVALID_NUMBER = true;
 
 /*
   6. Set alarm configuration like repeat duration, notification stale period - used in AlarmTrigger, NotificationAlarmReceiver
