@@ -69,14 +69,14 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     static String phoneNumber = "";
 
-    static GoogleApiClient mGoogleApiClient = null;
-    static GoogleApiClient mLocationGoogleApiClient = null;
+    GoogleApiClient mGoogleApiClient = null;
+    GoogleApiClient mLocationGoogleApiClient = null;
     boolean callLocationApi = false;
 
     static Location mLastLocation = null;
     CallbackManager callbackManager;
     static ProgressDialog pdialog;
-    static Context activityContext;
+    Context activityContext;
 
     /* Request code used to invoke sign in user interactions. */
     private static final int RC_SIGN_IN = 0;
@@ -89,6 +89,8 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
 
     protected void onCreate(android.os.Bundle savedInstanceState) {
+        if(Config.SHOWLOG) Log.d("DEBUG_PHONE_LOGIN", "onCreate called");
+
         super.onCreate(savedInstanceState);
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
@@ -247,6 +249,8 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onActivityResult : resultCode=" + resultCode);
+
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == RC_SIGN_IN) {
@@ -255,6 +259,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                 mShouldResolve = false;
             }
 
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "mIsResolving=false");
             mIsResolving = false;
             mGoogleApiClient.connect();
         }
@@ -366,7 +371,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
     public void onConnectionFailed(ConnectionResult connectionResult) {
         // At least one of the API client connect attempts failed
         // No client is connected
-        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnectionFailed()");
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnectionFailed() " + connectionResult);
 
         if(mGoogleApiClient == null){//this failure was for mLocationGoogleApiClient, so ignore
             return;
@@ -377,7 +382,9 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         }
 
         if (!mIsResolving && mShouldResolve) {
+            if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "resolving enter");
             if (connectionResult.hasResolution()) {
+                if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "hasResolution() true");
                 try {
                     connectionResult.startResolutionForResult(this, RC_SIGN_IN);
                     mIsResolving = true;
@@ -392,6 +399,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                 Utility.toast("Can't resolve error. Try Again !");
             }
         }
+        if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnectionFailed() " + connectionResult);
     }
 
     @Override

@@ -66,7 +66,7 @@ import utility.Utility;
  */
 public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
-    static Context activityContext;
+    Context activityContext;
 
     EditText displayNameET;
     EditText phoneNumberET;
@@ -74,13 +74,14 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     static String role = "";
     static String displayName = "";
     static String phoneNumber = "";
+    static Location mLastLocation = null;
+
     static ProgressDialog pdialog;
 
-    static GoogleApiClient mGoogleApiClient = null;
-    static GoogleApiClient mLocationGoogleApiClient = null;
+    GoogleApiClient mGoogleApiClient = null;
+    GoogleApiClient mLocationGoogleApiClient = null;
     boolean callLocationApi = false;
 
-    static Location mLastLocation = null;
     CallbackManager callbackManager;
     static String TAG = "google_login";
 
