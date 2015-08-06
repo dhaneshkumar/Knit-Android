@@ -86,11 +86,11 @@ public class Application extends android.app.Application {
 
 
       // Register LocalyticsActivityLifecycleCallbacks
-      int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+      /*int currentapiVersion = android.os.Build.VERSION.SDK_INT;
       if (currentapiVersion >= 14) {
           registerActivityLifecycleCallbacks(
                   new LocalyticsActivityLifecycleCallbacks(this));
-      }
+      }*/
 
   }
   

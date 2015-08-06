@@ -461,7 +461,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         // If you're using Localytics Push Messaging
-        Localytics.registerPush("76237");
+        //Localytics.registerPush("76237");
 
     }
 
