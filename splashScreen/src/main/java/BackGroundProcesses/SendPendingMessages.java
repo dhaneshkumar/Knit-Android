@@ -228,7 +228,7 @@ public class SendPendingMessages {
                                     Utility.toast("Class " + className + " has already been deleted");
                                 }
                                 else if (result == 201) { //no subscribers in class
-                                    Utility.toast("Class " + className + " has no members");
+                                    Utility.toast("You can't send message to class " + className + " as it has no members");
                                 }
                             }
                         });

@@ -270,7 +270,9 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
 
         switch (item.getItemId()) {
             case android.R.id.home:
-                Tools.hideKeyboard(ComposeMessage.this);
+                if(ComposeMessage.this != null) {
+                    Tools.hideKeyboard(ComposeMessage.this);
+                }
                 onBackPressed();
                 break;
 
@@ -281,8 +283,10 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 break;
 
             case R.id.send:
-                Tools.hideKeyboard(ComposeMessage.this);
-                checkTime();
+                if(ComposeMessage.this != null) {
+                    Tools.hideKeyboard(ComposeMessage.this);
+                    checkTime();
+                }
                 break;
 
             default:

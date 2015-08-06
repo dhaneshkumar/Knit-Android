@@ -196,11 +196,17 @@ public class ComposeMessageHelper {
         List<String> classcodes = new ArrayList<>();
         List<String> classnames = new ArrayList<>();
         List<Boolean> checkmemberFlagArray = new ArrayList<>();
+
+        boolean CHECK_MEMBER_FLAG = false;
+        if(batch.size() == 1){
+            CHECK_MEMBER_FLAG = true; //only when sending to one class
+        }
+
         for(int i=0; i<batch.size(); i++){
             String code = batch.get(i).getString("code");
             classcodes.add(code);
             classnames.add(batch.get(i).getString("name"));
-            checkmemberFlagArray.add(MemberList.getMemberCount(code) < 1);
+            checkmemberFlagArray.add(CHECK_MEMBER_FLAG && MemberList.getMemberCount(code) < 1);
         }
 
         //if live, then only show "sent" toast
@@ -270,18 +276,18 @@ public class ComposeMessageHelper {
                             if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "setting Created_groups in the user");
                             user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
                             user.pin();
+
+                            List<String> deletedClasses = new ArrayList<>();
+                            for(ParseObject failedMsg : failedMessages){
+                                deletedClasses.add(failedMsg.getString(Constants.GroupDetails.CODE));
+                            }
+
+                            //Notify created classrooms adapter
+                            Classrooms.refreshCreatedClassrooms(deletedClasses);
                         }
                     } catch (ParseException err) {
                         err.printStackTrace();
                     }
-
-                    List<String> deletedClasses = new ArrayList<>();
-                    for(ParseObject failedMsg : failedMessages){
-                        deletedClasses.add(failedMsg.getString(Constants.GroupDetails.CODE));
-                    }
-
-                    //Notify created classrooms adapter
-                    Classrooms.refreshCreatedClassrooms(deletedClasses);
 
                     //unpin the message,
                     ParseObject.unpinAll(failedMessages);
@@ -362,11 +368,17 @@ public class ComposeMessageHelper {
         List<String> classcodes = new ArrayList<>();
         List<String> classnames = new ArrayList<>();
         List<Boolean> checkmemberFlagArray = new ArrayList<>();
+
+        boolean CHECK_MEMBER_FLAG = false;
+        if(batch.size() == 1){
+            CHECK_MEMBER_FLAG = true; //only when sending to one class
+        }
+
         for(int i=0; i<batch.size(); i++){
             String code = batch.get(i).getString("code");
             classcodes.add(code);
             classnames.add(batch.get(i).getString("name"));
-            checkmemberFlagArray.add(MemberList.getMemberCount(code) < 1);
+            checkmemberFlagArray.add(CHECK_MEMBER_FLAG && MemberList.getMemberCount(code) < 1);
         }
 
         /* image file work */
@@ -466,18 +478,17 @@ public class ComposeMessageHelper {
                         if (user != null && updatedCreatedGroups != null) {
                             user.put(Constants.CREATED_GROUPS, updatedCreatedGroups);
                             user.pin();
+
+                            List<String> deletedClasses = new ArrayList<>();
+                            for(ParseObject failedMsg : failedMessages){
+                                deletedClasses.add(failedMsg.getString(Constants.GroupDetails.CODE));
+                            }
+                            //Notify created classrooms adapter
+                            Classrooms.refreshCreatedClassrooms(deletedClasses);
                         }
                     } catch (ParseException err) {
                         err.printStackTrace();
                     }
-
-                    List<String> deletedClasses = new ArrayList<>();
-                    for(ParseObject failedMsg : failedMessages){
-                        deletedClasses.add(failedMsg.getString(Constants.GroupDetails.CODE));
-                    }
-
-                    //Notify created classrooms adapter
-                    Classrooms.refreshCreatedClassrooms(deletedClasses);
 
                     //unpin the message,
                     ParseObject.unpinAll(failedMessages);
