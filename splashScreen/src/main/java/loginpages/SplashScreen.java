@@ -44,6 +44,21 @@ public class SplashScreen extends MyActionBarActivity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.logosplash);
 
+      /*  FacebookSdk.sdkInitialize(getApplicationContext());
+        AppLinkData.fetchDeferredAppLinkData(getApplicationContext(), Config.FB_APP_ID,
+                new AppLinkData.CompletionHandler() {
+                    @Override
+                    public void onDeferredAppLinkDataFetched(AppLinkData appLinkData) {
+                        if (appLinkData != null) {
+                            Bundle bundle = appLinkData.getArgumentBundle();
+                            Log.i("DEBUG_FACEBOOK_SDK", "AppLinkData : " + bundle.toString());
+                        } else {
+                            Log.i("DEBUG_FACEBOOK_SDK", "AppLinkData is Null");
+                        }
+                    }
+                });*/
+
+
     logoLayout = (LinearLayout) findViewById(R.id.logoLayout);
     getSupportActionBar().hide();
 

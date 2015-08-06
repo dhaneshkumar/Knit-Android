@@ -6,7 +6,6 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.localytics.android.*;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseObject;

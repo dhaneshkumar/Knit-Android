@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="trumplab.textslate"
-    android:versionCode="31"
-    android:versionName="4.1.2.1.1">
+    android:versionCode="33"
+    android:versionName="4.1.3">
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="22" />
@@ -84,7 +84,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <!-- Accepts URIs that begin with "example://gizmos” -->
+                <!-- Accepts URIs that begin with "knit101://index” -->
                 <data android:scheme="knit101"
                       android:host="index" />
 
@@ -210,6 +210,7 @@
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
+
 
     </application>
 
