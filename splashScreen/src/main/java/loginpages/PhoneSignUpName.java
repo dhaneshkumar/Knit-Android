@@ -364,7 +364,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                 Log.d("DEBUG_LOCATION", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
                         + ", " + String.valueOf(mLastLocation.getLongitude()));
 
-            LocationServices.FusedLocationApi.removeLocationUpdates(mLocationGoogleApiClient, this);
+            if(mLocationGoogleApiClient != null && mLocationGoogleApiClient.isConnected()){
+                LocationServices.FusedLocationApi.removeLocationUpdates(mLocationGoogleApiClient, this);
+            }
         }
     }
 

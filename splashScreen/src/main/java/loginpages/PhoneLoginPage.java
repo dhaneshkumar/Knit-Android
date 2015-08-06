@@ -288,7 +288,9 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                 Log.d("DEBUG_LOCATION_LOGIN", "onLocationChanged() : location : " + String.valueOf(mLastLocation.getLatitude())
                         + ", " + String.valueOf(mLastLocation.getLongitude()));
 
-            LocationServices.FusedLocationApi.removeLocationUpdates(mLocationGoogleApiClient, this);
+            if(mLocationGoogleApiClient != null && mLocationGoogleApiClient.isConnected()){
+                LocationServices.FusedLocationApi.removeLocationUpdates(mLocationGoogleApiClient, this);
+            }
         }
     }
 
