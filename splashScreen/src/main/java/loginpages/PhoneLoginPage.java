@@ -29,6 +29,7 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
@@ -62,6 +63,7 @@ import utility.Utility;
 
 public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
+    boolean defaultAccountClearedOnce = true;
     EditText phoneNumberET;
     TextView oldLoginTV;
 
@@ -335,8 +337,8 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
-                .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+                .addScope(new Scope("email"))
+                .addScope(new Scope(Scopes.PROFILE))
                 .addApi(Plus.API)
                 .build();
     }
@@ -346,6 +348,13 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
         if(Config.SHOWLOG) Log.d("DEBUG_LOCATION_LOGIN", "onConnected() entered, first take last known location, just in case that gps location is not received");
 
         if(mGoogleApiClient != null && mGoogleApiClient.isConnected()) {
+            if(!defaultAccountClearedOnce){
+                mShouldResolve = true;
+                mGoogleApiClient.clearDefaultAccountAndReconnect();
+                defaultAccountClearedOnce = true;
+                return;
+            }
+
             mShouldResolve = false;
 
             pdialog = new ProgressDialog(activityContext);

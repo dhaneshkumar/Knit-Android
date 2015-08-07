@@ -27,6 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Scope;
 import com.google.android.gms.location.LocationServices;
@@ -190,8 +191,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 .addApi(LocationServices.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
-                .addScope(new Scope("https://www.googleapis.com/auth/userinfo.email"))
-                .addScope(new Scope("https://www.googleapis.com/auth/plus.login"))
+                .addScope(new Scope("email"))
+                .addScope(new Scope(Scopes.PROFILE))
                 .addApi(Plus.API)
                 .build();
     }
