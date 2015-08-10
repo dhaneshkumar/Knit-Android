@@ -16,6 +16,7 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 import utility.Config;
+import com.localytics.android.*;
 
 public class Application extends android.app.Application {
 	
@@ -85,12 +86,11 @@ public class Application extends android.app.Application {
 
 
       // Register LocalyticsActivityLifecycleCallbacks
-      /*int currentapiVersion = android.os.Build.VERSION.SDK_INT;
+      int currentapiVersion = android.os.Build.VERSION.SDK_INT;
       if (currentapiVersion >= 14) {
           registerActivityLifecycleCallbacks(
                   new LocalyticsActivityLifecycleCallbacks(this));
-      }*/
-
+      }
   }
   
   

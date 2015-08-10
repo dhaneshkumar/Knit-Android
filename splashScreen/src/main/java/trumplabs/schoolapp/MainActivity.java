@@ -35,6 +35,7 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.github.amlcurran.showcaseview.ShowcaseView;
+import com.localytics.android.Localytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -460,7 +461,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         FacebookSdk.sdkInitialize(getApplicationContext());
 
         // If you're using Localytics Push Messaging
-        //Localytics.registerPush("76237");
+        Localytics.registerPush("110521105118");
 
     }
 
