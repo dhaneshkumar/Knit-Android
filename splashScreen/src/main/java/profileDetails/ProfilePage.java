@@ -387,8 +387,10 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 nameParams.setMargins(30, 30, 30, 30);
 
                 final EditText nameInput = new EditText(this);
+                nameInput.setSingleLine(true);
                 nameInput.setText(name);
                 nameInput.setTextColor(Color.BLACK);
+
                 nameLayout.addView(nameInput, nameParams);
                 nameDialog.setView(nameLayout);
                 nameDialog.setPositiveButton("Ok", new DialogInterface.OnClickListener() {

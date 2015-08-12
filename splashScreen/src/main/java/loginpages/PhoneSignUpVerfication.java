@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -87,13 +88,10 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
 
 
-        verificationCodeET.setOnKeyListener(new View.OnKeyListener() {
-
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-
-                if ((event.getAction() == KeyEvent.ACTION_DOWN) &&
-                        (keyCode == KeyEvent.KEYCODE_ENTER))
-                {
+        verificationCodeET.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
                     verify();
                     return true;
                 }

@@ -6,7 +6,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -38,7 +40,7 @@ public class RecommendationDialog extends DialogFragment {
     private String classCode;
     private String className;
     private String email;
-
+    EditText emailET;
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
@@ -50,8 +52,8 @@ public class RecommendationDialog extends DialogFragment {
         dialog.setCanceledOnTouchOutside(true);
         dialog.show();
 
-        final TextView send = (TextView) view.findViewById(R.id.send);
-        final EditText emailId = (EditText) view.findViewById(R.id.emailId);
+        final TextView sendTV = (TextView) view.findViewById(R.id.send);
+        emailET = (EditText) view.findViewById(R.id.emailId);
         progressLayout = (LinearLayout) view.findViewById(R.id.progresslayout);
         contentLayout = (LinearLayout) view.findViewById(R.id.recommendedlayout);
 
@@ -60,30 +62,42 @@ public class RecommendationDialog extends DialogFragment {
             className = getArguments().getString("className");
         }
 
-        send.setOnClickListener(new View.OnClickListener() {
+        emailET.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
-            public void onClick(View v) {
-                email = emailId.getText().toString();
-
-                if (UtilString.isBlank(email))
-                    Utility.toast("Enter your Email-ID");
-                else {
-                    if (Utility.isInternetExist()) {
-                        progressLayout.setVisibility(View.VISIBLE);
-                        contentLayout.setVisibility(View.GONE);
-
-                        SendInstructions sendInstructions = new SendInstructions();
-                        sendInstructions.execute();
-                    }
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    send();
+                    return true;
                 }
+                return false;
             }
         });
 
+        sendTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                send();
+            }
+        });
 
         return dialog;
     }
 
+    void send(){
+        email = emailET.getText().toString();
 
+        if (UtilString.isBlank(email))
+            Utility.toast("Enter your Email-ID");
+        else {
+            if (Utility.isInternetExist()) {
+                progressLayout.setVisibility(View.VISIBLE);
+                contentLayout.setVisibility(View.GONE);
+
+                SendInstructions sendInstructions = new SendInstructions();
+                sendInstructions.execute();
+            }
+        }
+    }
 
     class SendInstructions extends AsyncTask<Void, Void, Boolean>
     {

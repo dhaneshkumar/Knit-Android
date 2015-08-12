@@ -75,6 +75,8 @@
             android:inputType="textCapWords"
             android:textColor="@color/black"
             android:layout_marginTop="30dp"
+            android:imeOptions="actionNext"
+            android:singleLine="true"
             android:textSize="16sp" />
 
         <EditText
@@ -89,6 +91,8 @@
             android:inputType="number"
             android:maxLength="10"
             android:textColor="@color/black"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
             android:textSize="16sp" />
 
         <TextView

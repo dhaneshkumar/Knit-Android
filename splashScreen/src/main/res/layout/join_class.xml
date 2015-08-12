@@ -79,6 +79,7 @@
                 android:background="@drawable/apptheme_edit_text_holo_light"
                 android:layout_marginTop="12dp"
                 android:singleLine="true"
+                android:imeOptions="actionNext"
                 android:textColor="@color/black"
                 android:textColorHint="#8A8A8A"
                 android:textSize="14sp" />
@@ -117,6 +118,7 @@
                     android:background="@drawable/apptheme_edit_text_holo_light"
                     android:layout_marginTop="8dp"
                     android:singleLine="true"
+                    android:imeOptions="actionDone"
                     android:textColor="@color/black"
                     android:textColorHint="#8A8A8A"
                     android:textSize="14sp" />

@@ -9,8 +9,11 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
+import android.text.InputFilter;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -111,6 +114,19 @@ public class JoinClassDialog extends DialogFragment {
             childInfo.setVisibility(View.GONE);
         }
 
+        codeET.setFilters(new InputFilter[] {new InputFilter.AllCaps()}); //code in all caps
+
+        childET.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    joinAction();
+                    return true;
+                }
+                return false;
+            }
+        });
+
         userId = currentParseUser.getUsername();
         query = new Queries();
 
@@ -152,74 +168,7 @@ public class JoinClassDialog extends DialogFragment {
         joinButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                ParseUser user = ParseUser.getCurrentUser();
-                if(user == null){
-                    Utility.LogoutUtility.logout();
-                    return;
-                }
-
-                if(! role.equals(Constants.STUDENT))
-                    childName = childET.getText().toString();
-
-                if(! callerflag)
-                    code = codeET.getText().toString().trim();
-
-                //validating class code and child name
-                if ((!UtilString.isBlank(code))   && (! UtilString.isBlank(childName)) ) {
-
-                    childName = childName.trim();
-
-                    //validating code format
-                    if (code.length() != 7) {
-                        Utility.toast(WRONG_CLASS_CODE_MSG);
-                        return;
-                    }
-
-                    //hiding keyboard
-                    if(getActivity() != null)
-                    {
-                        InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                        imm.hideSoftInputFromWindow(joinButton.getWindowToken(), 0);
-                    }
-
-                    //to hide keyboard when showing dialog fragment
-                    getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-
-                    //Check CAN_JOIN_OWN_CLASS flag. If set nothing to check.
-                    //Otherwise if attempt to join a created class, then deny.
-                    if(!Config.CAN_JOIN_OWN_CLASS && role.equals(Constants.TEACHER)){
-                        List<ArrayList<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
-                        if (createdGroups != null && !createdGroups.isEmpty()) {
-                            for (int i = 0; i < createdGroups.size(); i++) {
-                                if (createdGroups.get(i).get(0).equalsIgnoreCase(code)) {
-                                    Utility.toast("You can't join your own class");
-                                    return;
-                                }
-                            }
-                        }
-                    }
-
-                    //checking for internet connection
-                    if(Utility.isInternetExist()) {
-
-                        //calling background function to join clas
-                        AddChild_Background rcb = new AddChild_Background();
-                        rcb.execute();
-
-                        //showing progress bar
-                        progressLayout.setVisibility(View.VISIBLE);
-                        contentLayout.setVisibility(View.GONE);
-
-                    }
-                }
-                else if(UtilString.isBlank(codeET.getText().toString())) {
-                    Utility.toast(WRONG_CLASS_CODE_MSG);
-                }
-                else {
-                    Utility.toast("Enter child name");
-                }
+                joinAction();
             }
         });
 
@@ -288,6 +237,75 @@ public class JoinClassDialog extends DialogFragment {
     }
 
 
+    void joinAction(){
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user == null){
+            Utility.LogoutUtility.logout();
+            return;
+        }
+
+        if(! role.equals(Constants.STUDENT))
+            childName = childET.getText().toString();
+
+        if(! callerflag)
+            code = codeET.getText().toString().trim().toUpperCase();
+
+        //validating class code and child name
+        if ((!UtilString.isBlank(code))   && (! UtilString.isBlank(childName)) ) {
+
+            childName = childName.trim();
+
+            //validating code format
+            if (code.length() != 7) {
+                Utility.toast(WRONG_CLASS_CODE_MSG);
+                return;
+            }
+
+            //hiding keyboard
+            if(getActivity() != null)
+            {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(joinButton.getWindowToken(), 0);
+            }
+
+            //to hide keyboard when showing dialog fragment
+            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+
+            //Check CAN_JOIN_OWN_CLASS flag. If set nothing to check.
+            //Otherwise if attempt to join a created class, then deny.
+            if(!Config.CAN_JOIN_OWN_CLASS && role.equals(Constants.TEACHER)){
+                List<ArrayList<String>> createdGroups = user.getList(Constants.CREATED_GROUPS);
+                if (createdGroups != null && !createdGroups.isEmpty()) {
+                    for (int i = 0; i < createdGroups.size(); i++) {
+                        if (createdGroups.get(i).get(0).equalsIgnoreCase(code)) {
+                            Utility.toast("You can't join your own class");
+                            return;
+                        }
+                    }
+                }
+            }
+
+            //checking for internet connection
+            if(Utility.isInternetExist()) {
+
+                //calling background function to join clas
+                AddChild_Background rcb = new AddChild_Background();
+                rcb.execute();
+
+                //showing progress bar
+                progressLayout.setVisibility(View.VISIBLE);
+                contentLayout.setVisibility(View.GONE);
+
+            }
+        }
+        else if(UtilString.isBlank(codeET.getText().toString())) {
+            Utility.toast(WRONG_CLASS_CODE_MSG);
+        }
+        else {
+            Utility.toast("Enter child name");
+        }
+    }
 
 
     /**

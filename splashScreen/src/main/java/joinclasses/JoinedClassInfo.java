@@ -170,6 +170,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
                 params.setMargins(30, 30, 30, 30);
 
                 final EditText input = new EditText(activityContext);
+                input.setSingleLine(true);
                 input.setText(assignedName);
                 input.setTextColor(Color.BLACK);
                 layout.addView(input, params);

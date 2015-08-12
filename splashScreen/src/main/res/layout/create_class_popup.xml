@@ -94,6 +94,7 @@
                     android:background="@drawable/apptheme_edit_text_holo_light"
                     android:layout_marginTop="16dp"
                     android:singleLine="true"
+                    android:imeOptions="actionDone"
                     android:textColor="@color/black"
                     android:textColorHint="#8A8A8A"
                     android:textSize="15sp" />

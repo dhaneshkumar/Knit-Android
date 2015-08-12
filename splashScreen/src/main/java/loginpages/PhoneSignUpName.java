@@ -12,10 +12,12 @@ import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -134,9 +136,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
+                if (Config.SHOWLOG) Log.d("D_FB_VERIF", "logged in " + AccessToken.getCurrentAccessToken());
 
-                if(AccessToken.getCurrentAccessToken() != null){
+                if (AccessToken.getCurrentAccessToken() != null) {
                     //show progress bar
                     pdialog = new ProgressDialog(activityContext);
                     pdialog.setCancelable(true);
@@ -146,31 +148,40 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
 
                     String token = AccessToken.getCurrentAccessToken().getToken();
-                    if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
+                    if (Config.SHOWLOG) Log.d("D_FB_VERIF", "access token = " + token);
 
                     String fbUserId = AccessToken.getCurrentAccessToken().getUserId();
 
                     FBVerifyTask fbVerifyTask = new FBVerifyTask(token, fbUserId, false); //isLogin = false
                     fbVerifyTask.execute();
-                }
-                else{
-                    if(Config.SHOWLOG) Log.d("D_FB_VERIF", "access token null");
+                } else {
+                    if (Config.SHOWLOG) Log.d("D_FB_VERIF", "access token null");
                 }
             }
 
             @Override
             public void onCancel() {
-                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "logged cancelled");
+                if (Config.SHOWLOG) Log.d("D_FB_VERIF", "logged cancelled");
 
             }
 
             @Override
             public void onError(FacebookException exception) {
                 exception.printStackTrace();
-                if(Config.SHOWLOG) Log.d("D_FB_VERIF", "FacebookException");
+                if (Config.SHOWLOG) Log.d("D_FB_VERIF", "FacebookException");
             }
         });
 
+        phoneNumberET.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    next();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override

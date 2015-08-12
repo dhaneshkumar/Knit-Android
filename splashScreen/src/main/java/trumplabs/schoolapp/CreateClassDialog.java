@@ -8,9 +8,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
+import android.text.InputFilter;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -43,7 +46,7 @@ public class CreateClassDialog extends DialogFragment{
     private TextView createclassbtn;
     private Queries query;
     private String className;
-    private EditText classView;
+    private EditText classNameET;
     private ParseUser user;
     private String classCode;
     private LinearLayout progressLayout;
@@ -68,7 +71,7 @@ public class CreateClassDialog extends DialogFragment{
         //Initializing gui elements
         query = new Queries();
         createclassbtn = (TextView) view.findViewById(R.id.create_button);
-        classView = (EditText) view.findViewById(R.id.classnameid);
+        classNameET = (EditText) view.findViewById(R.id.classnameid);
         progressLayout = (LinearLayout) view.findViewById(R.id.progresslayout);
         contentLayout = (LinearLayout) view.findViewById(R.id.createclasslayout);
         codeViewLayout = (LinearLayout) view.findViewById(R.id.codeViewLayout);
@@ -89,55 +92,25 @@ public class CreateClassDialog extends DialogFragment{
             }
         }
 
+        classNameET.setFilters(new InputFilter[] {new InputFilter.AllCaps()});
+        classNameET.setOnEditorActionListener(new EditText.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    createAction();
+                    return true;
+                }
+                return false;
+            }
+        });
 
         //setting create button click functionality
         createclassbtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                //typed class name
-                className = classView.getText().toString().trim();
-
-                String updatedName = className;
-
-                //Checking newly created class already exist or not
-                if (!UtilString.isBlank(className)) {
-                    if(query.checkClassNameExist(updatedName))
-                    {
-                        Utility.toast(updatedName + " class already exist");
-                        return;
-                    }
-
-                    //to hide keyboard when showing dialog fragment
-                    getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
-
-
-                    //calling creteGroup class to create new class in background
-                    if(Utility.isInternetExist()) {
-                        createGroup jg = new createGroup();
-                        jg.execute();
-
-
-                        /*
-                         * Hidding the keyboard from screen
-                         */
-
-                        if(getActivity() != null)
-                        {
-                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-                            imm.hideSoftInputFromWindow(createclassbtn.getWindowToken(), 0);
-                        }
-
-                        progressLayout.setVisibility(View.VISIBLE);
-                        contentLayout.setVisibility(View.GONE);
-                    }
-                }
-                else
-                    Utility.toast("Enter Class Name");
+                createAction();
             }
-
         });
-
 
 
         //on click code, copy code to clipboard
@@ -167,6 +140,48 @@ public class CreateClassDialog extends DialogFragment{
         });
 
         return dialog;
+    }
+
+    void createAction(){
+        //typed class name
+        className = classNameET.getText().toString().trim().toUpperCase();
+
+        String updatedName = className;
+
+        //Checking newly created class already exist or not
+        if (!UtilString.isBlank(className)) {
+            if(query.checkClassNameExist(updatedName))
+            {
+                Utility.toast(updatedName + " class already exist");
+                return;
+            }
+
+            //to hide keyboard when showing dialog fragment
+            getDialog().getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN);
+
+
+            //calling creteGroup class to create new class in background
+            if(Utility.isInternetExist()) {
+                createGroup jg = new createGroup();
+                jg.execute();
+
+
+                        /*
+                         * Hidding the keyboard from screen
+                         */
+
+                if(getActivity() != null)
+                {
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(createclassbtn.getWindowToken(), 0);
+                }
+
+                progressLayout.setVisibility(View.VISIBLE);
+                contentLayout.setVisibility(View.GONE);
+            }
+        }
+        else
+            Utility.toast("Enter Class Name");
     }
 
     private class createGroup extends AsyncTask<Void, Void, Boolean> {
