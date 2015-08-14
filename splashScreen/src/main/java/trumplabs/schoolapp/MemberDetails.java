@@ -4,14 +4,16 @@ public class MemberDetails {
   private String objectId;
   private String type;  // sms_member or app_member
   private String childName;
+  private String childId;
   public static final String SMS_MEMBER= "SMS";
   public static final String APP_MEMBER = "APP";
 
-  public MemberDetails(String objectId, String type, String childName) {
+  public MemberDetails(String objectId, String type, String childName, String childId) {
     super();
     this.objectId = objectId;
     this.type = type;
     this.childName = childName;
+    this.childId = childId;
   }
 
   public String getObjectId() {
@@ -32,6 +34,10 @@ public class MemberDetails {
 
   public String getChildName() {
     return childName;
+  }
+
+  public String getChildId() {
+    return childId;
   }
 
   public void setChildName(String childName) {

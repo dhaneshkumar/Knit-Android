@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
+import com.firebase.client.Firebase;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseObject;
@@ -49,14 +50,16 @@ public class Application extends android.app.Application {
   @Override
   public void onCreate() 
   {
+      super.onCreate();
+
       if(Config.SHOWLOG) Log.d("__A","onCreate Application, earlier applicationHandler null=" + (applicationHandler==null));
 
       applicationHandler = new Handler();
 
       globalCodegroupMap = new ConcurrentHashMap<>();
 
-    super.onCreate();
-
+      Firebase.setAndroidContext(this);
+      Firebase.getDefaultConfig().setPersistenceEnabled(true);
       FontsOverride.setDefaultFont(this, "MONOSPACE","fonts/Roboto-Regular.ttf");
 
       try {

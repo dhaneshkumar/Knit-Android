@@ -20,6 +20,10 @@ import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
+import com.firebase.client.ChildEventListener;
+import com.firebase.client.DataSnapshot;
+import com.firebase.client.Firebase;
+import com.firebase.client.FirebaseError;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -33,6 +37,8 @@ import java.util.List;
 import BackGroundProcesses.MemberList;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
+import chat.Chat;
+import chat.ChatActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.ExpandableListView;
 import library.UtilString;
@@ -210,8 +216,6 @@ public class Subscribers extends MyActionBarActivity {
 
     }
 
-
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
@@ -221,7 +225,6 @@ public class Subscribers extends MyActionBarActivity {
         inflater.inflate(R.menu.menu5, menu);
         return true;
     }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -304,6 +307,8 @@ public class Subscribers extends MyActionBarActivity {
 
             TextView membername = (TextView) row.findViewById(R.id.membernameid);
             final String name = ((MemberDetails) getItem(position)).getChildName();
+            final String childId = ((MemberDetails) getItem(position)).getChildId();
+
             membername.setText(name);
             ImageView option_imageView = (ImageView) row.findViewById(R.id.joinOpt);
             ImageView memberIcon = (ImageView) row.findViewById(R.id.memberIcon);
@@ -343,7 +348,15 @@ public class Subscribers extends MyActionBarActivity {
                 @Override
                 public void onClick(View v) {
 
-                    final Context context = Subscribers.this;
+                    Intent intent = new Intent(Subscribers.this, ChatActivity.class);
+                    intent.putExtra("classCode", classCode);
+                    intent.putExtra("childName", name);
+                    intent.putExtra("childId", childId);
+
+                    startActivity(intent);
+                    return;
+
+                    /*final Context context = Subscribers.this;
                     AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
                     if(! UtilString.isBlank(className))
@@ -375,7 +388,7 @@ public class Subscribers extends MyActionBarActivity {
                         }
                     });
 
-                    alert.show();
+                    alert.show();*/
                 }
             });
 
@@ -396,6 +409,39 @@ public class Subscribers extends MyActionBarActivity {
         protected Void doInBackground(Void... params) {
 
             memberDetails = memberQuery.getLocalClassMembers(code);
+
+            //Create listener for each member
+            /*for(MemberDetails m : memberDetails){
+                final String childId = m.getChildId();
+                Firebase mFirebaseRef = new Firebase(ChatActivity.FIREBASE_URL).child(classCode + "-" + childId);
+                Log.d("__CHAT_C", "adding listener for : " + classCode + "-" + childId);
+                mFirebaseRef.limit(1).addChildEventListener(new ChildEventListener() {
+                    @Override
+                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
+                        Log.d("__CHAT_C", "onChildAdded : " + childId);
+                    }
+
+                    @Override
+                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+                        Log.d("__CHAT_C", "onChildChanged : " + childId);
+                    }
+
+                    @Override
+                    public void onChildRemoved(DataSnapshot dataSnapshot) {
+                        Log.d("__CHAT_C", "onChildRemoved : " + childId);
+                    }
+
+                    @Override
+                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
+
+                    }
+
+                    @Override
+                    public void onCancelled(FirebaseError firebaseError) {
+
+                    }
+                });
+            }*/
             return null;
         }
 

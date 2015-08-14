@@ -35,6 +35,7 @@ import java.util.List;
 
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
+import chat.ChatActivity;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
@@ -138,6 +139,19 @@ public class JoinedClassInfo extends MyActionBarActivity {
         classCodeTV.setText(classCode);
         assignedNameTV.setText(assignedName);
         teacherNameTV.setText(teacherName);
+
+
+        teacherNameTV.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(JoinedClassInfo.this, ChatActivity.class);
+                intent.putExtra("classCode", classCode);
+                intent.putExtra("childName", assignedName);
+                intent.putExtra("childId", ParseUser.getCurrentUser().getUsername());
+
+                startActivity(intent);
+            }
+        });
 
         //on click code, copy code to clipboard
         classCodeTV.setOnClickListener(new View.OnClickListener() {

@@ -533,6 +533,8 @@ public class Queries {
 
 
                     List<String> childList = members.getList("children_names");
+                    String emailId = members.getString("emailId");
+
                     if (childList != null && childList.size() > 0) {
 
                         for (int j = 0; j < childList.size(); j++) {
@@ -543,15 +545,14 @@ public class Queries {
 
                                 child = UtilString.changeFirstToCaps(child);
                                 MemberDetails member =
-                                        new MemberDetails(members.getObjectId(), MemberDetails.APP_MEMBER, child);
+                                        new MemberDetails(members.getObjectId(), MemberDetails.APP_MEMBER, child, emailId);
                                 memberList.add(member);
                             }
                         }
                     } else {
-
                         String parent = members.getString("name");
                         MemberDetails member =
-                                new MemberDetails(members.getObjectId(), MemberDetails.APP_MEMBER, parent);
+                                new MemberDetails(members.getObjectId(), MemberDetails.APP_MEMBER, parent, emailId);
                         memberList.add(member);
                     }
                 }
@@ -588,10 +589,12 @@ public class Queries {
            * Adding members in memberlist
            */
                     String child = smsMembers.getString("subscriber");
+                    String emailId = smsMembers.getString("emailId");
+
                     if (!UtilString.isBlank(child)) {
                         child = UtilString.changeFirstToCaps(child);
                         MemberDetails member =
-                                new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child);
+                                new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child, emailId);
                         memberList.add(member);
                     }
                     else
@@ -599,7 +602,7 @@ public class Queries {
                         if(!UtilString.isBlank(smsMembers.getString("number"))) {
                             child = smsMembers.getString("number");
                             MemberDetails member =
-                                    new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child);
+                                    new MemberDetails(smsMembers.getObjectId(), MemberDetails.SMS_MEMBER, child, emailId);
                             memberList.add(member);
                         }
                     }
