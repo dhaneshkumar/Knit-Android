@@ -34,8 +34,8 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
     private int mLayout;
     private LayoutInflater mInflater;
     private List<T> mModels;
-    private List<String> mKeys;
-    private ChildEventListener mListener;
+    public List<String> mKeys;
+    public ChildEventListener mListener;
 
 
     /**
@@ -57,13 +57,22 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
         mListener = this.mRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d("__CHAT_K", "onChildAdded : " + dataSnapshot.toString() + " priority=" + dataSnapshot.getPriority());
-
-                Log.d("__CHAT", dataSnapshot.toString());
-                T model = dataSnapshot.getValue(FirebaseListAdapter.this.mModelClass);
-                Log.d("__CHAT", model + "");
 
                 String key = dataSnapshot.getKey();
+                int myIndex = mKeys.indexOf(key);
+
+                if(myIndex != -1){
+                    //ignore as it is duplicate at top of list
+                    Log.d("__CHAT_K", "Duplicate onChildAdded : " + dataSnapshot.toString() + " priority=" + dataSnapshot.getPriority());
+                    return;
+                }
+
+                Log.d("__CHAT_K", "New onChildAdded : " + dataSnapshot.toString() + " priority=" + dataSnapshot.getPriority());
+
+                //Log.d("__CHAT", dataSnapshot.toString());
+                T model = dataSnapshot.getValue(FirebaseListAdapter.this.mModelClass);
+                //Log.d("__CHAT", model + "");
+
 
                 // Insert into the correct location, based on previousChildName
                 if (previousChildName == null) {
@@ -81,7 +90,16 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
                     }
                 }
 
+                int prevPos = ChatActivity.listView.getFirstVisiblePosition();
+                int offset = 0;
+
+                if(prevPos >= 0 && ChatActivity.listView.getChildAt(prevPos) != null){
+                    offset = ChatActivity.listView.getChildAt(prevPos).getTop() - ChatActivity.listView.getPaddingTop();
+                }
+
                 notifyDataSetChanged();
+                Log.d("__CHAT_K", "onChildAdded : after notifyDataSetChanged" + ChatActivity.listView.getFirstVisiblePosition());
+                ChatActivity.listView.setSelectionFromTop(getCount() - ChatActivity.lastTotalCount, offset);
             }
 
             @Override
@@ -99,6 +117,10 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
 
             @Override
             public void onChildRemoved(DataSnapshot dataSnapshot) {
+                if(true){
+                    return; // exprerimental so as to show window > 10
+                }
+
                 Log.d("__CHAT_K", "onChildRemoved : " + dataSnapshot.toString());
                 // A model was removed from the list. Remove it from our list and the name mapping
                 String key = dataSnapshot.getKey();

@@ -8,7 +8,8 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/imagePreview"
         android:layout_alignParentTop="true"
-        android:transcriptMode="alwaysScroll" />
+        android:stackFromBottom="true"/>
+        <!--The list will automatically scroll to the bottom when a data set change notification is received and only if the last item is already visible on screen.-->
 
     <LinearLayout
         android:id="@+id/imagePreview"

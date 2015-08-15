@@ -7,11 +7,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.inputmethod.EditorInfo;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -22,8 +25,10 @@ import android.widget.Toast;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.firebase.client.Query;
 import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
+import com.parse.ParseException;
 import com.parse.ParseUser;
 
 import java.io.ByteArrayOutputStream;
@@ -34,6 +39,7 @@ import java.util.Map;
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.ChooserDialog;
+import utility.Config;
 import utility.Utility;
 
 public class ChatActivity extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
@@ -54,6 +60,10 @@ public class ChatActivity extends MyActionBarActivity implements ChooserDialog.C
     ImageView attachedImage;
     ImageView removeButton;
 
+    Query moreQuery;
+    static int lastTotalCount = -1;
+    static ListView listView;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,6 +72,7 @@ public class ChatActivity extends MyActionBarActivity implements ChooserDialog.C
         // Make sure we have a mUsername
         setupUsername();
 
+        lastTotalCount = -1;
 
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
@@ -143,15 +154,51 @@ public class ChatActivity extends MyActionBarActivity implements ChooserDialog.C
     public void onStart() {
         super.onStart();
         // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
-        final ListView listView = (ListView) findViewById(R.id.chatList);
+        listView = (ListView) findViewById(R.id.chatList);
+
         // Tell our list adapter that we only want 50 messages at a time
-        mChatListAdapter = new ChatListAdapter(mFirebaseRef.limit(100), this, R.layout.chat_message, mUsername);
+        mChatListAdapter = new ChatListAdapter(mFirebaseRef.limit(8), this, R.layout.chat_message, mUsername);
         listView.setAdapter(mChatListAdapter);
+
         mChatListAdapter.registerDataSetObserver(new DataSetObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
-                listView.setSelection(mChatListAdapter.getCount() - 1);
+                /*if (mChatListAdapter.getCount() > 4) {
+                    Log.d("__CHAT_KKP", "DataSetObserver.onChanged() called");
+                    listView.setSelection(4);
+                }*/
+            }
+        });
+
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int scrollState = SCROLL_STATE_IDLE;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                this.scrollState = scrollState;
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if (totalItemCount > 0 && firstVisibleItem == 0) {
+                    if (totalItemCount != lastTotalCount) {
+                        //remove duplicate listeners by making sure that another listener is added only if total count changes
+                        Log.d("__CHAT_KKP", "Top onScrollNew " + listView.getFirstVisiblePosition() + ", lTC=" + lastTotalCount + ", fVI=" + firstVisibleItem + ", vIC=" + visibleItemCount + ", tIC=" + totalItemCount);
+                        lastTotalCount = totalItemCount;
+
+                        if (moreQuery != null) {
+                            //Log.d("__CHAT_KKP", "removing Listener visibleItemCount=" + visibleItemCount + ", totalItemCount=" + totalItemCount);
+                            moreQuery.removeEventListener(mChatListAdapter.mListener);
+                            //moreQuery.removeEventListener(mChatListAdapter.mListener); // multiple calls gives no error :P
+                        }
+
+                        moreQuery = mFirebaseRef.limit(4).orderByKey().endAt(mChatListAdapter.mKeys.get(0)); //key for first item
+                        moreQuery.addChildEventListener(mChatListAdapter.mListener);
+                    } else {
+                        Log.d("__CHAT_KKQ", "Top onScrollDuplicate " + listView.getFirstVisiblePosition() + ", lTC=" + lastTotalCount + ", fVI=" + firstVisibleItem + ", vIC=" + visibleItemCount + ", tIC=" + totalItemCount);
+                    }
+                }
             }
         });
 
