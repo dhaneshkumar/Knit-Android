@@ -1,14 +1,20 @@
 package chat;
 
 import android.app.ListActivity;
-import android.content.SharedPreferences;
 import android.database.DataSetObserver;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -20,14 +26,17 @@ import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
 import com.parse.ParseUser;
 
+import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
-import library.UtilString;
+import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.ChooserDialog;
+import utility.Utility;
 
-public class ChatActivity extends ListActivity {
+public class ChatActivity extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
 
     // TODO: change this to your own Firebase URL
     public static final String FIREBASE_URL = "https://devknit.firebaseio.com";
@@ -40,6 +49,10 @@ public class ChatActivity extends ListActivity {
     private String childName;
     private String childId;
     private String classCode;
+
+    LinearLayout imagePreview;
+    ImageView attachedImage;
+    ImageView removeButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,13 +98,52 @@ public class ChatActivity extends ListActivity {
             }
         });
 
+        findViewById(R.id.attachButton).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getSupportFragmentManager();
+                ChooserDialog openchooser = new ChooserDialog();
+                openchooser.show(fm, "Add Image");
+            }
+        });
+
+        imagePreview = (LinearLayout) findViewById(R.id.imagePreview);
+        attachedImage = (ImageView) findViewById(R.id.attachedImage);
+        removeButton = (ImageView) findViewById(R.id.removeButton);
+
+        removeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                imagePreview.setTag("");
+                imagePreview.setVisibility(View.GONE);
+                attachedImage.setImageBitmap(null);
+
+               /* if (typedmsg.getText() != null) {
+                    if (typedmsg.getText().length() < 1)
+                        sendmsgbutton.setImageResource(R.drawable.send_grey);
+                }*/
+            }
+        });
+    }
+
+    @Override
+    public void sendImagePic(String imgname) {
+
+        // The image was brought into the App folder hence only name was passed
+        imagePreview.setVisibility(View.VISIBLE);
+        imagePreview.setTag(Utility.getWorkingAppDir() + "/media/" + imgname);
+        File thumbnailFile = new File(Utility.getWorkingAppDir() + "/thumbnail/" + imgname);
+
+        // The thumbnail is already created
+        Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
+        attachedImage.setImageBitmap(myBitmap);
     }
 
     @Override
     public void onStart() {
         super.onStart();
         // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
-        final ListView listView = getListView();
+        final ListView listView = (ListView) findViewById(R.id.chatList);
         // Tell our list adapter that we only want 50 messages at a time
         mChatListAdapter = new ChatListAdapter(mFirebaseRef.limit(100), this, R.layout.chat_message, mUsername);
         listView.setAdapter(mChatListAdapter);
@@ -139,11 +191,32 @@ public class ChatActivity extends ListActivity {
 
         EditText inputText = (EditText) findViewById(R.id.messageInput);
         String input = inputText.getText().toString();
-        if (!input.equals("")) {
+        if(imagePreview.getVisibility() == View.VISIBLE){
+            Bitmap bmp = ((BitmapDrawable) attachedImage.getDrawable()).getBitmap();
+            ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
+            bmp.compress(Bitmap.CompressFormat.PNG, 100, bYtE);
+            bmp.recycle();
+            byte[] byteArray = bYtE.toByteArray();
+            String imageData = Base64.encodeToString(byteArray, Base64.DEFAULT);
+
             Map<String, Object> data = new HashMap<>();
             data.put("message", input);
             data.put("author", mUsername);
             data.put("time", ServerValue.TIMESTAMP);
+            data.put("imageData", imageData);
+
+            // Create a new, auto-generated child of that chat location, and save our chat data there
+            mFirebaseRef.push().setValue(data);
+            inputText.setText("");
+            imagePreview.setVisibility(View.GONE);
+            attachedImage.setImageBitmap(null);
+        }
+        else if (!input.equals("")) {
+            Map<String, Object> data = new HashMap<>();
+            data.put("message", input);
+            data.put("author", mUsername);
+            data.put("time", ServerValue.TIMESTAMP);
+            data.put("imageData", "");
 
             // Create a new, auto-generated child of that chat location, and save our chat data there
             mFirebaseRef.push().setValue(data);

@@ -12,6 +12,7 @@ public class Chat {
     public String message;
     public String author;
     public String time;
+    public String imageData;
 
     // Required default constructor for Firebase object mapping
 //    @SuppressWarnings("unused")
@@ -30,8 +31,16 @@ public class Chat {
         return time;
     }
 
+    public String getImageData(){
+        return imageData;
+    }
     @Override
     public String toString(){
-        return author + "@" + time + " : " + message;
+        int imageSize = 0;
+        if(imageData != null){
+            imageSize = imageData.length();
+        }
+
+        return author + "@" + time + " : " + message + ", imageSize=" + imageSize;
     }
 }

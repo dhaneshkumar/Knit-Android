@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.firebase.client.Firebase;
+import com.firebase.client.Logger;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseObject;
@@ -60,6 +61,8 @@ public class Application extends android.app.Application {
 
       Firebase.setAndroidContext(this);
       Firebase.getDefaultConfig().setPersistenceEnabled(true);
+      //Firebase.getDefaultConfig().setLogLevel(Logger.Level.DEBUG);
+
       FontsOverride.setDefaultFont(this, "MONOSPACE","fonts/Roboto-Regular.ttf");
 
       try {

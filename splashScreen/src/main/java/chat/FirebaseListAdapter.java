@@ -57,7 +57,7 @@ public abstract class FirebaseListAdapter<T> extends BaseAdapter {
         mListener = this.mRef.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
-                Log.d("__CHAT_K", "onChildAdded : " + dataSnapshot.toString());
+                Log.d("__CHAT_K", "onChildAdded : " + dataSnapshot.toString() + " priority=" + dataSnapshot.getPriority());
 
                 Log.d("__CHAT", dataSnapshot.toString());
                 T model = dataSnapshot.getValue(FirebaseListAdapter.this.mModelClass);

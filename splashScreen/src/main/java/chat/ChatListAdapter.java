@@ -1,10 +1,14 @@
 package chat;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,6 +18,7 @@ import com.parse.ParseUser;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import library.UtilString;
 import trumplab.textslate.R;
 
 /**
@@ -56,6 +61,7 @@ public class ChatListAdapter extends FirebaseListAdapter<Chat> {
         LinearLayout contentWithBackground = (LinearLayout) view.findViewById(R.id.contentWithBackground);
         TextView messageTV = (TextView) view.findViewById(R.id.message);
         TextView authorTV = (TextView) view.findViewById(R.id.author);
+        ImageView attachedIV = (ImageView) view.findViewById(R.id.attachedImage);
 
         if(received){
             //change content
@@ -70,6 +76,7 @@ public class ChatListAdapter extends FirebaseListAdapter<Chat> {
             layoutParams.gravity = Gravity.RIGHT;
             messageTV.setLayoutParams(layoutParams);
             authorTV.setLayoutParams(layoutParams);
+            attachedIV.setLayoutParams(layoutParams);
         }
         else{
             //change content
@@ -84,6 +91,18 @@ public class ChatListAdapter extends FirebaseListAdapter<Chat> {
             layoutParams.gravity = Gravity.LEFT;
             messageTV.setLayoutParams(layoutParams);
             authorTV.setLayoutParams(layoutParams);
+            attachedIV.setLayoutParams(layoutParams);
+        }
+
+        if(!UtilString.isBlank(chat.getImageData())) {
+            byte[] decodedString = Base64.decode(chat.getImageData(), Base64.DEFAULT);
+            Bitmap bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+            attachedIV.setImageBitmap(bmp);
+            attachedIV.setVisibility(View.VISIBLE);
+        }
+        else{
+            attachedIV.setImageBitmap(null);
+            attachedIV.setVisibility(View.GONE);
         }
 
         String timeString = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(new Date(time));

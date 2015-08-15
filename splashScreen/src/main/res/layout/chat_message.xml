@@ -23,6 +23,13 @@
             android:textColor="@android:color/black"
             android:maxWidth="250dp" />
 
+        <ImageView
+            android:id="@+id/attachedImage"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:background="@drawable/imageview_shadow"
+            android:visibility="gone"/>
+
         <TextView
             android:id="@+id/author"
             android:layout_width="wrap_content"

@@ -3,12 +3,38 @@
     android:layout_height="fill_parent">
 
     <ListView
-        android:id="@android:id/list"
+        android:id="@+id/chatList"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/listFooter"
+        android:layout_above="@+id/imagePreview"
         android:layout_alignParentTop="true"
         android:transcriptMode="alwaysScroll" />
+
+    <LinearLayout
+        android:id="@+id/imagePreview"
+        android:layout_width="wrap_content"
+        android:layout_height="112dp"
+        android:layout_margin="16dp"
+        android:visibility="gone"
+        android:layout_above="@+id/listFooter">
+
+        <ImageView
+            android:id="@+id/attachedImage"
+            android:layout_width="112dp"
+            android:layout_height="112dp"
+            android:background="@drawable/imageview_shadow">
+
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/removeButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="16dp"
+            android:background="@drawable/cancel"
+            />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/listFooter"
@@ -16,6 +42,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/attachButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_attachment"/>
 
         <EditText
             android:id="@+id/messageInput"
