@@ -36,6 +36,7 @@ import java.util.List;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
 import chat.ChatActivity;
+import chat.ChatActivityRecyclerView;
 import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Classrooms;
@@ -144,7 +145,7 @@ public class JoinedClassInfo extends MyActionBarActivity {
         teacherNameTV.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(JoinedClassInfo.this, ChatActivity.class);
+                Intent intent = new Intent(JoinedClassInfo.this, ChatActivityRecyclerView.class);
                 intent.putExtra("classCode", classCode);
                 intent.putExtra("childName", assignedName);
                 intent.putExtra("childId", ParseUser.getCurrentUser().getUsername());
