@@ -302,6 +302,9 @@ public class Invite extends MyActionBarActivity{
           Map<String, String> dimensions = new HashMap<String, String>();
           dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
           dimensions.put("Source", source);
+          if(inviteType == Constants.INVITATION_P2P || inviteType == Constants.INVITATION_T2P){
+              dimensions.put("classCode", classCode);
+          }
           ParseAnalytics.trackEventInBackground("invitePageOpenings", dimensions);
           if(Config.SHOWLOG) Log.d(LOGTAG, "tracking invitePageOpenings type=" + inviteType + ",source=" + source);
       }

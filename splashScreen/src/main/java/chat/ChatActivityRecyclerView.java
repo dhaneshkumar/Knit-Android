@@ -65,12 +65,13 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     ImageView attachedImage;
     ImageView removeButton;
 
-    Query baseQuery;
-    Query moreQuery;
-    static int lastTotalCount = -1;
+    Query newQuery;
+    Query oldQuery;
+    int lastTotalCount = -1;
     RecyclerView listView;
 
-    public ChildEventListener mListener;
+    public ChildEventListener mNewListener; //for new messages
+    public ChildEventListener mOldListener; //to fetch old messages as we scroll up
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -183,6 +184,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
         // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
         listView = (RecyclerView) findViewById(R.id.chatList);
+
         mLayoutManager = new LinearLayoutManager(this);
         mLayoutManager.setStackFromEnd(true);
 
@@ -190,9 +192,11 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         listView.setAdapter(mChatListAdapter);
 
         //add base query listener
-        mListener = new MyChildEventListener(mChatListAdapter);
-        baseQuery = mFirebaseRef.limit(8);
-        baseQuery.addChildEventListener(mListener);
+        mNewListener = new MyChildEventListener(listView, mChatListAdapter, false);
+        mOldListener = new MyChildEventListener(listView, mChatListAdapter, true);
+
+        newQuery = mFirebaseRef.limit(8);
+        newQuery.addChildEventListener(mNewListener);
 
         listView.setLayoutManager(mLayoutManager);
         listView.setOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -209,14 +213,13 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                         Log.d("__CHAT_KKP", "Top onScrollNew " + firstVisibleItem + ", lTC=" + lastTotalCount + ", fVI=" + firstVisibleItem + ", vIC=" + visibleItemCount + ", tIC=" + totalItemCount);
                         lastTotalCount = totalItemCount;
 
-                        if (moreQuery != null) {
+                        if (oldQuery != null) {
                             //Log.d("__CHAT_KKP", "removing Listener visibleItemCount=" + visibleItemCount + ", totalItemCount=" + totalItemCount);
-                            moreQuery.removeEventListener(mListener);
-                            //moreQuery.removeEventListener(mChatListAdapter.mListener); // multiple calls gives no error :P
+                            oldQuery.removeEventListener(mOldListener);
                         }
 
-                        moreQuery = mFirebaseRef.limit(4).orderByKey().endAt(mChatListAdapter.mKeys.get(0)); //key for first item
-                        moreQuery.addChildEventListener(mListener);
+                        oldQuery = mFirebaseRef.limit(4).orderByKey().endAt(mChatListAdapter.mKeys.get(0)); //key for first item
+                        oldQuery.addChildEventListener(mOldListener);
                     } else {
                         Log.d("__CHAT_KKQ", "Top onScrollDuplicate " + firstVisibleItem + ", lTC=" + lastTotalCount + ", fVI=" + firstVisibleItem + ", vIC=" + visibleItemCount + ", tIC=" + totalItemCount);
                     }
@@ -245,10 +248,14 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     }
 
     class MyChildEventListener implements ChildEventListener{
+        RecyclerView list;
         ReclycleAdapter adapter;
+        boolean isOldQuery;
 
-        public MyChildEventListener(ReclycleAdapter adapter){
+        public MyChildEventListener(RecyclerView list, ReclycleAdapter adapter, boolean isOldQuery){
+            this.list = list;
             this.adapter = adapter;
+            this.isOldQuery = isOldQuery;
         }
 
         @Override
@@ -286,16 +293,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 }
             }
 
-            adapter.notifyDataSetChanged();
-            /*int prevPos = ChatActivity.listView.getFirstVisiblePosition();
-            int offset = 0;
-
-            if(prevPos >= 0 && ChatActivity.listView.getChildAt(prevPos) != null){
-                offset = ChatActivity.listView.getChildAt(prevPos).getTop() - ChatActivity.listView.getPaddingTop();
-            }
-
-            Log.d("__CHAT_K", "onChildAdded : after notifyDataSetChanged" + ChatActivity.listView.getFirstVisiblePosition());
-            ChatActivity.listView.setSelectionFromTop(adapter.getCount() - ChatActivity.lastTotalCount, offset);*/
+            notifyAndSmartScroll();
         }
 
         @Override
@@ -308,7 +306,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
             adapter.mModels.set(index, newModel);
 
-            adapter.notifyDataSetChanged();
+            notifyAndSmartScroll();
         }
 
         @Override
@@ -325,7 +323,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             adapter.mKeys.remove(index);
             adapter.mModels.remove(index);
 
-            adapter.notifyDataSetChanged();
+            notifyAndSmartScroll();
         }
 
         @Override
@@ -353,13 +351,33 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 }
             }
 
-            adapter.notifyDataSetChanged();
+            notifyAndSmartScroll();
         }
 
         @Override
         public void onCancelled(FirebaseError firebaseError) {
             Log.d("__CHAT_K", "onChildCancelled");
             Log.e("FirebaseListAdapter", "Listen was cancelled, no more updates will occur");
+        }
+
+        void notifyAndSmartScroll(){
+            if(isOldQuery) {
+                int prevPos = mLayoutManager.findFirstVisibleItemPosition();
+                int offset = 0;
+
+                if (prevPos >= 0 && listView.getChildAt(prevPos) != null) {
+                    offset = listView.getChildAt(prevPos).getTop() - listView.getPaddingTop();
+                }
+
+                adapter.notifyDataSetChanged();
+                Log.d("__CHAT_KS", "smartNotifyAndScroll() old Query");
+                mLayoutManager.scrollToPositionWithOffset(adapter.getItemCount() - lastTotalCount, offset);
+            }
+            else{
+                Log.d("__CHAT_KS", "smartNotifyAndScroll() new Query");
+                adapter.notifyDataSetChanged();
+                mLayoutManager.scrollToPosition(adapter.getItemCount()-1);
+            }
         }
     }
 
@@ -472,7 +490,10 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     public void onStop() {
         super.onStop();
         mFirebaseRef.getRoot().child(".info/connected").removeEventListener(mConnectedListener);
-        baseQuery.removeEventListener(mListener);
+        newQuery.removeEventListener(mNewListener);
+        if(oldQuery != null){
+            oldQuery.removeEventListener(mOldListener);
+        }
     }
 
     private void setupUsername() {
