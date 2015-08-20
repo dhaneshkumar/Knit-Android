@@ -267,7 +267,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
                     final List<ChatMessage> chatMsgs = new ArrayList<ChatMessage>();
 
-                    if(chatMsgs.size() > 0){
+                    if (chatMsgs.size() > 0) {
                         //there were some messages
                         lastTotalCount = -1; //so that again moreHistory will be called, just in case all config msgs so no change in adapter size
                     }
@@ -275,7 +275,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                     for (int i = 0; i < messages.length(); i++) {
                         JSONObject jsonMsg = messages.getJSONObject(i).getJSONObject("data");
                         String name = jsonMsg.optString(ChatConfig.JSON_USER, null);
-                        if(name == null){
+                        if (name == null) {
                             //to detect notifications
                             continue;
                         }
@@ -632,19 +632,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     private void gcmRegister() {
         if (checkPlayServices()) {
             new RegisterTask().execute();
-
-            /*try {
-                gcmRegId = getRegistrationId();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            if (gcmRegId.isEmpty()) {
-                new RegisterTask().execute();
-            } else {
-                sendRegistrationId(gcmRegId);
-                Toast.makeText(this, "Registration ID already exists: " + gcmRegId, Toast.LENGTH_SHORT).show();
-            }*/
         } else {
             Log.e("GCM-register", "No valid Google Play Services APK found.");
         }
@@ -690,6 +677,8 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     }
 
     private class RegisterTask extends AsyncTask<Void, Void, String> {
+        boolean isRenewed = false;
+
         @Override
         protected String doInBackground(Void... params) {
             String msg="";
@@ -697,17 +686,34 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 if (gcm == null) {
                     gcm = GoogleCloudMessaging.getInstance(ChatActivityRecyclerView.this);
                 }
+
+                String oldGcmRegId = getRegistrationId();
                 gcmRegId = gcm.register(ChatConfig.GCM_SENDER_ID);
-                msg = "Device registered, registation ID: " + gcmRegId;
+
+                Log.i("__CHAT RegisterTask", "old id=" + oldGcmRegId + ", new id=" + gcmRegId);
 
                 sendRegistrationId(gcmRegId);
-
                 storeRegistrationId(gcmRegId);
-                Log.i("GCM-register", msg);
+
+                if(!oldGcmRegId.equals(gcmRegId)) {
+                    isRenewed = true;
+                }
+
             } catch (IOException e){
                 e.printStackTrace();
             }
             return msg;
+        }
+
+        @Override
+        protected void onPostExecute(String res) {
+            super.onPostExecute(res);
+            if(isRenewed){
+                Toast.makeText(ChatActivityRecyclerView.this, "Sending new Registration id=" + gcmRegId, Toast.LENGTH_SHORT).show();
+            }
+            else{
+                Toast.makeText(ChatActivityRecyclerView.this, "Same Registration id=" + gcmRegId, Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
