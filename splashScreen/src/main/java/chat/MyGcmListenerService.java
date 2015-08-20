@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import com.google.android.gms.gcm.GcmListenerService;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 
 import trumplab.textslate.R;
@@ -18,22 +19,19 @@ import trumplab.textslate.R;
 /**
  * Created by GleasonK on 7/14/15.
  */
-public class GcmIntentService  extends IntentService {
+public class MyGcmListenerService extends GcmListenerService {
 
-    public GcmIntentService() {
-        super("GcmIntentService");
-    }
-
+    private final static String TAG = "__CHAT GCMListen";
     @Override
-    protected void onHandleIntent(Intent intent) {
-        Bundle extras = intent.getExtras();
-        GoogleCloudMessaging gcm = GoogleCloudMessaging.getInstance(this);
-        String messageType = gcm.getMessageType(intent);
-        if (!extras.isEmpty() && GoogleCloudMessaging.MESSAGE_TYPE_MESSAGE.equals(messageType)) {
-            showNotification(intent.getExtras());
+    public void onMessageReceived(String from, Bundle data) {
+        if(from != null && from.equals(ChatConfig.GCM_SENDER_ID)) {
+            Log.d(TAG, "From: " + from);
+            Log.d(TAG, "Message: " + data);
+            showNotification(data);
         }
-
-        ChatGcmBroadcastReceiver.completeWakefulIntent(intent);
+        else{
+            Log.d(TAG, "From: " + from + "(possibly Parse)");
+        }
     }
 
     private void showNotification(Bundle extras) {

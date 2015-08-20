@@ -145,7 +145,6 @@
         <activity android:name="tutorial.ParentTutorial"></activity>
         <activity android:name="tutorial.TeacherTutorial"></activity>
         <activity android:name="additionals.OpenURL"></activity>
-        <activity android:name="chat.ChatActivity"></activity>
         <activity android:name="chat.ChatActivityRecyclerView"
             android:windowSoftInputMode="adjustPan">
         </activity>
@@ -185,7 +184,7 @@
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter android:priority="1000">
+            <intent-filter android:priority="1">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <category android:name="trumplab.textslate" />
@@ -217,7 +216,7 @@
         </receiver>
 
         <!-- Localytics PushReceiver follows -->
-        <receiver
+        <!--<receiver
             android:name="com.localytics.android.PushReceiver"
             android:permission="com.google.android.c2dm.permission.SEND" >
             <intent-filter>
@@ -225,7 +224,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="trumplab.textslate" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <activity android:name="com.localytics.android.PushTrackingActivity"/>
 
@@ -238,14 +237,35 @@
 
         <!-- Chat PubNub -->
         <receiver
-            android:name="chat.ChatGcmBroadcastReceiver"
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
             android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
+            <intent-filter android:priority="2">
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <category android:name="trumplab.textslate" />
             </intent-filter>
         </receiver>
-        <service android:name="chat.GcmIntentService" />
+
+        <service
+            android:name="chat.MyGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="chat.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="chat.RegistrationIntentService"
+            android:exported="false">
+        </service>
 
     </application>
 

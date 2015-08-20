@@ -1,6 +1,7 @@
 package chat;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -59,7 +60,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
     private String mUsername;
     private String channel;
-    private String notificationChannel;
+    public static String notificationChannel;
 
     private Long startTimeToken = 0L;
 
@@ -631,7 +632,10 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
     private void gcmRegister() {
         if (checkPlayServices()) {
-            new RegisterTask().execute();
+            Log.d("__CHAT", "call Reg Intent Service");
+            Intent intent = new Intent(this, RegistrationIntentService.class);
+            startService(intent);
+            //new RegisterTask().execute();
         } else {
             Log.e("GCM-register", "No valid Google Play Services APK found.");
         }
