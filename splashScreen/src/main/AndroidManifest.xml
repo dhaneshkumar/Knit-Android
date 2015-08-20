@@ -226,6 +226,7 @@
                 <category android:name="trumplab.textslate" />
             </intent-filter>
         </receiver>
+
         <activity android:name="com.localytics.android.PushTrackingActivity"/>
 
         <!-- Localytics ReferralReceiver follows -->
@@ -234,6 +235,18 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
+
+        <!-- Chat PubNub -->
+        <receiver
+            android:name="chat.ChatGcmBroadcastReceiver"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="trumplab.textslate" />
+            </intent-filter>
+        </receiver>
+        <service android:name="chat.GcmIntentService" />
+
     </application>
 
 </manifest>

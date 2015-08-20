@@ -41,7 +41,7 @@ dependencies {
     compile project(':library')
     compile project(':main')
     compile project(':showcaseview')
-    compile 'com.firebase:firebase-client-android:2.3.1+'
+    compile 'com.pubnub:pubnub-android:3.7.4'
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:recyclerview-v7:22.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'

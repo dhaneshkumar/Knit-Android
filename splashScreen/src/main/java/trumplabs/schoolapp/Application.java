@@ -6,8 +6,7 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.firebase.client.Firebase;
-import com.firebase.client.Logger;
+import com.localytics.android.LocalyticsActivityLifecycleCallbacks;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseObject;
@@ -18,7 +17,6 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 import utility.Config;
-import com.localytics.android.*;
 
 public class Application extends android.app.Application {
 	
@@ -58,10 +56,6 @@ public class Application extends android.app.Application {
       applicationHandler = new Handler();
 
       globalCodegroupMap = new ConcurrentHashMap<>();
-
-      Firebase.setAndroidContext(this);
-      Firebase.getDefaultConfig().setPersistenceEnabled(true);
-      //Firebase.getDefaultConfig().setLogLevel(Logger.Level.DEBUG);
 
       FontsOverride.setDefaultFont(this, "MONOSPACE","fonts/Roboto-Regular.ttf");
 

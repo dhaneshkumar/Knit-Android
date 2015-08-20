@@ -26,7 +26,6 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.File;
@@ -35,7 +34,6 @@ import java.util.List;
 
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
-import chat.ChatActivity;
 import chat.ChatActivityRecyclerView;
 import library.UtilString;
 import trumplab.textslate.R;
