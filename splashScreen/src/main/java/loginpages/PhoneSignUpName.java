@@ -21,6 +21,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.appsflyer.AppsFlyerLib;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -50,7 +51,6 @@ import com.parse.ParseUser;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import additionals.SmsListener;
@@ -670,6 +670,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                 t.start();
                             }
 
+                            if(!isLogin){
+                                //sending compaign info to analytics
+                              //  sendCompaignDetailsToServer(user);
+                                //reSetCompaignDetails();
+
+                                AppsFlyerLib.setCustomerUserId(user.getUsername());
+                            }
 
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
@@ -795,12 +802,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             String accountName = Plus.AccountApi.getAccountName(mGoogleApiClient);
             Account account = new Account(accountName, GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE);
 
-            List<String> scopeList = Arrays.asList(new String[]{
-                    "https://www.googleapis.com/auth/plus.login",
-                    "https://www.googleapis.com/auth/userinfo.email"
-            });
-
-            //String scope = String.format("audience:server:client_id:%s:api_scope:%s", SERVER_CLIENT_ID, TextUtils.join(" ", scopeList));
             String scope = String.format("audience:server:client_id:%s", SERVER_CLIENT_ID);
 
             try {
@@ -891,7 +892,9 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                     Person currentPerson = Plus.PeopleApi.getCurrentPerson(mGoogleApiClient);
                                     final String url = currentPerson.getImage().getUrl();
 
-                                    if(!UtilString.isBlank(url))
+                                    Log.d(TAG, currentPerson.getId()+" id");
+
+                                    if(currentPerson.hasImage() && !UtilString.isBlank(url))
                                     {
                                         //call refresher
                                         Runnable r = new Runnable() {
@@ -909,6 +912,11 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                         t.start();
                                     }
 
+                                    //sending compaign info to analytics
+                                 //   sendCompaignDetailsToServer(user);
+                                  //  reSetCompaignDetails();
+
+                                    AppsFlyerLib.setCustomerUserId(user.getUsername());
 
                                     Log.d(TAG, "url : " + url);
                                 }
@@ -916,7 +924,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                     mIsResolving = true;
                                     mGoogleApiClient.connect();
                                 }
-
 
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                             } else {

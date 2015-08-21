@@ -17,7 +17,7 @@ public class Config {
     1. Select APP ID
      */
     public static final String APP_ID = "jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
-//    public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
+   //public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
     //public static final String APP_ID = "NCevIU3UOFsXQxcxCp0jp5qGECwHgWgP3SEqRSFr"; // load testing
 
 
@@ -37,12 +37,14 @@ public class Config {
    */
   //flag to show teacher can join his own class or not
   public static final boolean CAN_JOIN_OWN_CLASS = false;
+//  public static final boolean CAN_JOIN_OWN_CLASS = true;
 
   /*
   5. Set flag to detect invalid number.  #true : knit & #false for testing
     Note now invalid number detection is now local i.e numbers must be 10 digit with 1st digit >= 7
    */
   public static final boolean DETECT_INVALID_NUMBER = true;
+//  public static final boolean DETECT_INVALID_NUMBER = false;
 
 /*
   6. Set alarm configuration like repeat duration, notification stale period - used in AlarmTrigger, NotificationAlarmReceiver
@@ -55,6 +57,8 @@ public class Config {
   /*************************************************************************************************************/
 
     public static final String FB_APP_ID = "689390944539813";
+  public static final String GoogleApi_ProjectNumner = "838906570879";
+  public static final String APPS_FLYER_ID = "yM6MGfywAWmdjteEvgftxT";
 
     public static int SUBSCRIBER_MIN_LIMIT = 1;
 

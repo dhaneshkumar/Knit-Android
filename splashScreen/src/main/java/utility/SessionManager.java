@@ -6,16 +6,12 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.util.Log;
 
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.util.Calendar;
 import java.util.Date;
 
-import library.UtilString;
 import trumplabs.schoolapp.Application;
-import trumplabs.schoolapp.Constants;
 
 @SuppressLint("SimpleDateFormat")
 public class SessionManager {
@@ -235,6 +231,30 @@ public class SessionManager {
 
         //editor won't be null
         editor.putBoolean(key, value);
+        editor.commit();
+    }
+
+
+    /****************************************************************************/
+    //storing compaign information
+
+
+    public static void setCompaignDetails(String key, String value)
+    {
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    public static String getCompaignDetails(String key)
+    {
+        String value = pref.getString(key, null);
+        return value;
+    }
+
+
+    public static void reSetCompaignDetails(String key)
+    {
+        editor.putString(key, null);
         editor.commit();
     }
 }

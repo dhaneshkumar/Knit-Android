@@ -9,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.text.Html;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -20,6 +19,7 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.appsflyer.AppsFlyerLib;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
@@ -460,6 +460,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Map<String, String> dimensions = new HashMap<String, String>();
             dimensions.put("Login", "Total Login");
             ParseAnalytics.trackEvent("Login", dimensions);
+
         }
     }
 
@@ -518,6 +519,13 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Map<String, String> dimensions = new HashMap<String, String>();
             dimensions.put("Signup", "Total Signup");
             ParseAnalytics.trackEvent("Signup", dimensions);
+
+            //sending campaign info to analytics
+            //sendCompaignDetailsToServer(currentParseUser);
+            //reSetCompaignDetails();
+
+            AppsFlyerLib.setCustomerUserId(currentParseUser.getUsername());
+
         }
     }
 

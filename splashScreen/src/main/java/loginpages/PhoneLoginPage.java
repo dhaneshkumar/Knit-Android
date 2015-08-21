@@ -618,6 +618,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
                                 }
 
+
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                             } else {
                                 // The token could not be validated.

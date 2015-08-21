@@ -16,7 +16,6 @@ import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 import utility.Config;
-import com.localytics.android.*;
 
 public class Application extends android.app.Application {
 	
@@ -83,14 +82,6 @@ public class Application extends android.app.Application {
 	//PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class);
 	PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class,getResources().getIdentifier("notifications", "drawable", getPackageName()));
 
-
-
-      // Register LocalyticsActivityLifecycleCallbacks
-      int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-      if (currentapiVersion >= 14) {
-          registerActivityLifecycleCallbacks(
-                  new LocalyticsActivityLifecycleCallbacks(this));
-      }
   }
   
   

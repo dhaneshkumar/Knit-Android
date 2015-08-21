@@ -52,10 +52,12 @@ import java.util.HashMap;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
 import utility.Config;
+import utility.SessionManager;
 import utility.Utility;
 
 public class ProfilePage extends MyActionBarActivity implements OnClickListener , GoogleApiClient.ConnectionCallbacks,
@@ -135,12 +137,14 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             name_textView.setText(name);
 
 
+        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
 
         if(!UtilString.isBlank(userId)) {
             if (userId.length() == 10 || userId.contains("@"))
                 phone_textView.setText(userId);
-            else
+            else {
                 editPhone.setVisibility(View.GONE);
+            }
         }
 
 

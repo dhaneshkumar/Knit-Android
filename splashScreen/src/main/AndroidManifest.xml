@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="trumplab.textslate"
-    android:versionCode="34"
-    android:versionName="4.1.3.0">
+    android:versionCode="39"
+    android:versionName="4.1.3.1.4">
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="22" />
@@ -28,6 +28,8 @@
     <uses-permission android:name="trumplab.textslate.permission.C2D_MESSAGE" />
     <!-- For Google Login -->
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <!-- Apps Flyer requirement -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
 
     <application
@@ -37,11 +39,9 @@
         android:label="@string/app_name"
         android:launchMode="singleTask"
         android:theme="@style/AppBaseTheme">
-        <meta-data android:name="com.google.android.gms.version"
-            android:value="@integer/google_play_services_version" />
 
+        <meta-data android:name="com.google.android.gms.version" android:value="@integer/google_play_services_version" />
         <meta-data android:name="com.facebook.sdk.ApplicationId"  android:value="@string/FB_APP_id"/>
-        <meta-data android:name="LOCALYTICS_APP_KEY" android:value="24695b617d02a08993a389c-3b91a63a-3a68-11e5-8299-003e57fecdee"/>
 
         <activity
             android:name="loginpages.SplashScreen"
@@ -49,37 +49,43 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-
-            <intent-filter
-                >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
                 <data android:scheme="http"
                     android:host="www.knitapp.co.in"
-                    android:pathPattern=".*"
+                    android:pathPattern="/"
                     />
             </intent-filter>
 
-            <intent-filter
-                >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
                 <data android:scheme="http"
                     android:host="knitapp.co.in"
-                    android:pathPattern=".*"
+                    android:pathPattern="/"
                     />
             </intent-filter>
 
-            <intent-filter
-                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <!-- Accepts URIs that begin with "http://www.example.com/gizmos” -->
+                <data android:scheme="http"
+                    android:host="knitapp.co.in"
+                    android:pathPattern="/compaign.html.*"
+                    />
+            </intent-filter>
+
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -87,18 +93,12 @@
                 <!-- Accepts URIs that begin with "knit101://index” -->
                 <data android:scheme="knit101"
                       android:host="index" />
-
             </intent-filter>
-
         </activity>
-        <activity
-                  android:name="loginpages.LoginPage"></activity>
 
-        <activity android:name="trumplabs.schoolapp.MainActivity"
-            android:launchMode="singleTop">
 
-            <intent-filter
-                >
+        <activity android:name="trumplabs.schoolapp.MainActivity" android:launchMode="singleTop">
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -106,21 +106,18 @@
                 <!-- Accepts URIs that begin with "example://gizmos” -->
                 <data android:scheme="knit101"
                     android:host="dashboard" />
-
-            </intent-filter
-                >
-
+            </intent-filter>
         </activity>
-        <activity android:name="loginpages.Signup"></activity>
 
+        <activity android:name="loginpages.LoginPage"></activity>
+        <activity android:name="loginpages.Signup"></activity>
         <activity android:name="loginpages.PhoneSignUpName"></activity>
         <activity android:name="loginpages.PhoneSignUpVerfication"></activity>
         <activity android:name="loginpages.PhoneLoginPage"></activity>
 
-
+        <activity android:name="profileDetails.FAQs"></activity>
         <activity android:name="profileDetails.ProfilePage">
-            <intent-filter
-                >
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -128,33 +125,29 @@
                 <!-- Accepts URIs that begin with "example://gizmos” -->
                 <data android:scheme="knit101"
                     android:host="profile" />
-
             </intent-filter>
-
         </activity>
-        <activity android:name="profileDetails.FAQs"></activity>
-        <activity android:name="joinclasses.JoinClassesContainer"></activity>
+
         <activity android:name="utility.Utility"></activity>
         <activity android:name="utility.PushOpen"></activity>
-        <activity android:name="additionals.Invite"></activity>
+
         <activity android:name="joinclasses.JoinedClassInfo"></activity>
+        <activity android:name="joinclasses.JoinClassesContainer"></activity>
+
         <activity android:name="trumplabs.schoolapp.Subscribers"></activity>
         <activity android:name="trumplabs.schoolapp.SendMessage"></activity>
         <activity android:name="trumplabs.schoolapp.ComposeMessage"></activity>
 
         <activity android:name="tutorial.ParentTutorial"></activity>
         <activity android:name="tutorial.TeacherTutorial"></activity>
+
         <activity android:name="additionals.OpenURL"></activity>
-        <activity android:name="additionals.InviteVia"
-            android:launchMode="singleTop"
-            >
+        <activity android:name="additionals.Invite"></activity>
+        <activity android:name="additionals.InviteVia" android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
-
-            <meta-data android:name="android.app.searchable"
-                android:resource="@layout/searchable"/>
-
+            <meta-data android:name="android.app.searchable" android:resource="@layout/searchable"/>
         </activity>
 
 
@@ -165,8 +158,7 @@
 
 
 
-
-
+        <!-- Receivers and services -->
 
         <service android:name="com.parse.PushService" />
 
@@ -180,7 +172,7 @@
         <receiver
             android:name="com.parse.GcmBroadcastReceiver"
             android:permission="com.google.android.c2dm.permission.SEND">
-            <intent-filter android:priority="1000">
+            <intent-filter>
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
                 <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
                 <category android:name="trumplab.textslate" />
@@ -199,32 +191,24 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="notifications.EventCheckerAlarmReceiver">
-        </receiver>
-        <receiver android:name="notifications.RefresherAlarmReceiver" >
-        </receiver>
-        <receiver android:name="notifications.NotificationAlarmReceiver" >
-        </receiver>
+        <receiver android:name="notifications.EventCheckerAlarmReceiver"></receiver>
+        <receiver android:name="notifications.RefresherAlarmReceiver" ></receiver>
+        <receiver android:name="notifications.NotificationAlarmReceiver" ></receiver>
         <receiver android:name="notifications.ConnectivityChangeReceiver">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
             </intent-filter>
         </receiver>
 
-        <!-- Localytics PushReceiver follows -->
-        <receiver
-            android:name="com.localytics.android.PushReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+        <receiver android:name="com.appsflyer.MultipleInstallBroadcastReceiver"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="trumplab.textslate" />
+                <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
-        <activity android:name="com.localytics.android.PushTrackingActivity"/>
 
-        <!-- Localytics ReferralReceiver follows -->
-        <receiver android:name="com.localytics.android.ReferralReceiver" android:exported="true">
+        <!-- Installation source details Receiver -->
+        <receiver android:name="additionals.CampaignTrackingReceiver" android:exported="true">
             <intent-filter>
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>

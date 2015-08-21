@@ -35,7 +35,6 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.localytics.android.Localytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -285,6 +284,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                     action_menu.setVisibility(View.GONE);
                     action_menu_list.setVisibility(View.GONE);
                     isFloatingButtonCliked = false;
+
+
                 }
             });
 
@@ -460,17 +461,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        // If you're using Localytics Push Messaging
-        Localytics.registerPush("110521105118");
-
     }
 
-    @Override
-    protected void onNewIntent(Intent intent)
-    {
-        super.onNewIntent(intent);
-        setIntent(intent);
-    }
 
     /**
      * create list of options to show on selecting action button
