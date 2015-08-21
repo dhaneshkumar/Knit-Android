@@ -562,7 +562,9 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 @Override
                 public void run() {
                     MainActivity.classList = finalClassList;
-                    MainActivity.floatOptionsAdapter.notifyDataSetChanged();
+                    if(MainActivity.floatOptionsAdapter != null) {
+                        MainActivity.floatOptionsAdapter.notifyDataSetChanged();
+                    }
                 }
             });
         }
