@@ -1,6 +1,8 @@
 package trumplabs.schoolapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -330,17 +332,11 @@ public class Subscribers extends MyActionBarActivity {
                         memberIcon.setBackground( getResources().getDrawable(R.drawable.sms));
                     }
                 }
-                }
+            }
 
-
-        /*
-           * Setting options for items
-           */
-            option_imageView.setOnClickListener(new View.OnClickListener() {
-
+            membername.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
                     Intent intent = new Intent(Subscribers.this, ChatActivityRecyclerView.class);
                     intent.putExtra("classCode", classCode);
                     intent.putExtra("childName", name);
@@ -348,8 +344,17 @@ public class Subscribers extends MyActionBarActivity {
 
                     startActivity(intent);
                     return;
+                }
+            });
 
-                    /*final Context context = Subscribers.this;
+            /*
+            * Setting options for items
+            */
+            option_imageView.setOnClickListener(new View.OnClickListener() {
+
+                @Override
+                public void onClick(View v) {
+                    final Context context = Subscribers.this;
                     AlertDialog.Builder alert = new AlertDialog.Builder(context);
 
                     if(! UtilString.isBlank(className))
@@ -381,7 +386,7 @@ public class Subscribers extends MyActionBarActivity {
                         }
                     });
 
-                    alert.show();*/
+                    alert.show();
                 }
             });
 
@@ -400,41 +405,7 @@ public class Subscribers extends MyActionBarActivity {
 
         @Override
         protected Void doInBackground(Void... params) {
-
             memberDetails = memberQuery.getLocalClassMembers(code);
-
-            //Create listener for each member
-            /*for(MemberDetails m : memberDetails){
-                final String childId = m.getChildId();
-                Firebase mFirebaseRef = new Firebase(ChatActivity.FIREBASE_URL).child(classCode + "-" + childId);
-                Log.d("__CHAT_C", "adding listener for : " + classCode + "-" + childId);
-                mFirebaseRef.limit(1).addChildEventListener(new ChildEventListener() {
-                    @Override
-                    public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                        Log.d("__CHAT_C", "onChildAdded : " + childId);
-                    }
-
-                    @Override
-                    public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-                        Log.d("__CHAT_C", "onChildChanged : " + childId);
-                    }
-
-                    @Override
-                    public void onChildRemoved(DataSnapshot dataSnapshot) {
-                        Log.d("__CHAT_C", "onChildRemoved : " + childId);
-                    }
-
-                    @Override
-                    public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-                    }
-
-                    @Override
-                    public void onCancelled(FirebaseError firebaseError) {
-
-                    }
-                });
-            }*/
             return null;
         }
 

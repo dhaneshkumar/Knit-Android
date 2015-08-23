@@ -1,13 +1,9 @@
 package chat;
 
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -24,26 +20,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseUser;
-import com.pubnub.api.Callback;
-import com.pubnub.api.PnGcmMessage;
-import com.pubnub.api.PnMessage;
-import com.pubnub.api.Pubnub;
-import com.pubnub.api.PubnubError;
-import com.pubnub.api.PubnubException;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -64,7 +46,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
     private Long startTimeToken = 0L;
 
-    private Pubnub mPubNub;
     private GoogleCloudMessaging gcm;
     private String gcmRegId;
 
@@ -156,156 +137,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
     }
 
-    /**
-     * Instantiate PubNub object with username as UUID
-     *   Then subscribe to the current channel with presence.
-     *   Finally, populate the listview with past messages from history
-     */
-    private void initPubNub(){
-        this.mPubNub = new Pubnub(ChatConfig.PUBLISH_KEY, ChatConfig.SUBSCRIBE_KEY);
-        this.mPubNub.setUUID(mUsername);
-        subscribeWithPresence();
-        history();
-        gcmRegister();
-    }
-
-    /**
-     * Subscribe to channel, when subscribe connection is established, in connectCallback, subscribe
-     *   to presence, set login time with setStateLogin and update hereNow information.
-     * When a message is received, in successCallback, get the ChatMessage information from the
-     *   received JSONObject and finally put it into the listview's ChatAdapter.
-     * Chat adapter calls notifyDatasetChanged() which updates UI, meaning must run on UI thread.
-     */
-    public void subscribeWithPresence(){
-
-        Callback subscribeCallback = new Callback() {
-            @Override
-            public void successCallback(String channel, Object message) {
-                if (message instanceof JSONObject){
-                    try {
-                        JSONObject jsonObj = (JSONObject) message;
-                        JSONObject json = jsonObj.getJSONObject("data");
-                        String name = json.getString(ChatConfig.JSON_USER);
-                        String msg  = json.getString(ChatConfig.JSON_MSG);
-                        long time   = json.getLong(ChatConfig.JSON_TIME);
-                        if (name.equals(mPubNub.getUUID())) return; // Ignore own messages
-                        final ChatMessage chatMsg = new ChatMessage(name, msg, time);
-                        ChatActivityRecyclerView.this.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                mChatListAdapter.mModels.add(chatMsg);
-                                notifyAndSmartScroll(false);
-                            }
-                        });
-                    } catch (JSONException e){ e.printStackTrace(); }
-                }
-                Log.d("__CHAT", "Channel: " + channel + " Msg: " + message.toString());
-            }
-
-            @Override
-            public void connectCallback(String channel, Object message) {
-                Log.d("__CHAT", "Connected! " + message.toString());
-            }
-        };
-        try {
-            mPubNub.subscribe(this.channel, subscribeCallback);
-        } catch (PubnubException e){ e.printStackTrace(); }
-    }
-
-    /**
-     * Get last 100 messages sent on current channel from history.
-     */
-    public void history(){
-        this.mPubNub.history(this.channel, 8, false, new Callback() {
-            @Override
-            public void successCallback(String channel, final Object message) {
-                try {
-                    JSONArray json = (JSONArray) message;
-                    Log.d("__CHAT history", json.toString());
-                    final JSONArray messages = json.getJSONArray(0);
-                    startTimeToken = json.getLong(1);
-
-                    final List<ChatMessage> chatMsgs = new ArrayList<ChatMessage>();
-                    for (int i = 0; i < messages.length(); i++) {
-                        JSONObject jsonMsg = messages.getJSONObject(i).getJSONObject("data");
-                        String name = jsonMsg.getString(ChatConfig.JSON_USER);
-                        String msg = jsonMsg.getString(ChatConfig.JSON_MSG);
-                        long time = jsonMsg.getLong(ChatConfig.JSON_TIME);
-                        ChatMessage chatMsg = new ChatMessage(name, msg, time);
-                        chatMsgs.add(chatMsg);
-                    }
-                    ChatActivityRecyclerView.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mChatListAdapter.mModels = chatMsgs;
-                            notifyAndSmartScroll(false);
-                        }
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void errorCallback(String channel, PubnubError error) {
-                Log.d("__CHAT history", error.toString());
-            }
-        });
-    }
-
-    /**
-     * Get last 100 messages sent on current channel from history.
-     */
-    public void moreHistory(){
-        this.mPubNub.history(this.channel, startTimeToken, 4, false, new Callback() {
-            @Override
-            public void successCallback(String channel, final Object message) {
-                try {
-                    JSONArray json = (JSONArray) message;
-                    Log.d("__CHAT moreHistory", json.toString());
-                    final JSONArray messages = json.getJSONArray(0);
-                    startTimeToken = json.getLong(1);
-
-                    final List<ChatMessage> chatMsgs = new ArrayList<ChatMessage>();
-
-                    if (chatMsgs.size() > 0) {
-                        //there were some messages
-                        lastTotalCount = -1; //so that again moreHistory will be called, just in case all config msgs so no change in adapter size
-                    }
-
-                    for (int i = 0; i < messages.length(); i++) {
-                        JSONObject jsonMsg = messages.getJSONObject(i).getJSONObject("data");
-                        String name = jsonMsg.optString(ChatConfig.JSON_USER, null);
-                        if (name == null) {
-                            //to detect notifications
-                            continue;
-                        }
-                        String msg = jsonMsg.getString(ChatConfig.JSON_MSG);
-                        long time = jsonMsg.getLong(ChatConfig.JSON_TIME);
-                        ChatMessage chatMsg = new ChatMessage(name, msg, time);
-                        chatMsgs.add(chatMsg);
-                    }
-
-                    ChatActivityRecyclerView.this.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            mChatListAdapter.mModels.addAll(0, chatMsgs);
-                            notifyAndSmartScroll(true);
-                        }
-                    });
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void errorCallback(String channel, PubnubError error) {
-                Log.d("__CHAT moreHistory", error.toString());
-                lastTotalCount = -1; //so that again moreHistory will be called
-            }
-        });
-    }
-
     @Override
     public void sendImagePic(String imgname) {
 
@@ -340,8 +171,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     @Override
     public void onStart() {
         super.onStart();
-        initPubNub();
-
 
         // Setup our view and list adapter. Ensure it scrolls to the bottom as data changes
         listView = (RecyclerView) findViewById(R.id.chatList);
@@ -367,7 +196,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                         Log.d("__CHAT_KKP", "Top onScrollNew " + firstVisibleItem + ", lTC=" + lastTotalCount + ", fVI=" + firstVisibleItem + ", vIC=" + visibleItemCount + ", tIC=" + totalItemCount);
                         lastTotalCount = totalItemCount;
 
-                        moreHistory();
+                        //moreHistory();
 
                         /*if (oldQuery != null) {
                             //Log.d("__CHAT_KKP", "removing Listener visibleItemCount=" + visibleItemCount + ", totalItemCount=" + totalItemCount);
@@ -490,8 +319,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     @Override
     protected void onStop() {
         super.onStop();
-        if (this.mPubNub != null)
-            this.mPubNub.unsubscribeAll();
     }
 
     /**
@@ -501,12 +328,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     @Override
     protected void onRestart() {
         super.onRestart();
-        if (this.mPubNub==null){
-            initPubNub();
-        } else {
-            subscribeWithPresence();
-            history();
-        }
     }
 
 
@@ -528,7 +349,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             String imageData = Base64.encodeToString(byteArray, Base64.DEFAULT);
 
             ChatMessage chatMsg = new ChatMessage(mUsername, message, System.currentTimeMillis());
-            try {
+            /*try {
                 JSONObject json = new JSONObject();
                 json.put(ChatConfig.JSON_USER, chatMsg.getAuthor());
                 json.put(ChatConfig.JSON_MSG,  chatMsg.getMessage());
@@ -537,7 +358,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 sendNotification(notificationChannel);
 
             } catch (JSONException e){ e.printStackTrace();
-            }
+            }*/
 
             mChatListAdapter.mModels.add(chatMsg);
             notifyAndSmartScroll(false);
@@ -548,7 +369,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         }
         else if (!message.equals("")) {
             ChatMessage chatMsg = new ChatMessage(mUsername, message, System.currentTimeMillis());
-            try {
+            /*try {
                 JSONObject json = new JSONObject();
                 json.put(ChatConfig.JSON_USER, chatMsg.getAuthor());
                 json.put(ChatConfig.JSON_MSG,  chatMsg.getMessage());
@@ -556,7 +377,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 publish(ChatConfig.JSON_GROUP, json);
                 sendNotification(notificationChannel);
             } catch (JSONException e){ e.printStackTrace();
-            }
+            }*/
 
             mChatListAdapter.mModels.add(chatMsg);
             notifyAndSmartScroll(false);
@@ -585,165 +406,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         }
     }
 
-    /**
-     * Use PubNub to send any sort of data
-     * @param type The type of the data, used to differentiate groupMessage from directMessage
-     * @param data The payload of the publish
-     */
-    public void publish(String type, JSONObject data){
-        JSONObject json = new JSONObject();
-        try {
-            json.put("type", type);
-            json.put("data", data);
-        } catch (JSONException e) { e.printStackTrace(); }
-
-        Log.d("__CHAT publish", "channel=" + channel + " payload="+json);
-        this.mPubNub.publish(this.channel, json, new BasicCallback("publish"));
-    }
-
-    // #################### GCM methods follow (move it somewhere else generalize) #############
-
-    public void sendNotification(String notChannel) {
-        PnGcmMessage gcmMessage = new PnGcmMessage();
-        JSONObject json = new JSONObject();
-        try {
-            json.put(ChatConfig.GCM_POKE_FROM, this.mUsername);
-            json.put(ChatConfig.GCM_CHAT_ROOM, this.channel);
-            gcmMessage.setData(json);
-
-            PnMessage message = new PnMessage(
-                    this.mPubNub,
-                    notChannel,
-                    new BasicCallback("sendNotification to " + notChannel),
-                    gcmMessage);
-            message.put("pn_debug",true); // Subscribe to yourchannel-pndebug on console for reports
-            Log.d("__CHAT sendNotification", "sending notification to channel=" + notChannel + ", json=" + json);
-            message.publish();
-        }
-        catch (JSONException e) { e.printStackTrace(); }
-        catch (PubnubException e) { e.printStackTrace(); }
-    }
-
-    /**
-     * GCM Functionality.
-     * In order to use GCM Push notifications you need an API key and a Sender ID.
-     * Get your key and ID at - https://developers.google.com/cloud-messaging/
-     */
-
-    private void gcmRegister() {
-        if (checkPlayServices()) {
-            Log.d("__CHAT", "call Reg Intent Service");
-            Intent intent = new Intent(this, RegistrationIntentService.class);
-            startService(intent);
-            //new RegisterTask().execute();
-        } else {
-            Log.e("GCM-register", "No valid Google Play Services APK found.");
-        }
-    }
-
-    private boolean checkPlayServices() {
-        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if (resultCode != ConnectionResult.SUCCESS) {
-            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
-                GooglePlayServicesUtil.getErrorDialog(resultCode, this, ChatConfig.PLAY_SERVICES_RESOLUTION_REQUEST).show();
-            } else {
-                Log.e("GCM-check", "This device is not supported.");
-                finish();
-            }
-            return false;
-        }
-        return true;
-    }
-
-    private String getRegistrationId() {
-        SharedPreferences prefs = getSharedPreferences(ChatConfig.CHAT_PREFS, Context.MODE_PRIVATE);
-        return prefs.getString(ChatConfig.GCM_REG_ID, "");
-    }
-
-    private void removeRegistrationId() {
-        SharedPreferences prefs = getSharedPreferences(ChatConfig.CHAT_PREFS, Context.MODE_PRIVATE);
-
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.remove(ChatConfig.GCM_REG_ID);
-        editor.apply();
-    }
-
-    private void storeRegistrationId(String regId) {
-        SharedPreferences prefs = getSharedPreferences(ChatConfig.CHAT_PREFS, Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = prefs.edit();
-        editor.putString(ChatConfig.GCM_REG_ID, regId);
-        editor.apply();
-    }
-
-    private void sendRegistrationId(String regId) {
-        Log.d("__CHAT sendRegId", "regId is " + regId);
-        this.mPubNub.enablePushNotificationsOnChannel(notificationChannel , regId, new BasicCallback("sendRegistrationId for " + notificationChannel));
-    }
-
-    private class RegisterTask extends AsyncTask<Void, Void, String> {
-        boolean isRenewed = false;
-
-        @Override
-        protected String doInBackground(Void... params) {
-            String msg="";
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(ChatActivityRecyclerView.this);
-                }
-
-                String oldGcmRegId = getRegistrationId();
-                gcmRegId = gcm.register(ChatConfig.GCM_SENDER_ID);
-
-                Log.i("__CHAT RegisterTask", "old id=" + oldGcmRegId + ", new id=" + gcmRegId);
-
-                sendRegistrationId(gcmRegId);
-                storeRegistrationId(gcmRegId);
-
-                if(!oldGcmRegId.equals(gcmRegId)) {
-                    isRenewed = true;
-                }
-
-            } catch (IOException e){
-                e.printStackTrace();
-            }
-            return msg;
-        }
-
-        @Override
-        protected void onPostExecute(String res) {
-            super.onPostExecute(res);
-            if(isRenewed){
-                Toast.makeText(ChatActivityRecyclerView.this, "Sending new Registration id=" + gcmRegId, Toast.LENGTH_SHORT).show();
-            }
-            else{
-                Toast.makeText(ChatActivityRecyclerView.this, "Same Registration id=" + gcmRegId, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    private class UnregisterTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                if (gcm == null) {
-                    gcm = GoogleCloudMessaging.getInstance(ChatActivityRecyclerView.this);
-                }
-
-                // Unregister from GCM
-                gcm.unregister();
-
-                // Remove Registration ID from memory
-                removeRegistrationId();
-
-                // Disable Push Notification
-                mPubNub.disablePushNotificationsOnChannel(notificationChannel, gcmRegId);
-
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }
 }
 
 

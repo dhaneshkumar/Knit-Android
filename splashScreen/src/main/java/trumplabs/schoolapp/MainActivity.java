@@ -35,7 +35,6 @@ import android.widget.TextView;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.localytics.android.Localytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -105,12 +104,14 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     public static boolean goToOutboxFlag = false; //when returns from Message Composer, go directly to Outbox
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if(Config.SHOWLOG) Log.d("__AA","onCreate MainActivity");
+        if(Config.SHOWLOG) Log.d("__AA","onCreate MainActivity d");
 
         //testing tutorial TODO comment following line before release
         //TestingUtililty.testingTutorial();
 
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.homepage_layout);
 
         user = ParseUser.getCurrentUser();
@@ -460,9 +461,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         FacebookSdk.sdkInitialize(getApplicationContext());
 
-        // If you're using Localytics Push Messaging
-        Localytics.registerPush("110521105118");
-
+        super.recreateSession();
     }
 
     @Override

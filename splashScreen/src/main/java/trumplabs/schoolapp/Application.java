@@ -6,16 +6,17 @@ import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 
-import com.localytics.android.LocalyticsActivityLifecycleCallbacks;
 import com.parse.Parse;
 import com.parse.ParseCrashReporting;
 import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.PushService;
+import com.quickblox.core.QBSettings;
 
 import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
+import chat.ChatConfig;
 import utility.Config;
 
 public class Application extends android.app.Application {
@@ -79,18 +80,11 @@ public class Application extends android.app.Application {
 	Application.context = getApplicationContext();
 
 
+      QBSettings.getInstance().fastConfigInit(ChatConfig.QB_APP_ID, ChatConfig.QB_AUTH_KEY, ChatConfig.QB_AUTH_SECRET);
 	// Specify an Activity to handle all pushes by   default.
 	//PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class);
 	PushService.setDefaultPushCallback(this, trumplabs.schoolapp.MainActivity.class,getResources().getIdentifier("notifications", "drawable", getPackageName()));
 
-
-
-      // Register LocalyticsActivityLifecycleCallbacks
-      int currentapiVersion = android.os.Build.VERSION.SDK_INT;
-      if (currentapiVersion >= 14) {
-          registerActivityLifecycleCallbacks(
-                  new LocalyticsActivityLifecycleCallbacks(this));
-      }
   }
   
   
