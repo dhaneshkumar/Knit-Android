@@ -25,18 +25,24 @@ import android.widget.TextView;
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseUser;
 import com.quickblox.chat.QBChatService;
+import com.quickblox.chat.QBGroupChat;
+import com.quickblox.chat.QBGroupChatManager;
 import com.quickblox.chat.QBPrivateChat;
 import com.quickblox.chat.QBPrivateChatManager;
 import com.quickblox.chat.exception.QBChatException;
 import com.quickblox.chat.listeners.QBIsTypingListener;
 import com.quickblox.chat.listeners.QBMessageListener;
 import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.chat.model.QBDialog;
+import com.quickblox.chat.model.QBDialogType;
 import com.quickblox.core.QBEntityCallbackImpl;
+import com.quickblox.core.request.QBRequestGetBuilder;
 import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
 
 import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
+import org.jivesoftware.smackx.muc.DiscussionHistory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -161,6 +167,8 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 "Please wait..", true);
 
         getOpponenentIdFromUsername(opponentParseUsername);
+
+        getAllChatDialogs();
     }
 
     @Override
@@ -551,6 +559,78 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                         }
                     }
                 });
+            }
+        });
+    }
+
+    void getAllChatDialogs(){
+        QBRequestGetBuilder requestBuilder = new QBRequestGetBuilder();
+        requestBuilder.setPagesLimit(100);
+
+        QBChatService.getChatDialogs(null, requestBuilder, new QBEntityCallbackImpl<ArrayList<QBDialog>>() {
+            @Override
+            public void onSuccess(ArrayList<QBDialog> dialogs, Bundle args) {
+                for(QBDialog d: dialogs){
+                    Log.d("__CHAT getAll", "dialog=" + d.getDialogId() + d.getName());
+                    if(d.getType().equals(QBDialogType.PUBLIC_GROUP)){
+                        final DiscussionHistory history = new DiscussionHistory();
+                        history.setMaxStanzas(2);
+
+                        QBGroupChatManager groupChatManager = QBChatService.getInstance().getGroupChatManager();
+
+                        final QBGroupChat currentChatRoom = groupChatManager.createGroupChat(d.getRoomJid());
+                        currentChatRoom.join(history, new QBEntityCallbackImpl() {
+                            @Override
+                            public void onSuccess() {
+                                // add listeners
+                                Log.d("__CHAT join", "success history=");
+                                currentChatRoom.addMessageListener(localPrivateChatMessageListener);
+
+                                QBChatMessage chatMessage = new QBChatMessage();
+                                chatMessage.setBody("Hi there 2");
+                                chatMessage.setProperty("save_to_history", "1"); // Save to Chat 2.0 history
+
+                                try {
+                                    currentChatRoom.sendMessage(chatMessage);
+                                } catch (XMPPException e) {
+
+                                } catch (SmackException.NotConnectedException e) {
+
+                                } catch (IllegalStateException e){
+
+                                }
+                            }
+
+                            @Override
+                            public void onError(final List list) {
+                                Log.d("__CHAT join", "error");
+                            }
+                        });
+                        //break;
+
+                        QBRequestGetBuilder requestBuilder = new QBRequestGetBuilder();
+                        requestBuilder.setPagesLimit(100);
+
+                        QBChatService.getDialogMessages(d, requestBuilder, new QBEntityCallbackImpl<ArrayList<QBChatMessage>>() {
+                            @Override
+                            public void onSuccess(ArrayList<QBChatMessage> messages, Bundle args) {
+                                for(QBChatMessage msg : messages){
+                                    Log.d("__CHAT getDMsgs", "msg=" + msg.getBody());
+                                }
+                            }
+
+                            @Override
+                            public void onError(List<String> errors) {
+                                Log.d("__CHAT getDMsgs", "error");
+                            }
+                        });
+                    }
+                }
+            }
+
+            @Override
+            public void onError(List<String> errors) {
+                Log.d("__CHAT getAll", "error=" + errors);
             }
         });
     }
