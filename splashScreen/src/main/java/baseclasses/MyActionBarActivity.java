@@ -17,11 +17,11 @@ import java.util.List;
 
 import chat.ChatService;
 import trumplabs.schoolapp.Application;
+import utility.Utility;
 
 public class MyActionBarActivity extends ActionBarActivity{
     private static boolean sessionActive = false;
     private boolean needToRecreateSession = false;
-    private final Handler handler = new Handler();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,12 +100,10 @@ public class MyActionBarActivity extends ActionBarActivity{
             public void onSuccess() {
                 Log.d("__CHAT", "Chat login onSuccess @" + ChatService.chatLoginStage);
 
-                runOnUiThread(new Runnable() {
+                Application.applicationHandler.post(new Runnable() {
                     @Override
                     public void run() {
-                        Toast toast = Toast.makeText(Application.getAppContext(),
-                                "Chat login success", Toast.LENGTH_SHORT);
-                        toast.show();
+                        Utility.toast("Chat login success");
                     }
                 });
 
@@ -117,12 +115,15 @@ public class MyActionBarActivity extends ActionBarActivity{
 
                 Log.d("__CHAT", "Chat login @" + ChatService.chatLoginStage + " onError: " + errors);
 
-                Toast toast = Toast.makeText(getApplicationContext(),
-                        "Error, trying again in 3 seconds.. Check internet", Toast.LENGTH_SHORT);
-                toast.show();
+                /*Application.applicationHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Utility.toast("Error, trying again in 3 seconds.. Check internet");
+                    }
+                });*/
 
                 // try again
-                handler.postDelayed(new Runnable() {
+                Application.applicationHandler.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         recreateSession();

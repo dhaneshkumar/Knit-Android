@@ -35,4 +35,8 @@ public class ChatMessage {
         return imageData;
     }
 
+    @Override
+    public String toString(){
+        return author + "@" + timeStamp + ":" + message;
+    }
 }

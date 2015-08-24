@@ -13,4 +13,7 @@ public class ChatConfig {
 
     public static final String GCM_REG_ID = "gcmRegId";
     public static final String CHAT_PREFS = "chatPrefs";
+
+    public static final String TEACHER = "teacher";
+    public static final String NON_TEACHER = "non_teacher";
 }

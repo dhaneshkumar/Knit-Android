@@ -8,10 +8,17 @@ import com.parse.ParseUser;
 import com.quickblox.auth.QBAuth;
 import com.quickblox.auth.model.QBSession;
 import com.quickblox.chat.QBChatService;
+import com.quickblox.chat.QBPrivateChat;
+import com.quickblox.chat.QBPrivateChatManager;
+import com.quickblox.chat.exception.QBChatException;
+import com.quickblox.chat.listeners.QBMessageListener;
+import com.quickblox.chat.listeners.QBPrivateChatManagerListener;
+import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.chat.model.QBDialog;
 import com.quickblox.core.QBEntityCallback;
 import com.quickblox.core.QBEntityCallbackImpl;
 import com.quickblox.core.request.QBPagedRequestBuilder;
+import com.quickblox.core.request.QBRequestBuilder;
 import com.quickblox.core.request.QBRequestGetBuilder;
 import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
@@ -101,7 +108,7 @@ public class ChatService {
 
             @Override
             public void onError(List<String> errors) {
-                if(errors.contains("Unauthorized")){
+                if (errors.contains("Unauthorized")) {
                     QBAuth.createSession(new QBEntityCallbackImpl<QBSession>() {
 
                         @Override
@@ -114,7 +121,6 @@ public class ChatService {
                             //signup the user
                             String username = ParseUser.getCurrentUser().getUsername();
                             final QBUser newQBUser = new QBUser(username, username);
-                            newQBUser.setFullName(ParseUser.getCurrentUser().getString("name"));
 
                             QBUsers.signUp(newQBUser, new QBEntityCallbackImpl<QBUser>() {
                                 @Override
@@ -149,8 +155,7 @@ public class ChatService {
                     });
 
 
-                }
-                else {
+                } else {
                     callback.onError(errors);
                 }
             }
@@ -210,7 +215,6 @@ public class ChatService {
         return opponentID;
     }
 
-
     ConnectionListener chatConnectionListener = new ConnectionListener() {
         @Override
         public void connected(XMPPConnection connection) {
@@ -247,6 +251,50 @@ public class ChatService {
         @Override
         public void reconnectionFailed(final Exception error) {
             Log.i(TAG, "reconnectionFailed: " + error.getLocalizedMessage());
+        }
+    };
+
+    //Actual chat manager and listener
+
+    void initChatManagerIfNeeded(){
+        if(privateChatManager == null) {
+            privateChatManager = QBChatService.getInstance().getPrivateChatManager();
+            privateChatManager.addPrivateChatManagerListener(privateChatManagerListener);
+        }
+    }
+
+    QBPrivateChatManager privateChatManager; //overall manager
+
+    QBPrivateChatManagerListener privateChatManagerListener = new QBPrivateChatManagerListener() {
+        @Override
+        public void chatCreated(final QBPrivateChat privateChat, final boolean createdLocally) {
+            Log.d("__CHAT pCMngLis", "chatCreated");
+            if(!createdLocally){
+                Log.d("__CHAT pCMngLis", "chatCreated not locally");
+                privateChat.addMessageListener(privateChatMessageListener);
+            }
+        }
+    };
+
+    QBMessageListener<QBPrivateChat> privateChatMessageListener = new QBMessageListener<QBPrivateChat>() {
+        @Override
+        public void processMessage(QBPrivateChat privateChat, final QBChatMessage chatMessage) {
+            Log.d("__CHAT pCMsgLis", "global processMessage " + privateChat.getParticipant());
+        }
+
+        @Override
+        public void processError(QBPrivateChat privateChat, QBChatException error, QBChatMessage originMessage){
+            Log.d("__CHAT pCMsgLis", "global processError " + privateChat.getParticipant());
+        }
+
+        @Override
+        public void processMessageDelivered(QBPrivateChat privateChat, String messageID){
+            Log.d("__CHAT pCMsgLis", "global processMessageDelivered " + privateChat.getParticipant());
+        }
+
+        @Override
+        public void processMessageRead(QBPrivateChat privateChat, String messageID){
+            Log.d("__CHAT pCMsgLis", "global processMessageRead " + privateChat.getParticipant());
         }
     };
 }

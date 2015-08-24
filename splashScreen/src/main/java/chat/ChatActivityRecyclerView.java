@@ -1,5 +1,6 @@
 package chat;
 
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -23,6 +24,19 @@ import android.widget.TextView;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.parse.ParseUser;
+import com.quickblox.chat.QBChatService;
+import com.quickblox.chat.QBPrivateChat;
+import com.quickblox.chat.QBPrivateChatManager;
+import com.quickblox.chat.exception.QBChatException;
+import com.quickblox.chat.listeners.QBIsTypingListener;
+import com.quickblox.chat.listeners.QBMessageListener;
+import com.quickblox.chat.model.QBChatMessage;
+import com.quickblox.core.QBEntityCallbackImpl;
+import com.quickblox.users.QBUsers;
+import com.quickblox.users.model.QBUser;
+
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.XMPPException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,21 +55,17 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
 
     private String mUsername;
-    private String channel;
-    public static String notificationChannel;
-
-    private Long startTimeToken = 0L;
 
     private GoogleCloudMessaging gcm;
     private String gcmRegId;
 
-
     private ReclycleAdapter mChatListAdapter;
     private LinearLayoutManager mLayoutManager;
 
-    private String childName;
-    private String childId;
+    private String opponentName;
+    private String opponentParseUsername;
     private String classCode;
+    private String chatAs; //either ChatConfig.TEACHER or ChatConfig.NON_TEACHER
 
     LinearLayout imagePreview;
     ImageView attachedImage;
@@ -64,11 +74,23 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     int lastTotalCount = -1;
     RecyclerView listView;
 
+    //Quickblox api
+    QBPrivateChat privateChat; //this chat
+    QBPrivateChatManager privateCMInstance;
+    Integer opponentQBId;
+    ProgressDialog dialog;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_activity_recycler_view);
 
+        if(!QBChatService.getInstance().isLoggedIn()){
+            Log.d("__CHAT onCreate", "not logged in");
+            Utility.toast("Chat Service not connected !");
+            finish();
+            return; //important just calling finish() won't stop remaining code from executing
+        }
         // Make sure we have a mUsername
         setupUsername();
 
@@ -76,15 +98,13 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
-            classCode = getIntent().getExtras().getString("classCode");
-            childName = getIntent().getExtras().getString("childName");
-            childId = getIntent().getExtras().getString("childId");
+            chatAs = getIntent().getExtras().getString("chatAs");
+            classCode = getIntent().getExtras().getString("classCode"); //always
+            opponentName = getIntent().getExtras().getString("opponentName");
+            opponentParseUsername = getIntent().getExtras().getString("opponentParseUsername");
         }
 
-        setTitle("With " + childName + " as " + classCode);
-
-        channel = classCode + "_" + childId;
-        notificationChannel = "gcm_" + classCode + "_" + childId;
+        setTitle("Chat with " + opponentName);
 
         //Firebase.goOffline();
         //mFirebaseRef = new Firebase(FIREBASE_URL).child("chat");
@@ -101,6 +121,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             }
         });
 
+        findViewById(R.id.sendButton).setEnabled(false);
         findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -127,14 +148,19 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 imagePreview.setTag("");
                 imagePreview.setVisibility(View.GONE);
                 attachedImage.setImageBitmap(null);
-
-               /* if (typedmsg.getText() != null) {
-                    if (typedmsg.getText().length() < 1)
-                        sendmsgbutton.setImageResource(R.drawable.send_grey);
-                }*/
             }
         });
 
+        ChatService.getInstance().initChatManagerIfNeeded(); //initialized global chat manager if needed(first time)
+        privateCMInstance = ChatService.getInstance().privateChatManager;
+
+        if(privateCMInstance == null){
+            Log.d("__CHAT onCreate", "privateCMInstance null");
+        }
+        dialog = ProgressDialog.show(this, "Creating chat",
+                "Please wait..", true);
+
+        getOpponenentIdFromUsername(opponentParseUsername);
     }
 
     @Override
@@ -336,10 +362,38 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     }
 
     private void sendMessage() {
-        //Firebase.goOnline();
-
         EditText inputText = (EditText) findViewById(R.id.messageInput);
         String message = inputText.getText().toString();
+        if(UtilString.isBlank(message)){
+            return;
+        }
+
+        //new start
+        QBChatMessage chatMessage = new QBChatMessage();
+        chatMessage.setBody(message);
+        chatMessage.setProperty("save_to_history", "1"); // Save a message to history
+        chatMessage.setMarkable(true);
+        chatMessage.setProperty("author", mUsername);
+
+        try {
+            Log.d("__CHAT send", "sendMessage begin");
+            privateChat.sendMessage(chatMessage);
+            Log.d("__CHAT send", "sendMessage end");
+            ChatMessage msg = new ChatMessage(mUsername, message, System.currentTimeMillis());
+            mChatListAdapter.mModels.add(msg);
+            notifyAndSmartScroll(false);
+        }
+        catch (XMPPException e) {
+            Log.d("__CHAT send xmpp", e.getMessage() + "");
+        } catch (SmackException.NotConnectedException e) {
+            Log.d("__CHAT send smack", e.getMessage() + "");
+        }
+
+        inputText.setText("");
+
+        if(true) return;
+        //new end
+
         if(imagePreview.getVisibility() == View.VISIBLE){
             Bitmap bmp = ((BitmapDrawable) attachedImage.getDrawable()).getBitmap();
             ByteArrayOutputStream bYtE = new ByteArrayOutputStream();
@@ -386,7 +440,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         }
     }
 
-    void notifyAndSmartScroll(boolean isOldQuery){
+    void notifyAndSmartScroll(final boolean isOldQuery){
         if(isOldQuery) {
             int prevPos = mLayoutManager.findFirstVisibleItemPosition();
             int offset = 0;
@@ -406,6 +460,100 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         }
     }
 
+    //chat msg listener local
+    QBMessageListener<QBPrivateChat> localPrivateChatMessageListener = new QBMessageListener<QBPrivateChat>() {
+        @Override
+        public void processMessage(QBPrivateChat privateChat, final QBChatMessage chatMessage) {
+            //not called on UI thread(worker thread)
+            final ChatMessage msg = new ChatMessage(chatMessage.getProperty("author") + "", chatMessage.getBody(), chatMessage.getDateSent());
+            Log.d("__CHAT pCMsgLis", "local processMessage " + privateChat.getParticipant() + " " + msg);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mChatListAdapter.mModels.add(msg);
+                    notifyAndSmartScroll(false);
+                }
+            });
+        }
+
+        @Override
+        public void processError(QBPrivateChat privateChat, QBChatException error, QBChatMessage originMessage){
+            Log.d("__CHAT pCMsgLis", "local processError " + privateChat.getParticipant());
+        }
+
+        @Override
+        public void processMessageDelivered(QBPrivateChat privateChat, String messageID){
+            Log.d("__CHAT pCMsgLis", "local processMessageDelivered " + privateChat.getParticipant());
+        }
+
+        @Override
+        public void processMessageRead(QBPrivateChat privateChat, String messageID){
+            Log.d("__CHAT pCMsgLis", "local processMessageRead " + privateChat.getParticipant());
+        }
+    };
+
+    QBIsTypingListener<QBPrivateChat> localPrivateChatIsTypingListener = new QBIsTypingListener<QBPrivateChat>() {
+        @Override
+        public void processUserIsTyping(QBPrivateChat privateChat) {
+
+        }
+
+        @Override
+        public void processUserStopTyping(QBPrivateChat privateChat) {
+
+        }
+    };
+
+    public void getOpponenentIdFromUsername(String username){
+        QBUsers.getUserByLogin(username, new QBEntityCallbackImpl<QBUser>() {
+            @Override
+            public void onSuccess(QBUser user, Bundle args) {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        findViewById(R.id.sendButton).setEnabled(true);
+                        Utility.toast("Successfully created chat with " + opponentName);
+                        if(dialog != null) {
+                            dialog.dismiss();
+                            dialog = null;
+                        }
+                    }
+                });
+
+                opponentQBId = user.getId();
+                Log.d("__CHAT getUser", "getUserByLogin success=" + opponentQBId);
+
+                privateChat = privateCMInstance.getChat(opponentQBId);
+                if (privateChat == null) {
+                    privateChat = privateCMInstance.createChat(opponentQBId, localPrivateChatMessageListener);
+                }
+
+                try {
+                    privateChat.sendIsTypingNotification();
+                    privateChat.addIsTypingListener(localPrivateChatIsTypingListener);
+                } catch (XMPPException e) {
+
+                } catch (SmackException.NotConnectedException e) {
+
+                }
+            }
+
+            @Override
+            public void onError(final List<String> errors) {
+                Log.d("__CHAT getUser", "getUserByLogin error=" + errors);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Utility.toast(errors + "");
+                        if(dialog != null) {
+                            dialog.dismiss();
+                            dialog = null;
+                        }
+                    }
+                });
+            }
+        });
+    }
 }
 
 

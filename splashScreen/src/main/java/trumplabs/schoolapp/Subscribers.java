@@ -34,6 +34,7 @@ import BackGroundProcesses.MemberList;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
 import chat.ChatActivityRecyclerView;
+import chat.ChatConfig;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.ExpandableListView;
 import library.UtilString;
@@ -338,9 +339,10 @@ public class Subscribers extends MyActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Subscribers.this, ChatActivityRecyclerView.class);
+                    intent.putExtra("chatAs", ChatConfig.NON_TEACHER);
                     intent.putExtra("classCode", classCode);
-                    intent.putExtra("childName", name);
-                    intent.putExtra("childId", childId);
+                    intent.putExtra("opponentName", name);
+                    intent.putExtra("opponentParseUsername", childId);
 
                     startActivity(intent);
                     return;
