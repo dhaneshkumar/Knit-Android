@@ -29,6 +29,8 @@
     <!-- For Google Login -->
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
 
+    <!-- Access to device info : By Quickblox GCM to get deviceId -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
         android:name="trumplabs.schoolapp.Application"
@@ -214,6 +216,38 @@
             </intent-filter>
         </receiver>
 
+
+        <!-- Chat GCM -->
+        <receiver
+            android:name="com.google.android.gms.gcm.GcmReceiver"
+            android:exported="true"
+            android:permission="com.google.android.c2dm.permission.SEND" >
+            <intent-filter android:priority="2">
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <category android:name="trumplab.textslate" />
+            </intent-filter>
+        </receiver>
+
+        <service
+            android:name="chat.MyGcmListenerService"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="chat.MyInstanceIDListenerService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
+            </intent-filter>
+        </service>
+
+        <service
+            android:name="chat.RegistrationIntentService"
+            android:exported="false">
+        </service>
     </application>
 
 </manifest>

@@ -1,9 +1,13 @@
 package chat;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.parse.ParseUser;
 import com.quickblox.auth.QBAuth;
 import com.quickblox.auth.model.QBSession;
@@ -31,6 +35,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import trumplabs.schoolapp.Application;
 
 /**
  * Created by igorkhomenko on 4/28/15.
@@ -297,4 +303,37 @@ public class ChatService {
             Log.d("__CHAT pCMsgLis", "global processMessageRead " + privateChat.getParticipant());
         }
     };
+
+    /**
+     * GCM Functionality.
+     * In order to use GCM Push notifications you need an API key and a Sender ID.
+     * Get your key and ID at - https://developers.google.com/cloud-messaging/
+     */
+    public void gcmRegister() {
+        if (checkPlayServices()) {
+            Log.d("__CHAT", "call Reg Intent Service");
+            Intent intent = new Intent(Application.getAppContext(), RegistrationIntentService.class);
+            Application.getAppContext().startService(intent);
+            //new RegisterTask().execute();
+        } else {
+            Log.e("GCM-register", "No valid Google Play Services APK found.");
+        }
+    }
+
+    private boolean checkPlayServices() {
+        int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(Application.getAppContext());
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+                if(Application.getCurrentActivity() != null) {
+                    //show in current activity
+                    GooglePlayServicesUtil.getErrorDialog(resultCode, Application.getCurrentActivity(), ChatConfig.PLAY_SERVICES_RESOLUTION_REQUEST).show();
+                }
+            } else {
+                Log.e("GCM-check", "This device is not supported.");
+            }
+            return false;
+        }
+        return true;
+    }
+
 }

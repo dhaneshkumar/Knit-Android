@@ -1,6 +1,7 @@
 package chat;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -36,7 +38,12 @@ import com.quickblox.chat.model.QBChatMessage;
 import com.quickblox.chat.model.QBDialog;
 import com.quickblox.chat.model.QBDialogType;
 import com.quickblox.core.QBEntityCallbackImpl;
+import com.quickblox.core.helper.StringifyArrayList;
 import com.quickblox.core.request.QBRequestGetBuilder;
+import com.quickblox.messages.QBMessages;
+import com.quickblox.messages.model.QBEnvironment;
+import com.quickblox.messages.model.QBEvent;
+import com.quickblox.messages.model.QBNotificationType;
 import com.quickblox.users.QBUsers;
 import com.quickblox.users.model.QBUser;
 
@@ -399,6 +406,8 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
         inputText.setText("");
 
+        sendNotification(message);
+
         if(true) return;
         //new end
 
@@ -446,6 +455,32 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
             inputText.setText("");
         }
+    }
+
+    void sendNotification(String message){
+        // Send Push: create QuickBlox Push Notification Event
+        QBEvent qbEvent = new QBEvent();
+        qbEvent.setNotificationType(QBNotificationType.PUSH);
+        qbEvent.setEnvironment(QBEnvironment.DEVELOPMENT);
+
+        // generic push - will be delivered to all platforms (Android, iOS, WP, Blackberry..)
+        qbEvent.setMessage(message);
+
+        StringifyArrayList<Integer> userIds = new StringifyArrayList<Integer>();
+        userIds.add(opponentQBId);
+        qbEvent.setUserIds(userIds);
+
+        QBMessages.createEvent(qbEvent, new QBEntityCallbackImpl<QBEvent>() {
+            @Override
+            public void onSuccess(QBEvent qbEvent, Bundle bundle) {
+                Log.d("__CHAT noti", "sendNotification success to " + opponentQBId);
+            }
+
+            @Override
+            public void onError(List<String> strings) {
+                Log.d("__CHAT noti", "sendNotification errors=" + strings);
+            }
+        });
     }
 
     void notifyAndSmartScroll(final boolean isOldQuery){

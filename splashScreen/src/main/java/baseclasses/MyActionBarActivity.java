@@ -91,7 +91,6 @@ public class MyActionBarActivity extends ActionBarActivity{
 
         sessionActive = false;
         // Restoring Chat session
-        //
 
         Log.d("__CHAT", "Chat attempting login.....");
 
@@ -104,6 +103,8 @@ public class MyActionBarActivity extends ActionBarActivity{
                     @Override
                     public void run() {
                         Utility.toast("Chat login success");
+
+                        ChatService.getInstance().gcmRegister();
                     }
                 });
 
