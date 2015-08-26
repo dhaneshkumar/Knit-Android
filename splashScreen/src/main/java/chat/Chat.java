@@ -14,6 +14,10 @@ public class Chat {
     public String time;
     public String imageData;
 
+    public Boolean sent;
+    public Boolean delivered;
+    public Boolean seen;
+
     // Required default constructor for Firebase object mapping
 //    @SuppressWarnings("unused")
     public Chat() {
@@ -34,6 +38,34 @@ public class Chat {
     public String getImageData(){
         return imageData;
     }
+
+    public Boolean getSent(){
+        return sent;
+    }
+
+    public Boolean getDelivered(){
+        return delivered;
+    }
+
+    public Boolean getSeen(){
+        return seen;
+    }
+
+    public String getStatus(){
+        if(seen != null){
+            return "[seen]";
+        }
+        else if(delivered != null){
+            return "[delivered]";
+        }
+        else if(sent != null){
+            return "[sent to server]";
+        }
+        else {
+            return "[pending]";
+        }
+    }
+
     @Override
     public String toString(){
         int imageSize = 0;

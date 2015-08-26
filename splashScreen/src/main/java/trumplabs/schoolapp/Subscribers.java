@@ -1,8 +1,6 @@
 package trumplabs.schoolapp;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -20,10 +18,6 @@ import android.widget.TextView;
 
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
-import com.firebase.client.ChildEventListener;
-import com.firebase.client.DataSnapshot;
-import com.firebase.client.Firebase;
-import com.firebase.client.FirebaseError;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
@@ -37,8 +31,6 @@ import java.util.List;
 import BackGroundProcesses.MemberList;
 import additionals.Invite;
 import baseclasses.MyActionBarActivity;
-import chat.Chat;
-import chat.ChatActivity;
 import chat.ChatActivityRecyclerView;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import library.ExpandableListView;

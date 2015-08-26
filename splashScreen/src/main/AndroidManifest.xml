@@ -144,7 +144,6 @@
         <activity android:name="tutorial.ParentTutorial"></activity>
         <activity android:name="tutorial.TeacherTutorial"></activity>
         <activity android:name="additionals.OpenURL"></activity>
-        <activity android:name="chat.ChatActivity"></activity>
         <activity android:name="chat.ChatActivityRecyclerView"
             android:windowSoftInputMode="adjustPan">
         </activity>

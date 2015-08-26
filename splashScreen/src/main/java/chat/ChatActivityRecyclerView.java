@@ -304,6 +304,12 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             Chat newModel = dataSnapshot.getValue(Chat.class);
             int index = adapter.mKeys.indexOf(key);
 
+            Chat oldModel = adapter.mModels.get(index);
+            if(oldModel.getSent() == null){
+                //first time
+                newModel.sent = true; //important to prevent infi loop
+                mFirebaseRef.child(key).child("sent").setValue(true);
+            }
             adapter.mModels.set(index, newModel);
 
             notifyAndSmartScroll();
@@ -482,7 +488,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             } else {
                 authorTV.setTextColor(Color.BLUE);
             }
-            messageTV.setText(chat.getMessage());
+            messageTV.setText(chat.getMessage() + " " + chat.getStatus());
         }
     }
 
