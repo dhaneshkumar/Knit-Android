@@ -49,6 +49,7 @@ import utility.Utility;
 
 public class ChatActivityRecyclerView extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
 
+    private String channelId;
     private String coreTitle;
     private String mUsername;
     private String opponentStatus;
@@ -106,16 +107,26 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             opponentParseUsername = getIntent().getExtras().getString("opponentParseUsername");
         }
 
-        coreTitle = "With " + opponentName;
+
+        coreTitle = opponentName;
         opponentStatus = NEVER;
         setTitle(coreTitle + opponentStatus);
 
         // Setup our Firebase mFirebaseRef - chat rooms is <classCode>_<childId>  (childId is just emailId column)
-        mFirebaseRef = new Firebase(FIREBASE_URL).child(classCode + "-" + opponentParseUsername);
-        mFirebaseRef.keepSynced(true);
+        if(chatAs.equals(ChatConfig.TEACHER)) {
+            //childId is parent's parse username
+            channelId = classCode + "-" + opponentParseUsername;
+        }
+        else{
+            //childId is just my parse username
+            channelId = classCode + "-" + mUsername;
+        }
 
-        //Firebase.goOffline();
-        //mFirebaseRef = new Firebase(FIREBASE_URL).child("chat");
+        Log.d("__CHAT onCreate", "me=" + mUsername + ", oppName=" + opponentName + ", oppParseUN=" + opponentParseUsername);
+        Log.d("__CHAT onCreate", "channelId=" + channelId);
+
+        mFirebaseRef = new Firebase(FIREBASE_URL).child(channelId);
+        mFirebaseRef.keepSynced(true);
 
         // Setup our input methods. Enter key on the keyboard or pushing the send button
         EditText inputText = (EditText) findViewById(R.id.messageInput);
@@ -250,7 +261,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         mConnectedListener = mConnectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("__BA", dataSnapshot + "");
+                Log.d("__CHAT myConn", dataSnapshot + "");
                 boolean connected = (Boolean) dataSnapshot.getValue();
                 if (connected) {
                     Firebase myStatusRef = mFirebaseRef.getRoot().child("status").child(mUsername);
@@ -273,6 +284,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 //don't take this value into "boolean" as it could be null and would crash while convering null Boolean to boolean
+                Log.d("__CHAT opponent", dataSnapshot + "");
                 Chat.ConnectionStatus connStatus = dataSnapshot.getValue(Chat.ConnectionStatus.class);
 
                 if (connStatus != null) {

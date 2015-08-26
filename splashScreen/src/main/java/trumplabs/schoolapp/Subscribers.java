@@ -339,7 +339,7 @@ public class Subscribers extends MyActionBarActivity {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(Subscribers.this, ChatActivityRecyclerView.class);
-                    intent.putExtra("chatAs", ChatConfig.NON_TEACHER);
+                    intent.putExtra("chatAs", ChatConfig.TEACHER);
                     intent.putExtra("classCode", classCode);
                     intent.putExtra("opponentName", name);
                     intent.putExtra("opponentParseUsername", childId);
