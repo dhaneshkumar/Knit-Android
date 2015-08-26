@@ -41,7 +41,6 @@
             android:value="@integer/google_play_services_version" />
 
         <meta-data android:name="com.facebook.sdk.ApplicationId"  android:value="@string/FB_APP_id"/>
-        <meta-data android:name="LOCALYTICS_APP_KEY" android:value="24695b617d02a08993a389c-3b91a63a-3a68-11e5-8299-003e57fecdee"/>
 
         <activity
             android:name="loginpages.SplashScreen"
@@ -216,24 +215,6 @@
             </intent-filter>
         </receiver>
 
-        <!-- Localytics PushReceiver follows -->
-        <receiver
-            android:name="com.localytics.android.PushReceiver"
-            android:permission="com.google.android.c2dm.permission.SEND" >
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-                <category android:name="trumplab.textslate" />
-            </intent-filter>
-        </receiver>
-        <activity android:name="com.localytics.android.PushTrackingActivity"/>
-
-        <!-- Localytics ReferralReceiver follows -->
-        <receiver android:name="com.localytics.android.ReferralReceiver" android:exported="true">
-            <intent-filter>
-                <action android:name="com.android.vending.INSTALL_REFERRER" />
-            </intent-filter>
-        </receiver>
     </application>
 
 </manifest>

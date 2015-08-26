@@ -24,8 +24,8 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.txt'
         }
         debug {
-            minifyEnabled true
-            shrinkResources true
+            /*minifyEnabled true
+            shrinkResources true*/
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules-debug.txt'
         }
     }
@@ -41,11 +41,19 @@ dependencies {
     compile project(':library')
     compile project(':main')
     compile project(':showcaseview')
+
     compile 'com.firebase:firebase-client-android:2.3.1+'
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:recyclerview-v7:22.0.0'
     compile 'com.facebook.android:facebook-android-sdk:4.1.0'
-    compile 'com.google.android.gms:play-services:7.5.0'
     compile 'com.github.shell-software:fab:1.1.2'
+
+    compile 'com.google.android.gms:play-services-identity:7.8.0'
+    compile 'com.google.android.gms:play-services-analytics:7.8.0'
+    compile 'com.google.android.gms:play-services-gcm:7.8.0'
+    compile 'com.google.android.gms:play-services-plus:7.8.0'
+    compile 'com.google.android.gms:play-services-location:7.8.0'
+    compile 'com.google.android.gms:play-services-ads:7.8.0'
+
     compile fileTree(include: ['*.jar'], dir: 'libs')
 }
