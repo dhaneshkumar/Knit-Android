@@ -2,6 +2,8 @@ package chat;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Map;
+
 /**
  * @author greg
  * @since 6/21/13
@@ -74,5 +76,21 @@ public class Chat {
         }
 
         return author + "@" + time + " : " + message + ", imageSize=" + imageSize;
+    }
+
+    static class ConnectionStatus{
+        public Boolean online;
+        public Long lastOnline;
+    }
+
+    //Because ServerValue.TIMESTAMP placeholder is of type Map
+    static class ConnectionStatusProxy{
+        public Boolean online;
+        public Map<String, String> lastOnline;
+
+        ConnectionStatusProxy(Boolean online, Map<String, String> lastOnline){
+            this.online = online;
+            this.lastOnline = lastOnline;
+        }
     }
 }

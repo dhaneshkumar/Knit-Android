@@ -43,35 +43,50 @@ import java.util.Map;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.ChooserDialog;
 import utility.Utility;
 
 public class ChatActivityRecyclerView extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
 
-    // TODO: change this to your own Firebase URL
+    private String coreTitle;
+    private String mUsername;
+    private String opponentStatus;
+    static final String NEVER = "[last : Never]";
+    static final String ONLINE = "[online]";
+
+    //Firebase start
     public static final String FIREBASE_URL = "https://devknitchat.firebaseio.com";
 
-    private String mUsername;
     private Firebase mFirebaseRef;
+
+    private Firebase mConnectedRef;
     private ValueEventListener mConnectedListener;
+
+    private Firebase opponentStatusRef;
+    private ValueEventListener opponentStatusListener;
+
+    Query newQuery;
+    public ChildEventListener mNewListener; //for new messages
+
+    Query oldQuery;
+    public ChildEventListener mOldListener; //to fetch old messages as we scroll up
+    //Firebase end
+
     private ReclycleAdapter mChatListAdapter;
     private LinearLayoutManager mLayoutManager;
 
-    private String childName;
-    private String childId;
     private String classCode;
+    private String opponentName;
+    private String opponentParseUsername;
+    private String chatAs; //either ChatConfig.TEACHER or ChatConfig.NON_TEACHER
 
     LinearLayout imagePreview;
     ImageView attachedImage;
     ImageView removeButton;
 
-    Query newQuery;
-    Query oldQuery;
     int lastTotalCount = -1;
     RecyclerView listView;
-
-    public ChildEventListener mNewListener; //for new messages
-    public ChildEventListener mOldListener; //to fetch old messages as we scroll up
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,15 +100,18 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
+            chatAs = getIntent().getExtras().getString("chatAs");
             classCode = getIntent().getExtras().getString("classCode");
-            childName = getIntent().getExtras().getString("childName");
-            childId = getIntent().getExtras().getString("childId");
+            opponentName = getIntent().getExtras().getString("opponentName");
+            opponentParseUsername = getIntent().getExtras().getString("opponentParseUsername");
         }
 
-        setTitle("With " + childName + " as " + classCode);
+        coreTitle = "With " + opponentName;
+        opponentStatus = NEVER;
+        setTitle(coreTitle + opponentStatus);
 
         // Setup our Firebase mFirebaseRef - chat rooms is <classCode>_<childId>  (childId is just emailId column)
-        mFirebaseRef = new Firebase(FIREBASE_URL).child(classCode + "-" + childId);
+        mFirebaseRef = new Firebase(FIREBASE_URL).child(classCode + "-" + opponentParseUsername);
         mFirebaseRef.keepSynced(true);
 
         //Firebase.goOffline();
@@ -227,14 +245,18 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             }
         });
 
+        mConnectedRef = mFirebaseRef.getRoot().child(".info/connected");
         // Finally, a little indication of connection status
-        mConnectedListener = mFirebaseRef.getRoot().child(".info/connected").addValueEventListener(new ValueEventListener() {
+        mConnectedListener = mConnectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("__BA", dataSnapshot + "");
                 boolean connected = (Boolean) dataSnapshot.getValue();
                 if (connected) {
+                    Firebase myStatusRef = mFirebaseRef.getRoot().child("status").child(mUsername);
                     Toast.makeText(ChatActivityRecyclerView.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
+                    myStatusRef.setValue(new Chat.ConnectionStatusProxy(true, null));
+                    myStatusRef.onDisconnect().setValue(new Chat.ConnectionStatusProxy(null, ServerValue.TIMESTAMP));
                 } else {
                     Toast.makeText(ChatActivityRecyclerView.this, "Disconnected from Firebase", Toast.LENGTH_SHORT).show();
                 }
@@ -243,6 +265,42 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             @Override
             public void onCancelled(FirebaseError firebaseError) {
                 // No-op
+            }
+        });
+
+        opponentStatusRef = mFirebaseRef.getRoot().child("status").child(opponentParseUsername);
+        opponentStatusListener = opponentStatusRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                //don't take this value into "boolean" as it could be null and would crash while convering null Boolean to boolean
+                Chat.ConnectionStatus connStatus = dataSnapshot.getValue(Chat.ConnectionStatus.class);
+
+                if (connStatus != null) {
+                    if (connStatus.online != null) {
+                        opponentStatus = ONLINE;
+                    } else if (connStatus.lastOnline != null) {
+                        String timeString = new SimpleDateFormat(ChatConfig.LAST_SEEN_FORMAT).format(new Date(connStatus.lastOnline));
+                        opponentStatus = "[last : " + timeString + "]";
+                    } else {
+                        opponentStatus = NEVER;
+                    }
+                } else {
+                    opponentStatus = NEVER;
+                }
+
+                Application.applicationHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (ChatActivityRecyclerView.this != null) {
+                            ChatActivityRecyclerView.this.setTitle(coreTitle + opponentStatus);
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
             }
         });
     }
@@ -276,6 +334,15 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             Chat model = dataSnapshot.getValue(Chat.class);
             //Log.d("__CHAT", model + "");
 
+            //set as delivered if received msg
+            boolean received = true;
+            if(model.getAuthor().equals(mUsername)){
+                received = false;
+            }
+            if(received && model.getDelivered() == null){
+                model.delivered = true; //important to prevent infi loop
+                mFirebaseRef.child(key).child("delivered").setValue(true);
+            }
 
             // Insert into the correct location, based on previousChildName
             if (previousChildName == null) {
@@ -421,14 +488,21 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
             Chat chat = mModels.get(position);
+            String key = mKeys.get(position);
 
             // Map a Chat object to an entry in our listview
             String author = chat.getAuthor();
             Long time = Long.valueOf(chat.getTime());
 
             boolean received = true;
-            if(author.equals(ParseUser.getCurrentUser().getUsername())){
+            if(author.equals(mUsername)){
                 received = false;
+            }
+
+            //set as delivered if received
+            if(received && chat.getSeen() == null){
+                chat.delivered = true; //important to prevent infi loop
+                mFirebaseRef.child(key).child("seen").setValue(true);
             }
 
             LinearLayout chatHolder = holder.chatHolder;
@@ -479,7 +553,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 attachedIV.setVisibility(View.GONE);
             }
 
-            String timeString = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a").format(new Date(time));
+            String timeString = new SimpleDateFormat(ChatConfig.MSG_TS_FORMAT).format(new Date(time));
 
             authorTV.setText(timeString + ": ");
             // If the message was sent by this user, color it differently
@@ -488,18 +562,28 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             } else {
                 authorTV.setTextColor(Color.BLUE);
             }
-            messageTV.setText(chat.getMessage() + " " + chat.getStatus());
+
+            if(received) {
+                messageTV.setText(chat.getMessage());
+            }
+            else{
+                messageTV.setText(chat.getMessage() + " " + chat.getStatus());
+            }
         }
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        mFirebaseRef.getRoot().child(".info/connected").removeEventListener(mConnectedListener);
+
+        //remove all listeners
         newQuery.removeEventListener(mNewListener);
         if(oldQuery != null){
             oldQuery.removeEventListener(mOldListener);
         }
+
+        mConnectedRef.removeEventListener(mConnectedListener);
+        opponentStatusRef.removeEventListener(opponentStatusListener);
     }
 
     private void setupUsername() {
