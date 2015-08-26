@@ -21,7 +21,6 @@ public class Chat {
     public Boolean seen;
 
     // Required default constructor for Firebase object mapping
-//    @SuppressWarnings("unused")
     public Chat() {
     }
 

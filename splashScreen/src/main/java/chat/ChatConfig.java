@@ -9,4 +9,7 @@ public class ChatConfig {
 
     public static final String MSG_TS_FORMAT = "dd/MM/yyyy hh:mm:ss a";
     public static final String LAST_SEEN_FORMAT = "dd/MM hh:mm a";
+
+    public static final String ONE_SIGNAL_APP_ID = "8b7bb84e-4aa7-11e5-9676-2360b1b515f4";
+    public static final String GOOGLE_PROJECT_NUMBER = "110521105118";
 }

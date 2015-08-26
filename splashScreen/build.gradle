@@ -16,6 +16,7 @@ android {
         applicationId "trumplab.textslate"
         minSdkVersion 11
         targetSdkVersion 22
+        manifestPlaceholders = [manifestApplicationId:"${applicationId}"]
     }
     buildTypes {
         release {
@@ -42,6 +43,7 @@ dependencies {
     compile project(':main')
     compile project(':showcaseview')
 
+    compile 'com.onesignal:OneSignal:1.+@aar'
     compile 'com.firebase:firebase-client-android:2.3.1+'
     compile 'com.android.support:appcompat-v7:22.0.0'
     compile 'com.android.support:recyclerview-v7:22.0.0'

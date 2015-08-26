@@ -29,7 +29,12 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
+import com.onesignal.OneSignal;
 import com.parse.ParseUser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -52,9 +57,12 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     private String channelId;
     private String coreTitle;
     private String mUsername;
+
     private String opponentStatus;
     static final String NEVER = "[last : Never]";
     static final String ONLINE = "[online]";
+
+    private String opponentOneSignalId;
 
     //Firebase start
     public static final String FIREBASE_URL = "https://devknitchat.firebaseio.com";
@@ -130,15 +138,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
         // Setup our input methods. Enter key on the keyboard or pushing the send button
         EditText inputText = (EditText) findViewById(R.id.messageInput);
-        inputText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView textView, int actionId, KeyEvent keyEvent) {
-                if (actionId == EditorInfo.IME_NULL && keyEvent.getAction() == KeyEvent.ACTION_DOWN) {
-                    sendMessage();
-                }
-                return true;
-            }
-        });
 
         findViewById(R.id.sendButton).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -253,6 +252,30 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                         Log.d("__CHAT_KKQ", "Top onScrollDuplicate " + firstVisibleItem + ", lTC=" + lastTotalCount + ", fVI=" + firstVisibleItem + ", vIC=" + visibleItemCount + ", tIC=" + totalItemCount);
                     }
                 }
+            }
+        });
+
+        //TODO move all of the following to MainActivity
+        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
+            @Override
+            public void idsAvailable(String userId, String registrationId) {
+                Log.d("__CHAT onesignal", "userId:" + userId);
+                mFirebaseRef.getRoot().child("Users").child(mUsername).child("oneSignalId").setValue(userId);
+
+                if (registrationId != null)
+                    Log.d("__CHAT onesignal", "registrationId:" + registrationId);
+            }
+        });
+
+        mFirebaseRef.getRoot().child("Users").child(opponentParseUsername).child("oneSignalId").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                opponentOneSignalId = (String) dataSnapshot.getValue();
+            }
+
+            @Override
+            public void onCancelled(FirebaseError firebaseError) {
+
             }
         });
 
@@ -637,6 +660,56 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             // Create a new, auto-generated child of that chat location, and save our chat data there
             mFirebaseRef.push().setValue(data);
             inputText.setText("");
+
+            sendNotification(input);
+        }
+    }
+
+    void sendNotification(String input){
+        if(opponentOneSignalId == null){
+            Utility.toast(opponentParseUsername + " not yet on OneSignal");
+            return;
+        }
+
+        try {
+            JSONObject content = new JSONObject();
+            content.put("en", input);
+
+            JSONArray playerIds = new JSONArray();
+            playerIds.put(opponentOneSignalId);
+
+            Map<String, Object> jsonMap = new HashMap<>();
+            jsonMap.put("contents", content);
+            jsonMap.put("include_player_ids",playerIds);
+
+            JSONObject notificationJSON = new JSONObject(jsonMap);
+
+            Log.d("__CHAT noti", notificationJSON + "");
+
+            OneSignal.postNotification(notificationJSON, new OneSignal.PostNotificationResponseHandler() {
+                @Override
+                public void onSuccess(JSONObject jsonObject) {
+                    Application.applicationHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utility.toast("notification sent");
+                        }
+                    });
+                }
+
+                @Override
+                public void onFailure(JSONObject jsonObject) {
+                    Application.applicationHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            Utility.toast("notification failed");
+                        }
+                    });
+                }
+            });
+        }
+        catch (JSONException e){
+            e.printStackTrace();
         }
     }
 }
