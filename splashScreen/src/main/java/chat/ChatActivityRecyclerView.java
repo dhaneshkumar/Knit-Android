@@ -672,15 +672,26 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         }
 
         try {
-            JSONObject content = new JSONObject();
-            content.put("en", input);
+            JSONObject contents = new JSONObject();
+            contents.put("en", "");
+
+            JSONObject headings = new JSONObject();
+            headings.put("en", "");
+
+            JSONObject data = new JSONObject();
+            data.put("channel", channelId);
+            data.put("msgTitle", mUsername);
+            data.put("msgContent", input);
 
             JSONArray playerIds = new JSONArray();
             playerIds.put(opponentOneSignalId);
 
             Map<String, Object> jsonMap = new HashMap<>();
-            jsonMap.put("contents", content);
-            jsonMap.put("include_player_ids",playerIds);
+            jsonMap.put("contents", contents); //actual content
+            jsonMap.put("include_player_ids",playerIds); //receipients
+            jsonMap.put("headings", headings); //title
+            jsonMap.put("data", data); //extra json
+            jsonMap.put("android_background_data", true); //so that com.onesignal.BackgroundBroadcast.RECEIVE broadcast is called
 
             JSONObject notificationJSON = new JSONObject(jsonMap);
 

@@ -214,6 +214,15 @@
             </intent-filter>
         </receiver>
 
+        <!-- One signal receiver -->
+        <receiver
+            android:name="chat.OneSignalBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.onesignal.BackgroundBroadcast.RECEIVE" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>

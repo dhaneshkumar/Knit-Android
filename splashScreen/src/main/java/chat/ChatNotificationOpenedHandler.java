@@ -41,7 +41,7 @@ public class ChatNotificationOpenedHandler implements OneSignal.NotificationOpen
         } catch (JSONException e) {
         }
 
-        Log.d("__CHAT notification", "notification active=" + isActive + ", msg=" + message + ", add=" + additionalData);
+        Log.d("__CHAT Noti Open", "notification active=" + isActive + ", msg=" + message + ", add=" + additionalData);
         Application.applicationHandler.post(new Runnable() {
             @Override
             public void run() {
