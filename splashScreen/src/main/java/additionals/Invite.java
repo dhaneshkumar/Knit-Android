@@ -178,8 +178,6 @@ public class Invite extends MyActionBarActivity{
                   Map<String, String> dimensions = new HashMap<String, String>();
                   dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
                   dimensions.put("Invite Mode", Constants.MODE_WHATSAPP);
-                  ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
-                  if(Config.SHOWLOG) Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_WHATSAPP);
 
                   Intent sendIntent = new Intent(Intent.ACTION_SEND);
                   sendIntent.setPackage("com.whatsapp");
@@ -195,7 +193,13 @@ public class Invite extends MyActionBarActivity{
                   else {
                       sendIntent.setType("text/plain");
 
+                      if(!UtilString.isBlank(classCode))
+                        dimensions.put("Class-Code", classCode);
                   }
+
+                  ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
+                  if(Config.SHOWLOG) Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_WHATSAPP);
+
                   startActivity(sendIntent);
 
               } catch (PackageManager.NameNotFoundException e) {
@@ -247,6 +251,12 @@ public class Invite extends MyActionBarActivity{
               Map<String, String> dimensions = new HashMap<String, String>();
               dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
               dimensions.put("Invite Mode", Constants.MODE_RECEIVE_INSTRUCTIONS);
+
+              if(inviteType == Constants.INVITATION_P2P || inviteType == Constants.INVITATION_T2P) {
+                  if(!UtilString.isBlank(classCode))
+                      dimensions.put("Class-Code", classCode);
+              }
+
               ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
               if(Config.SHOWLOG) Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + Constants.MODE_RECEIVE_INSTRUCTIONS);
 
@@ -302,6 +312,12 @@ public class Invite extends MyActionBarActivity{
           Map<String, String> dimensions = new HashMap<String, String>();
           dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
           dimensions.put("Source", source);
+
+          if(inviteType == Constants.INVITATION_P2P || inviteType == Constants.INVITATION_T2P) {
+              if(!UtilString.isBlank(classCode))
+                  dimensions.put("Class-Code", classCode);
+          }
+
           ParseAnalytics.trackEventInBackground("invitePageOpenings", dimensions);
           if(Config.SHOWLOG) Log.d(LOGTAG, "tracking invitePageOpenings type=" + inviteType + ",source=" + source);
       }

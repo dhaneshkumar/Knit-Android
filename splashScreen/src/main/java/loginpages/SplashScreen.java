@@ -7,6 +7,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
+import com.appsee.Appsee;
 import com.appsflyer.AppsFlyerLib;
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
@@ -88,6 +89,10 @@ public class SplashScreen extends MyActionBarActivity {
         //Appsflyer measure
         AppsFlyerLib.setAppsFlyerKey(Config.APPS_FLYER_ID);
         AppsFlyerLib.sendTracking(getApplicationContext());
+
+
+        //APPSEE measure
+        Appsee.start(Config.APPSEE_ID);
 
     /*
      * Setting parse analytics

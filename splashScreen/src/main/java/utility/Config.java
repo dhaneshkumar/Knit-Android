@@ -59,6 +59,7 @@ public class Config {
     public static final String FB_APP_ID = "689390944539813";
   public static final String GoogleApi_ProjectNumner = "838906570879";
   public static final String APPS_FLYER_ID = "yM6MGfywAWmdjteEvgftxT";
+  public static final String APPSEE_ID = "6c82500fcfaf498b83cc9a9e4b6d4111";
 
     public static int SUBSCRIBER_MIN_LIMIT = 1;
 

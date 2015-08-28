@@ -21,7 +21,6 @@ import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.appsflyer.AppsFlyerLib;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -670,13 +669,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                 t.start();
                             }
 
-                            if(!isLogin){
-                                //sending compaign info to analytics
-                              //  sendCompaignDetailsToServer(user);
-                                //reSetCompaignDetails();
-
-                                AppsFlyerLib.setCustomerUserId(user.getUsername());
-                            }
 
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
@@ -912,13 +904,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                         t.start();
                                     }
 
-                                    //sending compaign info to analytics
-                                 //   sendCompaignDetailsToServer(user);
-                                  //  reSetCompaignDetails();
-
-                                    AppsFlyerLib.setCustomerUserId(user.getUsername());
-
-                                    Log.d(TAG, "url : " + url);
                                 }
                                 else if(!mGoogleApiClient.isConnected()){
                                     mIsResolving = true;

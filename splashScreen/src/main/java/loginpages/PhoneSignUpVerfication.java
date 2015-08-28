@@ -495,6 +495,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             if(progressDialog != null){
                 progressDialog.dismiss();
             }
+
             if(currentParseUser == null) return; //won't happen as called after successful login
 
             //variable storing that its first time app <signup>user
@@ -520,11 +521,15 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             dimensions.put("Signup", "Total Signup");
             ParseAnalytics.trackEvent("Signup", dimensions);
 
-            //sending campaign info to analytics
-            //sendCompaignDetailsToServer(currentParseUser);
-            //reSetCompaignDetails();
+            //sending campaign info to appsflyer analytics
 
             AppsFlyerLib.setCustomerUserId(currentParseUser.getUsername());
+
+            Map<String, Object> eventValue = new HashMap<String, Object>();
+            eventValue.put("USERNAME", currentParseUser.getUsername());
+            AppsFlyerLib.trackEvent(Application.getAppContext(), "sign_up", eventValue);
+
+            Log.d("SIGN_UP", "singup done...................");
 
         }
     }

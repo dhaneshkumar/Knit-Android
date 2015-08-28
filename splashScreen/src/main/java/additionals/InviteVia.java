@@ -112,6 +112,11 @@ public class InviteVia extends MyActionBarActivity {
             Map<String, String> dimensions = new HashMap<String, String>();
             dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
             dimensions.put("Invite Mode", inviteMode);
+
+            if(inviteType == Constants.INVITATION_P2P || inviteType == Constants.INVITATION_T2P) {
+                if(!UtilString.isBlank(classCode))
+                    dimensions.put("Class-Code", classCode);
+            }
             ParseAnalytics.trackEventInBackground("inviteMode", dimensions);
             if(Config.SHOWLOG) Log.d(LOGTAG, "tracking inviteMode type=" + inviteType + ", mode=" + inviteMode);
         }
@@ -441,6 +446,11 @@ public class InviteVia extends MyActionBarActivity {
                                 Map<String, String> dimensions = new HashMap<String, String>();
                                 dimensions.put("Invite Type", "type" + Integer.toString(inviteType));
                                 dimensions.put("Invite Mode", inviteMode);
+
+                                if(inviteType == Constants.INVITATION_P2P || inviteType == Constants.INVITATION_T2P) {
+                                    if(!UtilString.isBlank(classCode))
+                                        dimensions.put("Class-Code", classCode);
+                                }
                                 ParseAnalytics.trackEventInBackground("invitedUsersCount", dimensions);
                                 if(Config.SHOWLOG) Log.d(LOGTAG, "tracking invitedUsersCount type=" + inviteType + ", mode=" + inviteMode);
                             }

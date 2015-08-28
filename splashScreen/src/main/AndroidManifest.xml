@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="trumplab.textslate"
-    android:versionCode="39"
-    android:versionName="4.1.3.1.4">
+    android:versionCode="42"
+    android:versionName="4.1.3.2">
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="22" />
@@ -213,6 +213,9 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
+
+        <!-- appsee service -->
+        <service android:name="com.appsee.AppseeBackgroundUploader" />
     </application>
 
 </manifest>
