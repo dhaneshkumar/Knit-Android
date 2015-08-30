@@ -12,6 +12,9 @@ import android.util.Log;
 
 import org.json.JSONObject;
 
+import notifications.NotificationGenerator;
+import trumplabs.schoolapp.Constants;
+
 public class OneSignalBroadcastReceiver extends BroadcastReceiver {
 
     // You may consider adding a wake lock here if you need to make sure the devices doesn't go to sleep while processing.
@@ -31,16 +34,24 @@ public class OneSignalBroadcastReceiver extends BroadcastReceiver {
             Log.d("__CHAT_OS_Rec", "Is Your App Active: " + dataBundle.getBoolean("isActive"));
 
             JSONObject customJSON = new JSONObject(dataBundle.getString("custom"));
-            if (customJSON.has("a"))
+            if (customJSON.has("a")) {
                 Log.d("__CHAT_OS_Rec", "additionalData: " + customJSON.getJSONObject("a").toString());
+                JSONObject customData = customJSON.getJSONObject("a");
+                String msgTitle = customData.getString("msgTitle");
+                String msgContent = customData.getString("msgContent");
+                String channel = customData.getString("channel");
+                showNotification(context, msgTitle, msgContent, channel);
+            }
         } catch (Throwable t) {
             t.printStackTrace();
         }
-
-        showNotification(); //TODO implement showNotification()
     }
 
-    void showNotification(){
-
+    void showNotification(Context context, String msgTitle, String msgContent, String channel){
+        //currently transition->classrooms
+        //todo 1) if specified 'channel' chat page active, don't do anything here(that activity will handle it); 2) add new transition action 'chat'
+        //if app is active and notification is for other channel whose activity is not visible, then their registered listeners will automatically handle it
+        NotificationGenerator.generateNotification(context, msgContent, msgTitle,
+                Constants.Notifications.TRANSITION_NOTIFICATION, Constants.Actions.CLASSROOMS_ACTION);
     }
 }

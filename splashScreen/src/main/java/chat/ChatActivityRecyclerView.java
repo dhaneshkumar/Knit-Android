@@ -11,11 +11,9 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Base64;
 import android.util.Log;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -53,6 +51,7 @@ import trumplabs.schoolapp.ChooserDialog;
 import utility.Utility;
 
 public class ChatActivityRecyclerView extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
+    boolean channelSet = false;
 
     private String channelId;
     private String coreTitle;
@@ -63,9 +62,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     static final String ONLINE = "[online]";
 
     private String opponentOneSignalId;
-
-    //Firebase start
-    public static final String FIREBASE_URL = "https://devknitchat.firebaseio.com";
 
     private Firebase mFirebaseRef;
 
@@ -133,7 +129,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         Log.d("__CHAT onCreate", "me=" + mUsername + ", oppName=" + opponentName + ", oppParseUN=" + opponentParseUsername);
         Log.d("__CHAT onCreate", "channelId=" + channelId);
 
-        mFirebaseRef = new Firebase(FIREBASE_URL).child(channelId);
+        mFirebaseRef = new Firebase(ChatConfig.FIREBASE_URL).child("Chats").child(channelId);
         mFirebaseRef.keepSynced(true);
 
         // Setup our input methods. Enter key on the keyboard or pushing the send button
@@ -255,18 +251,6 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             }
         });
 
-        //TODO move all of the following to MainActivity
-        OneSignal.idsAvailable(new OneSignal.IdsAvailableHandler() {
-            @Override
-            public void idsAvailable(String userId, String registrationId) {
-                Log.d("__CHAT onesignal", "userId:" + userId);
-                mFirebaseRef.getRoot().child("Users").child(mUsername).child("oneSignalId").setValue(userId);
-
-                if (registrationId != null)
-                    Log.d("__CHAT onesignal", "registrationId:" + registrationId);
-            }
-        });
-
         mFirebaseRef.getRoot().child("Users").child(opponentParseUsername).child("oneSignalId").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -287,7 +271,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 Log.d("__CHAT myConn", dataSnapshot + "");
                 boolean connected = (Boolean) dataSnapshot.getValue();
                 if (connected) {
-                    Firebase myStatusRef = mFirebaseRef.getRoot().child("status").child(mUsername);
+                    Firebase myStatusRef = mFirebaseRef.getRoot().child("Users").child(mUsername).child("status");
                     Toast.makeText(ChatActivityRecyclerView.this, "Connected to Firebase", Toast.LENGTH_SHORT).show();
                     myStatusRef.setValue(new Chat.ConnectionStatusProxy(true, null));
                     myStatusRef.onDisconnect().setValue(new Chat.ConnectionStatusProxy(null, ServerValue.TIMESTAMP));
@@ -302,7 +286,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             }
         });
 
-        opponentStatusRef = mFirebaseRef.getRoot().child("status").child(opponentParseUsername);
+        opponentStatusRef = mFirebaseRef.getRoot().child("Users").child(opponentParseUsername).child("status");
         opponentStatusListener = opponentStatusRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -662,6 +646,16 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             inputText.setText("");
 
             sendNotification(input);
+
+            if(!channelSet){
+                channelSet = true;
+                //add channel to mine and opponent so as to notify him
+                Firebase myRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(mUsername).child("rooms");
+                Firebase oppRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(opponentParseUsername).child("rooms");
+
+                myRef.child(channelId).setValue(true);
+                oppRef.child(channelId).setValue(true);
+            }
         }
     }
 

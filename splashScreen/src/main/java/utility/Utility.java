@@ -697,6 +697,7 @@ public class Utility extends MyActionBarActivity {
             Application.joinedSyncOnce = false;
             Application.lastTimeInboxSync = null;
             Application.lastTimeOutboxSync = null;
+            MyActionBarActivity.sentOneSignalId = false; //so that we send the id for next user who logs in
 
             //cancel all alarms set. Very first thing to do
             AlarmTrigger.cancelEventCheckerAlarm(_context);

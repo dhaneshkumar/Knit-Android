@@ -147,6 +147,7 @@
         <activity android:name="chat.ChatActivityRecyclerView"
             android:windowSoftInputMode="adjustPan">
         </activity>
+        <activity android:name="chat.ChatRoomsActivity"></activity>
 
         <activity android:name="additionals.InviteVia"
             android:launchMode="singleTop"

@@ -4,6 +4,7 @@ package chat;
  * Created by ashish on 26/8/15.
  */
 public class ChatConfig {
+
     public static final String NON_TEACHER = "non_teacher";
     public static final String TEACHER = "teacher";
 
@@ -12,4 +13,6 @@ public class ChatConfig {
 
     public static final String ONE_SIGNAL_APP_ID = "8b7bb84e-4aa7-11e5-9676-2360b1b515f4";
     public static final String GOOGLE_PROJECT_NUMBER = "110521105118";
+
+    public static final String FIREBASE_URL = "https://devknitchat.firebaseio.com";
 }

@@ -53,6 +53,7 @@ import additionals.Invite;
 import additionals.RateAppDialog;
 import additionals.SpreadWordDialog;
 import baseclasses.MyActionBarActivity;
+import chat.ChatRoomsActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
@@ -748,9 +749,12 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 break;
 
             case R.id.feedback:
-                FeedBackClass feedBack = new FeedBackClass();
+                Intent i = new Intent(getBaseContext(), ChatRoomsActivity.class);
+                startActivity(i);
+
+                /*FeedBackClass feedBack = new FeedBackClass();
                 FragmentManager fmr = getSupportFragmentManager();
-                feedBack.show(fmr, "FeedBackClass");
+                feedBack.show(fmr, "FeedBackClass");*/
 
                 break;
 
