@@ -219,6 +219,14 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
         mNewListener = new MyChildEventListener(listView, mChatListAdapter, false);
         mOldListener = new MyChildEventListener(listView, mChatListAdapter, true);
 
+        //set new msg count to 0
+        ChatRoomsActivity.RoomDetail roomDetail = ChatRoomsActivity.roomMap.get(channelId);
+
+        if(roomDetail != null){
+            roomDetail.newMsgs = 0;
+            ChatRoomsActivity.MyRoomListener.notifyAdapter();
+        }
+
         newQuery = mFirebaseRef.limit(8);
         newQuery.addChildEventListener(mNewListener);
 
@@ -358,9 +366,24 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             if(model.getAuthor().equals(mUsername)){
                 received = false;
             }
+
             if(received && model.getDelivered() == null){
                 model.delivered = true; //important to prevent infi loop
                 mFirebaseRef.child(key).child("delivered").setValue(true);
+
+                //set lastSeenMsgKey in Room
+                ChatRoomsActivity.RoomDetail roomDetail = ChatRoomsActivity.roomMap.get(channelId);
+                if(roomDetail != null && roomDetail.room != null){
+                    try {
+                        if (roomDetail.room.lastSeenMsgKey == null || key.compareTo(roomDetail.room.lastSeenMsgKey) > 0) {//this msg key >  stored seen key
+                            new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(mUsername)
+                                    .child("rooms").child(channelId).child("lastSeenMsgKey").setValue(key);
+                        }
+                    }
+                    catch (NumberFormatException e){
+                        e.printStackTrace();
+                    }
+                }
             }
 
             // Insert into the correct location, based on previousChildName
@@ -518,7 +541,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 received = false;
             }
 
-            //set as delivered if received
+            //set as delivered if received and seeing it for first time
             if(received && chat.getSeen() == null){
                 chat.delivered = true; //important to prevent infi loop
                 mFirebaseRef.child(key).child("seen").setValue(true);
@@ -653,8 +676,8 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 Firebase myRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(mUsername).child("rooms");
                 Firebase oppRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(opponentParseUsername).child("rooms");
 
-                myRef.child(channelId).setValue(true);
-                oppRef.child(channelId).setValue(true);
+                myRef.child(channelId).child("active").setValue(true);
+                oppRef.child(channelId).child("active").setValue(true);
             }
         }
     }

@@ -459,6 +459,10 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+
+        if(ParseUser.getCurrentUser() != null) {
+            ChatRoomsActivity.initChatRooms(ParseUser.getCurrentUser().getUsername());
+        }
     }
 
     @Override

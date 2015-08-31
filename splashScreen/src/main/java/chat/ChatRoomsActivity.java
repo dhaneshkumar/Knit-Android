@@ -34,11 +34,11 @@ public class ChatRoomsActivity extends MyActionBarActivity{
     static RecyclerView listView;
     static MyRecycleAdapter listViewAdapter;
 
-    static Map<String, Room> roomMap;
+    static Map<String, RoomDetail> roomMap;
     static List<String> roomIdList;
 
     //if non null, means that it's listener, adapter, etc has been set
-    String mUsername;
+    static String mUsername;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,13 +50,7 @@ public class ChatRoomsActivity extends MyActionBarActivity{
             return;
         }
 
-        if(myRoomsRef == null){
-            Log.d("__CHAT_CR", "init myRoomsRef and listener");
-            myRoomsRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(mUsername).child("rooms");
-            myRoomListener = myRoomsRef.addChildEventListener(new MyRoomListener());
-            roomIdList = new ArrayList<>();
-            roomMap = new HashMap<>();
-        }
+        initChatRooms(mUsername);
 
         listView = (RecyclerView) findViewById(R.id.roomList);
         listView.setLayoutManager(new LinearLayoutManager(this));
@@ -64,20 +58,47 @@ public class ChatRoomsActivity extends MyActionBarActivity{
         listView.setAdapter(listViewAdapter);
     }
 
+    public static void initChatRooms(String user){
+        if(myRoomsRef == null){
+            mUsername = user;
+            Log.d("__CHAT_CR", "init myRoomsRef and listener");
+            myRoomsRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(mUsername).child("rooms");
+            myRoomListener = myRoomsRef.addChildEventListener(new MyRoomListener());
+            roomIdList = new ArrayList<>();
+            roomMap = new HashMap<>();
+        }
+    }
+
     static class MyViewHolder extends RecyclerView.ViewHolder {
         LinearLayout chatHolder;
         TextView roomIdTV;
+        TextView newMsgsTV;
 
         public MyViewHolder(View view) {
             super(view);
             chatHolder = (LinearLayout) view.findViewById(R.id.holder);
             roomIdTV = (TextView) view.findViewById(R.id.roomId);
+            newMsgsTV = (TextView) view.findViewById(R.id.newMsgs);
+        }
+    }
+
+    static class RoomDetail {
+        public int newMsgs;
+        Room room;
+
+        public RoomDetail(int n, Room r){
+            newMsgs = n;
+            room = r;
         }
     }
 
     static class Room{
-        String roomId;
-        String lastReadTimestamp;
+        public Boolean active;
+        public String lastSeenMsgKey;
+
+        public Room(){
+
+        }
     }
 
     public class MyRecycleAdapter extends RecyclerView.Adapter<MyViewHolder>{
@@ -97,18 +118,21 @@ public class ChatRoomsActivity extends MyActionBarActivity{
         public void onBindViewHolder(final MyViewHolder holder, final int position) {
             String roomId = roomIdList.get(position);
             holder.roomIdTV.setText(roomId);
+            holder.newMsgsTV.setText(roomMap.get(roomId).newMsgs + ""); //pass string, int will be treated as resId(crash)
         }
     }
 
-    class MyRoomListener implements ChildEventListener{
+    static class MyRoomListener implements ChildEventListener{
         @Override
         public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
             String key = dataSnapshot.getKey();
 
             Log.d("__CHAT_CR", "New onChildAdded : " + dataSnapshot.toString());
+            Room newModel = dataSnapshot.getValue(Room.class);
 
             // Insert into the correct location, based on previousChildName
             //todo add to roomMap also
+            roomMap.put(key, new RoomDetail(0, newModel));
             if (previousChildName == null) {
                 roomIdList.add(0, key);
             } else {
@@ -121,12 +145,33 @@ public class ChatRoomsActivity extends MyActionBarActivity{
                 }
             }
 
-            notifyAndSmartScroll();
+            //add new msg listener
+            Firebase newMsgsRef = new Firebase(ChatConfig.FIREBASE_URL).child("Chats").child(key);
+            if(newModel.lastSeenMsgKey != null){
+                Log.d("__CHAT_CR_msg", "Add listener startAt=" + newModel.lastSeenMsgKey);
+                newMsgsRef.orderByKey().startAt(newModel.lastSeenMsgKey).addChildEventListener(new NewMessageListener(key));
+            }
+            else{
+                Log.d("__CHAT_CR_msg", "Add listener startAt=null");
+                newMsgsRef.orderByKey().addChildEventListener(new NewMessageListener(key));
+            }
+
+            notifyAdapter();
         }
 
         @Override
         public void onChildChanged(DataSnapshot dataSnapshot, String s) {
             Log.d("__CHAT_CR", "onChildChanged : " + dataSnapshot.toString());
+
+            String key = dataSnapshot.getKey();
+            Room newModel = dataSnapshot.getValue(Room.class);
+
+            RoomDetail roomDetail = roomMap.get(key);
+            roomDetail.room = newModel; //keep the new msgs count intact
+
+            roomMap.put(key, roomDetail);
+
+            notifyAdapter();
         }
 
         @Override
@@ -145,10 +190,59 @@ public class ChatRoomsActivity extends MyActionBarActivity{
             Log.e("FirebaseListAdapter", "Listen was cancelled, no more updates will occur");
         }
 
-        void notifyAndSmartScroll(){
+        static void notifyAdapter(){
             if(listViewAdapter != null) {
                 listViewAdapter.notifyDataSetChanged();
             }
+        }
+    }
+
+    static class NewMessageListener implements ChildEventListener{
+        String roomId;
+
+        public NewMessageListener(String roomId){
+            this.roomId = roomId;
+        }
+
+        @Override
+        public void onChildAdded(DataSnapshot dataSnapshot, String previousChildName) {
+            Log.d("__CHAT_CR_msg", "onChildAdded@" + roomId + ":" + dataSnapshot.toString());
+            String key = dataSnapshot.getKey();
+            Chat model = dataSnapshot.getValue(Chat.class);
+
+            boolean received = true;
+            if(model.getAuthor().equals(mUsername)){
+                received = false;
+            }
+
+            if(received){
+                //new received message, increment the count
+                RoomDetail roomDetail = roomMap.get(roomId);
+                if(roomDetail.room.lastSeenMsgKey == null || key.compareTo(roomDetail.room.lastSeenMsgKey) > 0){ //current key > last seen key
+                    roomDetail.newMsgs++;
+                    MyRoomListener.notifyAdapter();
+                }
+            }
+        }
+
+        @Override
+        public void onChildChanged(DataSnapshot dataSnapshot, String s) {
+
+        }
+
+        @Override
+        public void onChildRemoved(DataSnapshot dataSnapshot) {
+
+        }
+
+        @Override
+        public void onChildMoved(DataSnapshot dataSnapshot, String previousChildName) {
+
+        }
+
+        @Override
+        public void onCancelled(FirebaseError firebaseError) {
+
         }
     }
 
