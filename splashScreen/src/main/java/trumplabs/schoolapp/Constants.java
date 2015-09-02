@@ -127,6 +127,9 @@ public class Constants {
       public static final String LIKE_ACTION = "LIKE";
       public static final String CONFUSE_ACTION = "CONFUSE"; //when significant confused parents(go to outbox, scroll to that message and highlight the edit option)
       public static final String CLASS_PAGE_ACTION = "CLASS_PAGE"; //go to specified created class page(where option to view subscribers and invite)
+
+      //chat
+      public static final String CHAT_ACTION = "CHAT";
     }
 
     public static final String PROFILE_PAGE_ACTION = "PROFILE"; //for update notification type

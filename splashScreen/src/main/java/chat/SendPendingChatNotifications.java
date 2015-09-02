@@ -6,6 +6,7 @@ import com.onesignal.OneSignal;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -155,6 +156,15 @@ public class SendPendingChatNotifications {
         Need input, channelId, mUsername, opponentOneSignalId
      */
     static void sendOneSignalNotification(final ParseObject notification){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if(currentUser == null){
+            notification.put(ChatConfig.ChatNotificationTable.PENDING, true);
+            notification.pinInBackground();
+            return;
+        }
+
+        String senderName = currentUser.getString("name");
+        String senderParseUsername = currentUser.getUsername();
 
         try {
             JSONObject contents = new JSONObject();
@@ -178,6 +188,9 @@ public class SendPendingChatNotifications {
             data.put("channel", channel);
             data.put("msgTitle", msgTitle);
             data.put("msgContent", msgContent);
+
+            data.put("senderName", senderName);
+            data.put("senderParseUsername", senderParseUsername);
 
             JSONArray playerIds = new JSONArray();
             playerIds.put(opponentOneSignalId);

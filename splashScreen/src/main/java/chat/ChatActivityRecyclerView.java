@@ -1,5 +1,6 @@
 package chat;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -46,6 +47,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.ChooserDialog;
+import trumplabs.schoolapp.MainActivity;
 import utility.SessionManager;
 import utility.Utility;
 
@@ -92,10 +94,20 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     int lastTotalCount = -1;
     RecyclerView listView;
 
+    boolean pushOpen = false; //set to true when directly opened through notification click,
+    ParseUser currentParseUser;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.chat_activity_recycler_view);
+
+        currentParseUser = ParseUser.getCurrentUser();
+        if(currentParseUser == null){
+            Utility.LogoutUtility.logout();
+            return;
+        }
 
         // Make sure we have a mUsername
         setupUsername();
@@ -104,6 +116,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
 
         if(getIntent()!= null && getIntent().getExtras() != null)
         {
+            pushOpen = getIntent().getExtras().getBoolean("pushOpen");
             chatAs = getIntent().getExtras().getString("chatAs");
             classCode = getIntent().getExtras().getString("classCode");
             opponentName = getIntent().getExtras().getString("opponentName");
@@ -262,6 +275,12 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 opponentOneSignalId = (String) dataSnapshot.getValue();
+                if(opponentOneSignalId == null){
+                    Utility.toast(opponentName + " does not have Chat yet");
+                    if(ChatActivityRecyclerView.this != null){
+                        finish();
+                    }
+                }
             }
 
             @Override
@@ -628,12 +647,11 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
     }
 
     private void setupUsername() {
-        mUsername = ParseUser.getCurrentUser().getUsername();
+        mUsername = currentParseUser.getUsername();
+        ChatRoomsActivity.initChatRooms(mUsername);
     }
 
     private void sendMessage() {
-        //Firebase.goOnline();
-
         EditText inputText = (EditText) findViewById(R.id.messageInput);
         String input = inputText.getText().toString();
         if(imagePreview.getVisibility() == View.VISIBLE){
@@ -714,6 +732,18 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 }
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if(pushOpen){
+            Intent intent = new Intent(this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+        else{
+            super.onBackPressed();
+        }
     }
 }
 

@@ -190,6 +190,19 @@ public class NotificationGenerator {
                     mBuilder.addAction(R.drawable.fwd, "VIEW", overrideClickPendingIntent);
                 }
             }
+            else if(notEntity.action.equals(Constants.Actions.CHAT_ACTION)){
+                if(Config.SHOWLOG) Log.d(LOGTAG, "special action=" + notEntity.action);
+                if(extras != null){
+                    clickIntent.putExtra("chatAs", extras.getString("chatAs"));
+                    clickIntent.putExtra("classCode", extras.getString("classCode"));
+                    clickIntent.putExtra("opponentName", extras.getString("opponentName"));
+                    clickIntent.putExtra("opponentParseUsername", extras.getString("opponentParseUsername"));
+
+                    PendingIntent overrideClickPendingIntent = PendingIntent.getActivity(context, notEntity.notificationId, clickIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                    mBuilder.setContentIntent(overrideClickPendingIntent);
+                    mBuilder.addAction(R.drawable.fwd, "VIEW", overrideClickPendingIntent);
+                }
+            }
             else{
                 show = false;//ignore this as this might be a new type of notification - recognized in updated app
                 if(Config.SHOWLOG) Log.d(LOGTAG, "Ignoring type=" + type + ", action=" + action);

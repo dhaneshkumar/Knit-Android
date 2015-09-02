@@ -21,6 +21,7 @@ import java.util.List;
 import additionals.Invite;
 import additionals.OpenURL;
 import baseclasses.MyActionBarActivity;
+import chat.ChatActivityRecyclerView;
 import library.UtilString;
 import notifications.EventCheckerAlarmReceiver;
 import notifications.NotificationGenerator;
@@ -148,6 +149,26 @@ public class PushOpen extends MyActionBarActivity {
                 }
                 else {
                     i = new Intent(this, MainActivity.class); //go to main activity
+                }
+            }
+            else if(action.equals(Constants.Actions.CHAT_ACTION)){//go to outbox and scroll to that message
+                i = new Intent(this, ChatActivityRecyclerView.class);
+
+                String chatAs = getIntent().getExtras().getString("chatAs");
+                String classCode = getIntent().getExtras().getString("classCode");
+                String opponentName = getIntent().getExtras().getString("opponentName");
+                String opponentParseUsername = getIntent().getExtras().getString("opponentParseUsername");
+
+                if(UtilString.isBlank(chatAs) || UtilString.isBlank(classCode) || UtilString.isBlank(opponentName) || UtilString.isBlank(opponentParseUsername)) {
+                    if(Config.SHOWLOG) Log.d("DEBUG_PUSH_OPEN", "chat action something is black");
+                    i = new Intent(this, MainActivity.class); //go to main activity
+                }
+                else {
+                    i.putExtra("pushOpen", true);
+                    i.putExtra("classCode", classCode);
+                    i.putExtra("chatAs", chatAs);
+                    i.putExtra("opponentName", opponentName);
+                    i.putExtra("opponentParseUsername", opponentParseUsername);
                 }
             }
         }
