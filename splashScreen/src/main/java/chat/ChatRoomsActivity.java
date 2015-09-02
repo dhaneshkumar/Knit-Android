@@ -1,5 +1,6 @@
 package chat;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -14,15 +15,21 @@ import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.FirebaseError;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
+import trumplabs.schoolapp.Constants;
+import trumplabs.schoolapp.MemberDetails;
+import utility.Queries;
+import utility.Utility;
 
 /**
  * Created by ashish on 31/8/15.
@@ -86,6 +93,9 @@ public class ChatRoomsActivity extends MyActionBarActivity{
         public int newMsgs;
         Room room;
 
+        String opponentName;
+        String opponentParseUsername;
+
         public RoomDetail(int n, Room r){
             newMsgs = n;
             room = r;
@@ -93,7 +103,7 @@ public class ChatRoomsActivity extends MyActionBarActivity{
     }
 
     static class Room{
-        public Boolean active;
+        public String chatAs;
         public String lastSeenMsgKey;
 
         public Room(){
@@ -117,8 +127,72 @@ public class ChatRoomsActivity extends MyActionBarActivity{
         @Override
         public void onBindViewHolder(final MyViewHolder holder, final int position) {
             String roomId = roomIdList.get(position);
+            final RoomDetail roomDetail = roomMap.get(roomId);
+
             holder.roomIdTV.setText(roomId);
-            holder.newMsgsTV.setText(roomMap.get(roomId).newMsgs + ""); //pass string, int will be treated as resId(crash)
+            holder.newMsgsTV.setText(roomDetail.newMsgs + ""); //pass string, int will be treated as resId(crash)
+
+            String[] tokens = roomId.split("-");
+            Log.d("__CHAT_CR_opp", "roomId split into=" + Arrays.toString(tokens));
+            if(tokens.length != 2) {
+                return;
+            }
+
+            final String classCode = tokens[0];
+            final String parentParseUsername = tokens[1];
+
+            //chatAs replacement
+            if(parentParseUsername.equals(mUsername)){
+                roomDetail.room.chatAs = ChatConfig.NON_TEACHER;
+            }
+            else{
+                roomDetail.room.chatAs = ChatConfig.TEACHER;
+            }
+
+            if(roomDetail.opponentParseUsername == null){
+                if (roomDetail.room.chatAs.equals(ChatConfig.TEACHER)) {
+                    //search in subscriber
+                    MemberDetails member = Queries.getMember(classCode, parentParseUsername);
+                    if(member != null){
+                        roomDetail.opponentName = member.getChildName();
+                        roomDetail.opponentParseUsername = member.getChildId();
+                        Log.d("__CHAT_CR_opp", "(teacher)found " + roomDetail.opponentName + "; " + tokens[1] + "==" + roomDetail.opponentParseUsername);
+                    }
+                }
+                else{
+                    //search for Codegroup object
+                    ParseObject codegroup = Queries.getCodegroupObject(classCode);
+                    if(codegroup != null){
+                        roomDetail.opponentName = codegroup.getString(Constants.Codegroup.CREATOR);
+                        roomDetail.opponentParseUsername = codegroup.getString(Constants.Codegroup.SENDER_ID);
+                        Log.d("__CHAT_CR_opp", "(non_teacher) found " + roomDetail.opponentName + "; " + roomDetail.opponentParseUsername);
+                    }
+                }
+            }
+
+            if(roomDetail.opponentParseUsername != null){
+                //set click listener
+                holder.roomIdTV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(ChatRoomsActivity.this, ChatActivityRecyclerView.class);
+                        intent.putExtra("classCode", classCode);
+                        intent.putExtra("chatAs", roomDetail.room.chatAs);
+                        intent.putExtra("opponentName", roomDetail.opponentName);
+                        intent.putExtra("opponentParseUsername", roomDetail.opponentParseUsername);
+                        startActivity(intent);
+                    }
+                });
+            }
+            else{
+                //should not happen
+                holder.roomIdTV.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Utility.toast("Sorry chat details not available at the moment !. Please restart the app and try again");
+                    }
+                });
+            }
         }
     }
 
@@ -218,6 +292,7 @@ public class ChatRoomsActivity extends MyActionBarActivity{
             if(received){
                 //new received message, increment the count
                 RoomDetail roomDetail = roomMap.get(roomId);
+                Log.d("__CHAT_CR_msg", "last=" + roomDetail.room.lastSeenMsgKey + ", this=" + key);
                 if(roomDetail.room.lastSeenMsgKey == null || key.compareTo(roomDetail.room.lastSeenMsgKey) > 0){ //current key > last seen key
                     roomDetail.newMsgs++;
                     MyRoomListener.notifyAdapter();

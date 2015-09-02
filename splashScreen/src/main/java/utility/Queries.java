@@ -615,6 +615,40 @@ public class Queries {
         return sortMemberList(memberList);
     }
 
+    public static MemberDetails getMember(String classCode, String emailId){
+        // Retrieving local messages from group members locally
+        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.GROUP_MEMBERS);
+        query.fromLocalDatastore();
+        query.whereEqualTo("code", classCode);
+        query.whereEqualTo("emailId", emailId);
+        query.whereEqualTo("status", null);
+
+        try {
+            ParseObject appMember = query.getFirst();
+            List<String> childList = appMember.getList("children_names");
+
+            if (childList != null && childList.size() > 0) {
+                String childName = childList.get(0);
+
+                if (!UtilString.isBlank(childName)) {
+
+                    childName = UtilString.changeFirstToCaps(childName);
+                    MemberDetails member =
+                            new MemberDetails(appMember.getObjectId(), MemberDetails.APP_MEMBER, childName, emailId);
+                    return member;
+                }
+            } else {
+                String parentName = appMember.getString("name");
+                MemberDetails member =
+                        new MemberDetails(appMember.getObjectId(), MemberDetails.APP_MEMBER, parentName, emailId);
+                return member;
+            }
+        } catch (ParseException e) {
+        }
+
+        return null;
+    }
+
 
     /**
      * Sorting memberlist in alphabetical order

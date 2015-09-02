@@ -8,6 +8,7 @@ import android.util.Log;
 import com.parse.ParseUser;
 
 import BackGroundProcesses.SendPendingMessages;
+import chat.SendPendingChatNotifications;
 import trumplabs.schoolapp.Constants;
 import utility.Config;
 import utility.Utility;
@@ -34,6 +35,8 @@ public class ConnectivityChangeReceiver extends WakefulBroadcastReceiver {
         String role = currentParseUser.getString("role");
         if(role == null)
             return;
+
+        SendPendingChatNotifications.spawnThread();
 
         if(role.equalsIgnoreCase(Constants.TEACHER)) {
             if (Utility.isInternetExistWithoutPopup()){

@@ -7,6 +7,7 @@ import com.parse.ParseUser;
 import java.util.Calendar;
 import java.util.Date;
 
+import chat.SendPendingChatNotifications;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
@@ -116,6 +117,7 @@ public class Refresher {
 
         //Send all pending messages
         SendPendingMessages.spawnThread(false); //direct call since already in a thread
+        SendPendingChatNotifications.spawnThread();
 
         if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "Leaving Refresher Thread");
     }

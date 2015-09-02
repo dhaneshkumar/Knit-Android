@@ -15,4 +15,16 @@ public class ChatConfig {
     public static final String GOOGLE_PROJECT_NUMBER = "110521105118";
 
     public static final String FIREBASE_URL = "https://devknitchat.firebaseio.com";
+
+    //Need input, channelId, mUsername, opponentOneSignalId
+    static class ChatNotificationTable{
+        public static final String TABLE = "ChatNotificationTable";
+
+        public static final String CHANNEL = "channel";
+        public static final String MSG_CONTENT = "msgContent";
+        public static final String MSG_TITLE = "msgTitle";
+        public static final String OPP_ONE_SIGNAL_ID = "oppOneSignalId"; //one signal id of opponent to send notification to
+        public static final String PENDING = "pending";
+        public static final String TIME = "time";
+    }
 }

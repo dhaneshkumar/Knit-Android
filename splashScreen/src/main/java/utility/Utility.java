@@ -301,6 +301,10 @@ public class Utility extends MyActionBarActivity {
      * @return
      */
     public static final boolean isInternetExistWithoutPopup() {
+        if(true){
+            return true;
+        }
+
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);

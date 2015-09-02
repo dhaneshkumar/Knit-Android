@@ -27,12 +27,10 @@ import com.firebase.client.FirebaseError;
 import com.firebase.client.Query;
 import com.firebase.client.ServerValue;
 import com.firebase.client.ValueEventListener;
-import com.onesignal.OneSignal;
+import com.parse.ParseException;
+import com.parse.ParseObject;
 import com.parse.ParseUser;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.parse.SaveCallback;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -48,6 +46,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.ChooserDialog;
+import utility.SessionManager;
 import utility.Utility;
 
 public class ChatActivityRecyclerView extends MyActionBarActivity implements ChooserDialog.CommunicatorInterface {
@@ -668,7 +667,7 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
             mFirebaseRef.push().setValue(data);
             inputText.setText("");
 
-            sendNotification(input);
+            sendNotificationUI(input);
 
             if(!channelSet){
                 channelSet = true;
@@ -676,69 +675,45 @@ public class ChatActivityRecyclerView extends MyActionBarActivity implements Cho
                 Firebase myRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(mUsername).child("rooms");
                 Firebase oppRef = new Firebase(ChatConfig.FIREBASE_URL).child("Users").child(opponentParseUsername).child("rooms");
 
-                myRef.child(channelId).child("active").setValue(true);
-                oppRef.child(channelId).child("active").setValue(true);
+                if(chatAs.equals(ChatConfig.TEACHER)) {
+                    myRef.child(channelId).child("chatAs").setValue(ChatConfig.TEACHER);
+                    oppRef.child(channelId).child("chatAs").setValue(ChatConfig.NON_TEACHER);
+                }
+                else{
+                    myRef.child(channelId).child("chatAs").setValue(ChatConfig.NON_TEACHER);
+                    oppRef.child(channelId).child("chatAs").setValue(ChatConfig.TEACHER);
+                }
             }
         }
     }
 
-    void sendNotification(String input){
+    /*
+        Need input, channelId, mUsername, opponentOneSignalId
+     */
+    void sendNotificationUI(String input){
         if(opponentOneSignalId == null){
             Utility.toast(opponentParseUsername + " not yet on OneSignal");
             return;
         }
 
-        try {
-            JSONObject contents = new JSONObject();
-            contents.put("en", "");
+        SessionManager sessionManager = new SessionManager(Application.getAppContext());
 
-            JSONObject headings = new JSONObject();
-            headings.put("en", "");
+        final ParseObject notification = new ParseObject(ChatConfig.ChatNotificationTable.TABLE);
+        notification.put(ChatConfig.ChatNotificationTable.CHANNEL, channelId);
+        notification.put(ChatConfig.ChatNotificationTable.MSG_CONTENT, input);
+        notification.put(ChatConfig.ChatNotificationTable.MSG_TITLE, mUsername);
+        notification.put(ChatConfig.ChatNotificationTable.OPP_ONE_SIGNAL_ID, opponentOneSignalId);
+        notification.put(ChatConfig.ChatNotificationTable.PENDING, true);
+        notification.put(ChatConfig.ChatNotificationTable.TIME, sessionManager.getCurrentTime());
 
-            JSONObject data = new JSONObject();
-            data.put("channel", channelId);
-            data.put("msgTitle", mUsername);
-            data.put("msgContent", input);
-
-            JSONArray playerIds = new JSONArray();
-            playerIds.put(opponentOneSignalId);
-
-            Map<String, Object> jsonMap = new HashMap<>();
-            jsonMap.put("contents", contents); //actual content
-            jsonMap.put("include_player_ids",playerIds); //receipients
-            jsonMap.put("headings", headings); //title
-            jsonMap.put("data", data); //extra json
-            jsonMap.put("android_background_data", true); //so that com.onesignal.BackgroundBroadcast.RECEIVE broadcast is called
-
-            JSONObject notificationJSON = new JSONObject(jsonMap);
-
-            Log.d("__CHAT noti", notificationJSON + "");
-
-            OneSignal.postNotification(notificationJSON, new OneSignal.PostNotificationResponseHandler() {
-                @Override
-                public void onSuccess(JSONObject jsonObject) {
-                    Application.applicationHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utility.toast("notification sent");
-                        }
-                    });
+        notification.pinInBackground(new SaveCallback() {
+            @Override
+            public void done(ParseException e) {
+                if(e == null) {
+                    SendPendingChatNotifications.addNotificationToQueue(notification);
                 }
-
-                @Override
-                public void onFailure(JSONObject jsonObject) {
-                    Application.applicationHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utility.toast("notification failed");
-                        }
-                    });
-                }
-            });
-        }
-        catch (JSONException e){
-            e.printStackTrace();
-        }
+            }
+        });
     }
 }
 
