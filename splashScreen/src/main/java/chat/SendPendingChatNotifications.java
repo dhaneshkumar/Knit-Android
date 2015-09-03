@@ -221,15 +221,42 @@ public class SendPendingChatNotifications {
 
                 @Override
                 public void onFailure(final JSONObject jsonObject) {
-                    notification.put(ChatConfig.ChatNotificationTable.PENDING, true);
-                    notification.pinInBackground(); //pending from temporary(false) to true
-                    if(Config.SHOWLOG) Log.d(LOGTAG, "postNotification onFailure() : " + jsonObject);
-                    Application.applicationHandler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            Utility.toast("notification failed " + jsonObject);
+                    boolean caughtError = false;
+                    try {
+                        if (jsonObject.has("errors")) {
+                            JSONArray errors = jsonObject.getJSONArray("errors");
+                            for(int i=0; i<errors.length(); i++){
+                                String error = errors.getString(i);
+                                if(error.contains(ChatConfig.OneSignalErrors.NOT_SUBSCRIBED)){
+                                    //unpin this notification as we won't be able to send it
+                                    notification.unpinInBackground();
+                                    Application.applicationHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Utility.toast("notification fail : Opp Not Subscribed");
+                                        }
+                                    });
+                                    caughtError = true;
+                                }
+                            }
                         }
-                    });
+                    }
+                    catch (JSONException e){
+                        e.printStackTrace();
+                    }
+
+                    if(!caughtError) {
+                        notification.put(ChatConfig.ChatNotificationTable.PENDING, true);
+                        notification.pinInBackground(); //pending from temporary(false) to true
+                        if (Config.SHOWLOG)
+                            Log.d(LOGTAG, "postNotification onFailure() : " + jsonObject);
+                        Application.applicationHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                Utility.toast("notification failed " + jsonObject);
+                            }
+                        });
+                    }
                 }
             });
         }

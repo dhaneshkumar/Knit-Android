@@ -27,4 +27,8 @@ public class ChatConfig {
         public static final String PENDING = "pending";
         public static final String TIME = "time";
     }
+
+    static class OneSignalErrors{
+        public static final String NOT_SUBSCRIBED = "All included players are not subscribed";
+    }
 }
