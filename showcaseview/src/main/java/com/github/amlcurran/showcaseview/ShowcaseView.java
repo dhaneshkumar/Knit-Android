@@ -110,7 +110,7 @@ public class ShowcaseView extends RelativeLayout
 
         apiUtils.setFitsSystemWindowsCompat(this);
         getViewTreeObserver().addOnPreDrawListener(new CalculateTextOnPreDraw());
-        getViewTreeObserver().addOnGlobalLayoutListener(new UpdateOnGlobalLayout());
+        //getViewTreeObserver().addOnGlobalLayoutListener(new UpdateOnGlobalLayout());
 
         // Get the attributes for the ShowcaseView
         final TypedArray styled = context.getTheme()
@@ -322,10 +322,10 @@ public class ShowcaseView extends RelativeLayout
 
                 if (!shotStateStore.hasShot()) {
 
-                    updateBitmap();
                     Point targetPoint = target.getPoint();
+                    Log.d("_TUTORIAL_", "postDelayed inside x=" + targetPoint.x + ",y=" + targetPoint.y);
+                    updateBitmap();
 
-                    Log.d("_SHOWCASE_", "x=" + targetPoint.x + ",y=" + targetPoint.y);
 
                     if (targetPoint != null) {
                         hasNoTarget = false;
@@ -348,8 +348,8 @@ public class ShowcaseView extends RelativeLayout
         if (bitmapBuffer == null || haveBoundsChanged()) {
             if(bitmapBuffer != null)
         		bitmapBuffer.recycle();
-            bitmapBuffer = Bitmap.createBitmap(getMeasuredWidth(), getMeasuredHeight(), Bitmap.Config.ARGB_8888);
-
+            bitmapBuffer = Bitmap.createBitmap(getWidth(), getHeight(), Bitmap.Config.ARGB_8888);
+            Log.d("_TUTORIAL_", "m=" + getMeasuredWidth() + ", " + getMeasuredHeight() + "| a=" + getWidth() + ", " + getHeight());
         }
     }
 
