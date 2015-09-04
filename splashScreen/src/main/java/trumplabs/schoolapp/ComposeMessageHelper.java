@@ -40,7 +40,6 @@ public class ComposeMessageHelper {
     private String sender;
     private String userId;        //really needed to store ???????????????
     private ParseUser user;
-    private SessionManager session;
 
     ComposeMessageHelper(Activity context, List<List<String>> classList)
     {
@@ -55,7 +54,6 @@ public class ComposeMessageHelper {
 
         userId = user.getUsername();
         sender = user.getString(Constants.NAME);
-        session = new SessionManager(Application.getAppContext());
     }
 
     /*
@@ -164,7 +162,7 @@ public class ComposeMessageHelper {
             sentMsg.put("code", cls.get(0)); //code @ 0
             sentMsg.put("title", typedtxt);
             sentMsg.put("name", cls.get(1)); //name @ 1
-            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+            sentMsg.put("creationTime", SessionManager.getInstance().getCurrentTime()); //needs to be updated once sent
             sentMsg.put("senderId", userId);
             sentMsg.put("userId", userId);
             sentMsg.put("pending", true);
@@ -328,8 +326,7 @@ public class ComposeMessageHelper {
             sentMsg.put("code", cls.get(0));
             sentMsg.put("title", txtmsg);
             sentMsg.put("name", cls.get(1));
-            SessionManager session = new SessionManager(Application.getAppContext());
-            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+            sentMsg.put("creationTime", SessionManager.getInstance().getCurrentTime()); //needs to be updated once sent
             sentMsg.put("senderId", userId);
             sentMsg.put("userId", userId);
             sentMsg.put("pending", true);

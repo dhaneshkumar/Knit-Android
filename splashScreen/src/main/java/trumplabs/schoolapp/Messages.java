@@ -589,12 +589,6 @@ public class Messages extends Fragment {
 
             if (msgObject.getCreatedAt() != null) {
                 holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
-
-                SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                //if(Config.SHOWLOG) Log.d("INBOX", "message : " + msgObject.getString("title"));
-                //if(Config.SHOWLOG) Log.d("INBOX", "createdAt : " + msgObject.getCreatedAt().toString());
-                //if(Config.SHOWLOG) Log.d("INBOX", "current time : " + sessionManager.getCurrentTime().toString());
-
             }
             else if (msgObject.get("creationTime") != null)
                 holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
@@ -740,7 +734,7 @@ public class Messages extends Fragment {
 
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && (!role.equals(Constants.TEACHER) || MainActivity.fragmentVisible == 2) && !ShowcaseView.isVisible){
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
-                SessionManager mgr = new SessionManager(Application.getAppContext());
+                SessionManager mgr = SessionManager.getInstance();
                 if(Config.SHOWLOG) Log.d(ShowcaseCreator.LOGTAG, "(parent)tutorialId=" + tutorialId + " isSignUpAccount=" + mgr.getSignUpAccount() + " tutState=" + mgr.getTutorialState(tutorialId));
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
@@ -964,7 +958,7 @@ public class Messages extends Fragment {
 
             String username = currentParseUser.getUsername();
             String key = username + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
-            if(SessionManager.getBooleanValue(key)){//if true set
+            if(SessionManager.getInstance().getBooleanValue(key)){//if true set
                 if(Config.SHOWLOG) Log.d("_FETCH_OLD", "already set in shared prefs");
                 oldInboxFetched = true;
                 return;

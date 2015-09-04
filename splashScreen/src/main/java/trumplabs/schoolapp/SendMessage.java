@@ -68,7 +68,6 @@ public class SendMessage extends MyActionBarActivity  {
 
     private Queries query;
     public static LinearLayout progressLayout;
-    private SessionManager session;
     public static int totalClassMessages; //total messages sent from this class
     public static LinearLayout contentLayout;
     public static Activity currentActivity;
@@ -120,8 +119,6 @@ public class SendMessage extends MyActionBarActivity  {
 
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
         empty_class_bg = (ImageView) findViewById(R.id.sent_class_bg);
-
-        session = new SessionManager(Application.getAppContext());
 
         ParseUser userObject = ParseUser.getCurrentUser();
 

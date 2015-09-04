@@ -136,9 +136,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         if (!UtilString.isBlank(name))
             name_textView.setText(name);
 
-
-        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
-
         if(!UtilString.isBlank(userId)) {
             if (userId.length() == 10 || userId.contains("@"))
                 phone_textView.setText(userId);

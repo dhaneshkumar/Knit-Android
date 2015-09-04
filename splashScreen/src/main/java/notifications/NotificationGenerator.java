@@ -293,12 +293,11 @@ public class NotificationGenerator {
         int notificationId;
 
         NotificationEntity(Context context, String tempContentText, String tempGroupName, String tempType, String tempAction){
-            SessionManager sessionManager = new SessionManager(context);
             if(tempType != null && tempType.equals(Constants.Notifications.NORMAL_NOTIFICATION)){
                 notificationId = NORMAL_NOTIFICATION_ID; //club them all up
             }
             else {
-                notificationId = sessionManager.getNextNotificationId(); //get a new id
+                notificationId = SessionManager.getInstance().getNextNotificationId(); //get a new id
             }
 
             contentText = tempContentText;

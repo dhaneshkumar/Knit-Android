@@ -30,8 +30,7 @@ public class RefresherAlarmReceiver extends WakefulBroadcastReceiver {
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                SessionManager session = new SessionManager(Application.getAppContext());
-                new Refresher(session.getAppOpeningCount());
+                new Refresher(SessionManager.getInstance().getAppOpeningCount());
             }
         };
 

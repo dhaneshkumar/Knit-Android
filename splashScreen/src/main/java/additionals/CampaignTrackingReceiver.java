@@ -53,13 +53,12 @@ public class CampaignTrackingReceiver extends BroadcastReceiver {
         }
 
         String referrerString = extras.getString("referrer");
-        SessionManager sessionManager = new SessionManager(Application.getAppContext());
         if(referrerString != null) {
             Log.d(REFERRER, "Query String : " + referrerString);
 
             referrerData = referrerString;
 
-            //sessionManager.setCompaignDetails(REFERRER, referrerString);
+            //SessionManager.getInstance().setCompaignDetails(REFERRER, referrerString);
 
            /* try {
                 Map<String, String> getParams = getHashMapFromQuery(referrerString);
@@ -72,7 +71,7 @@ public class CampaignTrackingReceiver extends BroadcastReceiver {
                         Log.d(REFERRER, sourceType + " : " + source);
 
                         //Storing compaign details in shared preferences
-                        sessionManager.setCompaignDetails(sourceType, source);
+                        SessionManager.getInstance().setCompaignDetails(sourceType, source);
                     } else
                         Log.d(REFERRER, sourceType + " : null");
                 }
@@ -164,12 +163,11 @@ public class CampaignTrackingReceiver extends BroadcastReceiver {
      */
     public static void sendCompaignDetailsToServer(ParseUser user)
     {
-        SessionManager sessionManager = new SessionManager(Application.getAppContext());
         Map<String, String> dimensions = new HashMap<String, String>();
         if(user == null)
         {
             for (String key : sources) {
-                String value = sessionManager.getCompaignDetails(key);
+                String value = SessionManager.getInstance().getCompaignDetails(key);
                 if(value != null)
                     dimensions.put(key, value);
             }
@@ -180,7 +178,7 @@ public class CampaignTrackingReceiver extends BroadcastReceiver {
         else
         {
             for (String key : sources) {
-                String value = sessionManager.getCompaignDetails(key);
+                String value = SessionManager.getInstance().getCompaignDetails(key);
                 if(value != null)
                     dimensions.put(key, value);
             }
@@ -194,10 +192,8 @@ public class CampaignTrackingReceiver extends BroadcastReceiver {
      * Deleting data from shared preferences
      */
     public static void reSetCompaignDetails(){
-        SessionManager sessionManager = new SessionManager(Application.getAppContext());
         for (String key : sources) {
-            sessionManager.reSetCompaignDetails(key);
+            SessionManager.getInstance().reSetCompaignDetails(key);
         }
-
     }
 }

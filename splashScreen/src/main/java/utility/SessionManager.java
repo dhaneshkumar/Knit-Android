@@ -16,13 +16,10 @@ import trumplabs.schoolapp.Application;
 @SuppressLint("SimpleDateFormat")
 public class SessionManager {
     // Shared Preferences
-    static SharedPreferences pref;
+    SharedPreferences pref;
 
     // Editor for Shared preferences
-    static Editor editor;
-
-    // Context
-    Context _context;
+    Editor editor;
 
     // Shared pref mode
     public static final int PRIVATE_MODE = 0;
@@ -34,12 +31,18 @@ public class SessionManager {
     public static final String ACTIONBAR_HEIGHT = "actionBarHeight";
     public static final String USER_HAS_JOINED_CLASS = "userHasJoinedClass";
 
-    public SessionManager() {}
+    static SessionManager myInstance; //this will be (initialized if needed and) returned any time when needed
 
+    public static SessionManager getInstance(){
+        if(myInstance == null){
+            myInstance = new SessionManager(Application.getAppContext());
+        }
 
-    public SessionManager(Context c) {
-        this._context = c;
-        pref = _context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
+        return myInstance;
+    }
+
+    private SessionManager(Context context) {
+        pref = context.getSharedPreferences(PREF_NAME, PRIVATE_MODE);
         editor = pref.edit();
     }
 
@@ -210,49 +213,33 @@ public class SessionManager {
         return false;
     }
 
-    public static void setUp(){
-        pref = Application.getAppContext().getSharedPreferences(PREF_NAME, PRIVATE_MODE);
-        editor = pref.edit();
-    }
-
-    public static boolean getBooleanValue(String key){
-        if(pref == null){
-            if(Config.SHOWLOG) Log.d("_FETCH_OLD", "SM : get value for key=" + key);
-            setUp();
-        }
-        //pref won't be null
+    public boolean getBooleanValue(String key){
         return pref.getBoolean(key, false);
     }
 
-    public static void setBooleanValue(String key, Boolean value){
-        if(editor == null){
-            setUp();
-        }
-
-        //editor won't be null
+    public void setBooleanValue(String key, Boolean value){
         editor.putBoolean(key, value);
         editor.commit();
     }
-
 
     /****************************************************************************/
     //storing compaign information
 
 
-    public static void setCompaignDetails(String key, String value)
+    public void setCompaignDetails(String key, String value)
     {
         editor.putString(key, value);
         editor.commit();
     }
 
-    public static String getCompaignDetails(String key)
+    public String getCompaignDetails(String key)
     {
         String value = pref.getString(key, null);
         return value;
     }
 
 
-    public static void reSetCompaignDetails(String key)
+    public void reSetCompaignDetails(String key)
     {
         editor.putString(key, null);
         editor.commit();

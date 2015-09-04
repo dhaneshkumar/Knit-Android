@@ -150,8 +150,8 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         Check for app re-installation. In case of reinstallation or delete data appOpeningCount set to zero.
         So, we retrieve all data from server.
          */
-        if(sessionManager == null)
-            sessionManager = new SessionManager(Application.getAppContext());
+
+        sessionManager = SessionManager.getInstance();
 
         final int appOpeningCount = sessionManager.getAppOpeningCount();
         if (appOpeningCount == 0) {
@@ -652,7 +652,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             if(Application.mainActivityVisible && !MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.OPTIONS;
-                SessionManager mgr = new SessionManager(Application.getAppContext());
+                SessionManager mgr = SessionManager.getInstance();
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
                     ShowcaseCreator.highlightOptions(this, joinClassActionView, false);
@@ -698,7 +698,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
             if(Application.mainActivityVisible && !MainActivity.optionsShowcaseShown && !Constants.IS_SIGNUP && !ShowcaseView.isVisible){//signup flag is not set i.e next time app is opened after signup
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.OPTIONS;
-                SessionManager mgr = new SessionManager(Application.getAppContext());
+                SessionManager mgr = SessionManager.getInstance();
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) { //only if signup account
                     mgr.setTutorialState(tutorialId, true);
                     ShowcaseCreator.highlightOptions(this, joinedClassesActionView, true);
@@ -764,9 +764,6 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
 
         public MyAdapter(FragmentManager fm) {
             super(fm);
-
-            if(sessionManager == null)
-                sessionManager = new SessionManager(Application.getAppContext());
         }
 
         @Override

@@ -91,8 +91,7 @@ public class Queries2 {
                 }
             }
             ParseObject.pinAll(codegroupEntries);
-            final SessionManager sm = new SessionManager(Application.getAppContext());
-            sm.setCodegroupLocalState(1, userId); //set the flag locally that outbox data is valid
+            SessionManager.getInstance().setCodegroupLocalState(1, userId); //set the flag locally that outbox data is valid
             if(Config.SHOWLOG) Log.d("D_FETCH_CLASS_DETAILS", "Pinned all. State changed to 1");
 
             //Fetch subscriber list once and for all in the same thread user for fetching all class details

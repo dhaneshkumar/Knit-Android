@@ -331,7 +331,6 @@ public class JoinClassDialog extends DialogFragment {
                 /*
                 * Change first letter to caps
                 */
-                SessionManager session = new SessionManager(Application.getAppContext());
                 ParseUser user = ParseUser.getCurrentUser();
                 if (user != null) {
                     int result = JoinedHelper.joinClass(code, childName);
@@ -366,7 +365,7 @@ public class JoinClassDialog extends DialogFragment {
                 //Refreshing joined class adapter
                 Classrooms.joinedGroups = currentParseUser.getList(Constants.JOINED_GROUPS);
 
-                SessionManager sessionManager = new SessionManager(Application.getAppContext());
+                SessionManager sessionManager = SessionManager.getInstance();
 
                 if(!sessionManager.getHasUserJoinedClass() && Classrooms.joinedGroups != null && Classrooms.joinedGroups.size() > 0)
                 {

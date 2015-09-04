@@ -27,7 +27,7 @@ public class TestingUtililty {
             return;
         }
 
-        /*SessionManager mgr = new SessionManager(Application.getAppContext());
+        /*SessionManager mgr = new SessionManager.getInstance();
         String p_flag = currentParseUser.getUsername() + Constants.TutorialKeys.PARENT_RESPONSE;
         String t_flag = currentParseUser.getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
         String o_flag = currentParseUser.getUsername() + Constants.TutorialKeys.OPTIONS;

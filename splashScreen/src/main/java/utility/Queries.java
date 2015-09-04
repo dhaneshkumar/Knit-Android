@@ -187,7 +187,6 @@ public class Queries {
         if (msgList == null)
             msgList = new ArrayList<ParseObject>();
 
-        SessionManager sessionManager = new SessionManager(Application.getAppContext());
         ParseUser user = ParseUser.getCurrentUser();
 
         if(user == null) return msgList; //won't happen in general
@@ -198,7 +197,7 @@ public class Queries {
         //      if sign up mode, set timestamp as user's creation time.
         //      Otherwise use showLatestMessagesWithLimit for login mode
 
-        if(newTimeStamp == null && sessionManager.getSignUpAccount()){
+        if(newTimeStamp == null && SessionManager.getInstance().getSignUpAccount()){
             if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "timestamp null with SIGNUP mode. Using user's creation time as timestamp");
             newTimeStamp = user.getCreatedAt();
         }
@@ -225,7 +224,7 @@ public class Queries {
                     if(allMessages.size() < Config.firstTimeInboxFetchCount){
                         String key = userId + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
                         if(Config.SHOWLOG) Log.d("_FETCH_OLD", "getServerInboxMsgs() : setting shared prefs _server_inbox_fetched");
-                        SessionManager.setBooleanValue(key, true);
+                        SessionManager.getInstance().setBooleanValue(key, true);
                     }
 
                     if(Config.SHOWLOG) Log.d("DBG_QUERIES_SERVER_MSGS", "[limit] : fetched msgs=" + allMessages.size() + ", states=" + allStates.size());
@@ -351,7 +350,7 @@ public class Queries {
                 if(allMessages.size() < Config.oldMessagesPagingSize){
                     String key = userId + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED;
                     if(Config.SHOWLOG) Log.d("_FETCH_OLD", "setting shared prefs _server_inbox_fetched");
-                    SessionManager.setBooleanValue(key, true);
+                    SessionManager.getInstance().setBooleanValue(key, true);
                 }
 
                 //use allStates to set appropriate state for the each received message

@@ -263,9 +263,8 @@ public class Utility extends MyActionBarActivity {
         String result;
 
         if (d1 != null) {
-            SessionManager sm = new SessionManager(Application.getAppContext());
 
-            Date d2 = sm.getCurrentTime();
+            Date d2 = SessionManager.getInstance().getCurrentTime();
 
             if (d2 == null)
                 return "just now";
@@ -483,13 +482,12 @@ public class Utility extends MyActionBarActivity {
     //update current time(sync with server now - needed for first time e.g login, signup)
     public static void updateCurrentTime(){
         if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "using updateCurrentTime() during login/signup");
-        SessionManager session = new SessionManager(Application.getAppContext());
 
         HashMap<String, Date> parameters = new HashMap<String, Date>();
         try{
             Date now = ParseCloud.callFunction("getServerTime", parameters);
             if(now != null) {
-                session.setCurrentTime(now);
+                SessionManager.getInstance().setCurrentTime(now);
             }
             else{
                 if(Config.SHOWLOG) Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME", "getServerTime failed - Date null");
@@ -504,7 +502,6 @@ public class Utility extends MyActionBarActivity {
     //update current time (but in background as not urgent)
     public static void updateCurrentTimeInBackground(){
         if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "using updateCurrentTimeInBackground()");
-        final SessionManager session = new SessionManager(Application.getAppContext());
 
         HashMap<String, Date> parameters = new HashMap<String, Date>();
         ParseCloud.callFunctionInBackground("getServerTime", parameters, new FunctionCallback<Object>() {
@@ -513,7 +510,7 @@ public class Utility extends MyActionBarActivity {
 
                 if(e == null && now != null) {
                     Date currentTime = (Date) now;
-                    session.setCurrentTime(currentTime);
+                    SessionManager.getInstance().setCurrentTime(currentTime);
                 }
                 else{
                     if(Config.SHOWLOG) Log.d("DEBUG_UTILITY_UPADTE_CURRENT_TIME_BACK", "getServerTime failed");
@@ -703,7 +700,7 @@ public class Utility extends MyActionBarActivity {
             AlarmTrigger.cancelRefresherAlarm(_context);
             AlarmTrigger.cancelNotificationAlarm(_context);
 
-            SessionManager session = new SessionManager(_context);
+            SessionManager session = SessionManager.getInstance();
             session.reSetAppOpeningCount();
             session.reSetSignUpAccount();
 

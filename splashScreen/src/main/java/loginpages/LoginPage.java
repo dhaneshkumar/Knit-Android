@@ -167,10 +167,9 @@ public class LoginPage extends MyActionBarActivity {
             Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
             Utility.updateCurrentTimeInBackground();
 
-            SessionManager session = new SessionManager(Application.getAppContext());
             //If user has joined any class then locally saving it in session manager
             if(user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
-              session.setHasUserJoinedClass();
+              SessionManager.getInstance().setHasUserJoinedClass();
             }
           } else {
             // The token could not be validated.
