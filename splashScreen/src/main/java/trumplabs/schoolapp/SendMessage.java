@@ -260,6 +260,10 @@ public class SendMessage extends MyActionBarActivity  {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    if(groupCode != null){
+                        ClassMsgFunctions.updateTotalClassMessages(groupCode);
+                    }
+
                     if (groupDetails != null && myadapter != null) {
                         if(msgsToRemove != null){
                             groupDetails.removeAll(msgsToRemove);
@@ -686,7 +690,9 @@ public class SendMessage extends MyActionBarActivity  {
                 int lastCount = groupDetails.size();
 
                 if (firstVisibleItem + visibleItemCount >= totalItemCount && totalItemCount != 0) {
+                    if(Config.SHOWLOG) Log.d("D_SEND_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalClassMessages);
                     if(lastCount >= totalClassMessages){
+                        if(Config.SHOWLOG) Log.d("D_SEND_SCROLL", "[" + (visibleItemCount + firstVisibleItem) + " out of" + totalClassMessages + "]all messages loaded. Saving unnecessary query");
                         return;
                     }
 

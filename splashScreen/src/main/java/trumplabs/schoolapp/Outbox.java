@@ -148,9 +148,9 @@ public class Outbox extends Fragment {
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
                 if (visibleItemCount + pastVisibleItems >= totalItemCount - 1) {
-                    //if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
+                    if(Config.SHOWLOG) Log.d("D_OUTBOX_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
                     if (totalItemCount >= totalOutboxMessages) {
-                        //if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
+                        if(Config.SHOWLOG) Log.d("D_OUTBOX_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
 
@@ -244,6 +244,7 @@ public class Outbox extends Fragment {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    updateOutboxTotalMessages();
                     if (groupDetails != null && myadapter != null) {
                         if(msgsToRemove != null){
                             groupDetails.removeAll(msgsToRemove);
