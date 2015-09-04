@@ -6,6 +6,7 @@ import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -16,7 +17,7 @@ import com.github.amlcurran.showcaseview.targets.PointTarget;
 import com.github.amlcurran.showcaseview.targets.Target;
 import com.github.amlcurran.showcaseview.targets.ViewTarget;
 
-import additionals.InviteToClassDialog;
+import baseclasses.MyActionBarActivity;
 import joinclasses.JoinClassDialog;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.CreateClassDialog;
@@ -55,6 +56,13 @@ public class ShowcaseCreator {
         targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
+                Log.d("_TUTORIAL_", "activity isVisibleNow=" + ((MyActionBarActivity) activity).isVisibleNow);
+
+                if(activity instanceof MyActionBarActivity && !((MyActionBarActivity) activity).isVisibleNow){
+                    Log.d("_TUTORIAL_", "skipping tutorial");
+                    return; //don't show
+                }
+
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
@@ -98,6 +106,12 @@ public class ShowcaseCreator {
         targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
+
+                Log.d("_TUTORIAL_", "activity isVisibleNow=" + ((MyActionBarActivity) activity).isVisibleNow);
+                if(activity instanceof MyActionBarActivity && !((MyActionBarActivity) activity).isVisibleNow){
+                    return; //don't show
+                }
+
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
 
                 builder.setScaleMultipler(0.25f)
@@ -153,6 +167,11 @@ public class ShowcaseCreator {
         targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
+
+                if(activity instanceof MyActionBarActivity && !((MyActionBarActivity) activity).isVisibleNow){
+                    return; //don't show
+                }
+
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
@@ -193,6 +212,10 @@ public class ShowcaseCreator {
         targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
+                if(activity instanceof MyActionBarActivity && !((MyActionBarActivity) activity).isVisibleNow){
+                    return; //don't show
+                }
+
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f)
                         .setShowcaseEventListener(new OnShowcaseEventListener() {
@@ -241,6 +264,10 @@ public class ShowcaseCreator {
         targetView.postDelayed(new Runnable() {
             @Override
             public void run() {
+                if(activity instanceof MyActionBarActivity && !((MyActionBarActivity) activity).isVisibleNow){
+                    return; //don't show
+                }
+
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
                 builder.setScaleMultipler(0.25f);
 
@@ -316,6 +343,10 @@ public class ShowcaseCreator {
         likeView.post(new Runnable() {
             @Override
             public void run() {
+                if(activity instanceof MyActionBarActivity && !((MyActionBarActivity) activity).isVisibleNow){
+                    return; //don't show
+                }
+
                 final LinearLayout buttonRow = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.messages_response_row_tutorial, null);
 
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);
@@ -390,6 +421,10 @@ public class ShowcaseCreator {
         likeView.post(new Runnable() {
             @Override
             public void run() {
+                if(activity instanceof MyActionBarActivity && !((MyActionBarActivity) activity).isVisibleNow){
+                    return; //don't show
+                }
+
                 final LinearLayout buttonRow = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.outbox_response_row_tutorial, null);
 
                 ShowcaseView.Builder builder = getDefaultBuilder(activity);

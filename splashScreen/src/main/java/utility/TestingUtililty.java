@@ -1,16 +1,12 @@
 package utility;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.parse.ParseException;
-import com.parse.ParseObject;
-import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
-import java.util.List;
-
 import notifications.NotificationGenerator;
+import profileDetails.ProfilePage;
 import trumplab.textslate.BuildConfig;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -136,5 +132,11 @@ public class TestingUtililty {
         catch (InterruptedException e){
             e.printStackTrace();
         }
+    }
+
+    public static void launchProfileActivity(){
+        Intent i = new Intent(Application.getAppContext(), ProfilePage.class);
+        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        Application.getAppContext().startActivity(i);
     }
 }
