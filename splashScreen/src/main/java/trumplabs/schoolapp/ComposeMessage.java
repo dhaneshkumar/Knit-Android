@@ -81,7 +81,8 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     boolean pushOpen = false; //set to true when directly opened through notification click, if so go to main activity onPause(). Don't call finish on message sent
                                 //since non-static so don't have to reset in onCreate()
 
-    public static boolean composeTutorialShown = false;
+    boolean sendEnabled = true; //whether send button enabled(to prevent multiple clicks)
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -287,9 +288,15 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 break;
 
             case R.id.send:
-                if(ComposeMessage.this != null) {
+                if(ComposeMessage.this != null && sendEnabled) {
+                    if(Config.SHOWLOG) Log.d("__CM", "#0 send clicked");
+                    sendEnabled = false;
+
                     Tools.hideKeyboard(ComposeMessage.this);
                     checkTime();
+                }
+                else{
+                    if(Config.SHOWLOG) Log.d("__CM", "HURRAY ignored send click");
                 }
                 break;
 
@@ -312,12 +319,16 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         if(Config.SHOWLOG) Log.d(LOGTAG, "selectedClassList size=" + selectedClassList.size());
         if(selectedClassList.isEmpty()){
             Utility.toast("Select target classrooms");
+            if(Config.SHOWLOG) Log.d("__CM", "#1 select class");
+            sendEnabled = true;
             return;
         }
 
 
         if(typedmsg.getText().toString().trim().isEmpty() && sendimgpreview.getVisibility() == View.GONE){
             Utility.toast("Enter your message");
+            if(Config.SHOWLOG) Log.d("__CM", "#2 enter msg");
+            sendEnabled = true;
             return;
         }
 
@@ -327,7 +338,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         Calendar cal = Calendar.getInstance();
         hourOfDay = cal.get(Calendar.HOUR_OF_DAY);
 
-        if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "send() : hourOfDay=" + hourOfDay);
+        if(Config.SHOWLOG) Log.d(ComposeMessage.LOGTAG, "send() : hourOfDay=" + hourOfDay + " endTime=" + Config.messageNormalEndTime);
 
         if (hourOfDay != -1) {
 
@@ -358,6 +369,14 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 builder.setNegativeButton("CANCEL", null);
                 AlertDialog dialog = builder.create();
                 dialog.setCanceledOnTouchOutside(true);
+                dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                    @Override
+                    public void onDismiss(DialogInterface dialog) {
+                        if(Config.SHOWLOG) Log.d("__CM", "#3 dialog onDismiss");
+                        sendEnabled = true;
+                    }
+                });
+
                 dialog.show();
 
             } else {
