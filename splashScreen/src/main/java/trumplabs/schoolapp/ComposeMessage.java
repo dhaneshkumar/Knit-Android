@@ -269,7 +269,6 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         return true;
     }
 
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 

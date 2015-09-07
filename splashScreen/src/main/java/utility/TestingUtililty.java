@@ -15,6 +15,9 @@ import trumplabs.schoolapp.Constants;
  * Created by ashish on 7/7/15.
  */
 public class TestingUtililty {
+
+    //public static boolean ignoreResponse = false;
+
     public static void testingTutorial(){
         if(!BuildConfig.DEBUG){
             return;

@@ -12,7 +12,10 @@ public class MyActionBarActivity extends ActionBarActivity{
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
+        isVisibleNow = true;
+        Application.setCurrentActivity(this);//important because in onCreate also app is visible
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
        // getSupportActionBar().show();
         
