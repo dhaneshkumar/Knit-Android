@@ -33,26 +33,27 @@ import utility.Utility;
  * It also updates the name in Codegroup table as we use Codegroup table to show joined classes.
  */
 public class ClassRoomsUpdate {
+    final static String LOGTAG = "__CR_UPDATE";
+    
     public static void fetchUpdates(){
 
         ParseUser user = ParseUser.getCurrentUser();
         if(user == null){
             return;
         }
-        SessionManager sm = new SessionManager(Application.getAppContext());
         //check if Codegroup data has been fetched or not yet. If not just return
-        if(sm.getCodegroupLocalState(user.getUsername()) == 0){
-            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Codegroup data not yet availabe locally. So returning");
+        if(SessionManager.getInstance().getCodegroupLocalState(user.getUsername()) == 0){
+            if(Config.SHOWLOG) Log.d(LOGTAG, "Codegroup data not yet availabe locally. So returning");
             return;
         }
 
         List<List<String>> joinedClasses = Classrooms.getJoinedGroups(user); //won't be null
         if(joinedClasses.size() == 0){
-            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is 0");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "joined_group size is 0");
             return; //We're done. No joined groups
         }
 
-        if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "joined_group size is " + joinedClasses.size());
+        if(Config.SHOWLOG) Log.d(LOGTAG, "joined_group size is " + joinedClasses.size());
 
         ArrayList<String> joinedClassCodes = new ArrayList<String>();
         for(int i=0; i<joinedClasses.size(); i++){
@@ -67,14 +68,14 @@ public class ClassRoomsUpdate {
         try{
             List<ParseObject> joinedGroups = joinedQuery.find();
             if(joinedGroups == null || joinedGroups.size() == 0){
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "Zero code group size");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "Zero code group size");
                 return;
             }
 
             ArrayList<String> joinedSenderIds = new ArrayList<>();
             for(int i=0; i<joinedGroups.size(); i++){
                 joinedSenderIds.add(joinedGroups.get(i).getString(Constants.Codegroup.SENDER_ID));
-                //if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", i + joinedGroups.get(i).getString("senderId"));
+                //if(Config.SHOWLOG) Log.d(LOGTAG, i + joinedGroups.get(i).getString("senderId"));
             }
 
             HashMap<String, Object> parameters = new HashMap<String, Object>();
@@ -82,7 +83,7 @@ public class ClassRoomsUpdate {
 
             try{
                 List<Map<String, Object>>  resultUsers = ParseCloud.callFunction("getUpdatesUserDetail", parameters);
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "fetchUpdates() : result Users size " + resultUsers.size());
+                if(Config.SHOWLOG) Log.d(LOGTAG, "fetchUpdates() : result Users size " + resultUsers.size());
 
                 //now iterate in the list and update the User table and put dirty mark for those whose profile pic has changed
                 //Also update Codegroup table if name has changed
@@ -93,12 +94,12 @@ public class ClassRoomsUpdate {
                 }
             }
             catch (ParseException e1){
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "getUpdatesUserDetails() failed");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "getUpdatesUserDetails() failed");
                 e1.printStackTrace();
             }
         }
         catch (ParseException e){
-            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "local Codegroup query failed");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "local Codegroup query failed");
             e.printStackTrace();
         }
     }
@@ -134,7 +135,7 @@ public class ClassRoomsUpdate {
                 else{
                     newUser.put(Constants.UserTable.DIRTY, false);
                 }
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : creating a new User object with dirty " +
+                if(Config.SHOWLOG) Log.d(LOGTAG, "updateUser() : creating a new User object with dirty " +
                         Boolean.toString(newUser.getBoolean(Constants.UserTable.DIRTY)));
 
                 newUser.put(Constants.UserTable.NAME, newName);
@@ -147,7 +148,7 @@ public class ClassRoomsUpdate {
                 if(!oldUser.getString(Constants.UserTable.NAME).equals(newName)){
                     //update the name here
 
-                    if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : updating user's name to " + newName);
+                    if(Config.SHOWLOG) Log.d(LOGTAG, "updateUser() : updating user's name to " + newName);
                     oldUser.put(Constants.UserTable.NAME, newName);
                     changed = true;
                     nameChanged = true;
@@ -155,7 +156,7 @@ public class ClassRoomsUpdate {
 
                 if(newPid != null){
                     if(oldUser.getParseFile(Constants.UserTable.PID) == null || !oldUser.getParseFile(Constants.UserTable.PID).getName().equals(newPid.getName())){//if existing is null or has different name from newPid
-                        if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : updating user's pic to " + newPid.getName());
+                        if(Config.SHOWLOG) Log.d(LOGTAG, "updateUser() : updating user's pic to " + newPid.getName());
                         oldUser.put(Constants.UserTable.PID, newPid);
                         oldUser.put(Constants.UserTable.DIRTY, true); //has become dirty. i.e need to fetch updated profile pic
                         changed = true;
@@ -168,7 +169,7 @@ public class ClassRoomsUpdate {
             }
 
             if(nameChanged) {//query Codegroup and change "Creator" in Codegroup table(where senderId = username)
-                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "updateUser() : updating Codegroup table for senderId = " + username);
+                if(Config.SHOWLOG) Log.d(LOGTAG, "updateUser() : updating Codegroup table for senderId = " + username);
                 ParseQuery classQuery = new ParseQuery(Constants.Codegroup.TABLE);
                 classQuery.fromLocalDatastore();
                 classQuery.whereEqualTo(Constants.Codegroup.SENDER_ID, username);
@@ -200,7 +201,7 @@ public class ClassRoomsUpdate {
 
         try{
             List<ParseObject> dirtyUsers = dirtyUserQuery.find();
-            if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "fetchProfilePics() : dirty user count " + dirtyUsers.size());
+            if(Config.SHOWLOG) Log.d(LOGTAG, "fetchProfilePics() : dirty user count " + dirtyUsers.size());
 
             for(int i=0; i<dirtyUsers.size(); i++){
                 ParseObject dirtyUser = dirtyUsers.get(i);
@@ -217,7 +218,7 @@ public class ClassRoomsUpdate {
         String senderId = dirtyUser.getString(Constants.UserTable.USERNAME);
         final ParseFile senderImagefile = dirtyUser.getParseFile(Constants.UserTable.PID);
 
-        if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "downloadProfileImage() : start downloading pic for " + senderId);
+        if(Config.SHOWLOG) Log.d(LOGTAG, "downloadProfileImage() : start downloading pic for " + senderId);
 
         if (senderImagefile != null && (!UtilString.isBlank(senderId))) {
             final String senderIdTrimmed = senderId.replaceAll("@", "");
@@ -236,7 +237,7 @@ public class ClassRoomsUpdate {
                                 //download and save is success. Set dirty bit to false and pin
                                 dirtyUser.put(Constants.UserTable.DIRTY, false);
                                 dirtyUser.pin();
-                                if(Config.SHOWLOG) Log.d("DEBUG_CLASS_ROOMS_UPDATE", "downloadProfileImage() : profile pic download and save successful in " + filePath);
+                                if(Config.SHOWLOG) Log.d(LOGTAG, "downloadProfileImage() : profile pic download and save successful in " + filePath);
                             } catch (IOException e1) {
                                 e1.printStackTrace();
                             } catch (ParseException e1) {

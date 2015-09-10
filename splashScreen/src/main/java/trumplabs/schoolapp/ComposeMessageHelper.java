@@ -15,12 +15,10 @@ import com.parse.SaveCallback;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Objects;
 
 import BackGroundProcesses.MemberList;
 import BackGroundProcesses.SendPendingMessages;
@@ -40,7 +38,6 @@ public class ComposeMessageHelper {
     private String sender;
     private String userId;        //really needed to store ???????????????
     private ParseUser user;
-    private SessionManager session;
 
     ComposeMessageHelper(Activity context, List<List<String>> classList)
     {
@@ -55,7 +52,6 @@ public class ComposeMessageHelper {
 
         userId = user.getUsername();
         sender = user.getString(Constants.NAME);
-        session = new SessionManager(Application.getAppContext());
     }
 
     /*
@@ -164,7 +160,7 @@ public class ComposeMessageHelper {
             sentMsg.put("code", cls.get(0)); //code @ 0
             sentMsg.put("title", typedtxt);
             sentMsg.put("name", cls.get(1)); //name @ 1
-            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+            sentMsg.put("creationTime", SessionManager.getInstance().getCurrentTime()); //needs to be updated once sent
             sentMsg.put("senderId", userId);
             sentMsg.put("userId", userId);
             sentMsg.put("pending", true);
@@ -185,7 +181,7 @@ public class ComposeMessageHelper {
         ParseException.INVALID_SESSION_TOKEN(209) : invalid session token
         -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
     */
-    public static int sendMultiTextMessageCloud(final List<ParseObject> batch){
+    public static int sendMultiTextMessageCloud(final List<ParseObject> batch, String uniqueBatchId){
         if(!Utility.isInternetExistWithoutPopup()){
             if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
             return 100; //not connected to internet
@@ -217,9 +213,12 @@ public class ComposeMessageHelper {
         params.put("checkmember", checkmemberFlagArray);
 
         params.put("message", master.getString("title"));
+        params.put("timestamp", uniqueBatchId);
 
         try{
-            HashMap result = ParseCloud.callFunction("sendMultiTextMessage", params);
+            HashMap result = ParseCloud.callFunction("sendMultiTextMessage2", params);
+
+            //if (!TestingUtililty.ignoreResponse && result != null) {
             if (result != null) {
                 int retVal = 0; //success
                 List<Date> createdAtList = (List<Date>) result.get("createdAt");
@@ -328,8 +327,7 @@ public class ComposeMessageHelper {
             sentMsg.put("code", cls.get(0));
             sentMsg.put("title", txtmsg);
             sentMsg.put("name", cls.get(1));
-            SessionManager session = new SessionManager(Application.getAppContext());
-            sentMsg.put("creationTime", session.getCurrentTime()); //needs to be updated once sent
+            sentMsg.put("creationTime", SessionManager.getInstance().getCurrentTime()); //needs to be updated once sent
             sentMsg.put("senderId", userId);
             sentMsg.put("userId", userId);
             sentMsg.put("pending", true);
@@ -357,7 +355,7 @@ public class ComposeMessageHelper {
        ParseException.INVALID_SESSION_TOKEN(209) : invalid session token
        -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
    */
-    public static int sendMultiPicMessageCloud(final List<ParseObject> batch){
+    public static int sendMultiPicMessageCloud(final List<ParseObject> batch, String uniqueBatchId){
         if(!Utility.isInternetExistWithoutPopup()){
             if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
             return 100; //not connected to internet
@@ -381,37 +379,66 @@ public class ComposeMessageHelper {
             checkmemberFlagArray.add(CHECK_MEMBER_FLAG && MemberList.getMemberCount(code) < 1);
         }
 
-        /* image file work */
-        //don't have attachement, objectid
-        //update creationTime, pending
-        String imageName = null;
-        if (master.containsKey("attachment_name"))
-            imageName = master.getString("attachment_name");
+        ParseFile imageParseFile = master.getParseFile("attachment");
 
-        if (imageName == null) return -1; //no attachment
+        if(imageParseFile == null) {
+            //create and save parse file
+            //don't have attachement, objectid
+            //update creationTime, pending
+            String imageName = null;
+            if (master.containsKey("attachment_name"))
+                imageName = master.getString("attachment_name");
 
-        byte[] data = null;
-        try {
-            RandomAccessFile f = new RandomAccessFile(Utility.getWorkingAppDir() + "/media/" + imageName, "r");
-            data = new byte[(int) f.length()];
-            f.read(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return -1; //io exception
+            if (imageName == null) return -1; //no attachment
+
+            byte[] data = null;
+            try {
+                RandomAccessFile f = new RandomAccessFile(Utility.getWorkingAppDir() + "/media/" + imageName, "r");
+                data = new byte[(int) f.length()];
+                f.read(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return -1; //io exception
+            }
+
+            String oldName = imageName;
+            imageName = imageName.replaceAll("[^a-zA-Z0-9_\\.]", "");
+            imageName = "i" + imageName;
+
+            ParseFile temp = new ParseFile(imageName, data);
+
+            if (Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name=" + imageName + ", old=" + oldName);
+
+            try {
+                temp.save();
+                imageParseFile = temp;
+
+                //save 'attachment' in all mesages in batch
+                for (ParseObject msg : batch) {
+                    msg.put("attachment", imageParseFile);
+                }
+
+                ParseObject.pinAll(batch);
+
+                if (Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
+
+            } catch (ParseException e) {
+                if(Utility.LogoutUtility.checkAndHandleInvalidSession(e)){
+                    return ParseException.INVALID_SESSION_TOKEN;
+                }
+                else if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    return 100; //network error
+                }
+                e.printStackTrace();
+                return -1;
+            }
+        }
+        else{
+            if (Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file already saved");
         }
 
-        String oldName = imageName;
-        imageName = imageName.replaceAll("[^a-zA-Z0-9_\\.]", "");
-        imageName = "i" + imageName;
-
-        final ParseFile file = new ParseFile(imageName, data);
-
-        if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : data size=" + data.length + " bytes, name=" + imageName + ", old=" + oldName);
-
+        //imageParseFile won't be null if reach here (will return before itself if some error)
         try{
-            file.save();
-            if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "sendPicMessageCloud : file save success");
-
             //sending message using parse cloud function
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("classcode", classcodes);
@@ -420,9 +447,11 @@ public class ComposeMessageHelper {
 
             params.put("message", master.getString("title"));
             params.put("filename", master.getString("attachment_name"));
-            params.put("parsefile", file);
+            params.put("parsefile", imageParseFile);
+            params.put("timestamp", uniqueBatchId);
 
-            HashMap result = ParseCloud.callFunction("sendMultiPhotoTextMessage", params);
+            HashMap result = ParseCloud.callFunction("sendMultiPhotoTextMessage2", params);
+            //if (!TestingUtililty.ignoreResponse && result != null) {
             if (result != null) {
                 int retVal = 0; //success
                 List<Date> createdAtList = (List<Date>) result.get("createdAt");
@@ -451,7 +480,6 @@ public class ComposeMessageHelper {
                     msg.put("objectId", objectId);
                     msg.put("pending", false);
                     msg.put("creationTime", createdAt);
-                    msg.put("attachment", file);
 
                     msg.pinInBackground();
                 }

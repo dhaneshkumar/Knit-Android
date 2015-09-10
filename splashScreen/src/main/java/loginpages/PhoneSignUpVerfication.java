@@ -359,11 +359,10 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Void result){
             if(taskSuccess){
-                SessionManager session = new SessionManager(Application.getAppContext());
                 ParseUser user = ParseUser.getCurrentUser();
                 //If user has joined any class then locally saving it in session manager
                 if(user != null && user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
-                    session.setHasUserJoinedClass();
+                    SessionManager.getInstance().setHasUserJoinedClass();
                 }
 
                 if(flag != null && flag.equals("logIn")){
@@ -376,7 +375,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
                 else {
 
-                    session.setSignUpAccount();
+                    SessionManager.getInstance().setSignUpAccount();
 
                     // The current user is now set to user. Do registration in default class
                     PostSignUpTask postSignUpTask = new PostSignUpTask(user, pdialog);
@@ -482,7 +481,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
             //set inbox fetch flag. We dont need to fetch old messages in this account
             if(currentParseUser != null) {
-                SessionManager.setBooleanValue(currentParseUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
+                SessionManager.getInstance().setBooleanValue(currentParseUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
             }
 
             return null;

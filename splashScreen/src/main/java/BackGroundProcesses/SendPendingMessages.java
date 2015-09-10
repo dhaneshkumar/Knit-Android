@@ -5,6 +5,7 @@ import android.util.Log;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.ParseUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +116,13 @@ public class SendPendingMessages {
 
     //must always be called in a thread, it first finds dirty messages(in asc order) and sends them one by one, aborts if anyone fails due to network error
     public static void sendPendingMessages(){
+        ParseUser user = ParseUser.getCurrentUser();
+        if(user == null){
+            return;
+        }
+
+        String userObjectId = user.getObjectId();
+        String username = user.getUsername();
 
         synchronized (DATA_LOCK){
             if(Config.SHOWLOG) Log.d(LOGTAG, "sendPendingMessages : start-LOCK acquired : begin");
@@ -132,6 +140,7 @@ public class SendPendingMessages {
             ParseQuery parseQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
             parseQuery.fromLocalDatastore();
             parseQuery.whereEqualTo("pending", true);
+            parseQuery.whereEqualTo("userId", username);
             parseQuery.orderByAscending("creationTime");
 
             try{
@@ -181,13 +190,15 @@ public class SendPendingMessages {
                 if (!UtilString.isBlank(master.getString("title")) && UtilString.isBlank(master.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     if(Config.SHOWLOG) Log.d(LOGTAG, "pending text msg content : '" + master.getString("title") + "'" + ", multicast=" + nextBatch.size());
-                    res = ComposeMessageHelper.sendMultiTextMessageCloud(nextBatch);
+                    String uniqueBatchId = userObjectId + "_" + master.getLong(Constants.BATCH_ID);
+                    res = ComposeMessageHelper.sendMultiTextMessageCloud(nextBatch, uniqueBatchId);
                 }
 
                 if (!UtilString.isBlank(master.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     if(Config.SHOWLOG) Log.d(LOGTAG, "pending pic msg attachment name : " + master.getString("attachment_name") + ", multicast=" + nextBatch.size());
-                    res = ComposeMessageHelper.sendMultiPicMessageCloud(nextBatch);
+                    String uniqueBatchId = userObjectId + "_" + master.getLong(Constants.BATCH_ID);
+                    res = ComposeMessageHelper.sendMultiPicMessageCloud(nextBatch, uniqueBatchId);
                 }
 
                 final int result = res;

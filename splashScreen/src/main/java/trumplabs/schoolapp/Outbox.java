@@ -62,7 +62,6 @@ public class Outbox extends Fragment {
     public static List<ParseObject> groupDetails; // List of group messages
     Activity myActivity;
     private LinearLayoutManager mLayoutManager;
-    SessionManager session;
     private static SwipeRefreshLayout outboxRefreshLayout;
     static LinearLayout outboxLayout;
     public static int totalOutboxMessages = 15; //total pinned outbox messages(across all classes)
@@ -95,7 +94,6 @@ public class Outbox extends Fragment {
         //intializing variables
         outboxListv = (RecyclerView) getActivity().findViewById(R.id.outboxlistview);
         myActivity = getActivity();
-        session = new SessionManager(Application.getAppContext());
         query = new Queries();
         outboxRefreshLayout = (SwipeRefreshLayout) getActivity().findViewById(R.id.ptr_outbox);
         outboxRefreshLayout.setColorSchemeColors(Color.RED, Color.GREEN, Color.BLUE, Color.MAGENTA);
@@ -150,9 +148,9 @@ public class Outbox extends Fragment {
                 int pastVisibleItems = mLayoutManager.findFirstVisibleItemPosition();
 
                 if (visibleItemCount + pastVisibleItems >= totalItemCount - 1) {
-                    //if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
+                    if(Config.SHOWLOG) Log.d("D_OUTBOX_SCROLL", "showing " + totalItemCount + " totalpinnned " + totalOutboxMessages);
                     if (totalItemCount >= totalOutboxMessages) {
-                        //if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_MESSAGES_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
+                        if(Config.SHOWLOG) Log.d("D_OUTBOX_SCROLL", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalOutboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
 
@@ -246,6 +244,7 @@ public class Outbox extends Fragment {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    updateOutboxTotalMessages();
                     if (groupDetails != null && myadapter != null) {
                         if(msgsToRemove != null){
                             groupDetails.removeAll(msgsToRemove);
@@ -572,7 +571,7 @@ public class Outbox extends Fragment {
             if(Application.mainActivityVisible && position == 0 && !responseTutorialShown && MainActivity.fragmentVisible == 0 && currentParseUser != null && currentParseUser.getString(Constants.ROLE).equals(Constants.TEACHER) && !ShowcaseView.isVisible){
                 if(Config.SHOWLOG) Log.d("_TUTORIAL_", "outbox response tutorial entered");
                 String tutorialId = currentParseUser.getUsername() + Constants.TutorialKeys.TEACHER_RESPONSE;
-                SessionManager mgr = new SessionManager(Application.getAppContext());
+                SessionManager mgr = SessionManager.getInstance();
                 if(mgr.getSignUpAccount() && !mgr.getTutorialState(tutorialId)) {//only if signup account
                     mgr.setTutorialState(tutorialId, true);
                     ShowcaseCreator.teacherHighlightResponseButtonsNew(getActivity(), holder.likes);

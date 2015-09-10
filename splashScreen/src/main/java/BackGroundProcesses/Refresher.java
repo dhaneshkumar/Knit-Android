@@ -17,10 +17,12 @@ import utility.Utility;
 
 
 public class Refresher {
+    final static String LOGTAG = "__REFRESHER";
+    
     ParseUser freshUser;
 
     public Refresher(int appOpeningCount) {
-        if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "Entering Refresher Thread");
+        if(Config.SHOWLOG) Log.d(LOGTAG, "Entering Refresher Thread");
 
         freshUser = ParseUser.getCurrentUser();
 
@@ -29,7 +31,6 @@ public class Refresher {
         }
 
 
-        final SessionManager sm = new SessionManager(Application.getAppContext());
         //Utility.checkParseInstallation(); //important for upgrade issues. This will be called first time app is launched after update
 
         /*
@@ -40,11 +41,11 @@ public class Refresher {
                 Utility.updateCurrentTimeInBackground();
         }
 
-        if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER",  "calling background tasks");
+        if(Config.SHOWLOG) Log.d(LOGTAG,  "calling background tasks");
         /*
          * Updating inbox msgs
          */
-        if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "Attempting calling Inbox execute()");
+        if(Config.SHOWLOG) Log.d(LOGTAG, "Attempting calling Inbox execute()");
 
         Inbox.syncOtherInboxDetails(); //called always in background but sends only dirty data
         // (modified like, seen, confused status) if any
@@ -59,7 +60,7 @@ public class Refresher {
             }
         }
         else{
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher skipping inbox update : visible " + Application.isAppForeground() + " gap " +  isSufficientGapInbox());
+            if(Config.SHOWLOG) Log.d(LOGTAG, "refresher skipping inbox update : visible " + Application.isAppForeground() + " gap " +  isSufficientGapInbox());
         }
 
        /*
@@ -69,7 +70,7 @@ public class Refresher {
             Outbox.refreshCountCore();
         }
         else{
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher skipping Outbox update : visible " + Application.isAppForeground() + " gap " + isSufficientGapOutbox());
+            if(Config.SHOWLOG) Log.d(LOGTAG, "refresher skipping Outbox update : visible " + Application.isAppForeground() + " gap " + isSufficientGapOutbox());
         }
 
         /*
@@ -86,29 +87,29 @@ public class Refresher {
             JoinedClassRooms.onPostExecuteHelper();
         }
         else{
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "refresher joined classes update - done once");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "refresher joined classes update - done once");
         }
 
         //Refresh local outbox data, if not in valid state, clear and fetch new.
         //If already present then no need to fetch outbox messages
         if(freshUser.getString(Constants.ROLE).equalsIgnoreCase(Constants.TEACHER)) {
-            if(sm.getOutboxLocalState(freshUser.getUsername())==0) {
-                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "fetching outbox messages for the first and last time");
+            if(SessionManager.getInstance().getOutboxLocalState(freshUser.getUsername())==0) {
+                if(Config.SHOWLOG) Log.d(LOGTAG, "fetching outbox messages for the first and last time");
                 //no need to do in seperate thread. Already this is running in a background thread
                 OutboxMsgFetch.fetchOutboxMessages();
             }
             else{
-                if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "local outbox data intact. No need to fetch anything");
+                if(Config.SHOWLOG) Log.d(LOGTAG, "local outbox data intact. No need to fetch anything");
             }
         }
 
         //Fetch codegroup details if not yet fetched after reinstallation
-        if(sm.getCodegroupLocalState(freshUser.getUsername()) == 0){
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "fetching Codegroup info for the first and last time");
+        if(SessionManager.getInstance().getCodegroupLocalState(freshUser.getUsername()) == 0){
+            if(Config.SHOWLOG) Log.d(LOGTAG, "fetching Codegroup info for the first and last time");
             Queries2.fetchAllClassDetails();
         }
         else{
-            if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "local Codegroup data intact. No need to fetch anything");
+            if(Config.SHOWLOG) Log.d(LOGTAG, "local Codegroup data intact. No need to fetch anything");
         }
 
         //Send all pending invites
@@ -117,7 +118,7 @@ public class Refresher {
         //Send all pending messages
         SendPendingMessages.spawnThread(false); //direct call since already in a thread
 
-        if(Config.SHOWLOG) Log.d("DEBUG_REFRESHER", "Leaving Refresher Thread");
+        if(Config.SHOWLOG) Log.d(LOGTAG, "Leaving Refresher Thread");
     }
 
     /*

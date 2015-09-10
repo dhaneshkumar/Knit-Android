@@ -665,11 +665,10 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             Log.d("D_FB_VERIF", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess + ", flag=" + flag);
 
             if(taskSuccess){
-                SessionManager session = new SessionManager(Application.getAppContext());
                 ParseUser user = ParseUser.getCurrentUser();
                 //If user has joined any class then locally saving it in session manager
                 if(user != null && user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() >0) {
-                    session.setHasUserJoinedClass();
+                    SessionManager.getInstance().setHasUserJoinedClass();
                 }
 
                 Log.d("fblogin", "starting fb");
@@ -685,7 +684,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                     Log.d("fblogin", "starting fb login activity");
                 }
                 else {
-                    session.setSignUpAccount();
+                    SessionManager.getInstance().setSignUpAccount();
 
                     // The current user is now set to user. Do registration in default class
                     PhoneSignUpVerfication.PostSignUpTask postSignUpTask = new PhoneSignUpVerfication.PostSignUpTask(user, pdialog);

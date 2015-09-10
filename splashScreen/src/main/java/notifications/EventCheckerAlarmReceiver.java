@@ -63,7 +63,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
     public void onReceive(final Context context, Intent intent) {
         if(Config.SHOWLOG) Log.d("DEBUG_ALARM_RECEIVER", "onReceive. Spawning a thread for handling events");
         alarmContext = context;
-        session = new SessionManager(Application.getAppContext());
+        session = SessionManager.getInstance();
 
         user = ParseUser.getCurrentUser();
         if(user == null) {
@@ -295,7 +295,6 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
     }
 
     public static void generateLocalMessage(String content, String code, String creator, String senderId, String grpName, ParseUser user){
-        SessionManager session = new SessionManager(Application.getAppContext());
         //generate local message
         final ParseObject localMsg = new ParseObject("LocalMessages");
         localMsg.put("Creator", creator);
@@ -304,7 +303,7 @@ public class EventCheckerAlarmReceiver extends WakefulBroadcastReceiver {
         localMsg.put("title", content);
         localMsg.put("userId", user.getUsername());
         localMsg.put("senderId", senderId);
-        localMsg.put("creationTime", session.getCurrentTime());
+        localMsg.put("creationTime", SessionManager.getInstance().getCurrentTime());
 
         localMsg.pinInBackground();
     }

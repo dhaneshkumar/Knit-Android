@@ -6,7 +6,7 @@ public class Config {
   /*
     set this flag to false before release to disable log statements(which use this flag as guard)
    */
-    public static final boolean SHOWLOG = false;
+    public static final boolean SHOWLOG = true;
 
   /*
    * Parse Configurations
@@ -16,16 +16,16 @@ public class Config {
     /*
     1. Select APP ID
      */
-    public static final String APP_ID = "jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
-   //public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
+    //public static final String APP_ID = "jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
+   public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
     //public static final String APP_ID = "NCevIU3UOFsXQxcxCp0jp5qGECwHgWgP3SEqRSFr"; // load testing
 
 
     /*
     2. Select CLIENT Key
      */
-    public static final String CLIENT_KEY = "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // Knit
-//    public static final String CLIENT_KEY = "4LnlMXS6hFUunIZ6cS3F7IcLrWGuzOIkyLldkxQJ"; // development_knit
+    //public static final String CLIENT_KEY = "nfSgzcWi39af825uQ0Fhj2L7L2YJca9ibBgR9wtQ"; // Knit
+    public static final String CLIENT_KEY = "4LnlMXS6hFUunIZ6cS3F7IcLrWGuzOIkyLldkxQJ"; // development_knit
     //public static final String CLIENT_KEY = "n7XBHP4N6l8lafxjFrh1bgLZJXtFyB6JQ4CNFwi3"; // load testing
 
   /*
@@ -36,15 +36,15 @@ public class Config {
   4. Set flag to allow to join his own class.  # false : Knit & #true for testing
    */
   //flag to show teacher can join his own class or not
-  public static final boolean CAN_JOIN_OWN_CLASS = false;
-//  public static final boolean CAN_JOIN_OWN_CLASS = true;
+  //public static final boolean CAN_JOIN_OWN_CLASS = false;
+  public static final boolean CAN_JOIN_OWN_CLASS = true;
 
   /*
   5. Set flag to detect invalid number.  #true : knit & #false for testing
     Note now invalid number detection is now local i.e numbers must be 10 digit with 1st digit >= 7
    */
-  public static final boolean DETECT_INVALID_NUMBER = true;
-//  public static final boolean DETECT_INVALID_NUMBER = false;
+  //public static final boolean DETECT_INVALID_NUMBER = true;
+  public static final boolean DETECT_INVALID_NUMBER = false;
 
 /*
   6. Set alarm configuration like repeat duration, notification stale period - used in AlarmTrigger, NotificationAlarmReceiver

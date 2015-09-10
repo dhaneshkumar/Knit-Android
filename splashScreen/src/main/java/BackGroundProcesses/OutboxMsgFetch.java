@@ -81,8 +81,7 @@ public class OutboxMsgFetch{
                 newMsgsToPin.add(sentMsg);
             }
             ParseObject.pinAll(newMsgsToPin);
-            final SessionManager sm = new SessionManager(Application.getAppContext());
-            sm.setOutboxLocalState(1, userId); //set the flag locally that outbox data is valid
+            SessionManager.getInstance().setOutboxLocalState(1, userId); //set the flag locally that outbox data is valid
             //Log.d("DEBUG_FETCH_OUTBOX_MESSAGES", "Pinned all. State changed to 1. Notifying Outbox about it");
 
             //update total message count outbox

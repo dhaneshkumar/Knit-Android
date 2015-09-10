@@ -52,12 +52,10 @@ import java.util.HashMap;
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
 import trumplabs.schoolapp.MainActivity;
 import utility.Config;
-import utility.SessionManager;
 import utility.Utility;
 
 public class ProfilePage extends MyActionBarActivity implements OnClickListener , GoogleApiClient.ConnectionCallbacks,
@@ -87,9 +85,15 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        /* testing start*/
+        //TestingUtililty.ignoreResponse = ! TestingUtililty.ignoreResponse;
+        //Utility.toast("ignore : " + TestingUtililty.ignoreResponse);
+        /* testing end */
+
         if(Config.SHOWLOG) Log.d("__A","onCreate ProfilePage");
 
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.profile);
 
         name_textView = (TextView) findViewById(R.id.name);
@@ -135,9 +139,6 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         if (!UtilString.isBlank(name))
             name_textView.setText(name);
-
-
-        final SessionManager sessionManager = new SessionManager(Application.getAppContext());
 
         if(!UtilString.isBlank(userId)) {
             if (userId.length() == 10 || userId.contains("@"))

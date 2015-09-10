@@ -78,9 +78,8 @@ public class SplashScreen extends MyActionBarActivity {
     /*
      * Setting App opening count Each time app count increases by one
      */
-        final SessionManager session = new SessionManager(Application.getAppContext());
         if(ParseUser.getCurrentUser() != null){ //only if logged in
-            session.setAppOpeningCount();
+            SessionManager.getInstance().setAppOpeningCount();
         }
 
         // FacebookSdk.sdkInitialize(getApplicationContext());
@@ -112,8 +111,8 @@ public class SplashScreen extends MyActionBarActivity {
         dimensions.put("count", "dailyCount");
 
         String timeSession = "not set";
-        if (session.getCurrentTime() != null) {
-            Date currentTime = session.getCurrentTime();
+        if (SessionManager.getInstance().getCurrentTime() != null) {
+            Date currentTime = SessionManager.getInstance().getCurrentTime();
 
             SimpleDateFormat ft = new SimpleDateFormat("HH:mm");
             String timeStamp = ft.format(currentTime);
@@ -166,8 +165,7 @@ public class SplashScreen extends MyActionBarActivity {
                 Putting security check to support old users while updating app
                  */
                         if (user.getList(Constants.JOINED_GROUPS) != null && user.getList(Constants.JOINED_GROUPS).size() > 0) {
-                            SessionManager sessionManager = new SessionManager(Application.getAppContext());
-                            sessionManager.setHasUserJoinedClass();
+                            SessionManager.getInstance().setHasUserJoinedClass();
                         }
 
 
