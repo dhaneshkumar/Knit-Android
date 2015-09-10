@@ -14,3 +14,7 @@
 -keep class android.support.v4.** { *; }
 -keep interface android.support.v4.** { *; }
 -keep class com.software.shell.** { *; }
+-keep class com.appsee.** { *; }
+-keep class org.jcodec.** { *; }
+-dontwarn com.appsee.**
+-dontwarn com.appsflyer.**

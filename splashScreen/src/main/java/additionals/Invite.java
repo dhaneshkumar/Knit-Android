@@ -118,25 +118,31 @@ public class Invite extends MyActionBarActivity{
               facebook.setVisibility(View.GONE);
               inviteHeading.setText("Invite Parents");
               getSupportActionBar().setTitle("Invite Parents & Students");
-              whatsAppContent = "Hi! I have recently started using 'Knit Messaging' app to send updates for my '"+ className +"' class. Download the app from "+ "http://goo.gl/cormDk" +" and use code '"+classCode+"' to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
+              whatsAppContent = "Hi! I have recently started using 'Knit Messaging' app to send updates for my '"+ className +"' class. Download the app from "+
+                      "http://m.onelink.me/878e5bab"
+                      +" and use code '"+classCode+"' to join my class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_P2T:
               facebook.setVisibility(View.VISIBLE);
               inviteHeading.setText("Invite Teachers");
               getSupportActionBar().setTitle("Invite Teachers");
-              whatsAppContent = "Dear teacher, I found an awesome app, 'Knit Messaging', for teachers to communicate with parents and students. You can download the app from " + "http://goo.gl/FmydzU ";
+              whatsAppContent = "Dear teacher, I found an awesome app, 'Knit Messaging', for teachers to communicate with parents and students. You can download the app from " +
+                      "http://m.onelink.me/fdecb1f0 ";
               break;
           case Constants.INVITATION_P2P:
               facebook.setVisibility(View.GONE);
               inviteHeading.setText("Invite other parents");
               getSupportActionBar().setTitle("Invite other parents");
-              whatsAppContent = "Hi! I just joined '" + className + "' class of " + teacherName + " on 'Knit Messaging' app.  Download the app from " + "http://goo.gl/Q2yeE3" +  " and use code '" + classCode + "' to join this class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
+              whatsAppContent = "Hi! I just joined '" + className + "' class of " + teacherName + " on 'Knit Messaging' app.  Download the app from " +
+                      "http://m.onelink.me/4303fb5f" +
+                      " and use code '" + classCode + "' to join this class. To join via SMS, send '" + classCode + "  <Student's Name>' to 9243000080";
               break;
           case Constants.INVITATION_SPREAD:
               facebook.setVisibility(View.VISIBLE);
               inviteHeading.setText("Tell your friends about Knit");
               getSupportActionBar().setTitle("Spread the word");
-              whatsAppContent = "Yo! I just started using 'Knit Messaging' app. It's an awesome app for teachers, parents and students to connect with each other. Download the app from " + "http://goo.gl/GLkQ57 ";
+              whatsAppContent = "Yo! I just started using 'Knit Messaging' app. It's an awesome app for teachers, parents and students to connect with each other. Download the app from " +
+                      "http://m.onelink.me/8bb7a12b ";
               break;
       }
 
