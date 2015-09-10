@@ -214,6 +214,14 @@
             </intent-filter>
         </receiver>
 
+        <!-- Track App Uninstalls - appsflyer-->
+        <receiver android:name="com.appsflyer.AppsFlyerLib">
+            <intent-filter>
+                <action android:name="android.intent.action.PACKAGE_REMOVED"/>
+                <data android:scheme="package"/>
+            </intent-filter>
+        </receiver>
+
         <!-- appsee service -->
         <service android:name="com.appsee.AppseeBackgroundUploader" />
     </application>
