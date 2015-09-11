@@ -18,6 +18,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 
+import com.parse.ParseUser;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -109,9 +111,14 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
   private void takePicture() {
 
     if(Config.SHOWLOG) Log.d("camera", "started camera.............");
+    ParseUser currentParseUser = ParseUser.getCurrentUser();
+    if(currentParseUser == null){
+      Utility.LogoutUtility.logout();
+      return;
+    }
 
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    imageFileName = Utility.getUniqueImageName();
+    imageFileName = Utility.getUniqueImageName(currentParseUser);
 
     if(Config.SHOWLOG) Log.d("camera", imageFileName);
 
@@ -202,7 +209,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
       boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
 
-      imageName = Utility.getUniqueImageName();
+      ParseUser currentParseUser = ParseUser.getCurrentUser();
+      if(currentParseUser == null){
+        Utility.LogoutUtility.logout();
+        return null;
+      }
+
+      imageName = Utility.getUniqueImageName(currentParseUser);
 
       String imagePath = Utility.getWorkingAppDir() + "/media/" + imageName;
 

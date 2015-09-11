@@ -446,11 +446,11 @@ public class Utility extends MyActionBarActivity {
         Use this to give a unique name to captured or picked image before storing 'media' folder
         This will be unique globally across all users, all devices, any time (assuming parse installation id is unique across all devices)
      */
-    public static String getUniqueImageName(){
-        String installationId = ParseInstallation.getCurrentInstallation().getInstallationId();
+    public static String getUniqueImageName(ParseUser currentParseUser){
+        String parseUserObjectId = currentParseUser.getObjectId();
         Long timeInMillis = new Date().getTime();
 
-        return installationId + "_" + timeInMillis + ".jpg";
+        return parseUserObjectId + "_" + timeInMillis + ".jpg";
     }
 
     public static String classColourCode(String className) {
