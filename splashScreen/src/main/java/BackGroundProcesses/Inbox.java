@@ -47,13 +47,11 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
 
       if(newMsgs != null)
       {
-      /*
-       * Deleting extra element from list
-       */
-          while(newMsgs.size() > Config.inboxMsgCount)
+       //Deleting extra element from list
+          /*while(newMsgs.size() > Config.inboxMsgCount)
           {
               newMsgs.remove(newMsgs.size()-1);
-          }
+          }*/
 
           Messages.msgs = newMsgs;
       }

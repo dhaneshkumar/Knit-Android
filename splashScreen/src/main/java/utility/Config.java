@@ -17,7 +17,7 @@ public class Config {
     1. Select APP ID
      */
     //public static final String APP_ID = "jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
-   public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
+    public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
     //public static final String APP_ID = "NCevIU3UOFsXQxcxCp0jp5qGECwHgWgP3SEqRSFr"; // load testing
 
 
@@ -78,10 +78,9 @@ public class Config {
 
     public static final int inboxMsgRefreshTotal= 10; //how many of the latest inbox messages(total) will
 
-    //be updated(periodically in Refresher) for like/confused
-    public static final int inboxMsgCount = 20;
-    public static final int createMsgCount = 20;
-    public static  final int outboxMsgCount =20;
+    public static final int inboxMsgCount = 50;
+    public static final int createMsgCount = 50;
+    public static  final int outboxMsgCount = 50;
     public static final int createMsgMax = 100;
     public static final int membersCount = 100;
     //public static final String creator = "Knit";

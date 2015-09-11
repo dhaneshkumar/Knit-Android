@@ -193,7 +193,7 @@ public class ComposeMessageHelper {
         List<String> classnames = new ArrayList<>();
         List<Boolean> checkmemberFlagArray = new ArrayList<>();
 
-        boolean CHECK_MEMBER_FLAG = false;
+        boolean CHECK_MEMBER_FLAG = true;
         if(batch.size() == 1){
             CHECK_MEMBER_FLAG = true; //only when sending to one class
         }
@@ -367,7 +367,7 @@ public class ComposeMessageHelper {
         List<String> classnames = new ArrayList<>();
         List<Boolean> checkmemberFlagArray = new ArrayList<>();
 
-        boolean CHECK_MEMBER_FLAG = false;
+        boolean CHECK_MEMBER_FLAG = true;
         if(batch.size() == 1){
             CHECK_MEMBER_FLAG = true; //only when sending to one class
         }

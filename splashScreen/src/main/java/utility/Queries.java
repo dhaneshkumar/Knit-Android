@@ -453,7 +453,6 @@ public class Queries {
             pendingQuery.whereEqualTo("userId", userId);
             pendingQuery.whereEqualTo("pending", true);
             pendingQuery.whereEqualTo("code", groupCode);
-            pendingQuery.setLimit(Config.outboxMsgCount);
 
             pendingMessages = pendingQuery.find();
         }
@@ -802,7 +801,6 @@ public class Queries {
         pendingQuery.orderByDescending("creationTime");
         pendingQuery.whereEqualTo("userId", userId);
         pendingQuery.whereEqualTo("pending", true);
-        pendingQuery.setLimit(Config.outboxMsgCount);
 
         List<ParseObject> pendingMessages = null;
         try {
