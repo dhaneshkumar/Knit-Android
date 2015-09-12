@@ -31,6 +31,8 @@ import android.widget.TextView;
 
 import com.parse.ParseUser;
 
+import org.jcodec.Util;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -236,10 +238,31 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         sendimgview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent imgintent = new Intent();
-                imgintent.setAction(Intent.ACTION_VIEW);
-                imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
-                startActivity(imgintent);
+                String tag = (String) sendimgpreview.getTag();
+                if(tag == null) return;
+
+                String extension = Utility.getExtension(tag);
+                if(extension == null){
+                    extension = "txt"; //won't happen
+                }
+
+                if(extension.toLowerCase().contains("jpg")){
+                    Intent imgintent = new Intent();
+                    imgintent.setAction(Intent.ACTION_VIEW);
+                    imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
+                    startActivity(imgintent);
+                }
+                else if(extension.toLowerCase().contains("pdf")){ //will add here as we add support for new file types
+                    //assume pdf file
+                    File file = new File(tag);
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                    startActivity(intent);
+                }
+                else{
+                    Utility.toast("Unsupported file " + tag);
+                }
             }
         });
 
@@ -415,6 +438,16 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         // The thumbnail is already created
         Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
         sendimgview.setImageBitmap(myBitmap);
+    }
+
+    @Override
+    public void sendDocument(String documentName) {
+
+        // The image was brought into the App folder hence only name was passed
+        ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
+        ComposeMessage.sendimgpreview.setTag(Utility.getFileLocationInAppFolder(documentName));
+
+        sendimgview.setImageResource(R.drawable.pdf);
     }
 
     @Override

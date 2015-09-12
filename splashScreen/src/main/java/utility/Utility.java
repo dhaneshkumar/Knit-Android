@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,8 +14,10 @@ import android.graphics.Point;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Display;
@@ -40,6 +43,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Set;
@@ -438,19 +442,94 @@ public class Utility extends MyActionBarActivity {
                 }
 
             }
+
+            File docsfolder =
+                    new File(Environment.getExternalStorageDirectory() + "/" + appName + "/docs");
+            if (!docsfolder.exists()) {
+                if (docsfolder.mkdir()) {
+                }
+
+            }
         }
         return Environment.getExternalStorageDirectory() + "/" + appName;
     }
 
+    public static String getFileNameFromUri(Uri uri) {
+        String result = null;
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = Application.getAppContext().getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+
+        if (result == null) {
+            result = uri.getPath();
+            int cut = result.lastIndexOf('/');
+            if (cut != -1) {
+                result = result.substring(cut + 1);
+            }
+        }
+        return result;
+    }
+
     /*
         Use this to give a unique name to captured or picked image before storing 'media' folder
-        This will be unique globally across all users, all devices, any time (assuming parse installation id is unique across all devices)
+        This will be unique globally across all users, any time (as anytime a user can have only one session)
      */
     public static String getUniqueImageName(ParseUser currentParseUser){
         String parseUserObjectId = currentParseUser.getObjectId();
         Long timeInMillis = new Date().getTime();
 
         return parseUserObjectId + "_" + timeInMillis + ".jpg";
+    }
+
+    public static String getUniqueFileName(ParseUser currentParseUser, String fileName, String extension){
+        fileName = removeSpecialChars(fileName);
+
+        String parseUserObjectId = currentParseUser.getObjectId();
+        Long timeInMillis = new Date().getTime();
+
+        if(fileName.length() > 20){
+            fileName = fileName.substring(0, 20);
+        }
+        return fileName + "_" + parseUserObjectId + "_" + timeInMillis + "." + extension;
+    }
+
+    public static String getFileLocationInAppFolder(String fileName){
+        String extension = getExtension(fileName);
+        if(extension == null){
+            Log.d("__file_picker", "ERROR 1 getFileLocationInAppFolder : " + fileName);
+            //should not happen
+            return getWorkingAppDir() + "/docs/" + fileName;
+        }
+
+        if(extension.toLowerCase().contains("jpg")){
+            return getWorkingAppDir() + "/media/" + fileName;
+        }
+        else if(extension.toLowerCase().contains("pdf")){ //will add here as we add support for new file types
+            return getWorkingAppDir() + "/docs/" + fileName;
+        }
+        else {
+            Log.d("__file_picker", "ERROR 2 getFileLocationInAppFolder : " + fileName);
+            //default as any other file(future) is in docs folder
+            return getWorkingAppDir() + "/docs/" + fileName;
+        }
+    }
+
+    public static String getExtension(String fileName){
+        if(fileName != null){
+            int i = fileName.lastIndexOf('.');
+            if (i >= 0) {
+                String extension = fileName.substring(i+1);
+                return extension;
+            }
+        }
+        return null;
     }
 
     public static String classColourCode(String className) {
@@ -468,7 +547,7 @@ public class Utility extends MyActionBarActivity {
 
     public static String removeSpecialChars(String str) {
         if (!UtilString.isBlank(str)) {
-            str = str.replaceAll("[^\\w\\s-]", "");
+            str = str.replaceAll("[^A-Za-z0-9_\\.]", "-");
         }
         return str;
     }

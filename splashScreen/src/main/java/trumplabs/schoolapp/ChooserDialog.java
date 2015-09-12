@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -29,9 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.util.Calendar;
 
 import trumplab.textslate.R;
 import utility.Config;
@@ -42,6 +39,7 @@ import utility.Utility;
  * Show dialog to select photo from gallery or camera
  */
 public class ChooserDialog extends DialogFragment implements OnClickListener {
+  static final int PICK_DOC_REQUEST_CODE = 110;
   File imageFile;
   String imageFileName;
   CommunicatorInterface activity;
@@ -57,10 +55,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
     LinearLayout gallerybutton = (LinearLayout) view.findViewById(R.id.galleryclick);
     LinearLayout camerabutton = (LinearLayout) view.findViewById(R.id.cameraclick);
+    LinearLayout pdfbutton = (LinearLayout) view.findViewById(R.id.pdfclick);
 
+    currentActivity = getActivity();
     activity = (CommunicatorInterface) getActivity();
     gallerybutton.setOnClickListener(this);
     camerabutton.setOnClickListener(this);
+    pdfbutton.setOnClickListener(this);
     builder.setView(view);
     Dialog dialog = builder.create();
     dialog.setCanceledOnTouchOutside(true);
@@ -90,6 +91,9 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         break;
       case R.id.cameraclick:
         takePicture();
+        break;
+      case R.id.pdfclick:
+        takePDF();
         break;
       default:
         break;
@@ -130,6 +134,15 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     intent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
     intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);   //high(1) or low(0) quality images
     startActivityForResult(intent, 100);
+  }
+
+  private void takePDF(){
+    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+    //intent.setType("*/*");
+    intent.setType("application/pdf");
+    intent.addCategory(Intent.CATEGORY_OPENABLE);
+    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+    startActivityForResult(intent, PICK_DOC_REQUEST_CODE);
   }
 
   /**
@@ -185,13 +198,43 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
           break;
       }
     }
+    else if(requestCode == PICK_DOC_REQUEST_CODE){
+      switch (resultCode) {
+        case Activity.RESULT_OK:
+          Uri fileUri = intent.getData();
+
+          String realFileName = Utility.getFileNameFromUri(fileUri);
+          String extension = null;
+          String pdfName = null;
+          if(realFileName != null){
+            int i = realFileName.lastIndexOf('.');
+            if (i > 0) {
+              extension = realFileName.substring(i+1);
+              pdfName = realFileName.substring(0, i);
+            }
+          }
+
+          Log.d("__file_picker", "onActivityResult realFileName=" + realFileName + ", extension=" + extension);
+          ParseUser currentParseUser = ParseUser.getCurrentUser();
+          if(currentParseUser == null){
+            Utility.LogoutUtility.logout();
+            return;
+          }
+
+          new SaveFile(fileUri, extension, pdfName, currentParseUser).execute();
+          break;
+        case Activity.RESULT_CANCELED:
+          Log.d("__file_picker", "onActivityResult cancelled");
+          break;
+      }
+    }
     getDialog().dismiss();
   }
 
   public interface CommunicatorInterface {
     void sendImagePic(String imgname);
+    void sendDocument(String documentName);
   }
-
 
   /**
    * loading image in background fetching image from photos app then loading in imageviewer
@@ -284,6 +327,100 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
       }
     }
 
+  }
+
+  class SaveFile extends AsyncTask<Void, Void, Void> {
+    private Uri uri;
+    private String parseFileName;
+    private String extension;
+    private String pdfName;
+    private String storagePath;
+    private ParseUser currentParseUser;
+
+    SaveFile(Uri uri, String extension, String pdfName, ParseUser currentParseUser) {
+      this.uri = uri;
+      this.extension = extension;
+      this.pdfName = pdfName;
+      this.currentParseUser = currentParseUser; //ensure that it won't be null
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+
+      boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
+
+      if(pdfName == null){
+        pdfName = "doc";
+        //todo keep only alpha-numeric chars (for a valid parse file name)
+      }
+
+      if(extension == null){
+        extension = "pdf";
+      }
+
+      parseFileName = Utility.getUniqueFileName(currentParseUser, pdfName, extension);
+
+      storagePath = Utility.getFileLocationInAppFolder(parseFileName);
+
+      //Storing file locally in /media folder
+      ParcelFileDescriptor parcelFileDescriptor = null;
+      try {
+        parcelFileDescriptor = currentActivity.getContentResolver().openFileDescriptor(uri, "r");
+      } catch (FileNotFoundException e1) {
+      }
+
+      if (parcelFileDescriptor != null) {
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+
+        if (fileDescriptor != null) {
+          InputStream inputStream = new FileInputStream(fileDescriptor);
+          BufferedInputStream reader = new BufferedInputStream(inputStream);
+
+          // Create an output stream to a file that you want to save to
+          BufferedOutputStream outStream;
+          try {
+            outStream = new BufferedOutputStream(new FileOutputStream(storagePath));
+            byte[] buf = new byte[2048];
+            int len;
+            while ((len = reader.read(buf)) > 0) {
+              outStream.write(buf, 0, len);
+            }
+
+            if (outStream != null)
+              outStream.close();
+
+            retrieveSuccess = true;
+            Log.d("__file_picker", "SaveFile: saved at loc=" + storagePath);
+            return null;
+
+          } catch (FileNotFoundException e) {
+          } catch (IOException e) {
+          }
+        }
+      }
+
+      Log.d("__file_picker", "SaveFile: failed");
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void res) {
+      Log.d("__file_picker", "SaveFile : onPostExecute");
+
+      activity.sendDocument(parseFileName);
+      /*
+      fileNameTV.setText(parseFileName);
+      fileNameTV.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+          File file = new File(storagePath);
+          Intent intent = new Intent(Intent.ACTION_VIEW);
+          intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+          intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+          startActivity(intent);
+        }
+      });*/
+    }
   }
 
 

@@ -487,15 +487,45 @@ public class Outbox extends Fragment {
 
             //If image attachment exist, display image
             if (!UtilString.isBlank(imageName)) {
+                String extension = Utility.getExtension(imageName);
+                if(extension == null){
+                    extension = "txt"; //won't happen
+                }
+
+                boolean temp = false;
+                if(extension.toLowerCase().contains("jpg")){
+                    temp = true;
+                }
+                final boolean isFileAnImage = temp;
+
+                Log.d("__file_picker", imageName);
                 final String imageFilePath = Utility.getWorkingAppDir() + "/media/" + imageName;
                 holder.imgmsgview.setVisibility(View.VISIBLE);
                 holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent imgintent = new Intent();
-                        imgintent.setAction(Intent.ACTION_VIEW);
-                        imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
-                        startActivity(imgintent);
+                        String extension = Utility.getExtension(imageFilePath);
+                        if(extension == null){
+                            extension = "txt"; //won't happen
+                        }
+
+                        if(extension.toLowerCase().contains("jpg")){
+                            Intent imgintent = new Intent();
+                            imgintent.setAction(Intent.ACTION_VIEW);
+                            imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
+                            startActivity(imgintent);
+                        }
+                        else if(extension.toLowerCase().contains("pdf")){ //will add here as we add support for new file types
+                            //assume pdf file
+                            File file = new File(imageFilePath);
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(intent);
+                        }
+                        else{
+                            Utility.toast("Unsupported file " + imageName);
+                        }
                     }
                 });
 
@@ -522,14 +552,23 @@ public class Outbox extends Fragment {
                 holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
                 if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
+                    Log.d("__file_picker", "cache " + imageName);
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(o) already cached : " + imageName);
                     onSuccessRunnable.run();
                 }
                 else if (imgFile.exists()) {
+                    Log.d("__file_picker", "imgFile exists " + imageName);
                     // image file present locally
-                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
-                    writeLoadAndShowTask.execute();
+                    if(isFileAnImage) {
+                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                        writeLoadAndShowTask.execute();
+                    }
+                    else{
+                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                        writeDocTask.execute();
+                    }
                 } else if(Utility.isInternetExistWithoutPopup()) {
+                    Log.d("__file_picker", "pf download " + imageName);
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(o) downloading data : " + imageName);
 
                     // Have to download image from server
@@ -538,8 +577,14 @@ public class Outbox extends Fragment {
                         imagefile.getDataInBackground(new GetDataCallback() {
                             public void done(byte[] data, ParseException e) {
                                 if (e == null) {
-                                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
-                                    writeLoadAndShowTask.execute();
+                                    if(isFileAnImage) {
+                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        writeLoadAndShowTask.execute();
+                                    }
+                                    else{
+                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        writeDocTask.execute();
+                                    }
                                 } else {
                                     //ParseException check for invalid session
                                     Utility.LogoutUtility.checkAndHandleInvalidSession(e);

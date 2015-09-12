@@ -41,7 +41,7 @@
 	        android:textColor="@color/black"
 	        android:textSize="16sp"/>
 	</LinearLayout>
-	 <TextView 
+	<TextView
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lightbackgroundcolor"/>
@@ -74,4 +74,33 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:background="@color/lightbackgroundcolor"/>
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="48dp"
+		android:layout_marginLeft="16dp"
+		android:layout_marginRight="16dp"
+		android:layout_marginTop="4dp"
+		android:padding="4dp"
+		android:layout_marginBottom="4dp"
+		android:id="@+id/pdfclick"
+		android:background="@drawable/selector">
+		<ImageButton
+			android:layout_width="48dp"
+			android:layout_height="48dp"
+			android:layout_toRightOf="@+id/pdfclick"
+			android:background="@drawable/pdf"/>
+		<TextView
+			android:layout_width="0dp"
+			android:layout_height="match_parent"
+			android:layout_weight="1"
+			android:layout_marginLeft="16dp"
+			android:gravity="left|center_vertical"
+			android:text="PDF file"
+			android:textColor="@color/black"
+			android:textSize="16sp"/>
+	</LinearLayout>
+	<TextView
+		android:layout_width="match_parent"
+		android:layout_height="1dp"
+		android:background="@color/lightbackgroundcolor"/>
   </LinearLayout>
