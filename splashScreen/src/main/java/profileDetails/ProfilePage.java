@@ -51,6 +51,7 @@ import java.util.HashMap;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
+import school.SchoolActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
@@ -310,6 +311,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 case Activity.RESULT_CANCELED:
                     break;
             }
+
         } else if (requestCode == 302) {
             if(Config.SHOWLOG) Log.d("DEBUG_PROFILE_PAGE", "request code 302 with resultCode=" + resultCode);
             switch (resultCode) {
@@ -503,9 +505,11 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
        */
             case R.id.faq:
 
-                Intent intent = new Intent(this, FAQs.class);
+                /*Intent intent = new Intent(this, FAQs.class);
                 startActivity(intent);
-
+                */
+                Intent intent = new Intent(this, SchoolActivity.class);
+                startActivity(intent);
                 break;
 
             default:
