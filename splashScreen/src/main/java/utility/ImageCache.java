@@ -187,10 +187,9 @@ public class ImageCache {
 
         @Override
         protected Void doInBackground(Void... params) {
-            String docPath = Utility.getFileLocationInAppFolder(docName);
-
             //first write to file if data not null
             if(data != null){
+                String docPath = Utility.getFileLocationInAppFolder(docName);
                 writeToDisk(data, docPath);
             }
             return null;

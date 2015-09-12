@@ -24,6 +24,7 @@ import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -501,22 +502,13 @@ public class Utility extends MyActionBarActivity {
     }
 
     public static String getFileLocationInAppFolder(String fileName){
-        String extension = getExtension(fileName);
-        if(extension == null){
-            Log.d("__file_picker", "ERROR 1 getFileLocationInAppFolder : " + fileName);
-            //should not happen
-            return getWorkingAppDir() + "/docs/" + fileName;
-        }
-
-        if(extension.toLowerCase().contains("jpg")){
+        if(isFileImageType(fileName)){
+            Log.d("__file_picker", "getFileLocationInAppFolder image type : " + fileName);
             return getWorkingAppDir() + "/media/" + fileName;
         }
-        else if(extension.toLowerCase().contains("pdf")){ //will add here as we add support for new file types
-            return getWorkingAppDir() + "/docs/" + fileName;
-        }
         else {
-            Log.d("__file_picker", "ERROR 2 getFileLocationInAppFolder : " + fileName);
-            //default as any other file(future) is in docs folder
+            //for non-image type files
+            Log.d("__file_picker", "getFileLocationInAppFolder fallback : " + fileName);
             return getWorkingAppDir() + "/docs/" + fileName;
         }
     }
@@ -530,6 +522,38 @@ public class Utility extends MyActionBarActivity {
             }
         }
         return null;
+    }
+
+    public static String getMimeType(String fileName){
+        String extension = getExtension(fileName);
+        if(extension != null){
+            Log.d("__file_picker", "non null extension=" + extension);
+            MimeTypeMap myMime = MimeTypeMap.getSingleton();
+            String mimeType = myMime.getMimeTypeFromExtension(extension);
+            String[] exts = new String[]{"pdf", "doc", "xls", "ppt", "xml", "txt", "html", "csv"};
+            for(String e : exts){
+                Log.d("__file_picker_check", e + " " + myMime.getMimeTypeFromExtension(e));
+            }
+
+            if(mimeType != null){
+                Log.d("__file_picker", "non null mimeType=" + mimeType);
+                return mimeType;
+            }
+        }
+
+        //default fallback, won't occur in general
+        Log.d("__file_picker", "default fallback");
+        return "*/*";
+    }
+
+    public static boolean isFileImageType(String fileName){
+        if(fileName != null){
+            String extension = getExtension(fileName);
+            if(extension != null && (extension.toLowerCase().contains("jpg") || extension.toLowerCase().contains("jpeg"))){
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String classColourCode(String className) {

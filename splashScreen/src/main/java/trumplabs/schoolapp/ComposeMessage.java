@@ -241,27 +241,22 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 String tag = (String) sendimgpreview.getTag();
                 if(tag == null) return;
 
-                String extension = Utility.getExtension(tag);
-                if(extension == null){
-                    extension = "txt"; //won't happen
-                }
-
-                if(extension.toLowerCase().contains("jpg")){
+                if(Utility.isFileImageType(tag)){
                     Intent imgintent = new Intent();
                     imgintent.setAction(Intent.ACTION_VIEW);
                     imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
                     startActivity(imgintent);
                 }
-                else if(extension.toLowerCase().contains("pdf")){ //will add here as we add support for new file types
-                    //assume pdf file
+                else {
+                    //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                    //while opening, assume any type of file
+                    String mimeType = Utility.getMimeType(tag); //non null return value
+                    Utility.toast(tag + " with mime=" + mimeType, false, 15);
                     File file = new File(tag);
                     Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                    intent.setDataAndType(Uri.fromFile(file), mimeType);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                     startActivity(intent);
-                }
-                else{
-                    Utility.toast("Unsupported file " + tag);
                 }
             }
         });

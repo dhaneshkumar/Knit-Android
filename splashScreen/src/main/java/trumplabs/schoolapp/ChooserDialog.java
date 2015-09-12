@@ -351,11 +351,11 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
       if(pdfName == null){
         pdfName = "doc";
-        //todo keep only alpha-numeric chars (for a valid parse file name)
       }
 
       if(extension == null){
         extension = "pdf";
+        //todo since currently only pdf file attachment is supported
       }
 
       parseFileName = Utility.getUniqueFileName(currentParseUser, pdfName, extension);
@@ -408,18 +408,6 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
       Log.d("__file_picker", "SaveFile : onPostExecute");
 
       activity.sendDocument(parseFileName);
-      /*
-      fileNameTV.setText(parseFileName);
-      fileNameTV.setOnClickListener(new View.OnClickListener() {
-        @Override
-        public void onClick(View view) {
-          File file = new File(storagePath);
-          Intent intent = new Intent(Intent.ACTION_VIEW);
-          intent.setDataAndType(Uri.fromFile(file), "application/pdf");
-          intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-          startActivity(intent);
-        }
-      });*/
     }
   }
 

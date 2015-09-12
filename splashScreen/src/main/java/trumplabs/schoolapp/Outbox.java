@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -401,10 +402,8 @@ public class Outbox extends Fragment {
                     });
                 } else
                     holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline));
-
-
+                }
             }
-        }
             else {
                 if (selectedMsgIndex != -1) {
                     if (position == selectedMsgIndex) {
@@ -487,44 +486,31 @@ public class Outbox extends Fragment {
 
             //If image attachment exist, display image
             if (!UtilString.isBlank(imageName)) {
-                String extension = Utility.getExtension(imageName);
-                if(extension == null){
-                    extension = "txt"; //won't happen
-                }
-
-                boolean temp = false;
-                if(extension.toLowerCase().contains("jpg")){
-                    temp = true;
-                }
-                final boolean isFileAnImage = temp;
+                final boolean isFileAnImage = Utility.isFileImageType(imageName);
 
                 Log.d("__file_picker", imageName);
-                final String imageFilePath = Utility.getWorkingAppDir() + "/media/" + imageName;
+                final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
+
                 holder.imgmsgview.setVisibility(View.VISIBLE);
                 holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        String extension = Utility.getExtension(imageFilePath);
-                        if(extension == null){
-                            extension = "txt"; //won't happen
-                        }
-
-                        if(extension.toLowerCase().contains("jpg")){
+                        if(Utility.isFileImageType(imageName)){
                             Intent imgintent = new Intent();
                             imgintent.setAction(Intent.ACTION_VIEW);
                             imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
                             startActivity(imgintent);
                         }
-                        else if(extension.toLowerCase().contains("pdf")){ //will add here as we add support for new file types
-                            //assume pdf file
+                        else {
+                            //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                            //while opening, assume any type of file
+                            String mimeType = Utility.getMimeType(imageName); //non null return value
+                            Utility.toast(imageName + " with mime=" + mimeType, false, 15);
                             File file = new File(imageFilePath);
                             Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setDataAndType(Uri.fromFile(file), "application/pdf");
+                            intent.setDataAndType(Uri.fromFile(file), mimeType);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
                             startActivity(intent);
-                        }
-                        else{
-                            Utility.toast("Unsupported file " + imageName);
                         }
                     }
                 });
@@ -564,8 +550,9 @@ public class Outbox extends Fragment {
                         writeLoadAndShowTask.execute();
                     }
                     else{
-                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
-                        writeDocTask.execute();
+                        //set file icon and run onSuccessRunnable
+                        holder.imgmsgview.setImageResource(R.drawable.pdf);
+                        onSuccessRunnable.run();
                     }
                 } else if(Utility.isInternetExistWithoutPopup()) {
                     Log.d("__file_picker", "pf download " + imageName);
@@ -722,8 +709,8 @@ public class Outbox extends Fragment {
     }
 
     /*
-stop swipe refreshlayout
- */
+    stop swipe refreshlayout
+    */
     public static void runSwipeRefreshLayout(final SwipeRefreshLayout outboxRefreshLayout, final int seconds) {
 
         if (outboxRefreshLayout == null)
