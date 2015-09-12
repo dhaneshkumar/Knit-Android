@@ -216,7 +216,7 @@ public class ComposeMessageHelper {
         params.put("timestamp", uniqueBatchId);
 
         try{
-            HashMap result = ParseCloud.callFunction("sendMultiTextMessage2", params);
+            HashMap result = ParseCloud.callFunction("sendMultiTextMessage", params);
 
             //if (!TestingUtililty.ignoreResponse && result != null) {
             if (result != null) {
@@ -451,7 +451,7 @@ public class ComposeMessageHelper {
             params.put("parsefile", imageParseFile);
             params.put("timestamp", uniqueBatchId);
 
-            HashMap result = ParseCloud.callFunction("sendMultiPhotoTextMessage2", params);
+            HashMap result = ParseCloud.callFunction("sendMultiPhotoTextMessage", params);
             //if (!TestingUtililty.ignoreResponse && result != null) {
             if (result != null) {
                 int retVal = 0; //success

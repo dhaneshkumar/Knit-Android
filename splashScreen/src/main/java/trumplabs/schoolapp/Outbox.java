@@ -495,7 +495,7 @@ public class Outbox extends Fragment {
                 holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(Utility.isFileImageType(imageName)){
+                        if(isFileAnImage){
                             Intent imgintent = new Intent();
                             imgintent.setAction(Intent.ACTION_VIEW);
                             imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");

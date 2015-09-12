@@ -641,17 +641,31 @@ public class Messages extends Fragment {
 
             if (!UtilString.isBlank(imageName))
             {
+                final boolean isFileAnImage = Utility.isFileImageType(imageName);
+                final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
+
                 holder.imgframelayout.setVisibility(View.VISIBLE);
                 holder.imgframelayout.setOnClickListener(new OnClickListener() {
 
                     @Override
                     public void onClick(View v) {
-                        Intent imgintent = new Intent();
-                        imgintent.setAction(Intent.ACTION_VIEW);
-                        imgintent.setDataAndType(
-                                Uri.parse("file://" + Utility.getWorkingAppDir() + "/media/" + imageName),
-                                "image/*");
-                        startActivity(imgintent);
+                        if(isFileAnImage){
+                            Intent imgintent = new Intent();
+                            imgintent.setAction(Intent.ACTION_VIEW);
+                            imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
+                            startActivity(imgintent);
+                        }
+                        else {
+                            //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                            //while opening, assume any type of file
+                            String mimeType = Utility.getMimeType(imageName); //non null return value
+                            Utility.toast(imageName + " with mime=" + mimeType, false, 15);
+                            File file = new File(imageFilePath);
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.fromFile(file), mimeType);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(intent);
+                        }
                     }
                 });
 
@@ -675,7 +689,8 @@ public class Messages extends Fragment {
                 holder.uploadprogressbar.setVisibility(View.VISIBLE);
                 holder.faildownload.setVisibility(View.GONE);
 
-                File imgFile = new File(Utility.getWorkingAppDir() + "/media/" + imageName);
+                File imgFile = new File(imageFilePath);
+
                 holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
                 holder.imgframelayout.setTag(imgFile.getAbsolutePath());
                 holder.imgmsgview.setTag(imgFile.getAbsolutePath());
@@ -686,9 +701,18 @@ public class Messages extends Fragment {
                 }
                 else if (imgFile.exists()) {
                     // image file present locally
-                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
-                    writeLoadAndShowTask.execute();
+                    if(isFileAnImage) {
+                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                        writeLoadAndShowTask.execute();
+                    }
+                    else{
+                        Log.d("__file_picker", "m) exists " + imageName);
+                        //set file icon and run onSuccessRunnable
+                        holder.imgmsgview.setImageResource(R.drawable.pdf);
+                        onSuccessRunnable.run();
+                    }
                 } else if(Utility.isInternetExistWithoutPopup()) {
+                    Log.d("__file_picker", "m) downloading " + imageName);
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
 
                     // Have to download image from server
@@ -697,8 +721,15 @@ public class Messages extends Fragment {
                         imagefile.getDataInBackground(new GetDataCallback() {
                             public void done(byte[] data, ParseException e) {
                                 if (e == null) {
-                                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
-                                    writeLoadAndShowTask.execute();
+                                    if(isFileAnImage) {
+                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        writeLoadAndShowTask.execute();
+                                    }
+                                    else{
+                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        writeDocTask.execute();
+                                    }
+
                                 } else {
                                     //ParseException check for invalid session
                                     Utility.LogoutUtility.checkAndHandleInvalidSession(e);

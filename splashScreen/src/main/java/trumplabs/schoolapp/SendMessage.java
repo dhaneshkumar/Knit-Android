@@ -591,15 +591,29 @@ public class SendMessage extends MyActionBarActivity  {
             // /////////////////////////////////////////////
 
             if (!UtilString.isBlank(imageName)) {
-                final String imageFilePath = Utility.getWorkingAppDir() + "/media/" + imageName;
+                final boolean isFileAnImage = Utility.isFileImageType(imageName);
+                final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
                 imgmsgview.setVisibility(View.VISIBLE);
                 imgmsgview.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent imgintent = new Intent();
-                        imgintent.setAction(Intent.ACTION_VIEW);
-                        imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
-                        startActivity(imgintent);
+                        if(isFileAnImage){
+                            Intent imgintent = new Intent();
+                            imgintent.setAction(Intent.ACTION_VIEW);
+                            imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
+                            startActivity(imgintent);
+                        }
+                        else {
+                            //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                            //while opening, assume any type of file
+                            String mimeType = Utility.getMimeType(imageName); //non null return value
+                            Utility.toast(imageName + " with mime=" + mimeType, false, 15);
+                            File file = new File(imageFilePath);
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.fromFile(file), mimeType);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                            startActivity(intent);
+                        }
                     }
                 });
 
@@ -631,8 +645,15 @@ public class SendMessage extends MyActionBarActivity  {
                 }
                 else if (imgFile.exists()) {
                     // image file present locally
-                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, imgmsgview, currentActivity, onSuccessRunnable);
-                    writeLoadAndShowTask.execute();
+                    if(isFileAnImage) {
+                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                        writeLoadAndShowTask.execute();
+                    }
+                    else{
+                        //set file icon and run onSuccessRunnable
+                        imgmsgview.setImageResource(R.drawable.pdf);
+                        onSuccessRunnable.run();
+                    }
                 } else if(Utility.isInternetExistWithoutPopup()) {
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
 
@@ -642,8 +663,14 @@ public class SendMessage extends MyActionBarActivity  {
                         imagefile.getDataInBackground(new GetDataCallback() {
                             public void done(byte[] data, ParseException e) {
                                 if (e == null) {
-                                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, imgmsgview, currentActivity, onSuccessRunnable);
-                                    writeLoadAndShowTask.execute();
+                                    if(isFileAnImage) {
+                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                                        writeLoadAndShowTask.execute();
+                                    }
+                                    else{
+                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                                        writeDocTask.execute();
+                                    }
                                 } else {
                                     //ParseException check for invalid session
                                     Utility.LogoutUtility.checkAndHandleInvalidSession(e);
