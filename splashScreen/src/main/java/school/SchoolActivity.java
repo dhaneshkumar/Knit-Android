@@ -20,6 +20,7 @@ import java.util.List;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
+import utility.TestingUtililty;
 import utility.Tools;
 import utility.Utility;
 
@@ -48,6 +49,8 @@ public class SchoolActivity extends MyActionBarActivity{
         setContentView(R.layout.school_activity);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
+        loadingSchoolsPB = (ProgressBar) findViewById(R.id.loading_schools);
+
         locSV = (CustomSearchView) findViewById(R.id.locSV);
         locSV.setQueryHint("Where is the school?");
 
@@ -58,7 +61,8 @@ public class SchoolActivity extends MyActionBarActivity{
         locSV.setParameters(500L, 3, locLV, locAdapter);
 
         final WeakReference<SearchViewAdapterInterface> locAdapterRef = new WeakReference<SearchViewAdapterInterface>(locAdapter);
-        locSV.setHandler(locAdapterRef);
+        final WeakReference<ProgressBar> progressBarRef = new WeakReference<ProgressBar>(loadingSchoolsPB);
+        locSV.setHandler(locAdapterRef, progressBarRef);
 
         locSV.setListItemOnClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -67,7 +71,8 @@ public class SchoolActivity extends MyActionBarActivity{
                 final String value = (String) locAdapter.getItem(position);
                 Utility.toast(locAdapter.getStringDescription(position));
 
-                schoolSV.setVisibility(View.GONE);
+                hideSchoolHolder();
+
                 loadingSchoolsPB.setVisibility(View.VISIBLE);
 
                 new AsyncTask<Void, Void, Void>() {
@@ -100,7 +105,13 @@ public class SchoolActivity extends MyActionBarActivity{
             }
         });
 
-        loadingSchoolsPB = (ProgressBar) findViewById(R.id.loading_schools);
+        locSV.setQueryTextChangeRunnable(new Runnable() {
+            @Override
+            public void run() {
+                hideSchoolHolder();
+            }
+        });
+
 
         schoolSV = (CustomSearchView) findViewById(R.id.schoolSV);
         schoolSV.setQueryHint("Find your school");
@@ -112,7 +123,7 @@ public class SchoolActivity extends MyActionBarActivity{
         schoolSV.setParameters(200L, 2, schoolLV, schoolAdapter);
 
         WeakReference<SearchViewAdapterInterface> schoolAdapterRef = new WeakReference<SearchViewAdapterInterface>(schoolAdapter);
-        schoolSV.setHandler(schoolAdapterRef);
+        schoolSV.setHandler(schoolAdapterRef, null);
 
         schoolSV.setListItemOnClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -125,6 +136,11 @@ public class SchoolActivity extends MyActionBarActivity{
         });
 
         selectedSchoolTV = (TextView) findViewById(R.id.selectedSchool);
+    }
+
+    void hideSchoolHolder(){
+        schoolSV.setVisibility(View.GONE);
+        schoolLV.setVisibility(View.GONE);
     }
 
     public class LocationAdapter extends SearchViewAdapterInterface{
@@ -197,6 +213,7 @@ public class SchoolActivity extends MyActionBarActivity{
 
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
+                    loadingSchoolsPB.setVisibility(View.GONE);
                     if(error){
                         Utility.toast("Error fetching areas");
                         return;
@@ -210,7 +227,10 @@ public class SchoolActivity extends MyActionBarActivity{
                     else {
                         notifyDataSetInvalidated();
                     }
-                    locLV.setVisibility(View.VISIBLE);
+
+                    if(!locSV.getItemJustSelected()) {//don't show list again if some item just selected before and no further text typed
+                        locLV.setVisibility(View.VISIBLE);
+                    }
                 }};
             return filter;
         }
@@ -305,7 +325,10 @@ public class SchoolActivity extends MyActionBarActivity{
                     else {
                         notifyDataSetInvalidated();
                     }
-                    schoolLV.setVisibility(View.VISIBLE);
+
+                    if(!schoolSV.getItemJustSelected()) {
+                        schoolLV.setVisibility(View.VISIBLE);
+                    }
                 }};
             return filter;
         }

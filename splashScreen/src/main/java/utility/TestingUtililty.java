@@ -124,7 +124,7 @@ public class TestingUtililty {
     }
 
     //create intentional delay while doing something(for testing, e.g loading of images)
-    static void sleep(int millis){
+    public static void sleep(int millis){
         if(!BuildConfig.DEBUG){
             return;
         }

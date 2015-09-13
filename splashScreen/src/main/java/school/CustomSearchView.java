@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 
 import java.lang.ref.WeakReference;
@@ -19,12 +20,15 @@ public class CustomSearchView extends SearchView{
     static final String LOGTAG = "__sv_custom";
     ListView myLVRef;
     SearchViewAdapterInterface mySVAdapterRef;
+    boolean itemJustSelected = false;
 
     long delayMillis = 750L; //delay before search query starts
     int searchThreshold = 2; //min #chars needed to start search
 
     MyHandler svHandler;
+
     AdapterView.OnItemClickListener listItemOnClickListener;
+    Runnable queryTextChangeRunnable;
 
     public CustomSearchView(Context context) {
         super(context);
@@ -49,11 +53,20 @@ public class CustomSearchView extends SearchView{
 
             @Override
             public boolean onQueryTextChange(String s) {
+                if(itemJustSelected){
+                    return true; //this is because when click selected item, it again triggers onQueryTextChange with full item description, we don't want that
+                }
+
+                itemJustSelected = false; //reset as a new potential query
+                if(queryTextChangeRunnable != null){
+                    queryTextChangeRunnable.run();
+                }
+
                 svHandler.removeMessages(0);
-                Log.d(LOGTAG, "onQueryTextChange with=" + s);
+                //Log.d(LOGTAG, "onQueryTextChange with=" + s);
                 if (s.length() < searchThreshold) {
                     myLVRef.setVisibility(View.GONE);
-                    Log.d(LOGTAG, "onQueryTextChange ignore short");
+                    //Log.d(LOGTAG, "onQueryTextChange ignore short");
                     return true;
                 }
 
@@ -73,10 +86,12 @@ public class CustomSearchView extends SearchView{
         myLVRef.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                itemJustSelected = true; //so that we don't show the list unnecessary if any pending query completes after this
+                //Log.d(LOGTAG, "sleeping set to " + itemJustSelected);
                 String sel = mySVAdapterRef.getStringDescription(position);
                 setQuery(sel, false);
                 myLVRef.setVisibility(View.GONE);
-                svHandler.removeMessages(0);
+                svHandler.removeMessages(0); //remove any pending query requests
                 Log.d(LOGTAG, "on item click");
 
                 if (listItemOnClickListener != null) {
@@ -86,25 +101,42 @@ public class CustomSearchView extends SearchView{
         });
     }
 
+    public boolean getItemJustSelected(){
+        return itemJustSelected;
+    }
+
     void setListItemOnClickListener(AdapterView.OnItemClickListener listItemOnClickListener){
         this.listItemOnClickListener = listItemOnClickListener;
     }
 
-    void setHandler(WeakReference<SearchViewAdapterInterface> adapterRef) {
-        svHandler = new MyHandler(adapterRef);
+    void setQueryTextChangeRunnable(Runnable queryTextChangeRunnable){
+        this.queryTextChangeRunnable = queryTextChangeRunnable;
+    }
+
+    void setHandler(WeakReference<SearchViewAdapterInterface> adapterRef, WeakReference<ProgressBar> progressBarRef) {
+        svHandler = new MyHandler(adapterRef, progressBarRef);
     }
 
     class MyHandler extends Handler {
         WeakReference<SearchViewAdapterInterface> adapterRef;
+        WeakReference<ProgressBar> progressBarRef;
 
-        MyHandler(WeakReference<SearchViewAdapterInterface> adapterRef){
+        MyHandler(WeakReference<SearchViewAdapterInterface> adapterRef, WeakReference<ProgressBar> progressBarRef){
             this.adapterRef = adapterRef;
+            this.progressBarRef = progressBarRef;
         }
 
         @Override
         public void handleMessage(Message msg) {
-            if(adapterRef.get() != null){
+            boolean filterRequestStarted = false;
+            if(adapterRef != null && adapterRef.get() != null){
+                Log.d(LOGTAG, "handler called to filter with " + msg.obj);
                 adapterRef.get().getFilter().filter((String) msg.obj);
+                filterRequestStarted = true;
+            }
+
+            if(filterRequestStarted && progressBarRef != null && progressBarRef.get() != null){
+                progressBarRef.get().setVisibility(View.VISIBLE); //show progress bar(general)
             }
         }
     }
