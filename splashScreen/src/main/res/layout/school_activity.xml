@@ -20,7 +20,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
-
     <school.CustomSearchView
         android:id="@+id/locSV"
         android:layout_width="match_parent"
@@ -28,14 +27,36 @@
         android:focusable="false"
         android:iconifiedByDefault="false"/>
 
+    <TextView
+        android:id="@+id/locSVHolder"
+        android:layout_below="@+id/locSV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="right"
+        android:text="e.g Andheri East Mumbai"
+        android:textSize="12dp"/>
+
     <school.CustomSearchView
         android:id="@+id/schoolSV"
-        android:layout_below="@+id/locSV"
+        android:layout_below="@+id/locSVHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:iconifiedByDefault="false"
         android:focusable="false"
         android:visibility="gone"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/schoolSV"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/powered_by_google_light" />
+
+    <TextView
+        android:id="@+id/selectedSchool"
+        android:layout_alignParentBottom="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
 
     <ListView
         android:id="@+id/locLV"
@@ -55,15 +76,9 @@
 
     <ProgressBar
         android:id="@+id/loading_schools"
-        android:layout_below="@+id/locSV"
+        android:layout_below="@+id/locSVHolder"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"/>
-
-    <TextView
-        android:id="@+id/selectedSchool"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
 
 </RelativeLayout>

@@ -20,6 +20,7 @@ import java.util.List;
 
 import baseclasses.MyActionBarActivity;
 import trumplab.textslate.R;
+import utility.Tools;
 import utility.Utility;
 
 /**
@@ -48,7 +49,7 @@ public class SchoolActivity extends MyActionBarActivity{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         locSV = (CustomSearchView) findViewById(R.id.locSV);
-        locSV.setQueryHint("School location/area");
+        locSV.setQueryHint("Where is the school?");
 
         locLV = (ListView) findViewById(R.id.locLV);
         locAdapter = new LocationAdapter(this);
@@ -62,6 +63,7 @@ public class SchoolActivity extends MyActionBarActivity{
         locSV.setListItemOnClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Tools.hideKeyboard(SchoolActivity.this);
                 final String value = (String) locAdapter.getItem(position);
                 Utility.toast(locAdapter.getStringDescription(position));
 
@@ -117,7 +119,8 @@ public class SchoolActivity extends MyActionBarActivity{
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Utility.toast(schoolAdapter.getStringDescription(position));
                 selectedSchoolTV.setText("You selected : " + schoolAdapter.getStringDescription(position) +
-                        " with id=" + ((SchoolUtils.SchoolItem)schoolAdapter.getItem(position)).placeId);
+                        " with id=" + ((SchoolUtils.SchoolItem) schoolAdapter.getItem(position)).placeId);
+                Tools.hideKeyboard(SchoolActivity.this);
             }
         });
 
@@ -127,6 +130,7 @@ public class SchoolActivity extends MyActionBarActivity{
     public class LocationAdapter extends SearchViewAdapterInterface{
         private List<String> itemList = new ArrayList<>();
         private Context context;
+        private List<String> tempItemList;
         //private ArrayList<String> placeIdList;
 
         public LocationAdapter(Context context){
@@ -173,20 +177,19 @@ public class SchoolActivity extends MyActionBarActivity{
                 boolean error = false;
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
-                    itemList = new ArrayList<>();
+                    tempItemList = null;
                     Log.d(LOGTAG, "loc performFiltering");
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null) {
                         // Retrieve the autocomplete results.
-                        List<String> tempItemList = SchoolUtils.areaAutoComplete(constraint.toString());
+                        tempItemList = SchoolUtils.areaAutoComplete(constraint.toString());
                         if(tempItemList == null){
                             error = true;
                         }
                         else {
-                            itemList = tempItemList;
                             // Assign the data to the FilterResults
-                            filterResults.values = itemList;
-                            filterResults.count = itemList.size();
+                            filterResults.values = tempItemList;
+                            filterResults.count = tempItemList.size();
                         }
                     }
                     return filterResults;
@@ -200,6 +203,7 @@ public class SchoolActivity extends MyActionBarActivity{
                     }
 
                     if (results != null && results.count > 0) {
+                        itemList = tempItemList;
                         Log.d(LOGTAG, "loc results.count=" + results.count);
                         notifyDataSetChanged();
                     }
@@ -222,6 +226,7 @@ public class SchoolActivity extends MyActionBarActivity{
     public class SchoolAdapter extends SearchViewAdapterInterface{
         private List<SchoolUtils.SchoolItem> originalItemList = new ArrayList<>();
         private List<SchoolUtils.SchoolItem> itemList = new ArrayList<>();
+        private List<SchoolUtils.SchoolItem> tempItemList;
         private Context context;
         //private ArrayList<String> placeIdList;
 
@@ -269,21 +274,22 @@ public class SchoolActivity extends MyActionBarActivity{
             Filter filter = new Filter() {
                 @Override
                 protected FilterResults performFiltering(CharSequence constraint) {
+                    tempItemList = null;
                     Log.d(LOGTAG, "school performFiltering among " + originalItemList.size() + " items");
                     FilterResults filterResults = new FilterResults();
                     if (constraint != null) {
                         // Retrieve the autocomplete results.
-                        itemList = new ArrayList<>();
+                        tempItemList = new ArrayList<>();
                         for(SchoolUtils.SchoolItem val : originalItemList){
                             String schoolDesc = val.name + ", " + val.area;
 
                             if(schoolDesc.toLowerCase().contains(constraint.toString().toLowerCase())){
-                                itemList.add(val);
+                                tempItemList.add(val);
                             }
                         }
 
-                        filterResults.values = itemList;
-                        filterResults.count = itemList.size();
+                        filterResults.values = tempItemList;
+                        filterResults.count = tempItemList.size();
                     }
 
                     return filterResults;
@@ -292,6 +298,7 @@ public class SchoolActivity extends MyActionBarActivity{
                 @Override
                 protected void publishResults(CharSequence constraint, FilterResults results) {
                     if (results != null && results.count > 0) {
+                        itemList = tempItemList;
                         Log.d(LOGTAG, "school results.count=" + results.count);
                         notifyDataSetChanged();
                     }
