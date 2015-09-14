@@ -47,6 +47,16 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
   boolean flag = false;
     boolean profileCall;  //It tells about caller activity : SendMessage(false) or ProfilePage(true)
 
+  private static final String[] acceptableMimeTypes = {
+          "application/msword", //doc
+          "application/vnd.ms-powerpoint", //ppt
+          "application/vnd.ms-excel", //xls
+
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document", //docx
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation", //pptx
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", //xlsx
+          };
+
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -139,9 +149,10 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
   private void takePDF(){
     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     //intent.setType("*/*");
-    intent.setType("application/pdf");
-    intent.addCategory(Intent.CATEGORY_OPENABLE);
-    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+    intent.setType("application/*");
+    //intent.putExtra(Intent.EXTRA_MIME_TYPES, acceptableMimeTypes);
+    intent.addCategory(Intent.CATEGORY_OPENABLE); //openable
+    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true); //local files only
     startActivityForResult(intent, PICK_DOC_REQUEST_CODE);
   }
 

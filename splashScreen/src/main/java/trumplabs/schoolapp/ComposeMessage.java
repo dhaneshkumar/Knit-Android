@@ -65,6 +65,8 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     public static LinearLayout sendimgpreview;
     public static LinearLayout picProgressBarLayout;
     public static ImageView sendimgview;
+    private TextView attachmentNameTV;
+
     private ImageView removebutton;
     private Typeface typeface;
     private LinearLayout contentLayout;
@@ -101,6 +103,8 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         sendimgview = (ImageView) findViewById(R.id.attachedimg);
+        attachmentNameTV = (TextView) findViewById(R.id.attachment_name);
+
         removebutton = (ImageView) findViewById(R.id.removebutton);
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
         contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
@@ -433,6 +437,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         // The thumbnail is already created
         Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
         sendimgview.setImageBitmap(myBitmap);
+        attachmentNameTV.setVisibility(View.GONE);
     }
 
     @Override
@@ -442,7 +447,9 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
         ComposeMessage.sendimgpreview.setTag(Utility.getFileLocationInAppFolder(documentName));
 
-        sendimgview.setImageResource(R.drawable.pdf);
+        sendimgview.setImageResource(R.drawable.general_file_icon);
+        attachmentNameTV.setText(documentName);
+        attachmentNameTV.setVisibility(View.VISIBLE);
     }
 
     @Override

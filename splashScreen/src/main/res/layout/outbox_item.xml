@@ -136,10 +136,10 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="sample.pdf"
-                        android:textColor="@color/fab_material_grey_500"
+                        android:textColor="@color/greyDark"
                         android:textSize="13sp"
                         android:layout_gravity="center_vertical"
-                        android:visibility="visible"/>
+                        android:visibility="gone"/>
 
                 </LinearLayout>
                 <ProgressBar

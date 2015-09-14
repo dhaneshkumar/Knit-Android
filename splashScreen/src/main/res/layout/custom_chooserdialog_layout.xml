@@ -88,14 +88,14 @@
 			android:layout_width="48dp"
 			android:layout_height="48dp"
 			android:layout_toRightOf="@+id/pdfclick"
-			android:background="@drawable/pdf"/>
+			android:background="@drawable/general_file_icon"/>
 		<TextView
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
 			android:layout_weight="1"
 			android:layout_marginLeft="16dp"
 			android:gravity="left|center_vertical"
-			android:text="PDF file"
+			android:text="Attach a document"
 			android:textColor="@color/black"
 			android:textSize="16sp"/>
 	</LinearLayout>

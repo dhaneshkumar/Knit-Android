@@ -128,14 +128,31 @@
 
             </ImageView>
 
-            <ImageView
-                android:id="@+id/removebutton"
+            <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="16dp"
-                android:background="@drawable/cancel"
-                />
+                android:paddingLeft="10dp">
+
+                <ImageView
+                    android:id="@+id/removebutton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="6dp"
+                    android:background="@drawable/cancel"
+                    />
+                <TextView
+                    android:id="@+id/attachment_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="sample_application_pdf_USERID_TIMESTAMP.pdf"
+                    android:textColor="@color/greyDark"
+                    android:textSize="13sp"
+                    android:layout_gravity="bottom"
+                    android:layout_alignParentBottom="true"
+                    />
+            </RelativeLayout>
         </LinearLayout>
         </LinearLayout>
     </LinearLayout>
