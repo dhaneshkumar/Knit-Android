@@ -203,7 +203,7 @@ public class ImageCache {
                     if(Config.SHOWLOG) Log.d(LOGTAG, "(i) tag not same for " + docName + ". Skip : (a) setting bitmap and (b) doing uiWork");
                 }
                 else {
-                    mImageView.setImageResource(R.drawable.pdf);
+                    mImageView.setImageResource(R.drawable.general_file_icon);
                     uiWork.run();
                 }
             }

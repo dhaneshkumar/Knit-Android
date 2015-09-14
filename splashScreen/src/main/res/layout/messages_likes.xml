@@ -95,15 +95,27 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:elevation="2dp"
-                android:background="@drawable/image_shadow">
+                android:orientation="horizontal"
+                android:elevation="2dp">
+                <!--android:background="@drawable/image_shadow"-->
 
                 <ImageView
                     android:id="@+id/imgmsgcontent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:src="@drawable/pdf"
                     android:scaleType="fitXY" />
+
+                <TextView
+                    android:id="@+id/attachment_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="sample.pdf"
+                    android:textColor="@color/fab_material_grey_500"
+                    android:textSize="13sp"
+                    android:layout_gravity="center_vertical"
+                    android:visibility="visible"/>
             </LinearLayout>
 
             <ProgressBar
@@ -118,7 +130,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Image Download failed!"
+                android:text="File Download failed!"
                 android:textColor="@color/darkergrey"
                 android:textSize="12sp"
                 android:visibility="gone" />

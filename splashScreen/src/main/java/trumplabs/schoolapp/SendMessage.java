@@ -476,6 +476,8 @@ public class SendMessage extends MyActionBarActivity  {
             final ImageView pendingClockIcon = (ImageView) row.findViewById(R.id.pendingClock);
 
             final ImageView imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
+            final TextView attachmentNameTV = (TextView) row.findViewById(R.id.attachment_name);
+
             final ProgressBar uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
             TextView msgtxtcontent = (TextView) row.findViewById(R.id.ccmsgtext);
             TextView classimage = (TextView) row.findViewById(R.id.classimage1);
@@ -618,10 +620,20 @@ public class SendMessage extends MyActionBarActivity  {
                 });
 
 
-                final Runnable onSuccessRunnable = new Runnable() {
+                final Runnable onImageSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
                         uploadprogressbar.setVisibility(View.GONE);
+                        attachmentNameTV.setVisibility(View.GONE);
+                    }
+                };
+
+                final Runnable onFileSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        uploadprogressbar.setVisibility(View.GONE);
+                        attachmentNameTV.setText(imageName);
+                        attachmentNameTV.setVisibility(View.VISIBLE);
                     }
                 };
 
@@ -629,6 +641,7 @@ public class SendMessage extends MyActionBarActivity  {
                     @Override
                     public void run() {
                         uploadprogressbar.setVisibility(View.GONE);
+                        attachmentNameTV.setVisibility(View.GONE);
                     }
                 };
 
@@ -641,18 +654,18 @@ public class SendMessage extends MyActionBarActivity  {
 
                 if(ImageCache.showIfInCache(imageName, imgmsgview)){
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(s) already cached : " + imageName);
-                    onSuccessRunnable.run();
+                    onImageSuccessRunnable.run();
                 }
                 else if (imgFile.exists()) {
                     // image file present locally
                     if(isFileAnImage) {
-                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, imgmsgview, currentActivity, onImageSuccessRunnable);
                         writeLoadAndShowTask.execute();
                     }
                     else{
                         //set file icon and run onSuccessRunnable
-                        imgmsgview.setImageResource(R.drawable.pdf);
-                        onSuccessRunnable.run();
+                        imgmsgview.setImageResource(R.drawable.general_file_icon);
+                        onFileSuccessRunnable.run();
                     }
                 } else if(Utility.isInternetExistWithoutPopup()) {
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
@@ -664,11 +677,11 @@ public class SendMessage extends MyActionBarActivity  {
                             public void done(byte[] data, ParseException e) {
                                 if (e == null) {
                                     if(isFileAnImage) {
-                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, imgmsgview, currentActivity, onImageSuccessRunnable);
                                         writeLoadAndShowTask.execute();
                                     }
                                     else{
-                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, imgmsgview, currentActivity, onSuccessRunnable);
+                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, imgmsgview, currentActivity, onFileSuccessRunnable);
                                         writeDocTask.execute();
                                     }
                                 } else {
@@ -688,6 +701,7 @@ public class SendMessage extends MyActionBarActivity  {
                 }
             } else {
                 imgmsgview.setVisibility(View.GONE);
+                attachmentNameTV.setVisibility(View.GONE);
                 imgmsgview.setTag(""); //reset to empty
             }
 

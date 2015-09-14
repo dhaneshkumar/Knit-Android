@@ -273,6 +273,7 @@ public class Outbox extends Fragment {
         ImageView pendingClockIcon;
         TextView classimage;
         ImageView imgmsgview;
+        TextView attachmentNameTV;
         ProgressBar uploadprogressbar;
         TextView msgtxtcontent;
         TextView classname;
@@ -292,6 +293,8 @@ public class Outbox extends Fragment {
             timestampmsg = (TextView) row.findViewById(R.id.cctimestamp);
             pendingClockIcon = (ImageView) row.findViewById(R.id.pendingClock);
             imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
+            attachmentNameTV = (TextView) row.findViewById(R.id.attachment_name);
+
             uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
             msgtxtcontent = (TextView) row.findViewById(R.id.ccmsgtext);
             likes = (TextView) row.findViewById(R.id.like);
@@ -516,10 +519,20 @@ public class Outbox extends Fragment {
                 });
 
 
-                final Runnable onSuccessRunnable = new Runnable() {
+                final Runnable onImageSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
                         holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
+                    }
+                };
+
+                final Runnable onFileSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setText(imageName);
+                        holder.attachmentNameTV.setVisibility(View.VISIBLE);
                     }
                 };
 
@@ -527,6 +540,7 @@ public class Outbox extends Fragment {
                     @Override
                     public void run() {
                         holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
                     }
                 };
 
@@ -540,19 +554,19 @@ public class Outbox extends Fragment {
                 if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
                     Log.d("__file_picker", "cache " + imageName);
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(o) already cached : " + imageName);
-                    onSuccessRunnable.run();
+                    onImageSuccessRunnable.run();
                 }
                 else if (imgFile.exists()) {
                     Log.d("__file_picker", "imgFile exists " + imageName);
                     // image file present locally
                     if(isFileAnImage) {
-                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
                         writeLoadAndShowTask.execute();
                     }
                     else{
                         //set file icon and run onSuccessRunnable
-                        holder.imgmsgview.setImageResource(R.drawable.pdf);
-                        onSuccessRunnable.run();
+                        holder.imgmsgview.setImageResource(R.drawable.general_file_icon);
+                        onFileSuccessRunnable.run();
                     }
                 } else if(Utility.isInternetExistWithoutPopup()) {
                     Log.d("__file_picker", "pf download " + imageName);
@@ -565,11 +579,11 @@ public class Outbox extends Fragment {
                             public void done(byte[] data, ParseException e) {
                                 if (e == null) {
                                     if(isFileAnImage) {
-                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
                                         writeLoadAndShowTask.execute();
                                     }
                                     else{
-                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), onFileSuccessRunnable);
                                         writeDocTask.execute();
                                     }
                                 } else {
@@ -591,6 +605,7 @@ public class Outbox extends Fragment {
             } else {
                 holder.imgmsgview.setVisibility(View.GONE);
                 holder.imgmsgview.setTag(""); //reset to empty
+                holder.attachmentNameTV.setVisibility(View.GONE);
             }
 
             //if a) first msg, b) is a teacher & c) already not shown

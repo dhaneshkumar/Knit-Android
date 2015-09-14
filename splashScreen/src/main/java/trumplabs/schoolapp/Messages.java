@@ -327,6 +327,8 @@ public class Messages extends Fragment {
         TextView msgslist;
         FrameLayout imgframelayout;
         ImageView imgmsgview;
+        TextView attachmentNameTV;
+
         TextView faildownload;
         ProgressBar uploadprogressbar;
         LinearLayout likeButton;
@@ -347,6 +349,8 @@ public class Messages extends Fragment {
             msgslist = (TextView) row.findViewById(R.id.msgs);
             imgframelayout = (FrameLayout) row.findViewById(R.id.imagefrmlayout);
             imgmsgview = (ImageView) row.findViewById(R.id.imgmsgcontent);
+            attachmentNameTV = (TextView) row.findViewById(R.id.attachment_name);
+
             faildownload = (TextView) row.findViewById(R.id.faildownload);
             uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
             likeButton = (LinearLayout) row.findViewById(R.id.likeButton);
@@ -669,10 +673,21 @@ public class Messages extends Fragment {
                     }
                 });
 
-                final Runnable onSuccessRunnable = new Runnable() {
+                final Runnable onImageSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
                         holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
+                        holder.faildownload.setVisibility(View.GONE);
+                    }
+                };
+
+                final Runnable onFileSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setText(imageName);
+                        holder.attachmentNameTV.setVisibility(View.VISIBLE);
                         holder.faildownload.setVisibility(View.GONE);
                     }
                 };
@@ -681,6 +696,7 @@ public class Messages extends Fragment {
                     @Override
                     public void run() {
                         holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
                         holder.faildownload.setVisibility(View.VISIBLE);
                     }
                 };
@@ -697,19 +713,19 @@ public class Messages extends Fragment {
 
                 if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
-                    onSuccessRunnable.run();
+                    onImageSuccessRunnable.run();
                 }
                 else if (imgFile.exists()) {
                     // image file present locally
                     if(isFileAnImage) {
-                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
                         writeLoadAndShowTask.execute();
                     }
                     else{
                         Log.d("__file_picker", "m) exists " + imageName);
                         //set file icon and run onSuccessRunnable
-                        holder.imgmsgview.setImageResource(R.drawable.pdf);
-                        onSuccessRunnable.run();
+                        holder.imgmsgview.setImageResource(R.drawable.general_file_icon);
+                        onFileSuccessRunnable.run();
                     }
                 } else if(Utility.isInternetExistWithoutPopup()) {
                     Log.d("__file_picker", "m) downloading " + imageName);
@@ -722,11 +738,11 @@ public class Messages extends Fragment {
                             public void done(byte[] data, ParseException e) {
                                 if (e == null) {
                                     if(isFileAnImage) {
-                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
                                         writeLoadAndShowTask.execute();
                                     }
                                     else{
-                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
+                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), onFileSuccessRunnable);
                                         writeDocTask.execute();
                                     }
 
@@ -748,6 +764,7 @@ public class Messages extends Fragment {
             } else
             {
                 holder.imgframelayout.setVisibility(View.GONE);
+                holder.attachmentNameTV.setVisibility(View.GONE);
                 holder.imgmsgview.setTag(""); //reset to empty
             }
 
