@@ -1,6 +1,7 @@
 package school;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Handler;
 import android.os.Message;
 import android.util.AttributeSet;
@@ -10,8 +11,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import java.lang.ref.WeakReference;
+
+import trumplab.textslate.R;
 
 /**
  * Created by ashish on 10/9/15.
@@ -36,6 +40,12 @@ public class CustomSearchView extends SearchView{
 
     public CustomSearchView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        int id = getContext().getResources().getIdentifier("android:id/search_src_text", null, null);
+        TextView textView = (TextView) findViewById(id);
+        if(textView != null) {
+            textView.setTextColor(context.getResources().getColor(R.color.com_facebook_blue));
+            //textView.setHintTextColor(context.getResources().getColor(R.color.googleyellow));
+        }
     }
 
     public void setParameters(Long dMillis, int sThreshold, ListView mLVRef,  SearchViewAdapterInterface mSVAdapterRef){
@@ -54,10 +64,12 @@ public class CustomSearchView extends SearchView{
             @Override
             public boolean onQueryTextChange(String s) {
                 if(itemJustSelected){
+                    itemJustSelected = false; //reset as a new potential query
                     return true; //this is because when click selected item, it again triggers onQueryTextChange with full item description, we don't want that
                 }
 
                 itemJustSelected = false; //reset as a new potential query
+
                 if(queryTextChangeRunnable != null){
                     queryTextChangeRunnable.run();
                 }

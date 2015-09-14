@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.MimeTypeMap;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -272,6 +273,7 @@ public class Outbox extends Fragment {
         TextView timestampmsg;
         ImageView pendingClockIcon;
         TextView classimage;
+        FrameLayout imgframelayout;
         ImageView imgmsgview;
         TextView attachmentNameTV;
         ProgressBar uploadprogressbar;
@@ -292,6 +294,7 @@ public class Outbox extends Fragment {
             classimage = (TextView) row.findViewById(R.id.classimage1);
             timestampmsg = (TextView) row.findViewById(R.id.cctimestamp);
             pendingClockIcon = (ImageView) row.findViewById(R.id.pendingClock);
+            imgframelayout = (FrameLayout) row.findViewById(R.id.imagefrmlayout);
             imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
             attachmentNameTV = (TextView) row.findViewById(R.id.attachment_name);
 
@@ -494,8 +497,8 @@ public class Outbox extends Fragment {
                 Log.d("__file_picker", imageName);
                 final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
 
-                holder.imgmsgview.setVisibility(View.VISIBLE);
-                holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
+                holder.imgframelayout.setVisibility(View.VISIBLE);
+                holder.imgframelayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(isFileAnImage){
@@ -603,7 +606,7 @@ public class Outbox extends Fragment {
                 }
 
             } else {
-                holder.imgmsgview.setVisibility(View.GONE);
+                holder.imgframelayout.setVisibility(View.GONE);
                 holder.imgmsgview.setTag(""); //reset to empty
                 holder.attachmentNameTV.setVisibility(View.GONE);
             }

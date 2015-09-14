@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -475,6 +476,7 @@ public class SendMessage extends MyActionBarActivity  {
             final TextView timestampview = (TextView) row.findViewById(R.id.cctimestamp);
             final ImageView pendingClockIcon = (ImageView) row.findViewById(R.id.pendingClock);
 
+            final FrameLayout imgframelayout = (FrameLayout) row.findViewById(R.id.imagefrmlayout);
             final ImageView imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
             final TextView attachmentNameTV = (TextView) row.findViewById(R.id.attachment_name);
 
@@ -595,8 +597,8 @@ public class SendMessage extends MyActionBarActivity  {
             if (!UtilString.isBlank(imageName)) {
                 final boolean isFileAnImage = Utility.isFileImageType(imageName);
                 final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
-                imgmsgview.setVisibility(View.VISIBLE);
-                imgmsgview.setOnClickListener(new View.OnClickListener() {
+                imgframelayout.setVisibility(View.VISIBLE);
+                imgframelayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(isFileAnImage){
@@ -700,7 +702,7 @@ public class SendMessage extends MyActionBarActivity  {
                     onFailRunnable.run();
                 }
             } else {
-                imgmsgview.setVisibility(View.GONE);
+                imgframelayout.setVisibility(View.GONE);
                 attachmentNameTV.setVisibility(View.GONE);
                 imgmsgview.setTag(""); //reset to empty
             }
