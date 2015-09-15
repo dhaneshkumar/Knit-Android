@@ -25,6 +25,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -59,53 +60,13 @@ import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
 
-public class Utility extends MyActionBarActivity {
+public class Utility{
 
     static String appName = "knit";
 
     public static void ls(String str) {
         if (!UtilString.isBlank(str))
             System.out.println(str);
-    }
-
-    /*
-        check if local parseinstallation has "id" field set which implies that cloud database
-        has an entry corresponding to it(this id is the object id in cloud database).
-        If not, use "appInstallation" cloud function to create an entry
-        on cloud.
-     */
-    public static boolean checkParseInstallation(){
-        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
-
-        if(parseInstallation == null){ //this should never ever happen
-            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstallation : getCurrentInstallation() returned null");
-            return false;
-        }
-
-        if(parseInstallation.getString("id") != null){  //this single handedly means that installation is all set.
-                                                        // This is cleared during singup/signin to
-                                                        // prevent use of stale ids
-            return true; //we're done
-        }
-
-        //Since neither id nor objectId set, call the cloud function.
-        if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstalltion : calling appInstallation cloud function");
-        HashMap<String, Object> param = new HashMap<String, Object>();
-        param.put("deviceType", "android");
-        param.put("installationId", parseInstallation.getInstallationId());
-
-        try{
-            String id = ParseCloud.callFunction("appInstallation", param);
-            parseInstallation.put("id", id);
-            parseInstallation.pin();
-            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstalltion : success cloud function with id " + id);
-            return true;
-        }
-        catch (com.parse.ParseException e){
-            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstallation : failure cloud function");
-            e.printStackTrace();
-            return false;
-        }
     }
 
     //called from ProfilePage logout option
@@ -687,6 +648,13 @@ public class Utility extends MyActionBarActivity {
             if(Config.DETECT_INVALID_NUMBER && Character.getNumericValue(phoneNumber.charAt(0)) < 7){
                 return false;
             }
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isTagSame(ImageView imageView, String oldTag){
+        if(imageView != null && imageView.getTag() != null && oldTag != null && oldTag.equals((String)imageView.getTag())){
             return true;
         }
         return false;

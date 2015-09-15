@@ -622,9 +622,21 @@ public class SendMessage extends MyActionBarActivity  {
                 });
 
 
+                //to override previous recycled view
+                uploadprogressbar.setVisibility(View.VISIBLE);
+                attachmentNameTV.setVisibility(View.GONE);
+                imgmsgview.setImageBitmap(null);
+
+                final File imgFile = new File(imageFilePath);
+                imgmsgview.setTag(imgFile.getAbsolutePath());
+
                 final Runnable onImageSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onImageSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
                         uploadprogressbar.setVisibility(View.GONE);
                         attachmentNameTV.setVisibility(View.GONE);
                     }
@@ -633,6 +645,10 @@ public class SendMessage extends MyActionBarActivity  {
                 final Runnable onFileSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFileSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
                         uploadprogressbar.setVisibility(View.GONE);
                         attachmentNameTV.setText(imageName);
                         attachmentNameTV.setVisibility(View.VISIBLE);
@@ -642,17 +658,14 @@ public class SendMessage extends MyActionBarActivity  {
                 final Runnable onFailRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFailRunnable skip different tag " + imageName);
+                            return;
+                        }
                         uploadprogressbar.setVisibility(View.GONE);
                         attachmentNameTV.setVisibility(View.GONE);
                     }
                 };
-
-                //to override previous recycled view
-                uploadprogressbar.setVisibility(View.VISIBLE);
-                imgmsgview.setImageBitmap(null);
-
-                File imgFile = new File(imageFilePath);
-                imgmsgview.setTag(imgFile.getAbsolutePath());
 
                 if(ImageCache.showIfInCache(imageName, imgmsgview)){
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(s) already cached : " + imageName);

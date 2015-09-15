@@ -53,6 +53,7 @@ import utility.Config;
 import utility.ImageCache;
 import utility.Queries;
 import utility.SessionManager;
+import utility.TestingUtililty;
 import utility.Utility;
 
 /**
@@ -673,9 +674,24 @@ public class Messages extends Fragment {
                     }
                 });
 
+                //to override previous recycled view
+                holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                holder.faildownload.setVisibility(View.GONE);
+                holder.attachmentNameTV.setVisibility(View.GONE);
+
+                final File imgFile = new File(imageFilePath);
+
+                holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
+                holder.imgframelayout.setTag(imgFile.getAbsolutePath());
+                holder.imgmsgview.setTag(imgFile.getAbsolutePath());
+
                 final Runnable onImageSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onImageSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setVisibility(View.GONE);
                         holder.faildownload.setVisibility(View.GONE);
@@ -685,6 +701,10 @@ public class Messages extends Fragment {
                 final Runnable onFileSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFileSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setText(imageName);
                         holder.attachmentNameTV.setVisibility(View.VISIBLE);
@@ -695,21 +715,15 @@ public class Messages extends Fragment {
                 final Runnable onFailRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFailRunnable skip different tag " + imageName);
+                            return;
+                        }
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setVisibility(View.GONE);
                         holder.faildownload.setVisibility(View.VISIBLE);
                     }
                 };
-
-                //show progress bar
-                holder.uploadprogressbar.setVisibility(View.VISIBLE);
-                holder.faildownload.setVisibility(View.GONE);
-
-                File imgFile = new File(imageFilePath);
-
-                holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
-                holder.imgframelayout.setTag(imgFile.getAbsolutePath());
-                holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
                 if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
@@ -732,10 +746,13 @@ public class Messages extends Fragment {
                     if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
 
                     // Have to download image from server
-                    ParseFile imagefile = msgObject.getParseFile("attachment");
+                    final ParseFile imagefile = msgObject.getParseFile("attachment");
+
                     if(imagefile != null) {
                         imagefile.getDataInBackground(new GetDataCallback() {
                             public void done(byte[] data, ParseException e) {
+                                //e = new ParseException(1000, "dummy parse exception");
+
                                 if (e == null) {
                                     if(isFileAnImage) {
                                         ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
@@ -753,6 +770,16 @@ public class Messages extends Fragment {
                                 }
                             }
                         });
+
+                        /*
+                        Runnable r = new Runnable() {
+                            @Override
+                            public void run() {
+
+                            }
+                        };
+
+                        TestingUtililty.runAfterUiThread(r, 5000, "__sleep" + imageName);*/
                     }
                     else{
                         onFailRunnable.run();

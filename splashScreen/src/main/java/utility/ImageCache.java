@@ -154,8 +154,7 @@ public class ImageCache {
         @Override
         protected void onPostExecute(Void result) {
             if(mImageView != null){
-                String currentTag = (String) mImageView.getTag();
-                if(initialTag != null && currentTag != null && !(initialTag.equals(currentTag))){
+                if(! Utility.isTagSame(mImageView, initialTag)){
                     if(Config.SHOWLOG) Log.d(LOGTAG, "(i) tag not same for " + imageName + ". Skip : (a) setting bitmap and (b) doing uiWork");
                 }
                 else {
@@ -198,8 +197,7 @@ public class ImageCache {
         @Override
         protected void onPostExecute(Void result) {
             if(mImageView != null){
-                String currentTag = (String) mImageView.getTag();
-                if(initialTag != null && currentTag != null && !(initialTag.equals(currentTag))){
+                if(! Utility.isTagSame(mImageView, initialTag)){
                     if(Config.SHOWLOG) Log.d(LOGTAG, "(i) tag not same for " + docName + ". Skip : (a) setting bitmap and (b) doing uiWork");
                 }
                 else {

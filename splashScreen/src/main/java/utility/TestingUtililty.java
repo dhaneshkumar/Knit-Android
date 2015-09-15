@@ -1,7 +1,9 @@
 package utility;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.parse.ParseUser;
 
@@ -135,6 +137,24 @@ public class TestingUtililty {
         catch (InterruptedException e){
             e.printStackTrace();
         }
+    }
+
+    //call from UI thread only as it spaws a asynctask
+    public static void runAfterUiThread(final Runnable r, final int sleepDuration, final String TAG){
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                Log.d(TAG, "start sleeping for " + sleepDuration);
+                TestingUtililty.sleep(sleepDuration);
+                Log.d(TAG, "end sleeping " + sleepDuration);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                r.run();
+            }
+        }.execute();
     }
 
     public static void launchProfileActivity(){

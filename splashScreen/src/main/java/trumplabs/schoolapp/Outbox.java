@@ -521,10 +521,21 @@ public class Outbox extends Fragment {
                     }
                 });
 
+                //to override previous recycled view
+                holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                holder.imgmsgview.setImageBitmap(null);
+                holder.attachmentNameTV.setVisibility(View.GONE);
+
+                final File imgFile = new File(imageFilePath);
+                holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
                 final Runnable onImageSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onImageSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setVisibility(View.GONE);
                     }
@@ -533,6 +544,10 @@ public class Outbox extends Fragment {
                 final Runnable onFileSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFileSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setText(imageName);
                         holder.attachmentNameTV.setVisibility(View.VISIBLE);
@@ -542,17 +557,14 @@ public class Outbox extends Fragment {
                 final Runnable onFailRunnable = new Runnable() {
                     @Override
                     public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFailRunnable skip different tag " + imageName);
+                            return;
+                        }
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setVisibility(View.GONE);
                     }
                 };
-
-                //to override previous recycled view
-                holder.uploadprogressbar.setVisibility(View.VISIBLE);
-                holder.imgmsgview.setImageBitmap(null);
-
-                File imgFile = new File(imageFilePath);
-                holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
                 if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
                     Log.d("__file_picker", "cache " + imageName);
@@ -580,6 +592,7 @@ public class Outbox extends Fragment {
                     if(imagefile != null) {
                         imagefile.getDataInBackground(new GetDataCallback() {
                             public void done(byte[] data, ParseException e) {
+                                //e = new ParseException(1000, "dummy parse exception");
                                 if (e == null) {
                                     if(isFileAnImage) {
                                         ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
