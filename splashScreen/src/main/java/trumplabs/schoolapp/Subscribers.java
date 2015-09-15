@@ -387,7 +387,7 @@ public class Subscribers extends MyActionBarActivity {
     class LocalMembers extends AsyncTask<Void, Void, Void> {
 
         private String code;
-
+        private List<MemberDetails> tempMemberDetails;
         LocalMembers(String groupCode) {
             this.code = groupCode;
         }
@@ -395,13 +395,13 @@ public class Subscribers extends MyActionBarActivity {
         @Override
         protected Void doInBackground(Void... params) {
 
-            memberDetails = memberQuery.getLocalClassMembers(code);
+            tempMemberDetails = memberQuery.getLocalClassMembers(code);
             return null;
         }
 
         @Override
         protected void onPostExecute(Void res) {
-
+            memberDetails = tempMemberDetails;
             //hide progressbar
             memberProgressBar.setVisibility(View.GONE);
 
@@ -415,6 +415,8 @@ public class Subscribers extends MyActionBarActivity {
     class RemoveChild extends AsyncTask<Void, Void, Boolean> {
         private MemberDetails member;
         private String memberName;
+        List<MemberDetails> tempMemberDetails;
+        int tempMemberCount;
 
         RemoveChild(MemberDetails member, String memberName) {
             this.member = member;
@@ -482,12 +484,12 @@ public class Subscribers extends MyActionBarActivity {
                                 obj.unpin(); //just unpin for now. Next time if it is fetched using MemberList task, it will have updated value for status column
 
                                 /*******    check whether fetched obj saved automatically or not ********/
-                                memberDetails = memberQuery.getLocalClassMembers(classCode);
+                                tempMemberDetails = memberQuery.getLocalClassMembers(classCode);
 
-                                if(memberDetails != null)
-                                    memberCount = memberDetails.size();
+                                if(tempMemberDetails != null)
+                                    tempMemberCount = tempMemberDetails.size();
 
-                                MemberList.setMemberCount(classCode, memberCount);  //updating codegroup
+                                MemberList.setMemberCount(classCode, tempMemberCount);  //updating codegroup
                                 return true;
                             }
                         }
@@ -529,11 +531,11 @@ public class Subscribers extends MyActionBarActivity {
                                 obj.unpin(); //just unpin for now. Next time if it is fetched using MemberList task, it will have updated field for status
 
                                 /*******    check whether fetched obj saved automatically or not ********/
-                                memberDetails = memberQuery.getLocalClassMembers(classCode);
+                                tempMemberDetails = memberQuery.getLocalClassMembers(classCode);
 
-                                if(memberDetails != null) {
-                                    memberCount = memberDetails.size();
-                                    MemberList.setMemberCount(classCode, memberCount);  //updating codegroup
+                                if(tempMemberDetails != null) {
+                                    tempMemberCount = tempMemberDetails.size();
+                                    MemberList.setMemberCount(classCode, tempMemberCount);  //updating codegroup
                                 }
                                 return true;
                             }
@@ -551,6 +553,9 @@ public class Subscribers extends MyActionBarActivity {
         @Override
         protected void onPostExecute(Boolean result) {
             if (result) {
+                memberDetails = tempMemberDetails;
+                memberCount = tempMemberCount;
+
                 if(memberDetails != null)
                     memberDetails.remove(member);
 

@@ -944,16 +944,17 @@ public class Messages extends Fragment {
 
     class GetLocalInboxMsgInBackground extends AsyncTask<Void, Void, Void>
     {
+        List<ParseObject> tempMsgs;
         @Override
         protected Void doInBackground(Void... params) {
             try {
-                msgs = query.getLocalInboxMsgs();
+                tempMsgs = query.getLocalInboxMsgs();
                 updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
             } catch (ParseException e) {
             }
 
-            if (msgs == null)
-                msgs = new ArrayList<ParseObject>();
+            if (tempMsgs == null)
+                tempMsgs = new ArrayList<>();
 
 
             return null;
@@ -961,7 +962,7 @@ public class Messages extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-
+            msgs = tempMsgs;
             Messages.myadapter.notifyDataSetChanged();
 
             if (msgs.size() == 0) {
