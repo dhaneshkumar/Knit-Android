@@ -3,6 +3,7 @@ package loginpages;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
@@ -27,6 +28,7 @@ import trumplabs.schoolapp.FontsOverride;
 import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.SessionManager;
+import utility.Utility;
 
 /**
  * Used to display splash screen on opening the app. It also start a background process to update
@@ -84,14 +86,16 @@ public class SplashScreen extends MyActionBarActivity {
 
         // FacebookSdk.sdkInitialize(getApplicationContext());
 
-
         //Appsflyer measure
         AppsFlyerLib.setAppsFlyerKey(Config.APPS_FLYER_ID);
         AppsFlyerLib.sendTracking(getApplicationContext());
 
+        String appseeId = Utility.getAppseeId();
+        Utility.fetchAppseeIdIfNeeded();
 
+        Log.d("__appsee", "Appsee.start() with=" + appseeId);
         //APPSEE measure
-        Appsee.start(Config.APPSEE_ID);
+        Appsee.start(appseeId);
 
     /*
      * Setting parse analytics

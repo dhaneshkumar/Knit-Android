@@ -38,6 +38,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONException;
@@ -49,8 +50,12 @@ import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -335,6 +340,13 @@ public class Utility{
             }
 
             return "just now";
+        }
+
+        public String giveInDetail(Date date){
+            if(date != null){
+                return sdfTimeDateYear.format(date);
+            }
+            return "unknown";
         }
     }
 
@@ -735,6 +747,86 @@ public class Utility{
             return true;
         }
         return false;
+    }
+
+    public static String getAppseeId(){
+        String appseeId = SessionManager.getInstance().getAppseeId();
+        if(appseeId == null){
+            appseeId = Config.APPSEE_ID; //default fallback is the old key
+        }
+        return appseeId;
+    }
+
+    public static void fetchAppseeIdIfNeeded(){
+        Date appseeExpiry = SessionManager.getInstance().getDate(SessionManager.KEY_APPSEE_EXPIRY);
+        if(appseeExpiry == null){
+            appseeExpiry = Config.APPSEE_EXPIRY;
+        }
+
+        Date current = new Date();
+
+        Log.d("__appsee", "exp=" + Utility.MyDateFormatter.getInstance().giveInDetail(appseeExpiry) +
+                ", cur=" + Utility.MyDateFormatter.getInstance().giveInDetail(current) + " compare=" + current.compareTo(appseeExpiry));
+
+        Date lastChecked = SessionManager.getInstance().getDate(SessionManager.KEY_APPSEE_LAST_CHECKED);
+        if(lastChecked == null){
+            lastChecked = new GregorianCalendar(2015, 1, 1).getTime(); //1 jan 2015 just some old date
+        }
+        Log.d("__appsee", "last checked=" + Utility.MyDateFormatter.getInstance().giveInDetail(lastChecked));
+
+        if((current.getTime() - appseeExpiry.getTime() > 0) || (current.getTime() - lastChecked.getTime() > Config.APPSEE_RETRY_INTERVAL_ALWAYS)){
+
+            if(current.getTime() - lastChecked.getTime() > Config.APPSEE_RETRY_INTERVAL){
+                //more than 1 day, start a thread to fetch new id
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        /*Log.d("__appsee", "sleep start");
+                        TestingUtililty.sleep(5000);
+                        String id = "abc";
+                        Calendar expiryCal = Calendar.getInstance();
+                        expiryCal.add(Calendar.MINUTE, TestingUtililty.multiplier * 5);
+                        Date expiry = expiryCal.getTime();
+                        Log.d("__appsee", "sleep over");*/
+
+                        String id = null;
+                        Date expiry = null;
+
+                        try {
+                            ParseQuery keyQuery = new ParseQuery("Appsee");
+                            keyQuery.whereEqualTo("name", "appsee");
+                            keyQuery.setLimit(1);
+
+                            List<ParseObject> results = keyQuery.find();
+                            ParseObject keyDetail = results.get(0);
+
+                            id = keyDetail.getString("key");
+                            expiry = keyDetail.getDate("expiry");
+                        }
+                        catch (ParseException e){
+                            e.printStackTrace();
+                        }
+
+                        if(id != null && expiry != null){
+                            Log.d("__appsee", "success id=" + id + ", expiry=" + Utility.MyDateFormatter.getInstance().giveInDetail(expiry));
+                            SessionManager.getInstance().setAppseeId(id);
+                            SessionManager.getInstance().setDate(SessionManager.KEY_APPSEE_EXPIRY, expiry);
+                            SessionManager.getInstance().setDate(SessionManager.KEY_APPSEE_LAST_CHECKED, new Date());//now
+                            Log.d("__appsee", "success persistently set");
+                        }
+                        else{
+                            Log.d("__appsee", "failure");
+                        }
+                    }
+                }).start();
+            }
+            else{
+                Log.d("__appsee", "too frequent to retry");
+            }
+        }
+        else{
+            Log.d("__appsee", "not yet expired");
+        }
     }
 
     public static class LogoutUtility{
