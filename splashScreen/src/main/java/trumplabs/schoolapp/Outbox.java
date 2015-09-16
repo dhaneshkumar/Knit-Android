@@ -387,7 +387,7 @@ public class Outbox extends Fragment {
                 cdate = (Date) msgObject.get("creationTime");
 
             //finding difference of current & createdAt timestamp
-            timestampmsg = Utility.convertTimeStamp(cdate);
+            timestampmsg = Utility.MyDateFormatter.getInstance().convertTimeStampNew(cdate);
 
             //setting cardview for higher api using elevation
 

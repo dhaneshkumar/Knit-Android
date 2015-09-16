@@ -45,20 +45,21 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import loginpages.Signup;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 
 public class Utility{
 
@@ -259,6 +260,82 @@ public class Utility{
         }
 
         return "just now";
+    }
+
+    public static class MyDateFormatter {
+        private SimpleDateFormat sdfDateYear;
+        private SimpleDateFormat sdfYearOnly;
+        private SimpleDateFormat sdfTimeOnly;
+        private SimpleDateFormat sdfTimeDate;
+        private SimpleDateFormat sdfTimeDateYear;
+
+        private static MyDateFormatter instance = null;
+
+        public MyDateFormatter(){
+            DateFormatSymbols symbols = new DateFormatSymbols(Locale.getDefault());
+            symbols.setAmPmStrings(new String[]{"a", "p"});
+
+            sdfDateYear = new SimpleDateFormat("dd/MM/yy");
+
+            sdfYearOnly = new SimpleDateFormat("yy");
+
+            sdfTimeOnly = new SimpleDateFormat("hh:mma");
+            sdfTimeOnly.setDateFormatSymbols(symbols);
+
+            sdfTimeDate = new SimpleDateFormat("dd/MM hh:mma");
+            sdfTimeDate.setDateFormatSymbols(symbols);
+
+            sdfTimeDateYear = new SimpleDateFormat("dd/MM/yy hh:mma");
+            sdfTimeDateYear.setDateFormatSymbols(symbols);
+        }
+
+        public static MyDateFormatter getInstance(){
+            if(instance == null){
+                instance = new MyDateFormatter();
+            }
+
+            return instance;
+        }
+
+        public String convertTimeStampNew(Date msgDate){
+            Log.d("__timestamp", "enter");
+            String result;
+
+            if (msgDate != null) {
+
+                String msgDateString = sdfDateYear.format(msgDate);
+                String msgYearString = sdfYearOnly.format(msgDate);
+                Log.d("__timestamp", "msgDateString " + msgDateString + ", " + msgYearString);
+
+                Calendar today = Calendar.getInstance();
+                String todayDateString = sdfDateYear.format(today.getTime());
+                String currentYearString = sdfYearOnly.format(today.getTime());
+                Log.d("__timestamp", "todayString " + todayDateString + ", " + currentYearString);
+
+                Calendar yesterday = Calendar.getInstance();
+                yesterday.add(Calendar.DATE, -1);
+                String yesterdayDateString = sdfDateYear.format(yesterday.getTime());
+                Log.d("__timestamp", "yesterdayString " + yesterdayDateString);
+
+                if(msgDateString.equals(todayDateString)){
+                    result = sdfTimeOnly.format(msgDate);
+                }
+                else if(msgDateString.equals(yesterdayDateString)){
+                    result = "yesterday " + sdfTimeOnly.format(msgDate);
+                }
+                else if(msgYearString.equals(currentYearString)) {
+                    result = sdfTimeDate.format(msgDate);
+                }
+                else{
+                    result = sdfTimeDateYear.format(msgDate);
+                }
+
+                Log.d("__timestamp", "exit");
+                return result;
+            }
+
+            return "just now";
+        }
     }
 
     /**

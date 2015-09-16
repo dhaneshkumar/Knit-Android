@@ -51,7 +51,6 @@ import trumplab.textslate.R;
 import utility.Config;
 import utility.ImageCache;
 import utility.Queries;
-import utility.SessionManager;
 import utility.Utility;
 
 /**
@@ -457,7 +456,7 @@ public class SendMessage extends MyActionBarActivity  {
             //retrieving the message sent time
             String timestampmsg = "";
             Date cdate = (Date) msgObject.get("creationTime");
-            timestampmsg = Utility.convertTimeStamp(cdate);
+            timestampmsg = Utility.MyDateFormatter.getInstance().convertTimeStampNew(cdate);
 
             boolean pending = msgObject.getBoolean("pending"); //if this key is not available (for older messages)
             //get pending "false" & that's what we want

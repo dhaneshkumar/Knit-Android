@@ -593,10 +593,10 @@ public class Messages extends Fragment {
 
 
             if (msgObject.getCreatedAt() != null) {
-                holder.startTime.setText(Utility.convertTimeStamp(msgObject.getCreatedAt()));
+                holder.startTime.setText(Utility.MyDateFormatter.getInstance().convertTimeStampNew(msgObject.getCreatedAt()));
             }
             else if (msgObject.get("creationTime") != null)
-                holder.startTime.setText(Utility.convertTimeStamp((Date) msgObject.get("creationTime")));
+                holder.startTime.setText(Utility.MyDateFormatter.getInstance().convertTimeStampNew((Date) msgObject.get("creationTime")));
 
             final String message = msgObject.getString("title");
             if (UtilString.isBlank(message)) {
