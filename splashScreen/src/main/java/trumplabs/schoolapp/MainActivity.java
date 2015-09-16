@@ -77,7 +77,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
     private TextView tabcolor;
     private LinearLayout.LayoutParams params;
     private int screenwidth;
-    private static String role;
+    private static String role = ""; //it should not be null
     public static LinearLayout progressBarLayout;
     SmoothProgressBar mHeaderProgressBar;
     public static MyAdapter myAdapter;
