@@ -504,11 +504,8 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
        * FAQs
        */
             case R.id.faq:
-
-                /*Intent intent = new Intent(this, FAQs.class);
-                startActivity(intent);
-                */
-                Intent intent = new Intent(this, SchoolActivity.class);
+                Intent intent = new Intent(this, FAQs.class);
+                //Intent intent = new Intent(this, SchoolActivity.class);
                 startActivity(intent);
                 break;
 

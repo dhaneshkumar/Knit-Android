@@ -65,7 +65,7 @@ public class Config {
   public static final String APPSEE_ID = "6c82500fcfaf498b83cc9a9e4b6d4111";
   public static final Date APPSEE_EXPIRY = new GregorianCalendar(2015, 8, 16).getTime();
   public static final long APPSEE_RETRY_INTERVAL = 1 * Constants.DAY_MILLISEC; //todo set it to 1 day
-  public static final long APPSEE_RETRY_INTERVAL_ALWAYS = 15 * Constants.DAY_MILLISEC; //after this interval,
+  public static final long APPSEE_RETRY_INTERVAL_ALWAYS = 7 * Constants.DAY_MILLISEC; //after this interval,
                                                                                           // always check whether the key has expired or not
                                                                                           // todo set it to a week(7 days)
 
