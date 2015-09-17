@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
@@ -321,6 +322,13 @@ public class Messages extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    class RunnableBundle{
+        public Runnable openRunnable;
+        public Runnable onImageSuccessRunnable;
+        public Runnable onFileSuccessRunnable;
+        public Runnable onFailRunnable;
+        public Runnable retryRunnable;
+    }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView groupName;
@@ -649,43 +657,43 @@ public class Messages extends Fragment {
                 final boolean isFileAnImage = Utility.isFileImageType(imageName);
                 final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
 
-                holder.imgframelayout.setVisibility(View.VISIBLE);
-                holder.imgframelayout.setOnClickListener(new OnClickListener() {
-
-                    @Override
-                    public void onClick(View v) {
-                        if(isFileAnImage){
-                            Intent imgintent = new Intent();
-                            imgintent.setAction(Intent.ACTION_VIEW);
-                            imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
-                            startActivity(imgintent);
-                        }
-                        else {
-                            //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
-                            //while opening, assume any type of file
-                            String mimeType = Utility.getMimeType(imageName); //non null return value
-                            Utility.toast(imageName + " with mime=" + mimeType, false, 15);
-                            File file = new File(imageFilePath);
-                            Intent intent = new Intent(Intent.ACTION_VIEW);
-                            intent.setDataAndType(Uri.fromFile(file), mimeType);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                            startActivity(intent);
-                        }
-                    }
-                });
-
-                //to override previous recycled view
-                holder.uploadprogressbar.setVisibility(View.VISIBLE);
-                holder.faildownload.setVisibility(View.GONE);
-                holder.attachmentNameTV.setVisibility(View.GONE);
-
                 final File imgFile = new File(imageFilePath);
 
-                holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
                 holder.imgframelayout.setTag(imgFile.getAbsolutePath());
                 holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
-                final Runnable onImageSuccessRunnable = new Runnable() {
+                final RunnableBundle rb = new RunnableBundle();
+
+                rb.openRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (isFileAnImage) {
+                                Intent imgintent = new Intent();
+                                imgintent.setAction(Intent.ACTION_VIEW);
+                                imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
+                                startActivity(imgintent);
+                            } else {
+                                //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                                //while opening, assume any type of file
+                                String mimeType = Utility.getMimeType(imageName); //non null return value
+                                Utility.toast(imageName + " with mime=" + mimeType, false, 15);
+                                File file = new File(imageFilePath);
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setDataAndType(Uri.fromFile(file), mimeType);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                startActivity(intent);
+                            }
+                        }
+                        catch (ActivityNotFoundException e){
+                            Utility.toast("No app installed to open file");
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+
+                rb.onImageSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
                         if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
@@ -695,10 +703,17 @@ public class Messages extends Fragment {
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setVisibility(View.GONE);
                         holder.faildownload.setVisibility(View.GONE);
+
+                        holder.imgframelayout.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rb.openRunnable.run();
+                            }
+                        });
                     }
                 };
 
-                final Runnable onFileSuccessRunnable = new Runnable() {
+                rb.onFileSuccessRunnable = new Runnable() {
                     @Override
                     public void run() {
                         if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
@@ -709,10 +724,17 @@ public class Messages extends Fragment {
                         holder.attachmentNameTV.setText(imageName);
                         holder.attachmentNameTV.setVisibility(View.VISIBLE);
                         holder.faildownload.setVisibility(View.GONE);
+
+                        holder.imgframelayout.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rb.openRunnable.run();
+                            }
+                        });
                     }
                 };
 
-                final Runnable onFailRunnable = new Runnable() {
+                rb.onFailRunnable = new Runnable() {
                     @Override
                     public void run() {
                         if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
@@ -722,72 +744,116 @@ public class Messages extends Fragment {
                         holder.uploadprogressbar.setVisibility(View.GONE);
                         holder.attachmentNameTV.setVisibility(View.GONE);
                         holder.faildownload.setVisibility(View.VISIBLE);
+                        holder.imgframelayout.setOnClickListener(new OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rb.retryRunnable.run();
+                            }
+                        });
                     }
                 };
 
-                if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
-                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
-                    onImageSuccessRunnable.run();
-                }
-                else if (imgFile.exists()) {
-                    // image file present locally
-                    if(isFileAnImage) {
-                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
-                        writeLoadAndShowTask.execute();
-                    }
-                    else{
-                        Log.d("__file_picker", "m) exists " + imageName);
-                        //set file icon and run onSuccessRunnable
-                        holder.imgmsgview.setImageResource(R.drawable.general_file_icon);
-                        onFileSuccessRunnable.run();
-                    }
-                } else if(Utility.isInternetExistWithoutPopup()) {
-                    Log.d("__file_picker", "m) downloading " + imageName);
-                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
+                rb.retryRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        //to override previous recycled view
+                        holder.imgframelayout.setVisibility(View.VISIBLE);
+                        holder.imgframelayout.setOnClickListener(null); //override always
 
-                    // Have to download image from server
-                    final ParseFile imagefile = msgObject.getParseFile("attachment");
+                        holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
+                        holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                        holder.faildownload.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
 
-                    if(imagefile != null) {
-                        imagefile.getDataInBackground(new GetDataCallback() {
-                            public void done(byte[] data, ParseException e) {
-                                //e = new ParseException(1000, "dummy parse exception");
 
-                                if (e == null) {
-                                    if(isFileAnImage) {
-                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onImageSuccessRunnable);
-                                        writeLoadAndShowTask.execute();
-                                    }
-                                    else{
-                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), onFileSuccessRunnable);
-                                        writeDocTask.execute();
-                                    }
-
-                                } else {
-                                    //ParseException check for invalid session
-                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                                    onFailRunnable.run();
-                                }
+                        if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
+                            if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
+                            rb.onImageSuccessRunnable.run();
+                        }
+                        else if (imgFile.exists()) {
+                            // image file present locally
+                            if(isFileAnImage) {
+                                ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), rb.onImageSuccessRunnable);
+                                writeLoadAndShowTask.execute();
                             }
-                        });
-
-                        /*
-                        Runnable r = new Runnable() {
-                            @Override
-                            public void run() {
-
+                            else{
+                                Log.d("__file_picker", "m) exists " + imageName);
+                                //set file icon and run onSuccessRunnable
+                                holder.imgmsgview.setImageResource(R.drawable.general_file_icon);
+                                rb.onFileSuccessRunnable.run();
                             }
-                        };
+                        } else if(Utility.isInternetExistWithoutPopup()) {
+                            Log.d("__file_picker", "m) downloading " + imageName);
+                            if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
 
-                        TestingUtililty.runAfterUiThread(r, 5000, "__sleep" + imageName);*/
+                            // Have to download image from server
+                            final ParseFile imagefile = msgObject.getParseFile("attachment");
+
+                            if(imagefile != null) {
+                                imagefile.getDataInBackground(new GetDataCallback() {
+                                    public void done(byte[] data, ParseException e) {
+                                        if (e == null) {
+                                            if(isFileAnImage) {
+                                                ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), rb.onImageSuccessRunnable);
+                                                writeLoadAndShowTask.execute();
+                                            }
+                                            else{
+                                                ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), rb.onFileSuccessRunnable);
+                                                writeDocTask.execute();
+                                            }
+
+                                        } else {
+                                            //ParseException check for invalid session
+                                            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                                            rb.onFailRunnable.run();
+                                        }
+                                    }
+                                });
+
+                                /*Runnable r = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        rb.onFailRunnable.run();
+                                        if(true) return;
+
+                                        imagefile.getDataInBackground(new GetDataCallback() {
+                                            public void done(byte[] data, ParseException e) {
+                                                e = new ParseException(1000, "dummy parse exception");
+
+                                                if (e == null) {
+                                                    if(isFileAnImage) {
+                                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), rb.onImageSuccessRunnable);
+                                                        writeLoadAndShowTask.execute();
+                                                    }
+                                                    else{
+                                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), rb.onFileSuccessRunnable);
+                                                        writeDocTask.execute();
+                                                    }
+
+                                                } else {
+                                                    //ParseException check for invalid session
+                                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                                                    rb.onFailRunnable.run();
+                                                }
+                                            }
+                                        });
+                                    }
+                                };
+
+                                TestingUtililty.runAfterUiThread(r, 5000, "__sleep" + imageName);*/
+                            }
+                            else{
+                                rb.onFailRunnable.run();
+                            }
+                        }
+                        else {
+                            rb.onFailRunnable.run();
+                        }
                     }
-                    else{
-                        onFailRunnable.run();
-                    }
-                }
-                else {
-                    onFailRunnable.run();
-                }
+                };
+
+                rb.retryRunnable.run();
+
             } else
             {
                 holder.imgframelayout.setVisibility(View.GONE);

@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -242,25 +243,29 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         sendimgview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String tag = (String) sendimgpreview.getTag();
-                if(tag == null) return;
-
-                if(Utility.isFileImageType(tag)){
-                    Intent imgintent = new Intent();
-                    imgintent.setAction(Intent.ACTION_VIEW);
-                    imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
-                    startActivity(imgintent);
+                try {
+                    String tag = (String) sendimgpreview.getTag();
+                    if (tag == null) return;
+                    if (Utility.isFileImageType(tag)) {
+                        Intent imgintent = new Intent();
+                        imgintent.setAction(Intent.ACTION_VIEW);
+                        imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
+                        startActivity(imgintent);
+                    } else {
+                        //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                        //while opening, assume any type of file
+                        String mimeType = Utility.getMimeType(tag); //non null return value
+                        Utility.toast(tag + " with mime=" + mimeType, false, 15);
+                        File file = new File(tag);
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.fromFile(file), mimeType);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        startActivity(intent);
+                    }
                 }
-                else {
-                    //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
-                    //while opening, assume any type of file
-                    String mimeType = Utility.getMimeType(tag); //non null return value
-                    Utility.toast(tag + " with mime=" + mimeType, false, 15);
-                    File file = new File(tag);
-                    Intent intent = new Intent(Intent.ACTION_VIEW);
-                    intent.setDataAndType(Uri.fromFile(file), mimeType);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                    startActivity(intent);
+                catch (ActivityNotFoundException e){
+                    Utility.toast("No app installed to open file");
+                    e.printStackTrace();
                 }
             }
         });

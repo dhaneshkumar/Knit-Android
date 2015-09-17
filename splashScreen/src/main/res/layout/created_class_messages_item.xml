@@ -156,6 +156,16 @@
                     android:layout_height="48dp"
                     android:layout_gravity="center"
                     android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/faildownload"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:text="File Download failed! Click to retry"
+                    android:textColor="@color/darkergrey"
+                    android:textSize="12sp"
+                    android:visibility="gone" />
             </FrameLayout>
 
 
