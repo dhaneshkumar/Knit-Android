@@ -704,7 +704,7 @@ public class Queries {
         catch (ParseException e){
             e.printStackTrace();
         }
-        if(Config.SHOWLOG) Log.d("__MG", "fillCodegroupMap : end,  mapsize=" + Application.globalCodegroupMap.size());
+        //if(Config.SHOWLOG) Log.d("__MG", "fillCodegroupMap : end,  mapsize=" + Application.globalCodegroupMap.size());
     }
 
     /*
@@ -827,6 +827,8 @@ public class Queries {
             return new ArrayList<>();
         }
 
+        if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "p=" + pendingMessages.size() + ", s=" + sentMessages.size());
+
         //append sentMessages at end of pendingMessages
         pendingMessages.addAll(sentMessages);
         return pendingMessages;
@@ -853,12 +855,7 @@ public class Queries {
 
         List<ParseObject> msgList1 = query.find();
 
-        // appending extra objects to the end of list
-        if (msgList1 != null) {
-            msgs.addAll(msgList1);
-            // Utility.toast(msgList1.size()+"");
-        }
-        return msgs;
+        return msgList1;
     }
 
 }

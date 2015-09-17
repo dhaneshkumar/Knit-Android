@@ -80,7 +80,6 @@ public class SendMessage extends MyActionBarActivity  {
     public static TextView memberCountTV;
     public static TextView memberLabelTV;
 
-    private boolean isLoading = false;
     private Typeface typeface;
     private ImageView empty_class_bg;
 
@@ -779,11 +778,10 @@ public class SendMessage extends MyActionBarActivity  {
                                 imagefile.getDataInBackground(new GetDataCallback() {
                                     public void done(byte[] data, ParseException e) {
                                         if (e == null) {
-                                            if(isFileAnImage) {
+                                            if (isFileAnImage) {
                                                 ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, imgmsgview, currentActivity, rb.onImageSuccessRunnable);
                                                 writeLoadAndShowTask.execute();
-                                            }
-                                            else{
+                                            } else {
                                                 ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, imgmsgview, currentActivity, rb.onFileSuccessRunnable);
                                                 writeDocTask.execute();
                                             }
@@ -875,17 +873,12 @@ public class SendMessage extends MyActionBarActivity  {
                     }
 
                     try {
-                        if (lastCount >= Config.createMsgCount) {
-
-                            if(!isLoading) {
-                                isLoading = true;
-
-
-                                groupDetails = query.getLocalCreateMsgs(groupCode, groupDetails, true);
-                                myadapter.notifyDataSetChanged();
-                                isLoading = false;
-                            }
+                        int prevSize = groupDetails.size();
+                        groupDetails = query.getLocalCreateMsgs(groupCode, groupDetails, true);
+                        if(groupDetails == null || groupDetails.size() <= prevSize){ //i.e no extra messages added
+                            totalClassMessages = totalItemCount; //safeguard when #total pinned > #total shown
                         }
+                        myadapter.notifyDataSetChanged();
                     } catch (ParseException e) {
                     }
                 }

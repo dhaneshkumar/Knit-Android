@@ -159,7 +159,18 @@ public class Outbox extends Fragment {
                     }
 
                     try {
-                        groupDetails = query.getExtraLocalOutbox(groupDetails);
+                        List<ParseObject> extraMsgs = query.getExtraLocalOutbox(groupDetails);
+                        if (extraMsgs == null || extraMsgs.size() == 0) {
+                            totalOutboxMessages = totalItemCount; //safe guard, when #total pinned > #total shown
+                        }
+                        else{
+                            if(groupDetails != null) {
+                                groupDetails.addAll(extraMsgs);
+                            }
+                            else{
+                                groupDetails = extraMsgs;
+                            }
+                        }
                         myadapter.notifyDataSetChanged();
                     } catch (ParseException e) {
                     }
@@ -637,15 +648,14 @@ public class Outbox extends Fragment {
                             // Have to download image from server
                             final ParseFile imagefile = msgObject.getParseFile("attachment");
 
-                            if(imagefile != null) {
+                            if (imagefile != null) {
                                 imagefile.getDataInBackground(new GetDataCallback() {
                                     public void done(byte[] data, ParseException e) {
                                         if (e == null) {
-                                            if(isFileAnImage) {
+                                            if (isFileAnImage) {
                                                 ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), rb.onImageSuccessRunnable);
                                                 writeLoadAndShowTask.execute();
-                                            }
-                                            else{
+                                            } else {
                                                 ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), rb.onFileSuccessRunnable);
                                                 writeDocTask.execute();
                                             }
