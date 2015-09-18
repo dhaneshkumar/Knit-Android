@@ -149,7 +149,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
   private void takePDF(){
     Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
     //intent.setType("*/*");
-    intent.setType("application/*");
+    intent.setType("*/*");
     //intent.putExtra(Intent.EXTRA_MIME_TYPES, acceptableMimeTypes);
     intent.addCategory(Intent.CATEGORY_OPENABLE); //openable
     intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true); //local files only
@@ -214,7 +214,10 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         case Activity.RESULT_OK:
           Uri fileUri = intent.getData();
 
-          String realFileName = Utility.getFileNameFromUri(fileUri);
+          Utility.FileDetails fileDetails = Utility.getFileNameFromUri(fileUri);
+          String realFileName = fileDetails.fName;
+          long realFileSize = fileDetails.fSize;
+
           String extension = null;
           String pdfName = null;
           if(realFileName != null){
@@ -226,13 +229,28 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
           }
 
           Log.d("__file_picker", "onActivityResult realFileName=" + realFileName + ", extension=" + extension);
+
+
+          Log.d("__file_picker", "onActivityResult realFileSize=" + realFileSize);
+          boolean isSizeUnderLimit = true;
+
+          if(realFileSize > 10 * 1024 * 1024){//more than 10 MB
+            //Utility.toast("attachment size limit is 10 MB");
+            isSizeUnderLimit = false;
+          }
+
           ParseUser currentParseUser = ParseUser.getCurrentUser();
           if(currentParseUser == null){
             Utility.LogoutUtility.logout();
-            return;
+            break;
           }
 
-          new SaveFile(fileUri, extension, pdfName, currentParseUser).execute();
+          if(isSizeUnderLimit) {
+            new SaveFile(fileUri, extension, pdfName, currentParseUser).execute();
+          }
+          else{
+            new SaveFile(null, extension, pdfName, currentParseUser).execute(); //explicitly pass null uri as flag that file size exceed
+          }
           break;
         case Activity.RESULT_CANCELED:
           Log.d("__file_picker", "onActivityResult cancelled");
@@ -243,8 +261,10 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
   }
 
   public interface CommunicatorInterface {
+    public static final int ALL_OK = 0;
+    public static final int SIZE_LIMIT_EXCEED = 1;
     void sendImagePic(String imgname);
-    void sendDocument(String documentName);
+    void sendDocument(String documentName, int flag);
   }
 
   /**
@@ -347,16 +367,22 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     private String pdfName;
     private String storagePath;
     private ParseUser currentParseUser;
+    int resultFlag;
 
     SaveFile(Uri uri, String extension, String pdfName, ParseUser currentParseUser) {
       this.uri = uri;
       this.extension = extension;
       this.pdfName = pdfName;
       this.currentParseUser = currentParseUser; //ensure that it won't be null
+      this.resultFlag = CommunicatorInterface.ALL_OK; //default hope
     }
 
     @Override
     protected Void doInBackground(Void... params) {
+      if(uri == null){
+        this.resultFlag = CommunicatorInterface.SIZE_LIMIT_EXCEED;
+        return null;
+      }
 
       boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
 
@@ -382,7 +408,6 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
       if (parcelFileDescriptor != null) {
         FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-
         if (fileDescriptor != null) {
           InputStream inputStream = new FileInputStream(fileDescriptor);
           BufferedInputStream reader = new BufferedInputStream(inputStream);
@@ -418,7 +443,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     protected void onPostExecute(Void res) {
       Log.d("__file_picker", "SaveFile : onPostExecute");
 
-      activity.sendDocument(parseFileName);
+      activity.sendDocument(parseFileName, resultFlag);
     }
   }
 

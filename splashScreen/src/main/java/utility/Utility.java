@@ -505,27 +505,36 @@ public class Utility{
         return Environment.getExternalStorageDirectory() + "/" + appName;
     }
 
-    public static String getFileNameFromUri(Uri uri) {
-        String result = null;
+    public static class FileDetails{
+        public String fName;
+        public long fSize;
+    }
+
+    public static FileDetails getFileNameFromUri(Uri uri) {
+        FileDetails details = new FileDetails();
+        details.fName = null;
+        details.fSize = -1;
+
         if (uri.getScheme().equals("content")) {
             Cursor cursor = Application.getAppContext().getContentResolver().query(uri, null, null, null, null);
             try {
                 if (cursor != null && cursor.moveToFirst()) {
-                    result = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    details.fName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    details.fSize = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
                 }
             } finally {
                 cursor.close();
             }
         }
 
-        if (result == null) {
-            result = uri.getPath();
-            int cut = result.lastIndexOf('/');
+        if (details.fName == null) {
+            details.fName = uri.getPath();
+            int cut = details.fName.lastIndexOf('/');
             if (cut != -1) {
-                result = result.substring(cut + 1);
+                details.fName = details.fName.substring(cut + 1);
             }
         }
-        return result;
+        return details;
     }
 
     /*

@@ -446,15 +446,20 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     }
 
     @Override
-    public void sendDocument(String documentName) {
+    public void sendDocument(String documentName, int flag) {
+        if(flag == ChooserDialog.CommunicatorInterface.ALL_OK) {
+            // The image was brought into the App folder hence only name was passed
+            ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
+            ComposeMessage.sendimgpreview.setTag(Utility.getFileLocationInAppFolder(documentName));
 
-        // The image was brought into the App folder hence only name was passed
-        ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
-        ComposeMessage.sendimgpreview.setTag(Utility.getFileLocationInAppFolder(documentName));
-
-        sendimgview.setImageResource(R.drawable.general_file_icon);
-        attachmentNameTV.setText(documentName);
-        attachmentNameTV.setVisibility(View.VISIBLE);
+            sendimgview.setImageResource(R.drawable.general_file_icon);
+            attachmentNameTV.setText(documentName);
+            attachmentNameTV.setVisibility(View.VISIBLE);
+        }
+        else{
+            ComposeMessage.sendimgpreview.setVisibility(View.GONE);
+            Utility.toast("attachment size limited to 10 MB");
+        }
     }
 
     @Override
