@@ -18,11 +18,17 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import utility.Utility;
+
 /**
  * Created by ashish on 7/9/15.
  */
 public class SchoolUtils {
     public static ArrayList<String> areaAutoComplete(String input) {
+        if(!Utility.isInternetExistWithoutPopup()){
+            return null;
+        }
+
         ArrayList<String> locationList = new ArrayList<>();
         HashMap<String, String> parameters = new HashMap<>();
 
@@ -39,6 +45,10 @@ public class SchoolUtils {
     }
 
     public static ArrayList<SchoolItem> schoolsNearby(String input) {
+        if(!Utility.isInternetExistWithoutPopup()){
+            return null;
+        }
+
         ArrayList<SchoolItem> resultList = new ArrayList<>();
         HashMap<String, String> parameters = new HashMap<>();
 

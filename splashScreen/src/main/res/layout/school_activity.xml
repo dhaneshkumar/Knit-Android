@@ -46,17 +46,39 @@
         android:visibility="gone"/>
 
     <ImageView
+        android:id="@+id/powered_by_google"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/schoolSV"
         android:layout_alignParentRight="true"
         android:src="@drawable/powered_by_google_light" />
 
-    <TextView
-        android:id="@+id/selectedSchool"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:id="@+id/schoolHolder"
+        android:layout_width="match_parent"
+        android:layout_below="@+id/powered_by_google"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:paddingTop="20dp"
+        android:orientation="vertical">
+        <TextView
+            android:id="@+id/selectedSchoolTV"
+            android:textSize="17dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingBottom="10dp"
+            android:textColor="@color/com_facebook_blue"/>
+        <Button
+            android:id="@+id/updateSchoolButton"
+            android:layout_width="wrap_content"
+            android:padding="7dp"
+            android:minHeight="0dp"
+            android:minWidth="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/buttoncolor"
+            android:layout_gravity="right"
+            android:text="Done"/>
+    </LinearLayout>
 
     <ListView
         android:id="@+id/locLV"

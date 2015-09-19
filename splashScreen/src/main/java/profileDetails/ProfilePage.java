@@ -64,6 +64,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     private ImageView profileimgview;
     private TextView name_textView;
     private TextView phone_textView;
+    private LinearLayout schoolHolder;
+    public static TextView schoolNameTV;
+
     private String userId;
     private String filePath;
     private String name;
@@ -101,6 +104,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         phone_textView = (TextView) findViewById(R.id.phone);
         profileimgview = (ImageView) findViewById(R.id.profileimg);
 
+        schoolHolder = (LinearLayout) findViewById(R.id.schoolHolder);
+        schoolNameTV = (TextView) findViewById(R.id.schoolName);
+
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView account = (TextView) findViewById(R.id.account);
         TextView about = (TextView) findViewById(R.id.about);
@@ -127,6 +133,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             return;
         }
 
+        Log.d("__school", "user's school place_id=" + currentParseUser.getString("place_id"));
+        Log.d("__school", "user's school place_name=" + currentParseUser.getString("place_name"));
+
         buildGoogleApiClient();
 
         userId = currentParseUser.getUsername();
@@ -149,6 +158,28 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             }
         }
 
+        /*
+            show hide school
+         */
+        String role = currentParseUser.getString("role");
+        if(role != null && role.equals(Constants.TEACHER)){
+            schoolHolder.setVisibility(View.VISIBLE);
+            if(!UtilString.isBlank(currentParseUser.getString("place_id"))
+                    && !UtilString.isBlank(currentParseUser.getString("place_name"))){
+                schoolNameTV.setText(currentParseUser.getString("place_name"));
+            }
+
+            schoolHolder.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ProfilePage.this, SchoolActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+        else{
+            schoolHolder.setVisibility(View.GONE);
+        }
 
     /*
      * set Profile Pic.

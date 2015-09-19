@@ -144,17 +144,30 @@ public class Utility{
 
 
     public static void toast(String str){
-        toast(str, false); //by default user shouldn't be null while showing toast
+        toast(str, false, 17, false); //by default user shouldn't be null while showing toast
+    }
+
+    public static void toast(String str, int fontSize){
+        toast(str, false, fontSize, false);
+    }
+
+    public static void toastDialog(String str){
+        toast(str, false, 17, true); //when shown in dialog, activity is paused
     }
 
     public static void toast(String str, boolean isNullUserOK) {
-        toast(str, isNullUserOK, 17);
+        toast(str, isNullUserOK, 17, false);
     }
+
+    public static void toast(String str, boolean isNullUserOK, int fontSize) {
+        toast(str, isNullUserOK, fontSize, false);
+    }
+
     /*
         @param str Content to show as toast
         @param isNullUserOK whether while showing this toast, null user is acceptable e.g during signup/login process
      */
-    public static void toast(String str, boolean isNullUserOK, int fontSize) {
+    public static void toast(String str, boolean isNullUserOK, int fontSize, boolean isNullActivityOK) {
 
         if(ParseUser.getCurrentUser() == null && !isNullUserOK){
             if(Config.SHOWLOG) Log.d("__A", "toast : parseUser null, hence ignoring content=" + str);
@@ -162,7 +175,7 @@ public class Utility{
         }
 
         //see if app is visible, i.e current activity not null
-        if(Application.getCurrentActivity() == null){
+        if(Application.getCurrentActivity() == null && !isNullActivityOK){
             if(Config.SHOWLOG) Log.d("__A", "toast : app not visible, hence ignoring content=" + str);
             return;
         }

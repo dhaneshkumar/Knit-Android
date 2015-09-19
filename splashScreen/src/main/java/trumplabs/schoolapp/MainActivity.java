@@ -56,8 +56,10 @@ import baseclasses.MyActionBarActivity;
 import fr.castorflex.android.smoothprogressbar.SmoothProgressBar;
 import joinclasses.JoinClassDialog;
 import joinclasses.JoinClassesContainer;
+import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
+import school.SchoolInputDialog;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
 import utility.Config;
@@ -440,6 +442,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             isEventCheckerAlarmTriggered = true;
         }
 
+        boolean somethingshown = false;
         //show recommend app dialog
         if(appOpeningCount == 6 || appOpeningCount == 21) {
 
@@ -448,6 +451,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             spreadWordDialog.show(fm, "recommend app");
 
             sessionManager.setAppOpeningCount();
+            somethingshown = true;
         }
 
         //show rate app dialog after using 10 times app
@@ -456,6 +460,36 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
                 FragmentManager fm = getSupportFragmentManager();
                 RateAppDialog rateAppDialog = new RateAppDialog();
                 rateAppDialog.show(fm, "rate app");
+                somethingshown = true;
+                sessionManager.setAppOpeningCount(); //not show again if MainActivity is recreated
+            }
+        }
+
+        //If SCHOOL_INPUT_BASE_COUNT not yet set(in case app is updated and opened for first time)
+        if(sessionManager.getInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT) < 0){
+            sessionManager.setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, appOpeningCount);
+            sessionManager.setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+            Log.d("__school", "setting school_input_base_count to " + appOpeningCount);
+        }
+
+        if(!somethingshown && role.equals(Constants.TEACHER) && UtilString.isBlank(user.getString("place_id"))) {
+            int baseCount = sessionManager.getInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT);
+            int showCount = sessionManager.getInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT);
+            int diff = appOpeningCount - baseCount;
+            if(diff > 3 && showCount < 3){//show 3 times, every 4th time
+                Log.d("__school", "showing appOpeningCount=" + appOpeningCount + ", baseCount=" + baseCount + ", showCount=" + showCount);
+                //show the dialog
+                FragmentManager fm = getSupportFragmentManager();
+                SchoolInputDialog schoolInputDialog = new SchoolInputDialog();
+                schoolInputDialog.show(fm, "school info");
+                somethingshown = true;
+
+                sessionManager.setAppOpeningCount(); //not show again if MainActivity is recreated
+                sessionManager.setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, appOpeningCount + 1);
+                sessionManager.setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, showCount + 1);
+            }
+            else{
+                Log.d("__school", "NOT showing appOpeningCount=" + appOpeningCount + ", baseCount=" + baseCount + ", showCount=" + showCount);
             }
         }
 

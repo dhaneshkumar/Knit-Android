@@ -162,4 +162,18 @@ public class TestingUtililty {
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.getAppContext().startActivity(i);
     }
+
+    public static void resetSchoolInputCase(){
+        if(!BuildConfig.DEBUG){
+            return;
+        }
+        SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
+        SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if(currentUser != null){
+            currentUser.remove("place_id");
+            currentUser.remove("place_name");
+            currentUser.pinInBackground();
+        }
+    }
 }

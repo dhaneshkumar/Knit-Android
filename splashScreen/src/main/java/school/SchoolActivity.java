@@ -1,6 +1,6 @@
 package school;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -10,18 +10,29 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.Filter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.parse.FunctionCallback;
+import com.parse.ParseCloud;
+import com.parse.ParseException;
+import com.parse.ParseUser;
+
+import org.slf4j.helpers.Util;
+
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import baseclasses.MyActionBarActivity;
+import profileDetails.ProfilePage;
 import trumplab.textslate.R;
-import utility.TestingUtililty;
 import utility.Tools;
 import utility.Utility;
 
@@ -43,6 +54,13 @@ public class SchoolActivity extends MyActionBarActivity{
     ProgressBar loadingSchoolsPB;
 
     TextView selectedSchoolTV;
+    LinearLayout schoolHolderLL;
+    Button updateSchoolButton;
+
+    String selectedSchoolName;
+    String selectedSchoolPlaceId;
+
+    ProgressDialog pdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,7 +88,7 @@ public class SchoolActivity extends MyActionBarActivity{
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Tools.hideKeyboard(SchoolActivity.this);
                 final String value = (String) locAdapter.getItem(position);
-                Utility.toast(locAdapter.getStringDescription(position));
+                //Utility.toast(locAdapter.getStringDescription(position), 15);
 
                 hideSchoolHolder();
 
@@ -95,7 +113,11 @@ public class SchoolActivity extends MyActionBarActivity{
 
                         if (error) {
                             Utility.toast("Error fetching schools...");
-                        } else {
+                        }
+                        else if(schools.size() == 0) {
+                            Utility.toast("No results to display");
+                        }
+                        else{
                             schoolAdapter.setOriginalItemList(schools);
                             schoolSV.setQuery("", false);
                             schoolSV.setVisibility(View.VISIBLE); //finally show school list box
@@ -129,14 +151,71 @@ public class SchoolActivity extends MyActionBarActivity{
         schoolSV.setListItemOnClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Utility.toast(schoolAdapter.getStringDescription(position));
-                selectedSchoolTV.setText("You selected : " + schoolAdapter.getStringDescription(position) +
-                        " with id=" + ((SchoolUtils.SchoolItem) schoolAdapter.getItem(position)).placeId);
+                //Utility.toast(schoolAdapter.getStringDescription(position), 15);
+                selectedSchoolTV.setText("You selected :\n" + schoolAdapter.getStringDescription(position));
+                selectedSchoolName = schoolAdapter.getStringDescription(position);
+                selectedSchoolPlaceId = ((SchoolUtils.SchoolItem) schoolAdapter.getItem(position)).placeId;
+
+                schoolHolderLL.setVisibility(View.VISIBLE);
                 Tools.hideKeyboard(SchoolActivity.this);
             }
         });
 
-        selectedSchoolTV = (TextView) findViewById(R.id.selectedSchool);
+        selectedSchoolTV = (TextView) findViewById(R.id.selectedSchoolTV);
+        schoolHolderLL = (LinearLayout) findViewById(R.id.schoolHolder);
+        updateSchoolButton = (Button) findViewById(R.id.updateSchoolButton);
+        updateSchoolButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(!Utility.isInternetExistWithoutPopup()){
+                    Utility.toast("No Internet Connection", false, 17, true);
+                    return;
+                }
+
+                pdialog = new ProgressDialog(SchoolActivity.this);
+                pdialog.setCancelable(false);
+                pdialog.setCanceledOnTouchOutside(false);
+                pdialog.setMessage("Updating school...");
+                pdialog.show();
+
+                Map<String, String> params = new HashMap<>();
+                params.put("place_id", selectedSchoolPlaceId);
+                ParseCloud.callFunctionInBackground("updateSchoolId", params, new FunctionCallback<Boolean>() {
+                    @Override
+                    public void done(Boolean result, ParseException e) {
+                        if(pdialog != null){
+                            pdialog.dismiss();
+                            pdialog = null;
+                        }
+
+                        if (e == null && result) {
+                            ParseUser currentUser = ParseUser.getCurrentUser();
+                            if(currentUser != null){
+                                currentUser.put("place_id", selectedSchoolPlaceId);
+                                currentUser.put("place_name", selectedSchoolName);
+                                currentUser.pinInBackground();
+                                Utility.toast("School updated !");
+                                if(ProfilePage.schoolNameTV != null){
+                                    ProfilePage.schoolNameTV.setText(selectedSchoolName);
+                                }
+                            }
+                            else{
+                                Utility.LogoutUtility.logout();
+                            }
+
+                            if(SchoolActivity.this != null){
+                                SchoolActivity.this.finish();
+                            }
+                        }
+                        else {
+                            if(!Utility.LogoutUtility.checkAndHandleInvalidSession(e)) {
+                                Utility.toast("School update failed ! Try again");
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
 
     void hideSchoolHolder(){
@@ -220,7 +299,10 @@ public class SchoolActivity extends MyActionBarActivity{
                         return;
                     }
 
-                    if (results != null && results.count > 0) {
+                    if (results != null && results.count >= 0) {
+                        if(results.count == 0){
+                            Utility.toast("No results to display");
+                        }
                         itemList = tempItemList;
                         Log.d(LOGTAG, "loc results.count=" + results.count);
                         notifyDataSetChanged();

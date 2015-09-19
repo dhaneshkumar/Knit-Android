@@ -42,6 +42,7 @@ import trumplabs.schoolapp.Messages;
 import trumplabs.schoolapp.Outbox;
 import utility.Config;
 import utility.SessionManager;
+import utility.TestingUtililty;
 import utility.Tools;
 import utility.Utility;
 
@@ -308,7 +309,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                         if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "parseuser become calling " + ParseUser.getCurrentUser());
                         ParseUser user = ParseUser.become(sessionToken);
                         if (user != null) {
-                            if(Config.SHOWLOG) Log.d("__A", "setting ignoreInvalidSessionCheck to false");
+                            //if(Config.SHOWLOG) Log.d("__A", "setting ignoreInvalidSessionCheck to false " + Utility.parseObjectToJson(user));
                             Utility.LogoutUtility.resetIgnoreInvalidSessionCheck();
 
                             if(Config.SHOWLOG) Log.d("D_SIGNUP_VERIF", "parseuser become - returned user correct with given token=" + sessionToken +", currentsessiontoken=" + user.getSessionToken());
@@ -439,7 +440,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
         protected Void doInBackground(Void... params) {
             Utility.updateCurrentTime();
-
+            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
+            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
             return null;
         }
 
@@ -478,6 +480,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         protected Void doInBackground(Void... params) {
 
             Utility.updateCurrentTime();
+            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
+            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
 
             //set inbox fetch flag. We dont need to fetch old messages in this account
             if(currentParseUser != null) {
