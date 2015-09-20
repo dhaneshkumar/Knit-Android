@@ -173,6 +173,7 @@ public class TestingUtililty {
         if(currentUser != null){
             currentUser.remove("place_id");
             currentUser.remove("place_name");
+            currentUser.remove("place_area");
             currentUser.pinInBackground();
         }
     }

@@ -442,6 +442,12 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             Utility.updateCurrentTime();
             SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
             SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+
+            if(user != null) {
+                user.remove("place_name");
+                user.remove("place_area");
+                user.pinInBackground();
+            }
             return null;
         }
 
@@ -486,6 +492,9 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             //set inbox fetch flag. We dont need to fetch old messages in this account
             if(currentParseUser != null) {
                 SessionManager.getInstance().setBooleanValue(currentParseUser.getUsername() + Constants.SharedPrefsKeys.SERVER_INBOX_FETCHED, true);
+                currentParseUser.remove("place_name");
+                currentParseUser.remove("place_area");
+                currentParseUser.pinInBackground();
             }
 
             return null;

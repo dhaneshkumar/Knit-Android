@@ -59,6 +59,7 @@ public class SchoolActivity extends MyActionBarActivity{
 
     String selectedSchoolName;
     String selectedSchoolPlaceId;
+    String selectedSchoolArea;
 
     ProgressDialog pdialog;
 
@@ -153,7 +154,9 @@ public class SchoolActivity extends MyActionBarActivity{
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //Utility.toast(schoolAdapter.getStringDescription(position), 15);
                 selectedSchoolTV.setText("You selected :\n" + schoolAdapter.getStringDescription(position));
-                selectedSchoolName = schoolAdapter.getStringDescription(position);
+
+                selectedSchoolName = ((SchoolUtils.SchoolItem) schoolAdapter.getItem(position)).name;
+                selectedSchoolArea = ((SchoolUtils.SchoolItem) schoolAdapter.getItem(position)).area;
                 selectedSchoolPlaceId = ((SchoolUtils.SchoolItem) schoolAdapter.getItem(position)).placeId;
 
                 schoolHolderLL.setVisibility(View.VISIBLE);
@@ -193,10 +196,11 @@ public class SchoolActivity extends MyActionBarActivity{
                             if(currentUser != null){
                                 currentUser.put("place_id", selectedSchoolPlaceId);
                                 currentUser.put("place_name", selectedSchoolName);
+                                currentUser.put("place_area", selectedSchoolArea);
                                 currentUser.pinInBackground();
                                 Utility.toast("School updated !");
                                 if(ProfilePage.schoolNameTV != null){
-                                    ProfilePage.schoolNameTV.setText(selectedSchoolName);
+                                    ProfilePage.schoolNameTV.setText(selectedSchoolName + "\n" + selectedSchoolArea);
                                 }
                             }
                             else{
@@ -345,6 +349,9 @@ public class SchoolActivity extends MyActionBarActivity{
 
         @Override
         public Object getItem(int index) {
+            if(index < 0 || index >= itemList.size()){
+                return new SchoolUtils.SchoolItem("unknown", "unknown", "unknown");
+            }
             return itemList.get(index);
         }
 

@@ -2,8 +2,10 @@ package school;
 
 import android.util.Log;
 
+import com.parse.FunctionCallback;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseUser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -18,6 +20,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import library.UtilString;
 import utility.Utility;
 
 /**
@@ -85,5 +88,49 @@ public class SchoolUtils {
             this.area = area;
             this.placeId = placeId;
         }
+    }
+
+    //fetch details of placeId and store in currentUser
+    public static void fetchSchoolInfoFromIdIfRequired(final ParseUser currentUser) {
+        if(currentUser == null || !Utility.isInternetExistWithoutPopup()){
+            return;
+        }
+
+        String placeId = currentUser.getString("place_id");
+        String placeName = currentUser.getString("place_name");
+        String placeArea = currentUser.getString("place_area");
+
+        if(UtilString.isBlank(placeId)){
+            Log.d("__school", "fetchSchoolInfo place_id null");
+            return;
+        }
+
+        //if place name and area not null, no need to do anything
+        if(!UtilString.isBlank(placeName) && !UtilString.isBlank(placeArea)){
+            Log.d("__school", "fetchSchoolInfo place_name and place_area already present");
+            return;
+        }
+
+        HashMap<String, String> parameters = new HashMap<>();
+
+        parameters.put("place_id", placeId);
+        Log.d("__school_utils", "calling placeInfo() with " + placeId);
+        ParseCloud.callFunctionInBackground("getSchoolDetail", parameters, new FunctionCallback<Object>() {
+            @Override
+            public void done(Object response, ParseException e) {
+                if (e == null && response != null && response instanceof ArrayList){
+                    ArrayList<String> result = (ArrayList<String>) response;
+                    if(result.size() >= 2 && !UtilString.isBlank(result.get(0)) && !UtilString.isBlank(result.get(1))){
+                        currentUser.put("place_name", result.get(0));
+                        currentUser.put("place_area", result.get(1));
+                        currentUser.pinInBackground();
+                        Log.d("__school", "fetchSchoolInfo success " + currentUser.getString("place_name") + ", " + currentUser.getString("place_area"));
+                    }
+                }
+                else{
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 }

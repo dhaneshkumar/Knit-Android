@@ -7,6 +7,7 @@ import com.parse.ParseUser;
 import java.util.Calendar;
 import java.util.Date;
 
+import school.SchoolUtils;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.Outbox;
@@ -111,6 +112,8 @@ public class Refresher {
         else{
             if(Config.SHOWLOG) Log.d(LOGTAG, "local Codegroup data intact. No need to fetch anything");
         }
+
+        SchoolUtils.fetchSchoolInfoFromIdIfRequired(freshUser);
 
         //Send all pending invites
         InviteTasks.sendAllPendingInvites();

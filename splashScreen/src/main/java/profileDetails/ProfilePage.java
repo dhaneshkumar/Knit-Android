@@ -135,6 +135,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         Log.d("__school", "user's school place_id=" + currentParseUser.getString("place_id"));
         Log.d("__school", "user's school place_name=" + currentParseUser.getString("place_name"));
+        Log.d("__school", "user's school place_area=" + currentParseUser.getString("place_area"));
 
         buildGoogleApiClient();
 
@@ -165,8 +166,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         if(role != null && role.equals(Constants.TEACHER)){
             schoolHolder.setVisibility(View.VISIBLE);
             if(!UtilString.isBlank(currentParseUser.getString("place_id"))
-                    && !UtilString.isBlank(currentParseUser.getString("place_name"))){
-                schoolNameTV.setText(currentParseUser.getString("place_name"));
+                    && !UtilString.isBlank(currentParseUser.getString("place_name"))
+                    && !UtilString.isBlank(currentParseUser.getString("place_area"))){
+                schoolNameTV.setText(currentParseUser.getString("place_name") + "\n" + currentParseUser.getString("place_area"));
             }
 
             schoolHolder.setOnClickListener(new OnClickListener() {
