@@ -266,7 +266,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                 }
                 catch (ActivityNotFoundException e){
                     String extension = Utility.getExtension(tag);
-                    Utility.toast("No app installed to open file type " + extension);
+                    Utility.toast("No app installed to open file type " + extension, 15);
                     e.printStackTrace();
                 }
             }
@@ -454,7 +454,8 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
             ComposeMessage.sendimgpreview.setTag(Utility.getFileLocationInAppFolder(documentName));
 
-            sendimgview.setImageResource(R.drawable.attachment_icon_word);
+            int resId = Utility.getComposeIconResource(documentName);
+            sendimgview.setImageResource(resId);
             attachmentNameTV.setText(documentName);
             attachmentNameTV.setVisibility(View.VISIBLE);
         }
@@ -463,6 +464,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             Utility.toast("attachment size limited to 10 MB");
         }
     }
+
 
     @Override
     public void onBackPressed() {

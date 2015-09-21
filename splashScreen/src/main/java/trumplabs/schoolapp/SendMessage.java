@@ -633,7 +633,7 @@ public class SendMessage extends MyActionBarActivity  {
                         }
                         catch (ActivityNotFoundException e){
                             String extension = Utility.getExtension(imageName);
-                            Utility.toast("No app installed to open file type " + extension);
+                            Utility.toast("No app installed to open file type " + extension, 15);
                             e.printStackTrace();
                         }
                     }
@@ -671,26 +671,15 @@ public class SendMessage extends MyActionBarActivity  {
                         attachmentNameTV.setVisibility(View.VISIBLE);
                         faildownload.setVisibility(View.GONE);
 
+                        int resId = Utility.getMessageIconResource(imageName);
+                        imgmsgview.setImageResource(resId);
+
                         imgframelayout.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
                                 rb.openRunnable.run();
                             }
                         });
-                    }
-                };
-
-
-                final Runnable onFileSuccessRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        if(! Utility.isTagSame(imgmsgview, imgFile.getAbsolutePath())){
-                            Log.d("__sleep", "onFileSuccessRunnable skip different tag " + imageName);
-                            return;
-                        }
-                        uploadprogressbar.setVisibility(View.GONE);
-                        attachmentNameTV.setText(imageName);
-                        attachmentNameTV.setVisibility(View.VISIBLE);
                     }
                 };
 
@@ -738,7 +727,6 @@ public class SendMessage extends MyActionBarActivity  {
                             else{
                                 Log.d("__file_picker", "m) exists " + imageName);
                                 //set file icon and run onSuccessRunnable
-                                imgmsgview.setImageResource(R.drawable.general_file_icon);
                                 rb.onFileSuccessRunnable.run();
                             }
                         } else if(Utility.isInternetExistWithoutPopup()) {

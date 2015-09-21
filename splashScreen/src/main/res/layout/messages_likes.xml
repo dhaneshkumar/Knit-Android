@@ -86,11 +86,9 @@
 
         <FrameLayout
             android:id="@+id/imagefrmlayout"
+            android:background="@drawable/imageview_shadow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/msg_margin_bottom"
-            android:layout_marginBottom="@dimen/msg_margin_bottom"
-            android:paddingRight="12dp"
             android:visibility="gone">
 
             <LinearLayout
@@ -105,7 +103,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:src="@drawable/pdf"
+                    android:src="@drawable/message_icon_pdf"
                     android:scaleType="fitXY" />
 
                 <TextView
@@ -119,6 +117,8 @@
                     android:maxLines="1"
                     android:ellipsize="middle"
                     android:singleLine="true"
+                    android:paddingRight="12dp"
+                    android:paddingLeft="12dp"
                     android:visibility="visible"/>
             </LinearLayout>
 

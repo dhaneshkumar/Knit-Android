@@ -98,8 +98,8 @@
 
         <LinearLayout
             android:id="@+id/progressBarLayout"
-            android:layout_width="112dp"
-            android:layout_height="112dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginLeft="16dp"
             android:gravity="center"
             android:background="@color/lightbackgroundcolor"
@@ -116,14 +116,14 @@
         <RelativeLayout
             android:id="@+id/imgpreview"
             android:layout_width="wrap_content"
-            android:layout_height="112dp"
+            android:layout_height="120dp"
             android:layout_margin="16dp"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/attachedimg"
-                android:layout_width="112dp"
-                android:layout_height="112dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
                 android:src="@drawable/attachment_icon_word"
                 android:background="@drawable/imageview_shadow">
             </ImageView>
@@ -138,7 +138,7 @@
                 />
             <TextView
                 android:id="@+id/attachment_name"
-                android:layout_width="112dp"
+                android:layout_width="120dp"
                 android:layout_height="wrap_content"
                 android:text="sample_application_pdf_USERID_TIMESTAMP.pdf"
                 android:textColor="@color/white"

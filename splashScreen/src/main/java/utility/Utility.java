@@ -63,6 +63,7 @@ import library.UtilString;
 import loginpages.Signup;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
+import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
 
@@ -594,6 +595,78 @@ public class Utility{
             }
         }
         return null;
+    }
+
+    public static HashMap<String, Integer> extensionToMessageIcon;
+    static {
+        extensionToMessageIcon = new HashMap<>();
+        extensionToMessageIcon.put("doc", R.drawable.message_icon_word);
+        extensionToMessageIcon.put("docx", R.drawable.message_icon_word);
+        extensionToMessageIcon.put("ppt", R.drawable.message_icon_ppt);
+        extensionToMessageIcon.put("pptx", R.drawable.message_icon_ppt);
+        extensionToMessageIcon.put("xls", R.drawable.message_icon_xls);
+        extensionToMessageIcon.put("xlsx", R.drawable.message_icon_xls);
+        extensionToMessageIcon.put("pdf", R.drawable.message_icon_pdf);
+    }
+
+    public static int getMessageIconResource(String documentName){
+        if(documentName != null && Utility.getExtension(documentName) != null){
+            //check for std document types e.g word, ppt, excel, pdf
+            String extension = Utility.getExtension(documentName).toLowerCase();
+            Integer resId = extensionToMessageIcon.get(extension);
+            if(resId != null){
+                return resId;
+            }
+
+            //check for audio/video using mimetype
+            String mimeType = getMimeType(documentName);
+            if(mimeType != null){
+                mimeType = mimeType.toLowerCase();
+                if(mimeType.contains("audio")){
+                    return R.drawable.message_icon_audio;
+                }
+                else if(mimeType.contains("video")){
+                    return R.drawable.message_icon_video;
+                }
+            }
+        }
+        return R.drawable.message_icon_general;
+    }
+
+    public static HashMap<String, Integer> extensionToComposeIcon;
+    static {
+        extensionToComposeIcon = new HashMap<>();
+        extensionToComposeIcon.put("doc", R.drawable.attachment_icon_word);
+        extensionToComposeIcon.put("docx", R.drawable.attachment_icon_word);
+        extensionToComposeIcon.put("ppt", R.drawable.attachment_icon_ppt);
+        extensionToComposeIcon.put("pptx", R.drawable.attachment_icon_ppt);
+        extensionToComposeIcon.put("xls", R.drawable.attachment_icon_xls);
+        extensionToComposeIcon.put("xlsx", R.drawable.attachment_icon_xls);
+        extensionToComposeIcon.put("pdf", R.drawable.attachment_icon_pdf);
+    }
+
+    public static int getComposeIconResource(String documentName){
+        if(documentName != null && Utility.getExtension(documentName) != null){
+            //check for std document types e.g word, ppt, excel, pdf
+            String extension = Utility.getExtension(documentName).toLowerCase();
+            Integer resId = extensionToComposeIcon.get(extension);
+            if(resId != null){
+                return resId;
+            }
+
+            //check for audio/video using mimetype
+            String mimeType = getMimeType(documentName);
+            if(mimeType != null){
+                mimeType = mimeType.toLowerCase();
+                if(mimeType.contains("audio")){
+                    return R.drawable.attachment_icon_audio;
+                }
+                else if(mimeType.contains("video")){
+                    return R.drawable.attachment_icon_video;
+                }
+            }
+        }
+        return R.drawable.attachment_icon_general;
     }
 
     public static String getMimeType(String fileName){

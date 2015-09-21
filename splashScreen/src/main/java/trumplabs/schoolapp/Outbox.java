@@ -547,7 +547,7 @@ public class Outbox extends Fragment {
                         }
                         catch (ActivityNotFoundException e){
                             String extension = Utility.getExtension(imageName);
-                            Utility.toast("No app installed to open file type " + extension);
+                            Utility.toast("No app installed to open file type " + extension, 15);
                             e.printStackTrace();
                         }
                     }
@@ -585,6 +585,8 @@ public class Outbox extends Fragment {
                         holder.attachmentNameTV.setVisibility(View.VISIBLE);
                         holder.faildownload.setVisibility(View.GONE);
 
+                        int resId = Utility.getMessageIconResource(imageName);
+                        holder.imgmsgview.setImageResource(resId);
                         holder.imgframelayout.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -639,7 +641,6 @@ public class Outbox extends Fragment {
                             else{
                                 Log.d("__file_picker", "m) exists " + imageName);
                                 //set file icon and run onSuccessRunnable
-                                holder.imgmsgview.setImageResource(R.drawable.general_file_icon);
                                 rb.onFileSuccessRunnable.run();
                             }
                         } else if(Utility.isInternetExistWithoutPopup()) {

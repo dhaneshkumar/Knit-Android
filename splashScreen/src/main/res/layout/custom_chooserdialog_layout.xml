@@ -47,7 +47,7 @@
         android:background="@color/lightbackgroundcolor"/>
 	<LinearLayout 
 	    android:layout_width="match_parent"
-	    android:layout_height="48dp"
+	    android:layout_height="wrap_content"
 	    android:layout_marginLeft="16dp"
 	    android:layout_marginRight="16dp"
 	    android:layout_marginTop="4dp"
@@ -76,7 +76,7 @@
         android:background="@color/lightbackgroundcolor"/>
 	<LinearLayout
 		android:layout_width="match_parent"
-		android:layout_height="48dp"
+		android:layout_height="wrap_content"
 		android:layout_marginLeft="16dp"
 		android:layout_marginRight="16dp"
 		android:layout_marginTop="4dp"
@@ -88,7 +88,7 @@
 			android:layout_width="48dp"
 			android:layout_height="48dp"
 			android:layout_toRightOf="@+id/pdfclick"
-			android:background="@drawable/general_file_icon"/>
+			android:background="@drawable/message_icon_general"/>
 		<TextView
 			android:layout_width="0dp"
 			android:layout_height="match_parent"
