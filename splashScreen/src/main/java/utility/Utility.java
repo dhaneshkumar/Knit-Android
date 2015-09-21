@@ -771,6 +771,7 @@ public class Utility{
         return false;
     }
 
+    //Appsee not used
     public static String getAppseeId(){
         String appseeId = SessionManager.getInstance().getAppseeId();
         if(appseeId == null){
@@ -779,6 +780,7 @@ public class Utility{
         return appseeId;
     }
 
+    //Appsee not used
     public static void fetchAppseeIdIfNeeded(){
         Date appseeExpiry = SessionManager.getInstance().getDate(SessionManager.KEY_APPSEE_EXPIRY);
         if(appseeExpiry == null){

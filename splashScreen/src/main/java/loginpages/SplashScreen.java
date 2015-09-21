@@ -3,12 +3,10 @@ package loginpages;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.LinearLayout;
 
-import com.appsee.Appsee;
 import com.appsflyer.AppsFlyerLib;
 import com.parse.ParseAnalytics;
 import com.parse.ParseUser;
@@ -28,7 +26,6 @@ import trumplabs.schoolapp.FontsOverride;
 import trumplabs.schoolapp.MainActivity;
 import utility.Config;
 import utility.SessionManager;
-import utility.Utility;
 
 /**
  * Used to display splash screen on opening the app. It also start a background process to update
@@ -90,12 +87,12 @@ public class SplashScreen extends MyActionBarActivity {
         AppsFlyerLib.setAppsFlyerKey(Config.APPS_FLYER_ID);
         AppsFlyerLib.sendTracking(getApplicationContext());
 
-        String appseeId = Utility.getAppseeId();
-        Utility.fetchAppseeIdIfNeeded();
+        //String appseeId = Utility.getAppseeId();
+        //Utility.fetchAppseeIdIfNeeded();
 
-        Log.d("__appsee", "Appsee.start() with=" + appseeId);
+        //Log.d("__appsee", "Appsee.start() with=" + appseeId);
         //APPSEE measure
-        Appsee.start(appseeId);
+        //Appsee.start(appseeId);
 
     /*
      * Setting parse analytics
