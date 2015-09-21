@@ -608,33 +608,6 @@ public class SendMessage extends MyActionBarActivity  {
                 final File imgFile = new File(imageFilePath);
                 imgmsgview.setTag(imgFile.getAbsolutePath());
 
-                imgframelayout.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        try {
-                            if (isFileAnImage) {
-                                Intent imgintent = new Intent();
-                                imgintent.setAction(Intent.ACTION_VIEW);
-                                imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
-                                startActivity(imgintent);
-                            } else {
-                                //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
-                                //while opening, assume any type of file
-                                String mimeType = Utility.getMimeType(imageName); //non null return value
-                                Utility.toast(imageName + " with mime=" + mimeType, false, 15);
-                                File file = new File(imageFilePath);
-                                Intent intent = new Intent(Intent.ACTION_VIEW);
-                                intent.setDataAndType(Uri.fromFile(file), mimeType);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
-                                startActivity(intent);
-                            }
-                        } catch (ActivityNotFoundException e) {
-                            Utility.toast("No app installed to open file");
-                            e.printStackTrace();
-                        }
-                    }
-                });
-
                 final RunnableBundle rb = new RunnableBundle();
 
                 rb.openRunnable = new Runnable() {
@@ -650,7 +623,7 @@ public class SendMessage extends MyActionBarActivity  {
                                 //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
                                 //while opening, assume any type of file
                                 String mimeType = Utility.getMimeType(imageName); //non null return value
-                                Utility.toast(imageName + " with mime=" + mimeType, false, 15);
+                                //Utility.toast(imageName + " with mime=" + mimeType, false, 15);
                                 File file = new File(imageFilePath);
                                 Intent intent = new Intent(Intent.ACTION_VIEW);
                                 intent.setDataAndType(Uri.fromFile(file), mimeType);
@@ -659,7 +632,8 @@ public class SendMessage extends MyActionBarActivity  {
                             }
                         }
                         catch (ActivityNotFoundException e){
-                            Utility.toast("No app installed to open file");
+                            String extension = Utility.getExtension(imageName);
+                            Utility.toast("No app installed to open file type " + extension);
                             e.printStackTrace();
                         }
                     }

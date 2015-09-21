@@ -537,7 +537,7 @@ public class Outbox extends Fragment {
                                 //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
                                 //while opening, assume any type of file
                                 String mimeType = Utility.getMimeType(imageName); //non null return value
-                                Utility.toast(imageName + " with mime=" + mimeType, false, 15);
+                                //Utility.toast(imageName + " with mime=" + mimeType, false, 15);
                                 File file = new File(imageFilePath);
                                 Intent intent = new Intent(Intent.ACTION_VIEW);
                                 intent.setDataAndType(Uri.fromFile(file), mimeType);
@@ -546,7 +546,8 @@ public class Outbox extends Fragment {
                             }
                         }
                         catch (ActivityNotFoundException e){
-                            Utility.toast("No app installed to open file");
+                            String extension = Utility.getExtension(imageName);
+                            Utility.toast("No app installed to open file type " + extension);
                             e.printStackTrace();
                         }
                     }

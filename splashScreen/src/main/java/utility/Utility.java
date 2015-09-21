@@ -602,11 +602,6 @@ public class Utility{
             Log.d("__file_picker", "non null extension=" + extension);
             MimeTypeMap myMime = MimeTypeMap.getSingleton();
             String mimeType = myMime.getMimeTypeFromExtension(extension);
-            String[] exts = new String[]{"pdf", "doc", "xls", "ppt", "xml", "txt", "html", "csv"};
-            for(String e : exts){
-                Log.d("__file_picker_check", e + " " + myMime.getMimeTypeFromExtension(e));
-            }
-
             if(mimeType != null){
                 Log.d("__file_picker", "non null mimeType=" + mimeType);
                 return mimeType;

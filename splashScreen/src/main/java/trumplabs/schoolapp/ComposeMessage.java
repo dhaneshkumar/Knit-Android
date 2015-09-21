@@ -63,7 +63,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     private ImageView doneImageView;
 
     public static EditText typedmsg;
-    public static LinearLayout sendimgpreview;
+    public static RelativeLayout sendimgpreview;
     public static LinearLayout picProgressBarLayout;
     public static ImageView sendimgview;
     private TextView attachmentNameTV;
@@ -101,7 +101,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         doneImageView = (ImageView) findViewById(R.id.done);
         classTextView = (TextView) findViewById(R.id.classTV);
         typedmsg = (EditText) findViewById(R.id.typedmsg);
-        sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
+        sendimgpreview = (RelativeLayout) findViewById(R.id.imgpreview);
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         sendimgview = (ImageView) findViewById(R.id.attachedimg);
         attachmentNameTV = (TextView) findViewById(R.id.attachment_name);
@@ -243,9 +243,10 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         sendimgview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String tag = (String) sendimgpreview.getTag();
+                if (tag == null) return;
+
                 try {
-                    String tag = (String) sendimgpreview.getTag();
-                    if (tag == null) return;
                     if (Utility.isFileImageType(tag)) {
                         Intent imgintent = new Intent();
                         imgintent.setAction(Intent.ACTION_VIEW);
@@ -255,7 +256,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                         //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
                         //while opening, assume any type of file
                         String mimeType = Utility.getMimeType(tag); //non null return value
-                        Utility.toast(tag + " with mime=" + mimeType, false, 15);
+                        //Utility.toast(tag + " with mime=" + mimeType, false, 15);
                         File file = new File(tag);
                         Intent intent = new Intent(Intent.ACTION_VIEW);
                         intent.setDataAndType(Uri.fromFile(file), mimeType);
@@ -264,7 +265,8 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
                     }
                 }
                 catch (ActivityNotFoundException e){
-                    Utility.toast("No app installed to open file");
+                    String extension = Utility.getExtension(tag);
+                    Utility.toast("No app installed to open file type " + extension);
                     e.printStackTrace();
                 }
             }
@@ -452,7 +454,7 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
             ComposeMessage.sendimgpreview.setTag(Utility.getFileLocationInAppFolder(documentName));
 
-            sendimgview.setImageResource(R.drawable.general_file_icon);
+            sendimgview.setImageResource(R.drawable.attachment_icon_word);
             attachmentNameTV.setText(documentName);
             attachmentNameTV.setVisibility(View.VISIBLE);
         }

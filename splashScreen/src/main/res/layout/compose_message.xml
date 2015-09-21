@@ -113,7 +113,7 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/imgpreview"
             android:layout_width="wrap_content"
             android:layout_height="112dp"
@@ -124,36 +124,33 @@
                 android:id="@+id/attachedimg"
                 android:layout_width="112dp"
                 android:layout_height="112dp"
+                android:src="@drawable/attachment_icon_word"
                 android:background="@drawable/imageview_shadow">
-
             </ImageView>
 
-            <RelativeLayout
+            <ImageView
+                android:id="@+id/removebutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dp">
-
-                <ImageView
-                    android:id="@+id/removebutton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentLeft="true"
-                    android:layout_marginLeft="6dp"
-                    android:background="@drawable/cancel"
-                    />
-                <TextView
-                    android:id="@+id/attachment_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="sample_application_pdf_USERID_TIMESTAMP.pdf"
-                    android:textColor="@color/greyDark"
-                    android:textSize="13sp"
-                    android:layout_gravity="bottom"
-                    android:layout_alignParentBottom="true"
-                    />
-            </RelativeLayout>
-        </LinearLayout>
+                android:layout_toRightOf="@id/attachedimg"
+                android:layout_marginLeft="6dp"
+                android:background="@drawable/cancel"
+                />
+            <TextView
+                android:id="@+id/attachment_name"
+                android:layout_width="112dp"
+                android:layout_height="wrap_content"
+                android:text="sample_application_pdf_USERID_TIMESTAMP.pdf"
+                android:textColor="@color/white"
+                android:padding="6dp"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:layout_alignLeft="@id/attachedimg"
+                android:layout_alignRight="@id/attachedimg"
+                android:layout_alignBottom="@id/attachedimg"
+                />
+        </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 

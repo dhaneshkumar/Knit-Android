@@ -90,6 +90,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/msg_margin_bottom"
             android:layout_marginBottom="@dimen/msg_margin_bottom"
+            android:paddingRight="12dp"
             android:visibility="gone">
 
             <LinearLayout
@@ -115,6 +116,9 @@
                     android:textColor="@color/greyDark"
                     android:textSize="13sp"
                     android:layout_gravity="center_vertical"
+                    android:maxLines="1"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
                     android:visibility="visible"/>
             </LinearLayout>
 

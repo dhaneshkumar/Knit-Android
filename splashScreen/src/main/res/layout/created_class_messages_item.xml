@@ -122,7 +122,8 @@
             <FrameLayout
                 android:id="@+id/imagefrmlayout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content" >
+                android:layout_height="wrap_content"
+                android:paddingRight="12dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -143,10 +144,12 @@
                         android:id="@+id/attachment_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="sample.pdf"
+                        android:text="sample_application_pdf_USERID_TIMESTAMP.pdf"
                         android:textColor="@color/greyDark"
                         android:textSize="13sp"
                         android:layout_gravity="center_vertical"
+                        android:ellipsize="middle"
+                        android:singleLine="true"
                         />
 
                 </LinearLayout>
