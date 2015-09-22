@@ -606,14 +606,25 @@ public class Messages extends Fragment {
             else if (msgObject.get("creationTime") != null)
                 holder.startTime.setText(Utility.MyDateFormatter.getInstance().convertTimeStampNew((Date) msgObject.get("creationTime")));
 
-            final String message = msgObject.getString("title");
-            if (UtilString.isBlank(message)) {
+            String messageCopy = msgObject.getString("title");
+            if (UtilString.isBlank(messageCopy)) {
                 holder.msgslist.setVisibility(View.GONE);
                 holder.copyLayout.setVisibility(View.GONE);
             }
             else
             {
                 holder.msgslist.setVisibility(View.VISIBLE);
+                if(messageCopy.length() >= Config.attachmentMessage.length()) {
+                    int candidateIndex = messageCopy.length()-Config.attachmentMessage.length();
+                    String candidate = messageCopy.substring(candidateIndex);
+                    if(candidate.equals(Config.attachmentMessage)){
+                        messageCopy = messageCopy.substring(0, candidateIndex);
+                        msgObject.put("title", messageCopy);
+                        msgObject.pinInBackground(); //Remove the extra note
+                    }
+                }
+                final String message = messageCopy;
+
                 holder.msgslist.setText(message);
                 holder.copyLayout.setVisibility(View.VISIBLE);
 

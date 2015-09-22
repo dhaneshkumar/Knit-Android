@@ -96,6 +96,7 @@ public class Config {
     public static final String welcomeMsg =
             "Congratulations! You have successfully joined my classroom. I will use this app to send important reminders and announcements related to my subject.";
 
+    public static final String attachmentMessage = "(This message contains a file attachment. Please update your app to see it)";
     public static final String RemovalMsg = "You have been removed from this classroom. You won't receive any notification from this class from now onwards.";
     public static final int faqRefreshingcount = 20;
 

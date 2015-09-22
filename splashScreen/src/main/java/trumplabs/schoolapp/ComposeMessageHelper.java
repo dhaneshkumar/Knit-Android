@@ -338,6 +338,11 @@ public class ComposeMessageHelper {
 
             if (fileName != null) {
                 sentMsg.put("attachment_name", fileName);
+                if(!Utility.isFileImageType(fileName)){
+                    //if file is not image type, append note to update your app
+                    txtmsg = txtmsg + Config.attachmentMessage;
+                    sentMsg.put("title", txtmsg);
+                }
             }
 
             ComposeMessage.typedmsg.setText(""); //for reuse

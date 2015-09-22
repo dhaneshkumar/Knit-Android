@@ -115,7 +115,9 @@
                 android:id="@+id/imagefrmlayout"
                 android:background="@drawable/imageview_shadow"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="7dp"
+                android:layout_marginRight="7dp">
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -158,9 +160,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:text="File Download failed! Click to retry"
-                    android:textColor="@color/darkergrey"
                     android:textSize="12sp"
+                    android:text="File Download failed! Click to retry"
+                    android:paddingTop="6dp"
+                    android:paddingBottom="6dp"
+                    android:textColor="@color/holo_red_dark"
                     android:visibility="gone" />
             </FrameLayout>
 

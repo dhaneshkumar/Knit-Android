@@ -356,6 +356,17 @@ public class Outbox extends Fragment {
 
             //setting message in view
             String msg = msgObject.getString("title");
+            if(msg != null){
+                if(msg.length() >= Config.attachmentMessage.length()) {
+                    int candidateIndex = msg.length()-Config.attachmentMessage.length();
+                    String candidate = msg.substring(candidateIndex);
+                    if(candidate.equals(Config.attachmentMessage)){
+                        msg = msg.substring(0, candidateIndex);
+                        //msgObject.put("title", msg); don't do this o/w pending message content would be changed
+                        //msgObject.pinInBackground(); //Remove the extra note
+                    }
+                }
+            }
             if (msg == null || msg.trim().equals(""))
                 holder.msgtxtcontent.setVisibility(View.GONE);
             else

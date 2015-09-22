@@ -589,6 +589,18 @@ public class SendMessage extends MyActionBarActivity  {
             row.setVisibility(View.VISIBLE);
 
 
+            if(stringmsg != null){
+                if(stringmsg.length() >= Config.attachmentMessage.length()) {
+                    int candidateIndex = stringmsg.length()-Config.attachmentMessage.length();
+                    String candidate = stringmsg.substring(candidateIndex);
+                    if(candidate.equals(Config.attachmentMessage)){
+                        stringmsg = stringmsg.substring(0, candidateIndex);
+                        //msgObject.put("title", stringmsg); don't do this o/w pending message content would be changed
+                        //msgObject.pinInBackground(); //Remove the extra note
+                    }
+                }
+            }
+
             if(UtilString.isBlank(stringmsg))
                 msgtxtcontent.setVisibility(View.GONE);
             else {
