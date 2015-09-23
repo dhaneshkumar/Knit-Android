@@ -300,6 +300,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             fillDetailsForSession(isLogin, params);
 
             try {
+                Utility.saveParseInstallationIfNeeded();
                 HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
                 String sessionToken = (String) result.get("sessionToken");
                 flag = (String) result.get("flag");

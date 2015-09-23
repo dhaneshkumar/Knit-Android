@@ -579,6 +579,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
                 try {
                     Log.d("D_GOOGLE_VERIFY", "appEnter : calling");
+                    Utility.saveParseInstallationIfNeeded();
                     HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
                     String sessionToken = (String) result.get("sessionToken");
                     flag = (String) result.get("flag");

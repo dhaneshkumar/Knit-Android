@@ -921,6 +921,20 @@ public class Utility{
         }
     }
 
+    //call in background thread only as it makes a blocking parse object save call
+    public static void saveParseInstallationIfNeeded() throws ParseException{
+        Log.d("__save_installation", "checking");
+
+        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        if(parseInstallation != null){
+            if(parseInstallation.getObjectId() == null){
+                Log.d("__save_installation", "saving");
+                parseInstallation.save();
+                Log.d("__save_installation", "save success");
+            }
+        }
+    }
+
     public static class LogoutUtility{
         //flag so that checkAndHandleInvalidSession does not run multiple times(i.e run only once until next login)
         //is set in checkAndHandleInvalidSession once it runs successfully

@@ -19,6 +19,7 @@ import trumplabs.schoolapp.Constants;
 public class TestingUtililty {
 
     //public static boolean ignoreResponse = false;
+    public static boolean ignoreSaveInstallation = true;
 
     public static void testingTutorial(){
         if(!BuildConfig.DEBUG){
