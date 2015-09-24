@@ -32,7 +32,6 @@ import additionals.Invite;
 import additionals.InviteToClassDialog;
 import library.UtilString;
 import trumplab.textslate.R;
-import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Classrooms;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.MainActivity;
@@ -393,11 +392,11 @@ public class JoinClassDialog extends DialogFragment {
                 //Refreshing inbox fetched messages
 
                 try {
-                    Messages.msgs = query.getLocalInboxMsgs();
+                    Messages.groupDetails = query.getLocalInboxMsgs();
                     Messages.updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
 
-                    if(Messages.msgs == null)
-                        Messages.msgs = new ArrayList<ParseObject>();
+                    if(Messages.groupDetails == null)
+                        Messages.groupDetails = new ArrayList<ParseObject>();
 
                 } catch (ParseException e) {
                     e.printStackTrace();
@@ -409,8 +408,8 @@ public class JoinClassDialog extends DialogFragment {
                     if(sessionManager.getSignUpAccount() && !sessionManager.getTutorialState(tutorialId)) {
                         sessionManager.setTutorialState(tutorialId, true);
 
-                        if(Messages.msgs != null && Messages.msgs.size() > 0){
-                            ParseObject msgObject = Messages.msgs.get(0);
+                        if(Messages.groupDetails != null && Messages.groupDetails.size() > 0){
+                            ParseObject msgObject = Messages.groupDetails.get(0);
 
                             Bundle bundle = new Bundle();
                             bundle.putString("classCode", msgObject.getString("code"));

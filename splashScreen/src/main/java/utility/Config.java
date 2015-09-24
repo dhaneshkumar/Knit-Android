@@ -80,9 +80,9 @@ public class Config {
 
     public static final int inboxMsgRefreshTotal= 10; //how many of the latest inbox messages(total) will
 
-    public static final int inboxMsgCount = 50;
-    public static final int createMsgCount = 50;
-    public static  final int outboxMsgCount = 50;
+    public static final int inboxMsgCount = 5;
+    public static final int createMsgCount = 5;
+    public static  final int outboxMsgCount = 5;
     public static final int createMsgMax = 100;
     public static final int membersCount = 100;
     //public static final String creator = "Knit";

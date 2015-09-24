@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -52,7 +51,6 @@ import utility.Config;
 import utility.ImageCache;
 import utility.Queries;
 import utility.SessionManager;
-import utility.TestingUtililty;
 import utility.Utility;
 
 /**
@@ -79,9 +77,9 @@ public class Outbox extends Fragment {
     private static String action; //LIKE/CONFUSE
     private static String id; //msg object id
 
-    //public static boolean needLoading = false; //whether needs new query to fetch newer messages from localstore(offline support)
-
     public static boolean responseTutorialShown = false; //show in shared prefs
+
+    public boolean isGetExtraLocalOutboxMsgsRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -158,21 +156,11 @@ public class Outbox extends Fragment {
                         return; //nothing to do as all messages have been loaded
                     }
 
-                    try {
-                        List<ParseObject> extraMsgs = query.getExtraLocalOutbox(groupDetails);
-                        if (extraMsgs == null || extraMsgs.size() == 0) {
-                            totalOutboxMessages = totalItemCount; //safe guard, when #total pinned > #total shown
-                        }
-                        else{
-                            if(groupDetails != null) {
-                                groupDetails.addAll(extraMsgs);
-                            }
-                            else{
-                                groupDetails = extraMsgs;
-                            }
-                        }
-                        myadapter.notifyDataSetChanged();
-                    } catch (ParseException e) {
+                    if(!isGetExtraLocalOutboxMsgsRunning){
+                        if(Config.SHOWLOG) Log.d("_FETCH_OLD", "spawning GetExtraLocalOutboxMsgs");
+                        GetExtraLocalOutboxMsgs getExtraLocalOutboxMsgs = new GetExtraLocalOutboxMsgs(totalItemCount);
+                        isGetExtraLocalOutboxMsgsRunning = true;
+                        getExtraLocalOutboxMsgs.execute();
                     }
                 }
             }
@@ -798,7 +786,7 @@ public class Outbox extends Fragment {
             Application.applicationHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    if (Config.SHOWLOG) Log.d("DEBUG_AFTER_OUTBOX_COUNT_REFRESH", "Updating outbox messages");
+                    if (Config.SHOWLOG) Log.d("D_AFTER_OUTBOX_REFRESH", "Updating outbox messages");
                     if(outboxRefreshLayout == null || outboxLayout == null){
                         return;
                     }
@@ -811,8 +799,8 @@ public class Outbox extends Fragment {
                         outboxLayout.setVisibility(View.GONE);
                     }
 
-                    if (Outbox.myadapter != null) {
-                        Outbox.myadapter.notifyDataSetChanged();
+                    if (myadapter != null) {
+                        myadapter.notifyDataSetChanged();
                     }
                 }
             });
@@ -889,14 +877,12 @@ public class Outbox extends Fragment {
 
 
     class GetLocalOutboxMsgInBackground extends AsyncTask<Void, Void, Void> {
-        List<ParseObject> msgs;
+        List<ParseObject> tempMsgs;
 
         @Override
         protected Void doInBackground(Void... params) {
-            //Outbox.needLoading = false; //clear needLoading flag so that not called twice when Outbox is loaded along with MainActivty and also this flag is set on viewpager change
-
             //retrieving lcoally stored outbox messges
-            msgs = Queries.getLocalOutbox();
+            tempMsgs = Queries.getLocalOutbox();
 
             updateOutboxTotalMessages();
             return null;
@@ -904,14 +890,14 @@ public class Outbox extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (msgs == null) {
-                msgs = new ArrayList<ParseObject>();
+            if (tempMsgs == null) {
+                tempMsgs = new ArrayList<ParseObject>();
             }
 
-            groupDetails = msgs;
+            groupDetails = tempMsgs;
 
-            if (Outbox.myadapter != null) {
-                Outbox.myadapter.notifyDataSetChanged();
+            if (myadapter != null) {
+                myadapter.notifyDataSetChanged();
             }
 
             if (outboxLayout != null && emptyBackground != null && loadingBar != null) {
@@ -933,6 +919,38 @@ public class Outbox extends Fragment {
                 NotificationHandler notificationHandler = new NotificationHandler();
                 notificationHandler.execute();
             }
+        }
+    }
+
+    //called when all local messages shown
+    class GetExtraLocalOutboxMsgs extends AsyncTask<Void, Void, Void>
+    {
+        int totalItemCount;
+        List<ParseObject> extraMessages = null;
+
+        GetExtraLocalOutboxMsgs(int totalItemCount){
+            this.totalItemCount = totalItemCount;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            extraMessages = query.getExtraLocalOutbox(groupDetails);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            isGetExtraLocalOutboxMsgsRunning = false;
+
+            if(extraMessages == null){
+                totalOutboxMessages = totalItemCount;
+            }
+
+            if(extraMessages != null && groupDetails != null && myadapter != null){
+                groupDetails.addAll(extraMessages);
+                myadapter.notifyDataSetChanged();
+            }
+            super.onPostExecute(aVoid);
         }
     }
 
@@ -960,13 +978,13 @@ public class Outbox extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (Outbox.outboxListv == null || Outbox.outboxListv.getAdapter() == null) return;
-            if (msgIndex >= 0 && msgIndex < Outbox.outboxListv.getAdapter().getItemCount()) {
+            if (outboxListv == null || outboxListv.getAdapter() == null) return;
+            if (msgIndex >= 0 && msgIndex < outboxListv.getAdapter().getItemCount()) {
                 if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX", "scrolling to position " + msgIndex);
 
                 selectedMsgIndex = msgIndex;
-                Outbox.myadapter.notifyDataSetChanged();
-                Outbox.outboxListv.smoothScrollToPosition(msgIndex);
+                myadapter.notifyDataSetChanged();
+                outboxListv.smoothScrollToPosition(msgIndex);
                 action = null;
                 id = null; //do not repeat
             }

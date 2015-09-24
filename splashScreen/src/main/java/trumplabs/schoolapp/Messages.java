@@ -37,9 +37,6 @@ import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -54,7 +51,6 @@ import utility.Config;
 import utility.ImageCache;
 import utility.Queries;
 import utility.SessionManager;
-import utility.TestingUtililty;
 import utility.Utility;
 
 /**
@@ -63,7 +59,7 @@ import utility.Utility;
 public class Messages extends Fragment {
     private static Activity getactivity;
 
-    public static List<ParseObject> msgs;
+    public static List<ParseObject> groupDetails;
     protected LayoutInflater layoutinflater;
     RecyclerView listv;
     private LinearLayoutManager mLayoutManager;
@@ -82,6 +78,7 @@ public class Messages extends Fragment {
 
     public boolean oldInboxFetched = false;
     public boolean isGetMoreOldMessagesRunning = false;
+    public boolean isGetExtraLocalInboxMsgsRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -177,7 +174,7 @@ public class Messages extends Fragment {
         query = new Queries();
 
         //initialize msgs as it is static and can be persistent from previous user who logged out
-        msgs = new ArrayList<>();
+        groupDetails = new ArrayList<>();
 
         /*
         If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
@@ -194,15 +191,15 @@ public class Messages extends Fragment {
             inbox_messages_bg.setVisibility(View.VISIBLE);
 
             try {
-                msgs = query.getLocalInboxMsgs();
+                groupDetails = query.getLocalInboxMsgs();
                 updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
             } catch (ParseException e) {
             }
 
-            if (msgs == null)
-                msgs = new ArrayList<>();
+            if (groupDetails == null)
+                groupDetails = new ArrayList<>();
 
-            if (msgs.size() == 0)
+            if (groupDetails.size() == 0)
                 inemptylayout.setVisibility(View.VISIBLE);
             else
                 inemptylayout.setVisibility(View.GONE);
@@ -249,19 +246,14 @@ public class Messages extends Fragment {
                         //if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "[" + (visibleItemCount + pastVisibleItems) + " out of" + totalInboxMessages + "]all messages loaded. Saving unnecessary query");
                         return; //nothing to do as all messages have been loaded
                     }
+
                     if (Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "Loading more local messages");
 
-                    try {
-                        boolean gotExtraMsgs = query.getExtraLocalInboxMsgs(msgs);
-                        //if no extra msgs added, then (just for safety), set totalInboxMessages to totalItemCount
-                        //otherwise repeatedly getExtraLocalInboxMsgs will be called unnecessarily
-                        if (!gotExtraMsgs) {
-                            if (Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "gotExtraMsgs=false, setting totalInboxMessges");
-                            totalInboxMessages = totalItemCount;
-                        }
-                        myadapter.notifyDataSetChanged();
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                    if(!isGetExtraLocalInboxMsgsRunning){
+                        if(Config.SHOWLOG) Log.d("_FETCH_OLD", "spawning GetExtraLocalInboxMsgs");
+                        GetExtraLocalInboxMsgs getExtraLocalInboxMsgs = new GetExtraLocalInboxMsgs(totalItemCount);
+                        isGetExtraLocalInboxMsgsRunning = true;
+                        getExtraLocalInboxMsgs.execute();
                     }
                 }
             }
@@ -396,16 +388,16 @@ public class Messages extends Fragment {
         @Override
         public int getItemCount() {
 
-            if(msgs == null){
-                msgs = new ArrayList<ParseObject>();
+            if(groupDetails == null){
+                groupDetails = new ArrayList<ParseObject>();
             }
 
-            if (msgs.size() == 0)
+            if (groupDetails.size() == 0)
                 inemptylayout.setVisibility(View.VISIBLE);
             else
                 inemptylayout.setVisibility(View.GONE);
 
-            return msgs.size();
+            return groupDetails.size();
         }
 
         protected void handleStateChange(final ViewHolder holder, MessageStatePair currentState, MessageStatePair newState, ParseObject msgObject){
@@ -478,7 +470,7 @@ public class Messages extends Fragment {
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-            final ParseObject msgObject = msgs.get(position);
+            final ParseObject msgObject = groupDetails.get(position);
 
       /*
        * Set likes and confused count
@@ -1047,7 +1039,7 @@ public class Messages extends Fragment {
             return;
         }
 
-        Messages.totalInboxMessages = totalMessages;
+        totalInboxMessages = totalMessages;
     }
 
     class GetLocalInboxMsgInBackground extends AsyncTask<Void, Void, Void>
@@ -1070,10 +1062,10 @@ public class Messages extends Fragment {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            msgs = tempMsgs;
-            Messages.myadapter.notifyDataSetChanged();
+            groupDetails = tempMsgs;
+            myadapter.notifyDataSetChanged();
 
-            if (msgs.size() == 0) {
+            if (groupDetails.size() == 0) {
                 inemptylayout.setVisibility(View.VISIBLE);
                 inbox_messages_pb.setVisibility(View.GONE);
                 inbox_messages_bg.setVisibility(View.VISIBLE);
@@ -1157,12 +1149,44 @@ public class Messages extends Fragment {
         protected void onPostExecute(Void aVoid) {
             isGetMoreOldMessagesRunning = false;
 
-            if(extraMessages != null && Messages.msgs != null && Messages.myadapter != null){
-                Messages.msgs.addAll(extraMessages);
-                Messages.myadapter.notifyDataSetChanged();
+            if(extraMessages != null && groupDetails != null && myadapter != null){
+                groupDetails.addAll(extraMessages);
+                myadapter.notifyDataSetChanged();
                 totalInboxMessages += extraMessages.size();
             }
 
+            super.onPostExecute(aVoid);
+        }
+    }
+
+    //called when all local messages shown
+    class GetExtraLocalInboxMsgs extends AsyncTask<Void, Void, Void>
+    {
+        int totalItemCount;
+        List<ParseObject> extraMessages = null;
+
+        GetExtraLocalInboxMsgs(int totalItemCount){
+            this.totalItemCount = totalItemCount;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            extraMessages = query.getExtraLocalInboxMsgs(groupDetails);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            isGetExtraLocalInboxMsgsRunning = false;
+
+            if(extraMessages == null){
+                totalInboxMessages = totalItemCount;
+            }
+
+            if(extraMessages != null && groupDetails != null && myadapter != null){
+                groupDetails.addAll(extraMessages);
+                myadapter.notifyDataSetChanged();
+            }
             super.onPostExecute(aVoid);
         }
     }

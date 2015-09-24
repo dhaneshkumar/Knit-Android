@@ -394,10 +394,10 @@ public class Queries {
         returns true if success (i.e atleast 1 new message added)
                 false otherwise, in that case caller should update totalInboxMessages = item count
      */
-    public boolean getExtraLocalInboxMsgs(List<ParseObject> msgs) throws ParseException {
+    public List<ParseObject> getExtraLocalInboxMsgs(List<ParseObject> msgs){
 
         if (msgs == null)
-            return false;
+            return null;
 
         if (msgs.size() > 0 && msgs.get(msgs.size() - 1) != null) {
 
@@ -417,34 +417,36 @@ public class Queries {
         if (oldTimeStamp != null)
             query.whereLessThan(Constants.TIMESTAMP, oldTimeStamp);
 
-        List<ParseObject> msgList1 = query.find();
-
-        // appending extra objects to the end of list
-        if (msgList1 != null && msgList1.size() > 0) {
-            msgs.addAll(msgList1);
-            return true;
+        try{
+            List<ParseObject> msgList1 = query.find();
+            // appending extra objects to the end of list
+            if (msgList1 != null && msgList1.size() > 0) {
+                //msgs.addAll(msgList1);
+                return msgList1;
+            }
+        }
+        catch (ParseException e){
+            e.printStackTrace();
         }
 
-        return false; //error
+        return null; //error or no extra messages
     }
 
     // **********************CREATE CLASS MESSAGES QUERY******************
 
 
     public List<ParseObject> getLocalCreateMsgs(String groupCode, List<ParseObject> groupDetails,
-                                                boolean flag) throws ParseException {
+                                                boolean flag){
 
         Date oldTime = null;
 
-        if (groupDetails != null && groupDetails.size() > 0 && flag /*important as append to older list only if flag is set*/) {
+        if (groupDetails != null && groupDetails.size() > 0 && flag) {
             int lastItem = groupDetails.size()-1;
             if (groupDetails.get(lastItem).get("creationTime") != null)
                 oldTime = (Date) groupDetails.get(lastItem).get("creationTime");
-        } else
-            groupDetails = new ArrayList<ParseObject>();
+        }
 
-
-        List<ParseObject> pendingMessages = new ArrayList<>();
+        List<ParseObject> pendingMessages = null;
         if(!flag) {//since getting first batch of messagess(not on scroll), so get all pending messages first and show them as latest
 
             ParseQuery<ParseObject> pendingQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
@@ -454,32 +456,51 @@ public class Queries {
             pendingQuery.whereEqualTo("pending", true);
             pendingQuery.whereEqualTo("code", groupCode);
 
-            pendingMessages = pendingQuery.find();
+            try{
+                pendingMessages = pendingQuery.find();
+            }
+            catch (ParseException e){
+                e.printStackTrace();
+            }
         }
 
-        ParseQuery<ParseObject> query = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
-        query.fromLocalDatastore();
-        query.orderByDescending("creationTime");
-        query.whereEqualTo("userId", userId);
-        query.whereEqualTo("code", groupCode);
-        query.whereNotEqualTo("pending", true);
+        ParseQuery<ParseObject> sentQuery = ParseQuery.getQuery(Constants.SENT_MESSAGES_TABLE);
+        sentQuery.fromLocalDatastore();
+        sentQuery.orderByDescending("creationTime");
+        sentQuery.whereEqualTo("userId", userId);
+        sentQuery.whereEqualTo("code", groupCode);
+        sentQuery.whereNotEqualTo("pending", true);
 
         if (flag)
-            query.setLimit(2 * createMsgCount);
+            sentQuery.setLimit(2 * createMsgCount);
         else
-            query.setLimit(createMsgCount);
+            sentQuery.setLimit(createMsgCount);
 
         if (oldTime != null)
-            query.whereLessThan("creationTime", oldTime);
+            sentQuery.whereLessThan("creationTime", oldTime);
 
-        List<ParseObject> msgList1 = query.find();
+        List<ParseObject> sentMessages = null;
+        try {
+            sentMessages = sentQuery.find();
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
 
-        // appending extra objects to the end of list
+        List<ParseObject> allMessages = new ArrayList<>();
+        if(pendingMessages != null){
+            allMessages.addAll(pendingMessages);
+        }
 
-        groupDetails.addAll(pendingMessages);
-        groupDetails.addAll(msgList1);
+        if(sentMessages != null){
+            allMessages.addAll(sentMessages);
+        }
 
-        return groupDetails;
+        if(allMessages.size() > 0){
+            return allMessages;
+        }
+
+        return null;
     }
 
     // ****************************CREATE CLASSS*************************************
@@ -834,7 +855,7 @@ public class Queries {
         return pendingMessages;
     }
 
-    public List<ParseObject> getExtraLocalOutbox(List<ParseObject> msgs) throws ParseException {
+    public List<ParseObject> getExtraLocalOutbox(List<ParseObject> msgs){
 
         if (msgs == null)
             return null;
@@ -853,9 +874,19 @@ public class Queries {
         if (lastTimeStamp != null)
             query.whereLessThan("creationTime", lastTimeStamp);
 
-        List<ParseObject> msgList1 = query.find();
+        try{
+            List<ParseObject> msgList1 = query.find();
+            // appending extra objects to the end of list
+            if (msgList1 != null && msgList1.size() > 0) {
+                //msgs.addAll(msgList1);
+                return msgList1;
+            }
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
 
-        return msgList1;
+        return null;
     }
 
 }

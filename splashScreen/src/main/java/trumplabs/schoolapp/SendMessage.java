@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -52,7 +53,6 @@ import trumplab.textslate.R;
 import utility.Config;
 import utility.ImageCache;
 import utility.Queries;
-import utility.TestingUtililty;
 import utility.Utility;
 
 /**
@@ -84,6 +84,8 @@ public class SendMessage extends MyActionBarActivity  {
     private ImageView empty_class_bg;
 
     boolean pushOpen = false; //set to true when directly opened through notification click,
+
+    public boolean  isGetLocalCreateMessagesRunning = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,19 +131,15 @@ public class SendMessage extends MyActionBarActivity  {
             return;
         }
 
-
         groupDetails = new ArrayList<>(); //important since now its static variable so need to reset
-        // retrieving sent messages of given class from local database
-        try {
-            groupDetails = query.getLocalCreateMsgs(groupCode, groupDetails, false);
-        } catch (ParseException e) {
+
+
+        if(!isGetLocalCreateMessagesRunning){
+            if(Config.SHOWLOG) Log.d("_FETCH_OLD", "spawning GetLocalCreateMessages");
+            GetLocalCreateMessages getLocalCreateMessages = new GetLocalCreateMessages(0, false);
+            isGetLocalCreateMessagesRunning = true;
+            getLocalCreateMessages.execute();
         }
-
-        ClassMsgFunctions.updateTotalClassMessages(groupCode);
-
-        if (groupDetails == null)
-            groupDetails = new ArrayList<ParseObject>();
-
 
         initialiseListViewMethods();
 
@@ -846,14 +844,11 @@ public class SendMessage extends MyActionBarActivity  {
                         return;
                     }
 
-                    try {
-                        int prevSize = groupDetails.size();
-                        groupDetails = query.getLocalCreateMsgs(groupCode, groupDetails, true);
-                        if(groupDetails == null || groupDetails.size() <= prevSize){ //i.e no extra messages added
-                            totalClassMessages = totalItemCount; //safeguard when #total pinned > #total shown
-                        }
-                        myadapter.notifyDataSetChanged();
-                    } catch (ParseException e) {
+                    if(!isGetLocalCreateMessagesRunning){
+                        if(Config.SHOWLOG) Log.d("_FETCH_OLD", "spawning GetLocalCreateMessages onScroll");
+                        GetLocalCreateMessages getLocalCreateMessages = new GetLocalCreateMessages(totalItemCount, true);
+                        isGetLocalCreateMessagesRunning = true;
+                        getLocalCreateMessages.execute();
                     }
                 }
             }
@@ -898,5 +893,55 @@ public class SendMessage extends MyActionBarActivity  {
                 }
             }
         });
+    }
+
+    //called when all local messages shown
+    class GetLocalCreateMessages extends AsyncTask<Void, Void, Void>
+    {
+        int totalItemCount;
+        List<ParseObject> extraMessages = null;
+        boolean calledOnScroll = false;
+
+        GetLocalCreateMessages(int totalItemCount, boolean onScroll){
+            this.totalItemCount = totalItemCount;
+            this.calledOnScroll = onScroll;
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+
+            if(!calledOnScroll) {//i.e called in onCreate
+                extraMessages = query.getLocalCreateMsgs(groupCode, groupDetails, false);
+                ClassMsgFunctions.updateTotalClassMessages(groupCode);
+            }
+            else{
+                extraMessages = query.getLocalCreateMsgs(groupCode, groupDetails, true);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            isGetLocalCreateMessagesRunning = false;
+
+            if(extraMessages == null && calledOnScroll){
+                totalClassMessages = totalItemCount;
+            }
+
+            if(extraMessages != null){
+                if(groupDetails == null){
+                    groupDetails = extraMessages;
+                }
+                else{
+                    groupDetails.addAll(extraMessages);
+                }
+            }
+
+            if(myadapter != null) {
+                myadapter.notifyDataSetChanged();
+            }
+
+            super.onPostExecute(aVoid);
+        }
     }
 }

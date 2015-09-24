@@ -1,6 +1,5 @@
 package BackGroundProcesses;
 
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 
@@ -77,7 +76,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
 
       if(newMsgs != null)
       {
-          Messages.msgs = newMsgs;
+          Messages.groupDetails = newMsgs;
       }
 
       Messages.updateInboxTotalCount();
