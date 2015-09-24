@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -19,6 +20,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.MimeTypeMap;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -49,6 +52,7 @@ import utility.Config;
 import utility.ImageCache;
 import utility.Queries;
 import utility.SessionManager;
+import utility.TestingUtililty;
 import utility.Utility;
 
 /**
@@ -155,7 +159,18 @@ public class Outbox extends Fragment {
                     }
 
                     try {
-                        groupDetails = query.getExtraLocalOutbox(groupDetails);
+                        List<ParseObject> extraMsgs = query.getExtraLocalOutbox(groupDetails);
+                        if (extraMsgs == null || extraMsgs.size() == 0) {
+                            totalOutboxMessages = totalItemCount; //safe guard, when #total pinned > #total shown
+                        }
+                        else{
+                            if(groupDetails != null) {
+                                groupDetails.addAll(extraMsgs);
+                            }
+                            else{
+                                groupDetails = extraMsgs;
+                            }
+                        }
                         myadapter.notifyDataSetChanged();
                     } catch (ParseException e) {
                     }
@@ -264,6 +279,14 @@ public class Outbox extends Fragment {
         setHasOptionsMenu(true);
     }
 
+    class RunnableBundle{
+        public Runnable openRunnable;
+        public Runnable onImageSuccessRunnable;
+        public Runnable onFileSuccessRunnable;
+        public Runnable onFailRunnable;
+        public Runnable retryRunnable;
+    }
+
     /**
      * Holder class to hold all elements of an item
      */
@@ -271,7 +294,10 @@ public class Outbox extends Fragment {
         TextView timestampmsg;
         ImageView pendingClockIcon;
         TextView classimage;
+        FrameLayout imgframelayout;
         ImageView imgmsgview;
+        TextView attachmentNameTV;
+        TextView faildownload;
         ProgressBar uploadprogressbar;
         TextView msgtxtcontent;
         TextView classname;
@@ -290,7 +316,11 @@ public class Outbox extends Fragment {
             classimage = (TextView) row.findViewById(R.id.classimage1);
             timestampmsg = (TextView) row.findViewById(R.id.cctimestamp);
             pendingClockIcon = (ImageView) row.findViewById(R.id.pendingClock);
+            imgframelayout = (FrameLayout) row.findViewById(R.id.imagefrmlayout);
             imgmsgview = (ImageView) row.findViewById(R.id.ccimgmsg);
+            attachmentNameTV = (TextView) row.findViewById(R.id.attachment_name);
+
+            faildownload = (TextView) row.findViewById(R.id.faildownload);
             uploadprogressbar = (ProgressBar) row.findViewById(R.id.msgprogressbar);
             msgtxtcontent = (TextView) row.findViewById(R.id.ccmsgtext);
             likes = (TextView) row.findViewById(R.id.like);
@@ -320,12 +350,23 @@ public class Outbox extends Fragment {
 
         @Override
         public void onBindViewHolder(final ViewHolder holder, final int position) {
-            ParseObject msgObject = groupDetails.get(position);
+            final ParseObject msgObject = groupDetails.get(position);
 
             if (msgObject == null) return;
 
             //setting message in view
             String msg = msgObject.getString("title");
+            if(msg != null){
+                if(msg.length() >= Config.attachmentMessage.length()) {
+                    int candidateIndex = msg.length()-Config.attachmentMessage.length();
+                    String candidate = msg.substring(candidateIndex);
+                    if(candidate.equals(Config.attachmentMessage)){
+                        msg = msg.substring(0, candidateIndex);
+                        //msgObject.put("title", msg); don't do this o/w pending message content would be changed
+                        //msgObject.pinInBackground(); //Remove the extra note
+                    }
+                }
+            }
             if (msg == null || msg.trim().equals(""))
                 holder.msgtxtcontent.setVisibility(View.GONE);
             else
@@ -380,7 +421,7 @@ public class Outbox extends Fragment {
                 cdate = (Date) msgObject.get("creationTime");
 
             //finding difference of current & createdAt timestamp
-            timestampmsg = Utility.convertTimeStamp(cdate);
+            timestampmsg = Utility.MyDateFormatter.getInstance().convertTimeStampNew(cdate);
 
             //setting cardview for higher api using elevation
 
@@ -401,10 +442,8 @@ public class Outbox extends Fragment {
                     });
                 } else
                     holder.head.setBackgroundDrawable(getResources().getDrawable(R.drawable.greyoutline));
-
-
+                }
             }
-        }
             else {
                 if (selectedMsgIndex != -1) {
                     if (position == selectedMsgIndex) {
@@ -487,78 +526,206 @@ public class Outbox extends Fragment {
 
             //If image attachment exist, display image
             if (!UtilString.isBlank(imageName)) {
-                final String imageFilePath = Utility.getWorkingAppDir() + "/media/" + imageName;
-                holder.imgmsgview.setVisibility(View.VISIBLE);
-                holder.imgmsgview.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent imgintent = new Intent();
-                        imgintent.setAction(Intent.ACTION_VIEW);
-                        imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
-                        startActivity(imgintent);
-                    }
-                });
+                final boolean isFileAnImage = Utility.isFileImageType(imageName);
 
-
-                final Runnable onSuccessRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        holder.uploadprogressbar.setVisibility(View.GONE);
-                    }
-                };
-
-                final Runnable onFailRunnable = new Runnable() {
-                    @Override
-                    public void run() {
-                        holder.uploadprogressbar.setVisibility(View.GONE);
-                    }
-                };
-
-                //to override previous recycled view
-                holder.uploadprogressbar.setVisibility(View.VISIBLE);
-                holder.imgmsgview.setImageBitmap(null);
-
-                File imgFile = new File(imageFilePath);
+                Log.d("__file_picker", imageName);
+                final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
+                final File imgFile = new File(imageFilePath);
                 holder.imgmsgview.setTag(imgFile.getAbsolutePath());
 
-                if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
-                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(o) already cached : " + imageName);
-                    onSuccessRunnable.run();
-                }
-                else if (imgFile.exists()) {
-                    // image file present locally
-                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
-                    writeLoadAndShowTask.execute();
-                } else if(Utility.isInternetExistWithoutPopup()) {
-                    if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(o) downloading data : " + imageName);
+                final RunnableBundle rb = new RunnableBundle();
 
-                    // Have to download image from server
-                    ParseFile imagefile = msgObject.getParseFile("attachment");
-                    if(imagefile != null) {
-                        imagefile.getDataInBackground(new GetDataCallback() {
-                            public void done(byte[] data, ParseException e) {
-                                if (e == null) {
-                                    ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), onSuccessRunnable);
-                                    writeLoadAndShowTask.execute();
-                                } else {
-                                    //ParseException check for invalid session
-                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
-                                    onFailRunnable.run();
-                                }
+                rb.openRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (isFileAnImage) {
+                                Intent imgintent = new Intent();
+                                imgintent.setAction(Intent.ACTION_VIEW);
+                                imgintent.setDataAndType(Uri.parse("file://" + imageFilePath), "image/*");
+                                startActivity(imgintent);
+                            } else {
+                                //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                                //while opening, assume any type of file
+                                String mimeType = Utility.getMimeType(imageName); //non null return value
+                                //Utility.toast(imageName + " with mime=" + mimeType, false, 15);
+                                File file = new File(imageFilePath);
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setDataAndType(Uri.fromFile(file), mimeType);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                startActivity(intent);
+                            }
+                        }
+                        catch (ActivityNotFoundException e){
+                            String extension = Utility.getExtension(imageName);
+                            Utility.toast("No app installed to open file type " + extension, 15);
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                rb.onImageSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onImageSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
+                        holder.faildownload.setVisibility(View.GONE);
+
+                        holder.imgframelayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rb.openRunnable.run();
                             }
                         });
                     }
-                    else{
-                        onFailRunnable.run();
+                };
+
+                rb.onFileSuccessRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFileSuccessRunnable skip different tag " + imageName);
+                            return;
+                        }
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setText(imageName);
+                        holder.attachmentNameTV.setVisibility(View.VISIBLE);
+                        holder.faildownload.setVisibility(View.GONE);
+
+                        int resId = Utility.getMessageIconResource(imageName);
+                        holder.imgmsgview.setImageResource(resId);
+                        holder.imgframelayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rb.openRunnable.run();
+                            }
+                        });
                     }
-                }
-                else {
-                    onFailRunnable.run();
-                }
+                };
+
+                rb.onFailRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        if(! Utility.isTagSame(holder.imgmsgview, imgFile.getAbsolutePath())){
+                            Log.d("__sleep", "onFailRunnable skip different tag " + imageName);
+                            return;
+                        }
+                        holder.uploadprogressbar.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
+                        holder.faildownload.setVisibility(View.VISIBLE);
+                        holder.imgframelayout.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                rb.retryRunnable.run();
+                            }
+                        });
+                    }
+                };
+
+                rb.retryRunnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        //to override previous recycled view
+                        holder.imgframelayout.setVisibility(View.VISIBLE);
+                        holder.imgframelayout.setOnClickListener(null); //override always
+
+                        holder.imgmsgview.setImageBitmap(null);//because in recycleview is reused, hence need to initialize properly
+                        holder.uploadprogressbar.setVisibility(View.VISIBLE);
+                        holder.faildownload.setVisibility(View.GONE);
+                        holder.attachmentNameTV.setVisibility(View.GONE);
+
+
+                        if(ImageCache.showIfInCache(imageName, holder.imgmsgview)){
+                            if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) already cached : " + imageName);
+                            rb.onImageSuccessRunnable.run();
+                        }
+                        else if (imgFile.exists()) {
+                            // image file present locally
+                            if(isFileAnImage) {
+                                ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(null, imageName, holder.imgmsgview, getActivity(), rb.onImageSuccessRunnable);
+                                writeLoadAndShowTask.execute();
+                            }
+                            else{
+                                Log.d("__file_picker", "m) exists " + imageName);
+                                //set file icon and run onSuccessRunnable
+                                rb.onFileSuccessRunnable.run();
+                            }
+                        } else if(Utility.isInternetExistWithoutPopup()) {
+                            Log.d("__file_picker", "m) downloading " + imageName);
+                            if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
+
+                            // Have to download image from server
+                            final ParseFile imagefile = msgObject.getParseFile("attachment");
+
+                            if (imagefile != null) {
+                                imagefile.getDataInBackground(new GetDataCallback() {
+                                    public void done(byte[] data, ParseException e) {
+                                        if (e == null) {
+                                            if (isFileAnImage) {
+                                                ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), rb.onImageSuccessRunnable);
+                                                writeLoadAndShowTask.execute();
+                                            } else {
+                                                ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), rb.onFileSuccessRunnable);
+                                                writeDocTask.execute();
+                                            }
+
+                                        } else {
+                                            //ParseException check for invalid session
+                                            Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                                            rb.onFailRunnable.run();
+                                        }
+                                    }
+                                });
+
+                                /*Runnable r = new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        imagefile.getDataInBackground(new GetDataCallback() {
+                                            public void done(byte[] data, ParseException e) {
+                                                e = new ParseException(1000, "dummy parse exception");
+
+                                                if (e == null) {
+                                                    if(isFileAnImage) {
+                                                        ImageCache.WriteLoadAndShowTask writeLoadAndShowTask = new ImageCache.WriteLoadAndShowTask(data, imageName, holder.imgmsgview, getActivity(), rb.onImageSuccessRunnable);
+                                                        writeLoadAndShowTask.execute();
+                                                    }
+                                                    else{
+                                                        ImageCache.WriteDocTask writeDocTask = new ImageCache.WriteDocTask(data, imageName, holder.imgmsgview, getActivity(), rb.onFileSuccessRunnable);
+                                                        writeDocTask.execute();
+                                                    }
+
+                                                } else {
+                                                    //ParseException check for invalid session
+                                                    Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                                                    rb.onFailRunnable.run();
+                                                }
+                                            }
+                                        });
+                                    }
+                                };
+
+                                TestingUtililty.runAfterUiThread(r, 5000, "__sleep" + imageName);*/
+                            }
+                            else{
+                                rb.onFailRunnable.run();
+                            }
+                        }
+                        else {
+                            rb.onFailRunnable.run();
+                        }
+                    }
+                };
+
+                rb.retryRunnable.run();
 
             } else {
-                holder.imgmsgview.setVisibility(View.GONE);
+                holder.imgframelayout.setVisibility(View.GONE);
                 holder.imgmsgview.setTag(""); //reset to empty
+                holder.attachmentNameTV.setVisibility(View.GONE);
             }
 
             //if a) first msg, b) is a teacher & c) already not shown
@@ -677,8 +844,8 @@ public class Outbox extends Fragment {
     }
 
     /*
-stop swipe refreshlayout
- */
+    stop swipe refreshlayout
+    */
     public static void runSwipeRefreshLayout(final SwipeRefreshLayout outboxRefreshLayout, final int seconds) {
 
         if (outboxRefreshLayout == null)

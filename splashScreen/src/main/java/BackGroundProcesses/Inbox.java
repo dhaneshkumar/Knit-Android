@@ -27,6 +27,7 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
     int myid = 0;
     static int id = 0;
 
+    List<ParseObject> newMsgs; //store in background thread and update Messages.msgs only in UI thread before notifyDatasetchanged
   public Inbox()
   {
       isQueued = true; //enable so that another Inbox asynctask is not triggered
@@ -43,22 +44,9 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
 
       if(Config.SHOWLOG) Log.d("DEBUG_INBOX", "fetching new messages and setting lastTimeInboxSync");
 
-      List<ParseObject> newMsgs = query.getServerInboxMsgs();
+      newMsgs = query.getServerInboxMsgs();
 
-      if(newMsgs != null)
-      {
-      /*
-       * Deleting extra element from list
-       */
-          while(newMsgs.size() > Config.inboxMsgCount)
-          {
-              newMsgs.remove(newMsgs.size()-1);
-          }
 
-          Messages.msgs = newMsgs;
-      }
-
-      Messages.updateInboxTotalCount();
   }
 
   @Override
@@ -86,6 +74,13 @@ public class Inbox extends AsyncTaskProxy<Void, Void, String[]> {
 
       if (MainActivity.progressBarLayout != null)
           MainActivity.progressBarLayout.setVisibility(View.GONE);
+
+      if(newMsgs != null)
+      {
+          Messages.msgs = newMsgs;
+      }
+
+      Messages.updateInboxTotalCount();
 
       if(Messages.myadapter != null)
           Messages.myadapter.notifyDataSetChanged();

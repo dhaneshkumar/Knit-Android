@@ -193,7 +193,7 @@ public class ComposeMessageHelper {
         List<String> classnames = new ArrayList<>();
         List<Boolean> checkmemberFlagArray = new ArrayList<>();
 
-        boolean CHECK_MEMBER_FLAG = false;
+        boolean CHECK_MEMBER_FLAG = true;
         if(batch.size() == 1){
             CHECK_MEMBER_FLAG = true; //only when sending to one class
         }
@@ -336,8 +336,14 @@ public class ComposeMessageHelper {
             int slashindex = filepath.lastIndexOf("/");
             final String fileName = filepath.substring(slashindex + 1);// image file //
 
-            if (fileName != null)
+            if (fileName != null) {
                 sentMsg.put("attachment_name", fileName);
+                if(!Utility.isFileImageType(fileName)){
+                    //if file is not image type, append note to update your app
+                    txtmsg = txtmsg + Config.attachmentMessage;
+                    sentMsg.put("title", txtmsg);
+                }
+            }
 
             ComposeMessage.typedmsg.setText(""); //for reuse
 
@@ -367,7 +373,7 @@ public class ComposeMessageHelper {
         List<String> classnames = new ArrayList<>();
         List<Boolean> checkmemberFlagArray = new ArrayList<>();
 
-        boolean CHECK_MEMBER_FLAG = false;
+        boolean CHECK_MEMBER_FLAG = true;
         if(batch.size() == 1){
             CHECK_MEMBER_FLAG = true; //only when sending to one class
         }
@@ -393,7 +399,7 @@ public class ComposeMessageHelper {
 
             byte[] data = null;
             try {
-                RandomAccessFile f = new RandomAccessFile(Utility.getWorkingAppDir() + "/media/" + imageName, "r");
+                RandomAccessFile f = new RandomAccessFile(Utility.getFileLocationInAppFolder(imageName), "r");
                 data = new byte[(int) f.length()];
                 f.read(data);
             } catch (IOException e) {
@@ -403,7 +409,7 @@ public class ComposeMessageHelper {
 
             String oldName = imageName;
             imageName = imageName.replaceAll("[^a-zA-Z0-9_\\.]", "");
-            imageName = "i" + imageName;
+            //imageName = "i" + imageName;
 
             ParseFile temp = new ParseFile(imageName, data);
 

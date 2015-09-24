@@ -167,6 +167,40 @@
                         android:textSize="@dimen/profil_edit_font_size" />-->
                 </LinearLayout>
 
+                <LinearLayout
+                    android:id="@+id/schoolHolder"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/profile_tail_bar"
+                        android:text="" />
+
+                    <TextView
+                        android:id="@+id/schoolName"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:paddingTop="17dp"
+                        android:text="School not added yet. (tap to add)"
+                        android:textColor="@color/profile_heading"
+                        android:textSize="@dimen/profil_heading_font_size" />
+                    <TextView
+                        android:id="@+id/schoolEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="5dp"
+                        android:layout_marginTop="5dp"
+                        android:text="Edit"
+                        android:textColor="@color/profile_edit"
+                        android:paddingBottom="17dp"
+                        android:textSize="@dimen/profil_edit_font_size" />
+                </LinearLayout>
+
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -180,6 +214,7 @@
                     android:background="@color/profile_tail_bar"
                     android:text="" />
 
+
                 <TextView
                     android:id="@+id/signOut"
                     android:layout_width="match_parent"
@@ -191,6 +226,7 @@
                     android:text="Sign Out"
                     android:textColor="@color/profile_heading"
                     android:textSize="@dimen/profil_heading_font_size" />
+
 
                 <TextView
                     android:id="@+id/about"

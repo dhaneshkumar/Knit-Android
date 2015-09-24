@@ -156,9 +156,6 @@ public class FAQs extends MyActionBarActivity {
 
       return row;
     }
-
-
-
   }
 
 
@@ -177,10 +174,11 @@ public class FAQs extends MyActionBarActivity {
   class GetServerFaqs extends AsyncTask<Void, Void, Void> {
 
     private String role;
-
+    private List<ParseObject> tempFaqList;
 
     public GetServerFaqs(String role) {
       this.role = role;
+      this.tempFaqList = new ArrayList<>();
     }
 
     @Override
@@ -218,7 +216,7 @@ public class FAQs extends MyActionBarActivity {
         for (int i = 0; i < faqs.size(); i++) {
           ParseObject faq = faqs.get(i);
 
-          faqList.add(faq);
+          tempFaqList.add(faq);
           faq.put("userId", currentParseUser.getUsername());
 
           try {
@@ -234,7 +232,7 @@ public class FAQs extends MyActionBarActivity {
 
     @Override
     protected void onPostExecute(Void result) {
-
+      faqList = tempFaqList;
       faqAdapter.notifyDataSetChanged();
       progressLayout.setVisibility(View.GONE);
       editLayout.setVisibility(View.VISIBLE);

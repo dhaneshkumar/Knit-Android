@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="fill_parent"
+android:layout_height="wrap_content"
+    android:background="@android:color/background_light">
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/loc_icon"/>
+    <LinearLayout
+        android:layout_toRightOf="@+id/icon"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <TextView android:id="@+id/name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IIT Bombay"
+        android:textSize="12dp"
+        android:textStyle="bold"
+        android:paddingTop="4dp"
+        android:paddingBottom="4dp"
+        android:textColor="@color/black"/>
+    <TextView
+        android:id="@+id/area"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Powai, Mumbai, Maharashtra"
+        android:textSize="11dp"
+        android:paddingBottom="4dp"
+        android:textColor="@color/grey" />
+    </LinearLayout>
+</RelativeLayout>

@@ -51,6 +51,7 @@ import java.util.HashMap;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
+import school.SchoolActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
@@ -63,6 +64,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
     private ImageView profileimgview;
     private TextView name_textView;
     private TextView phone_textView;
+    private LinearLayout schoolHolder;
+    public static TextView schoolNameTV;
+
     private String userId;
     private String filePath;
     private String name;
@@ -100,6 +104,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         phone_textView = (TextView) findViewById(R.id.phone);
         profileimgview = (ImageView) findViewById(R.id.profileimg);
 
+        schoolHolder = (LinearLayout) findViewById(R.id.schoolHolder);
+        schoolNameTV = (TextView) findViewById(R.id.schoolName);
+
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView account = (TextView) findViewById(R.id.account);
         TextView about = (TextView) findViewById(R.id.about);
@@ -126,6 +133,10 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             return;
         }
 
+        Log.d("__school", "user's school place_id=" + currentParseUser.getString("place_id"));
+        Log.d("__school", "user's school place_name=" + currentParseUser.getString("place_name"));
+        Log.d("__school", "user's school place_area=" + currentParseUser.getString("place_area"));
+
         buildGoogleApiClient();
 
         userId = currentParseUser.getUsername();
@@ -148,6 +159,29 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
             }
         }
 
+        /*
+            show hide school
+         */
+        String role = currentParseUser.getString("role");
+        if(role != null && role.equals(Constants.TEACHER)){
+            schoolHolder.setVisibility(View.VISIBLE);
+            if(!UtilString.isBlank(currentParseUser.getString("place_id"))
+                    && !UtilString.isBlank(currentParseUser.getString("place_name"))
+                    && !UtilString.isBlank(currentParseUser.getString("place_area"))){
+                schoolNameTV.setText(currentParseUser.getString("place_name") + "\n" + currentParseUser.getString("place_area"));
+            }
+
+            schoolHolder.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(ProfilePage.this, SchoolActivity.class);
+                    startActivity(intent);
+                }
+            });
+        }
+        else{
+            schoolHolder.setVisibility(View.GONE);
+        }
 
     /*
      * set Profile Pic.
@@ -310,6 +344,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 case Activity.RESULT_CANCELED:
                     break;
             }
+
         } else if (requestCode == 302) {
             if(Config.SHOWLOG) Log.d("DEBUG_PROFILE_PAGE", "request code 302 with resultCode=" + resultCode);
             switch (resultCode) {
@@ -502,10 +537,9 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
        * FAQs
        */
             case R.id.faq:
-
                 Intent intent = new Intent(this, FAQs.class);
+                //Intent intent = new Intent(this, SchoolActivity.class);
                 startActivity(intent);
-
                 break;
 
             default:

@@ -1,6 +1,7 @@
 package trumplabs.schoolapp;
 
 import android.app.AlertDialog;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,6 +32,8 @@ import android.widget.TextView;
 
 import com.parse.ParseUser;
 
+import org.jcodec.Util;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,9 +63,11 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
     private ImageView doneImageView;
 
     public static EditText typedmsg;
-    public static LinearLayout sendimgpreview;
+    public static RelativeLayout sendimgpreview;
     public static LinearLayout picProgressBarLayout;
     public static ImageView sendimgview;
+    private TextView attachmentNameTV;
+
     private ImageView removebutton;
     private Typeface typeface;
     private LinearLayout contentLayout;
@@ -96,9 +101,11 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         doneImageView = (ImageView) findViewById(R.id.done);
         classTextView = (TextView) findViewById(R.id.classTV);
         typedmsg = (EditText) findViewById(R.id.typedmsg);
-        sendimgpreview = (LinearLayout) findViewById(R.id.imgpreview);
+        sendimgpreview = (RelativeLayout) findViewById(R.id.imgpreview);
         picProgressBarLayout = (LinearLayout) findViewById(R.id.progressBarLayout);
         sendimgview = (ImageView) findViewById(R.id.attachedimg);
+        attachmentNameTV = (TextView) findViewById(R.id.attachment_name);
+
         removebutton = (ImageView) findViewById(R.id.removebutton);
         typeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
         contentLayout = (LinearLayout) findViewById(R.id.contentLayout);
@@ -236,10 +243,32 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         sendimgview.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent imgintent = new Intent();
-                imgintent.setAction(Intent.ACTION_VIEW);
-                imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
-                startActivity(imgintent);
+                String tag = (String) sendimgpreview.getTag();
+                if (tag == null) return;
+
+                try {
+                    if (Utility.isFileImageType(tag)) {
+                        Intent imgintent = new Intent();
+                        imgintent.setAction(Intent.ACTION_VIEW);
+                        imgintent.setDataAndType(Uri.parse("file://" + (String) sendimgpreview.getTag()), "image/*");
+                        startActivity(imgintent);
+                    } else {
+                        //assume any kind of file. only teacher has restriction on what kind of file he can send(currently pdf)
+                        //while opening, assume any type of file
+                        String mimeType = Utility.getMimeType(tag); //non null return value
+                        //Utility.toast(tag + " with mime=" + mimeType, false, 15);
+                        File file = new File(tag);
+                        Intent intent = new Intent(Intent.ACTION_VIEW);
+                        intent.setDataAndType(Uri.fromFile(file), mimeType);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+                        startActivity(intent);
+                    }
+                }
+                catch (ActivityNotFoundException e){
+                    String extension = Utility.getExtension(tag);
+                    Utility.toast("No app installed to open file type " + extension, 15);
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -415,7 +444,27 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
         // The thumbnail is already created
         Bitmap myBitmap = BitmapFactory.decodeFile(thumbnailFile.getAbsolutePath());
         sendimgview.setImageBitmap(myBitmap);
+        attachmentNameTV.setVisibility(View.GONE);
     }
+
+    @Override
+    public void sendDocument(String documentName, int flag) {
+        if(flag == ChooserDialog.CommunicatorInterface.ALL_OK) {
+            // The image was brought into the App folder hence only name was passed
+            ComposeMessage.sendimgpreview.setVisibility(View.VISIBLE);
+            ComposeMessage.sendimgpreview.setTag(Utility.getFileLocationInAppFolder(documentName));
+
+            int resId = Utility.getComposeIconResource(documentName);
+            sendimgview.setImageResource(resId);
+            attachmentNameTV.setText(documentName);
+            attachmentNameTV.setVisibility(View.VISIBLE);
+        }
+        else{
+            ComposeMessage.sendimgpreview.setVisibility(View.GONE);
+            Utility.toast("attachment size limited to 10 MB");
+        }
+    }
+
 
     @Override
     public void onBackPressed() {

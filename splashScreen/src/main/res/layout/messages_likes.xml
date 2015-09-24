@@ -86,24 +86,42 @@
 
         <FrameLayout
             android:id="@+id/imagefrmlayout"
+            android:background="@drawable/imageview_shadow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/msg_margin_bottom"
-            android:layout_marginBottom="@dimen/msg_margin_bottom"
-            android:visibility="gone">
+            android:layout_marginLeft="7dp"
+            android:layout_marginRight="7dp"
+            android:visibility="visible">
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:elevation="2dp"
-                android:background="@drawable/image_shadow">
+                android:orientation="horizontal"
+                android:elevation="2dp">
+                <!--android:background="@drawable/image_shadow"-->
 
                 <ImageView
                     android:id="@+id/imgmsgcontent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:src="@drawable/message_icon_pdf"
                     android:scaleType="fitXY" />
+
+                <TextView
+                    android:id="@+id/attachment_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="sample.pdf"
+                    android:textColor="@color/greyDark"
+                    android:textSize="13sp"
+                    android:layout_gravity="center_vertical"
+                    android:maxLines="1"
+                    android:ellipsize="middle"
+                    android:singleLine="true"
+                    android:paddingRight="12dp"
+                    android:paddingLeft="12dp"
+                    android:visibility="visible"/>
             </LinearLayout>
 
             <ProgressBar
@@ -118,8 +136,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="Image Download failed!"
-                android:textColor="@color/darkergrey"
+                android:text="File Download failed! Click to retry"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:textColor="@color/holo_red_dark"
                 android:textSize="12sp"
                 android:visibility="gone" />
         </FrameLayout>

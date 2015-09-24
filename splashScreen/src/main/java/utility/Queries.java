@@ -453,7 +453,6 @@ public class Queries {
             pendingQuery.whereEqualTo("userId", userId);
             pendingQuery.whereEqualTo("pending", true);
             pendingQuery.whereEqualTo("code", groupCode);
-            pendingQuery.setLimit(Config.outboxMsgCount);
 
             pendingMessages = pendingQuery.find();
         }
@@ -705,7 +704,7 @@ public class Queries {
         catch (ParseException e){
             e.printStackTrace();
         }
-        if(Config.SHOWLOG) Log.d("__MG", "fillCodegroupMap : end,  mapsize=" + Application.globalCodegroupMap.size());
+        //if(Config.SHOWLOG) Log.d("__MG", "fillCodegroupMap : end,  mapsize=" + Application.globalCodegroupMap.size());
     }
 
     /*
@@ -802,7 +801,6 @@ public class Queries {
         pendingQuery.orderByDescending("creationTime");
         pendingQuery.whereEqualTo("userId", userId);
         pendingQuery.whereEqualTo("pending", true);
-        pendingQuery.setLimit(Config.outboxMsgCount);
 
         List<ParseObject> pendingMessages = null;
         try {
@@ -828,6 +826,8 @@ public class Queries {
         if(pendingMessages == null || sentMessages == null){//though this won't happen
             return new ArrayList<>();
         }
+
+        if(Config.SHOWLOG) Log.d("DEBUG_OUTBOX_UPDATE_TOTAL_COUNT", "p=" + pendingMessages.size() + ", s=" + sentMessages.size());
 
         //append sentMessages at end of pendingMessages
         pendingMessages.addAll(sentMessages);
@@ -855,12 +855,7 @@ public class Queries {
 
         List<ParseObject> msgList1 = query.find();
 
-        // appending extra objects to the end of list
-        if (msgList1 != null) {
-            msgs.addAll(msgList1);
-            // Utility.toast(msgList1.size()+"");
-        }
-        return msgs;
+        return msgList1;
     }
 
 }

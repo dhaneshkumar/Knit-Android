@@ -6,18 +6,14 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v4.util.LruCache;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
-
-import com.parse.GetDataCallback;
-import com.parse.ParseException;
-import com.parse.ParseFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import trumplab.textslate.R;
 
 /**
  * Created by ashish on 28/7/15.
@@ -158,12 +154,53 @@ public class ImageCache {
         @Override
         protected void onPostExecute(Void result) {
             if(mImageView != null){
-                String currentTag = (String) mImageView.getTag();
-                if(initialTag != null && currentTag != null && !(initialTag.equals(currentTag))){
+                if(! Utility.isTagSame(mImageView, initialTag)){
                     if(Config.SHOWLOG) Log.d(LOGTAG, "(i) tag not same for " + imageName + ". Skip : (a) setting bitmap and (b) doing uiWork");
                 }
                 else {
                     mImageView.setImageBitmap(bitmap);
+                    uiWork.run();
+                }
+            }
+        }
+    }
+
+    public static class WriteDocTask extends AsyncTask<Void, Void, Void>{
+        byte[] data;
+        String docName;
+        ImageView mImageView;
+        Activity attachedActivity;
+        Runnable uiWork;
+
+        String initialTag;
+
+        public WriteDocTask(byte[] data, String imageName, ImageView mImageView, Activity activity, Runnable uiWork){
+            this.data = data;
+            this.docName = imageName;
+            this.mImageView = mImageView;
+            this.attachedActivity = activity;
+            this.uiWork = uiWork;
+
+            this.initialTag = (String) mImageView.getTag();
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            //first write to file if data not null
+            if(data != null){
+                String docPath = Utility.getFileLocationInAppFolder(docName);
+                writeToDisk(data, docPath);
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result) {
+            if(mImageView != null){
+                if(! Utility.isTagSame(mImageView, initialTag)){
+                    if(Config.SHOWLOG) Log.d(LOGTAG, "(i) tag not same for " + docName + ". Skip : (a) setting bitmap and (b) doing uiWork");
+                }
+                else {
                     uiWork.run();
                 }
             }

@@ -238,10 +238,52 @@ public class SessionManager {
         return value;
     }
 
-
     public void reSetCompaignDetails(String key)
     {
         editor.putString(key, null);
         editor.commit();
+    }
+
+    /*************************************/
+    //app see id store
+    public static final String KEY_APPSEE_ID = "appsee_id";
+    public static final String KEY_APPSEE_EXPIRY = "appsee_expiry";
+    public static final String KEY_APPSEE_LAST_CHECKED = "appsee_last_checked";
+
+    public void setAppseeId(String value){
+        editor.putString(KEY_APPSEE_ID, value);
+        editor.commit();
+    }
+
+    public String getAppseeId(){
+        return pref.getString(KEY_APPSEE_ID, null);
+    }
+
+    public void setDate(String key, Date value){
+        Long t = value.getTime();
+        editor.putLong(key, t);
+        editor.commit();
+    }
+
+    public Date getDate(String key){
+        Long t = pref.getLong(key, -1);
+        if(t >= 0){
+            Date expiry = new Date(t);
+            return expiry;
+        }
+        return null;
+    }
+
+    /********** school input **************/
+    public static final String SCHOOL_INPUT_BASE_COUNT = "school_input_base_count"; //open count when updated app first launched
+    public static final String SCHOOL_INPUT_SHOW_COUNT = "school_input_show_count"; //how many times school input dialog shown
+    public void setInteger(String key, int value){
+        editor.putInt(key, value);
+        editor.commit();
+    }
+
+    public int getInteger(String key){
+        int value = pref.getInt(key, -1);
+        return value;
     }
 }

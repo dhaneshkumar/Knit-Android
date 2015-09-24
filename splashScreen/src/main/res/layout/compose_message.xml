@@ -98,8 +98,8 @@
 
         <LinearLayout
             android:id="@+id/progressBarLayout"
-            android:layout_width="112dp"
-            android:layout_height="112dp"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
             android:layout_marginLeft="16dp"
             android:gravity="center"
             android:background="@color/lightbackgroundcolor"
@@ -113,30 +113,44 @@
 
         </LinearLayout>
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/imgpreview"
             android:layout_width="wrap_content"
-            android:layout_height="112dp"
+            android:layout_height="120dp"
             android:layout_margin="16dp"
             android:visibility="gone">
 
             <ImageView
                 android:id="@+id/attachedimg"
-                android:layout_width="112dp"
-                android:layout_height="112dp"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/attachment_icon_word"
                 android:background="@drawable/imageview_shadow">
-
             </ImageView>
 
             <ImageView
                 android:id="@+id/removebutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginLeft="16dp"
+                android:layout_toRightOf="@id/attachedimg"
+                android:layout_marginLeft="6dp"
                 android:background="@drawable/cancel"
                 />
-        </LinearLayout>
+            <TextView
+                android:id="@+id/attachment_name"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"
+                android:text="sample_application_pdf_USERID_TIMESTAMP.pdf"
+                android:textColor="@color/white"
+                android:padding="6dp"
+                android:textSize="12sp"
+                android:ellipsize="end"
+                android:singleLine="true"
+                android:layout_alignLeft="@id/attachedimg"
+                android:layout_alignRight="@id/attachedimg"
+                android:layout_alignBottom="@id/attachedimg"
+                />
+        </RelativeLayout>
         </LinearLayout>
     </LinearLayout>
 

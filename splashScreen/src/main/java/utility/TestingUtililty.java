@@ -1,7 +1,9 @@
 package utility;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.parse.ParseUser;
 
@@ -17,6 +19,7 @@ import trumplabs.schoolapp.Constants;
 public class TestingUtililty {
 
     //public static boolean ignoreResponse = false;
+    public static boolean ignoreSaveInstallation = true;
 
     public static void testingTutorial(){
         if(!BuildConfig.DEBUG){
@@ -124,7 +127,7 @@ public class TestingUtililty {
     }
 
     //create intentional delay while doing something(for testing, e.g loading of images)
-    static void sleep(int millis){
+    public static void sleep(int millis){
         if(!BuildConfig.DEBUG){
             return;
         }
@@ -137,9 +140,42 @@ public class TestingUtililty {
         }
     }
 
+    //call from UI thread only as it spaws a asynctask
+    public static void runAfterUiThread(final Runnable r, final int sleepDuration, final String TAG){
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... params) {
+                Log.d(TAG, "start sleeping for " + sleepDuration);
+                TestingUtililty.sleep(sleepDuration);
+                Log.d(TAG, "end sleeping " + sleepDuration);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                r.run();
+            }
+        }.execute();
+    }
+
     public static void launchProfileActivity(){
         Intent i = new Intent(Application.getAppContext(), ProfilePage.class);
         i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         Application.getAppContext().startActivity(i);
+    }
+
+    public static void resetSchoolInputCase(){
+        if(!BuildConfig.DEBUG){
+            return;
+        }
+        SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
+        SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if(currentUser != null){
+            currentUser.remove("place_id");
+            currentUser.remove("place_name");
+            currentUser.remove("place_area");
+            currentUser.pinInBackground();
+        }
     }
 }

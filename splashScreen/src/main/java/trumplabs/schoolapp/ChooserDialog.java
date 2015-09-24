@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.net.Uri;
@@ -18,6 +17,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
 
+import com.parse.ParseUser;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -27,9 +28,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Random;
+import java.util.Calendar;
 
 import trumplab.textslate.R;
 import utility.Config;
@@ -40,12 +39,23 @@ import utility.Utility;
  * Show dialog to select photo from gallery or camera
  */
 public class ChooserDialog extends DialogFragment implements OnClickListener {
+  static final int PICK_DOC_REQUEST_CODE = 110;
   File imageFile;
   String imageFileName;
   CommunicatorInterface activity;
   Activity currentActivity;
   boolean flag = false;
     boolean profileCall;  //It tells about caller activity : SendMessage(false) or ProfilePage(true)
+
+  private static final String[] acceptableMimeTypes = {
+          "application/msword", //doc
+          "application/vnd.ms-powerpoint", //ppt
+          "application/vnd.ms-excel", //xls
+
+          "application/vnd.openxmlformats-officedocument.wordprocessingml.document", //docx
+          "application/vnd.openxmlformats-officedocument.presentationml.presentation", //pptx
+          "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", //xlsx
+          };
 
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -55,10 +65,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
     LinearLayout gallerybutton = (LinearLayout) view.findViewById(R.id.galleryclick);
     LinearLayout camerabutton = (LinearLayout) view.findViewById(R.id.cameraclick);
+    LinearLayout pdfbutton = (LinearLayout) view.findViewById(R.id.pdfclick);
 
+    currentActivity = getActivity();
     activity = (CommunicatorInterface) getActivity();
     gallerybutton.setOnClickListener(this);
     camerabutton.setOnClickListener(this);
+    pdfbutton.setOnClickListener(this);
     builder.setView(view);
     Dialog dialog = builder.create();
     dialog.setCanceledOnTouchOutside(true);
@@ -89,6 +102,9 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
       case R.id.cameraclick:
         takePicture();
         break;
+      case R.id.pdfclick:
+        takePDF();
+        break;
       default:
         break;
     }
@@ -109,9 +125,14 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
   private void takePicture() {
 
     if(Config.SHOWLOG) Log.d("camera", "started camera.............");
+    ParseUser currentParseUser = ParseUser.getCurrentUser();
+    if(currentParseUser == null){
+      Utility.LogoutUtility.logout();
+      return;
+    }
 
     Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-    imageFileName = Utility.getUniqueImageName();
+    imageFileName = Utility.getUniqueImageName(currentParseUser);
 
     if(Config.SHOWLOG) Log.d("camera", imageFileName);
 
@@ -123,6 +144,16 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
     intent.putExtra(MediaStore.EXTRA_OUTPUT, tempUri);
     intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);   //high(1) or low(0) quality images
     startActivityForResult(intent, 100);
+  }
+
+  private void takePDF(){
+    Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+    //intent.setType("*/*");
+    intent.setType("*/*");
+    //intent.putExtra(Intent.EXTRA_MIME_TYPES, acceptableMimeTypes);
+    intent.addCategory(Intent.CATEGORY_OPENABLE); //openable
+    intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true); //local files only
+    startActivityForResult(intent, PICK_DOC_REQUEST_CODE);
   }
 
   /**
@@ -178,13 +209,63 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
           break;
       }
     }
+    else if(requestCode == PICK_DOC_REQUEST_CODE){
+      switch (resultCode) {
+        case Activity.RESULT_OK:
+          Uri fileUri = intent.getData();
+
+          Utility.FileDetails fileDetails = Utility.getFileNameFromUri(fileUri);
+          String realFileName = fileDetails.fName;
+          long realFileSize = fileDetails.fSize;
+
+          String extension = null;
+          String pdfName = null;
+          if(realFileName != null){
+            int i = realFileName.lastIndexOf('.');
+            if (i > 0) {
+              extension = realFileName.substring(i+1);
+              pdfName = realFileName.substring(0, i);
+            }
+          }
+
+          Log.d("__file_picker", "onActivityResult realFileName=" + realFileName + ", extension=" + extension);
+
+
+          Log.d("__file_picker", "onActivityResult realFileSize=" + realFileSize);
+          boolean isSizeUnderLimit = true;
+
+          if(realFileSize > 10 * 1024 * 1024){//more than 10 MB
+            //Utility.toast("attachment size limit is 10 MB");
+            isSizeUnderLimit = false;
+          }
+
+          ParseUser currentParseUser = ParseUser.getCurrentUser();
+          if(currentParseUser == null){
+            Utility.LogoutUtility.logout();
+            break;
+          }
+
+          if(isSizeUnderLimit) {
+            new SaveFile(fileUri, extension, pdfName, currentParseUser).execute();
+          }
+          else{
+            new SaveFile(null, extension, pdfName, currentParseUser).execute(); //explicitly pass null uri as flag that file size exceed
+          }
+          break;
+        case Activity.RESULT_CANCELED:
+          Log.d("__file_picker", "onActivityResult cancelled");
+          break;
+      }
+    }
     getDialog().dismiss();
   }
 
   public interface CommunicatorInterface {
+    public static final int ALL_OK = 0;
+    public static final int SIZE_LIMIT_EXCEED = 1;
     void sendImagePic(String imgname);
+    void sendDocument(String documentName, int flag);
   }
-
 
   /**
    * loading image in background fetching image from photos app then loading in imageviewer
@@ -202,7 +283,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
 
       boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
 
-      imageName = Utility.getUniqueImageName();
+      ParseUser currentParseUser = ParseUser.getCurrentUser();
+      if(currentParseUser == null){
+        Utility.LogoutUtility.logout();
+        return null;
+      }
+
+      imageName = Utility.getUniqueImageName(currentParseUser);
 
       String imagePath = Utility.getWorkingAppDir() + "/media/" + imageName;
 
@@ -271,6 +358,93 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
       }
     }
 
+  }
+
+  class SaveFile extends AsyncTask<Void, Void, Void> {
+    private Uri uri;
+    private String parseFileName;
+    private String extension;
+    private String pdfName;
+    private String storagePath;
+    private ParseUser currentParseUser;
+    int resultFlag;
+
+    SaveFile(Uri uri, String extension, String pdfName, ParseUser currentParseUser) {
+      this.uri = uri;
+      this.extension = extension;
+      this.pdfName = pdfName;
+      this.currentParseUser = currentParseUser; //ensure that it won't be null
+      this.resultFlag = CommunicatorInterface.ALL_OK; //default hope
+    }
+
+    @Override
+    protected Void doInBackground(Void... params) {
+      if(uri == null){
+        this.resultFlag = CommunicatorInterface.SIZE_LIMIT_EXCEED;
+        return null;
+      }
+
+      boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
+
+      if(pdfName == null){
+        pdfName = "doc";
+      }
+
+      if(extension == null){
+        extension = "pdf";
+        //todo since currently only pdf file attachment is supported
+      }
+
+      parseFileName = Utility.getUniqueFileName(currentParseUser, pdfName, extension);
+
+      storagePath = Utility.getFileLocationInAppFolder(parseFileName);
+
+      //Storing file locally in /media folder
+      ParcelFileDescriptor parcelFileDescriptor = null;
+      try {
+        parcelFileDescriptor = currentActivity.getContentResolver().openFileDescriptor(uri, "r");
+      } catch (FileNotFoundException e1) {
+      }
+
+      if (parcelFileDescriptor != null) {
+        FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
+        if (fileDescriptor != null) {
+          InputStream inputStream = new FileInputStream(fileDescriptor);
+          BufferedInputStream reader = new BufferedInputStream(inputStream);
+
+          // Create an output stream to a file that you want to save to
+          BufferedOutputStream outStream;
+          try {
+            outStream = new BufferedOutputStream(new FileOutputStream(storagePath));
+            byte[] buf = new byte[2048];
+            int len;
+            while ((len = reader.read(buf)) > 0) {
+              outStream.write(buf, 0, len);
+            }
+
+            if (outStream != null)
+              outStream.close();
+
+            retrieveSuccess = true;
+            Log.d("__file_picker", "SaveFile: saved at loc=" + storagePath);
+            return null;
+
+          } catch (FileNotFoundException e) {
+          } catch (IOException e) {
+          }
+        }
+      }
+
+      Log.d("__file_picker", "SaveFile: failed");
+      return null;
+    }
+
+    @Override
+    protected void onPostExecute(Void res) {
+      Log.d("__file_picker", "SaveFile : onPostExecute");
+
+      activity.sendDocument(parseFileName, resultFlag);
+    }
   }
 
 

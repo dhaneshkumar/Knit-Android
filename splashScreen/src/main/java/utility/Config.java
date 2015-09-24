@@ -1,5 +1,8 @@
 package utility;
 
+import java.util.Date;
+import java.util.GregorianCalendar;
+
 import trumplabs.schoolapp.Constants;
 
 public class Config {
@@ -17,7 +20,7 @@ public class Config {
     1. Select APP ID
      */
     //public static final String APP_ID = "jrumkUT2jzvbFn7czsC5fQmFG5JIYSE4P7GJrlOG"; //Knit
-   public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
+    public static final String APP_ID = "tTqAhR73SE4NWFhulYX4IjQSDH2TkuTblujAbvOK"; // development_knit
     //public static final String APP_ID = "NCevIU3UOFsXQxcxCp0jp5qGECwHgWgP3SEqRSFr"; // load testing
 
 
@@ -60,6 +63,12 @@ public class Config {
   public static final String GoogleApi_ProjectNumner = "838906570879";
   public static final String APPS_FLYER_ID = "yM6MGfywAWmdjteEvgftxT";
   public static final String APPSEE_ID = "6c82500fcfaf498b83cc9a9e4b6d4111";
+  public static final Date APPSEE_EXPIRY = new GregorianCalendar(2015, 8, 16).getTime();
+  public static final long APPSEE_RETRY_INTERVAL = 1 * Constants.DAY_MILLISEC; //todo set it to 1 day
+  public static final long APPSEE_RETRY_INTERVAL_ALWAYS = 7 * Constants.DAY_MILLISEC; //after this interval,
+                                                                                          // always check whether the key has expired or not
+                                                                                          // todo set it to a week(7 days)
+
 
     public static int SUBSCRIBER_MIN_LIMIT = 1;
 
@@ -78,16 +87,16 @@ public class Config {
 
     public static final int inboxMsgRefreshTotal= 10; //how many of the latest inbox messages(total) will
 
-    //be updated(periodically in Refresher) for like/confused
-    public static final int inboxMsgCount = 20;
-    public static final int createMsgCount = 20;
-    public static  final int outboxMsgCount =20;
+    public static final int inboxMsgCount = 50;
+    public static final int createMsgCount = 50;
+    public static  final int outboxMsgCount = 50;
     public static final int createMsgMax = 100;
     public static final int membersCount = 100;
     //public static final String creator = "Knit";
     public static final String welcomeMsg =
             "Congratulations! You have successfully joined my classroom. I will use this app to send important reminders and announcements related to my subject.";
 
+    public static final String attachmentMessage = "(This message contains a file attachment. Please update your app to see it)";
     public static final String RemovalMsg = "You have been removed from this classroom. You won't receive any notification from this class from now onwards.";
     public static final int faqRefreshingcount = 20;
 

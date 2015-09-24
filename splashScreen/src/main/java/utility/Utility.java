@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -13,14 +14,18 @@ import android.graphics.Point;
 import android.media.ThumbnailUtils;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.provider.OpenableColumns;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.Display;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
@@ -33,6 +38,7 @@ import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
 
 import org.json.JSONException;
@@ -40,67 +46,34 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import baseclasses.MyActionBarActivity;
 import library.UtilString;
 import loginpages.Signup;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
+import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
-import trumplabs.schoolapp.MainActivity;
 
-public class Utility extends MyActionBarActivity {
+public class Utility{
 
     static String appName = "knit";
 
     public static void ls(String str) {
         if (!UtilString.isBlank(str))
             System.out.println(str);
-    }
-
-    /*
-        check if local parseinstallation has "id" field set which implies that cloud database
-        has an entry corresponding to it(this id is the object id in cloud database).
-        If not, use "appInstallation" cloud function to create an entry
-        on cloud.
-     */
-    public static boolean checkParseInstallation(){
-        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
-
-        if(parseInstallation == null){ //this should never ever happen
-            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstallation : getCurrentInstallation() returned null");
-            return false;
-        }
-
-        if(parseInstallation.getString("id") != null){  //this single handedly means that installation is all set.
-                                                        // This is cleared during singup/signin to
-                                                        // prevent use of stale ids
-            return true; //we're done
-        }
-
-        //Since neither id nor objectId set, call the cloud function.
-        if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstalltion : calling appInstallation cloud function");
-        HashMap<String, Object> param = new HashMap<String, Object>();
-        param.put("deviceType", "android");
-        param.put("installationId", parseInstallation.getInstallationId());
-
-        try{
-            String id = ParseCloud.callFunction("appInstallation", param);
-            parseInstallation.put("id", id);
-            parseInstallation.pin();
-            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstalltion : success cloud function with id " + id);
-            return true;
-        }
-        catch (com.parse.ParseException e){
-            if(Config.SHOWLOG) Log.d("DEBUG_UTILITY", "checkParseInstallation : failure cloud function");
-            e.printStackTrace();
-            return false;
-        }
     }
 
     //called from ProfilePage logout option
@@ -172,17 +145,30 @@ public class Utility extends MyActionBarActivity {
 
 
     public static void toast(String str){
-        toast(str, false); //by default user shouldn't be null while showing toast
+        toast(str, false, 17, false); //by default user shouldn't be null while showing toast
+    }
+
+    public static void toast(String str, int fontSize){
+        toast(str, false, fontSize, false);
+    }
+
+    public static void toastDialog(String str){
+        toast(str, false, 17, true); //when shown in dialog, activity is paused
     }
 
     public static void toast(String str, boolean isNullUserOK) {
-        toast(str, isNullUserOK, 17);
+        toast(str, isNullUserOK, 17, false);
     }
+
+    public static void toast(String str, boolean isNullUserOK, int fontSize) {
+        toast(str, isNullUserOK, fontSize, false);
+    }
+
     /*
         @param str Content to show as toast
         @param isNullUserOK whether while showing this toast, null user is acceptable e.g during signup/login process
      */
-    public static void toast(String str, boolean isNullUserOK, int fontSize) {
+    public static void toast(String str, boolean isNullUserOK, int fontSize, boolean isNullActivityOK) {
 
         if(ParseUser.getCurrentUser() == null && !isNullUserOK){
             if(Config.SHOWLOG) Log.d("__A", "toast : parseUser null, hence ignoring content=" + str);
@@ -190,7 +176,7 @@ public class Utility extends MyActionBarActivity {
         }
 
         //see if app is visible, i.e current activity not null
-        if(Application.getCurrentActivity() == null){
+        if(Application.getCurrentActivity() == null && !isNullActivityOK){
             if(Config.SHOWLOG) Log.d("__A", "toast : app not visible, hence ignoring content=" + str);
             return;
         }
@@ -293,6 +279,89 @@ public class Utility extends MyActionBarActivity {
         }
 
         return "just now";
+    }
+
+    public static class MyDateFormatter {
+        private SimpleDateFormat sdfDateYear;
+        private SimpleDateFormat sdfYearOnly;
+        private SimpleDateFormat sdfTimeOnly;
+        private SimpleDateFormat sdfTimeDate;
+        private SimpleDateFormat sdfTimeDateYear;
+
+        private static MyDateFormatter instance = null;
+
+        public MyDateFormatter(){
+            DateFormatSymbols symbols = new DateFormatSymbols(Locale.getDefault());
+            symbols.setAmPmStrings(new String[]{"a", "p"});
+
+            sdfDateYear = new SimpleDateFormat("dd/MM/yy");
+
+            sdfYearOnly = new SimpleDateFormat("yy");
+
+            sdfTimeOnly = new SimpleDateFormat("hh:mma");
+            sdfTimeOnly.setDateFormatSymbols(symbols);
+
+            sdfTimeDate = new SimpleDateFormat("dd/MM hh:mma");
+            sdfTimeDate.setDateFormatSymbols(symbols);
+
+            sdfTimeDateYear = new SimpleDateFormat("dd/MM/yy hh:mma");
+            sdfTimeDateYear.setDateFormatSymbols(symbols);
+        }
+
+        public static MyDateFormatter getInstance(){
+            if(instance == null){
+                instance = new MyDateFormatter();
+            }
+
+            return instance;
+        }
+
+        public String convertTimeStampNew(Date msgDate){
+            Log.d("__timestamp", "enter");
+            String result;
+
+            if (msgDate != null) {
+
+                String msgDateString = sdfDateYear.format(msgDate);
+                String msgYearString = sdfYearOnly.format(msgDate);
+                Log.d("__timestamp", "msgDateString " + msgDateString + ", " + msgYearString);
+
+                Calendar today = Calendar.getInstance();
+                String todayDateString = sdfDateYear.format(today.getTime());
+                String currentYearString = sdfYearOnly.format(today.getTime());
+                Log.d("__timestamp", "todayString " + todayDateString + ", " + currentYearString);
+
+                Calendar yesterday = Calendar.getInstance();
+                yesterday.add(Calendar.DATE, -1);
+                String yesterdayDateString = sdfDateYear.format(yesterday.getTime());
+                Log.d("__timestamp", "yesterdayString " + yesterdayDateString);
+
+                if(msgDateString.equals(todayDateString)){
+                    result = sdfTimeOnly.format(msgDate);
+                }
+                else if(msgDateString.equals(yesterdayDateString)){
+                    result = "yesterday " + sdfTimeOnly.format(msgDate);
+                }
+                else if(msgYearString.equals(currentYearString)) {
+                    result = sdfTimeDate.format(msgDate);
+                }
+                else{
+                    result = sdfTimeDateYear.format(msgDate);
+                }
+
+                Log.d("__timestamp", "exit");
+                return result;
+            }
+
+            return "just now";
+        }
+
+        public String giveInDetail(Date date){
+            if(date != null){
+                return sdfTimeDateYear.format(date);
+            }
+            return "unknown";
+        }
     }
 
     /**
@@ -438,19 +507,193 @@ public class Utility extends MyActionBarActivity {
                 }
 
             }
+
+            File docsfolder =
+                    new File(Environment.getExternalStorageDirectory() + "/" + appName + "/docs");
+            if (!docsfolder.exists()) {
+                if (docsfolder.mkdir()) {
+                }
+
+            }
         }
         return Environment.getExternalStorageDirectory() + "/" + appName;
     }
 
+    public static class FileDetails{
+        public String fName;
+        public long fSize;
+    }
+
+    public static FileDetails getFileNameFromUri(Uri uri) {
+        FileDetails details = new FileDetails();
+        details.fName = null;
+        details.fSize = -1;
+
+        if (uri.getScheme().equals("content")) {
+            Cursor cursor = Application.getAppContext().getContentResolver().query(uri, null, null, null, null);
+            try {
+                if (cursor != null && cursor.moveToFirst()) {
+                    details.fName = cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    details.fSize = cursor.getLong(cursor.getColumnIndex(OpenableColumns.SIZE));
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+
+        if (details.fName == null) {
+            details.fName = uri.getPath();
+            int cut = details.fName.lastIndexOf('/');
+            if (cut != -1) {
+                details.fName = details.fName.substring(cut + 1);
+            }
+        }
+        return details;
+    }
+
     /*
         Use this to give a unique name to captured or picked image before storing 'media' folder
-        This will be unique globally across all users, all devices, any time (assuming parse installation id is unique across all devices)
+        This will be unique globally across all users, any time (as anytime a user can have only one session)
      */
-    public static String getUniqueImageName(){
-        String installationId = ParseInstallation.getCurrentInstallation().getInstallationId();
+    public static String getUniqueImageName(ParseUser currentParseUser){
+        String parseUserObjectId = currentParseUser.getObjectId();
         Long timeInMillis = new Date().getTime();
 
-        return installationId + "_" + timeInMillis + ".jpg";
+        return parseUserObjectId + "_" + timeInMillis + ".jpg";
+    }
+
+    public static String getUniqueFileName(ParseUser currentParseUser, String fileName, String extension){
+        fileName = removeSpecialChars(fileName);
+
+        String parseUserObjectId = currentParseUser.getObjectId();
+        Long timeInMillis = new Date().getTime();
+
+        if(fileName.length() > 20){
+            fileName = fileName.substring(0, 20);
+        }
+        return fileName + "_" + parseUserObjectId + "_" + timeInMillis + "." + extension;
+    }
+
+    public static String getFileLocationInAppFolder(String fileName){
+        if(isFileImageType(fileName)){
+            Log.d("__file_picker", "getFileLocationInAppFolder image type : " + fileName);
+            return getWorkingAppDir() + "/media/" + fileName;
+        }
+        else {
+            //for non-image type files
+            Log.d("__file_picker", "getFileLocationInAppFolder fallback : " + fileName);
+            return getWorkingAppDir() + "/docs/" + fileName;
+        }
+    }
+
+    public static String getExtension(String fileName){
+        if(fileName != null){
+            int i = fileName.lastIndexOf('.');
+            if (i >= 0) {
+                String extension = fileName.substring(i+1);
+                return extension;
+            }
+        }
+        return null;
+    }
+
+    public static HashMap<String, Integer> extensionToMessageIcon;
+    static {
+        extensionToMessageIcon = new HashMap<>();
+        extensionToMessageIcon.put("doc", R.drawable.message_icon_word);
+        extensionToMessageIcon.put("docx", R.drawable.message_icon_word);
+        extensionToMessageIcon.put("ppt", R.drawable.message_icon_ppt);
+        extensionToMessageIcon.put("pptx", R.drawable.message_icon_ppt);
+        extensionToMessageIcon.put("xls", R.drawable.message_icon_xls);
+        extensionToMessageIcon.put("xlsx", R.drawable.message_icon_xls);
+        extensionToMessageIcon.put("pdf", R.drawable.message_icon_pdf);
+    }
+
+    public static int getMessageIconResource(String documentName){
+        if(documentName != null && Utility.getExtension(documentName) != null){
+            //check for std document types e.g word, ppt, excel, pdf
+            String extension = Utility.getExtension(documentName).toLowerCase();
+            Integer resId = extensionToMessageIcon.get(extension);
+            if(resId != null){
+                return resId;
+            }
+
+            //check for audio/video using mimetype
+            String mimeType = getMimeType(documentName);
+            if(mimeType != null){
+                mimeType = mimeType.toLowerCase();
+                if(mimeType.contains("audio")){
+                    return R.drawable.message_icon_audio;
+                }
+                else if(mimeType.contains("video")){
+                    return R.drawable.message_icon_video;
+                }
+            }
+        }
+        return R.drawable.message_icon_general;
+    }
+
+    public static HashMap<String, Integer> extensionToComposeIcon;
+    static {
+        extensionToComposeIcon = new HashMap<>();
+        extensionToComposeIcon.put("doc", R.drawable.attachment_icon_word);
+        extensionToComposeIcon.put("docx", R.drawable.attachment_icon_word);
+        extensionToComposeIcon.put("ppt", R.drawable.attachment_icon_ppt);
+        extensionToComposeIcon.put("pptx", R.drawable.attachment_icon_ppt);
+        extensionToComposeIcon.put("xls", R.drawable.attachment_icon_xls);
+        extensionToComposeIcon.put("xlsx", R.drawable.attachment_icon_xls);
+        extensionToComposeIcon.put("pdf", R.drawable.attachment_icon_pdf);
+    }
+
+    public static int getComposeIconResource(String documentName){
+        if(documentName != null && Utility.getExtension(documentName) != null){
+            //check for std document types e.g word, ppt, excel, pdf
+            String extension = Utility.getExtension(documentName).toLowerCase();
+            Integer resId = extensionToComposeIcon.get(extension);
+            if(resId != null){
+                return resId;
+            }
+
+            //check for audio/video using mimetype
+            String mimeType = getMimeType(documentName);
+            if(mimeType != null){
+                mimeType = mimeType.toLowerCase();
+                if(mimeType.contains("audio")){
+                    return R.drawable.attachment_icon_audio;
+                }
+                else if(mimeType.contains("video")){
+                    return R.drawable.attachment_icon_video;
+                }
+            }
+        }
+        return R.drawable.attachment_icon_general;
+    }
+
+    public static String getMimeType(String fileName){
+        String extension = getExtension(fileName);
+        if(extension != null){
+            Log.d("__file_picker", "non null extension=" + extension);
+            MimeTypeMap myMime = MimeTypeMap.getSingleton();
+            String mimeType = myMime.getMimeTypeFromExtension(extension);
+            if(mimeType != null){
+                Log.d("__file_picker", "non null mimeType=" + mimeType);
+                return mimeType;
+            }
+        }
+
+        //default fallback, won't occur in general
+        Log.d("__file_picker", "default fallback");
+        return "*/*";
+    }
+
+    public static boolean isFileImageType(String fileName){
+        if(fileName != null){
+            String extension = getExtension(fileName);
+            if(extension != null && (extension.toLowerCase().contains("jpg") || extension.toLowerCase().contains("jpeg"))){
+                return true;
+            }
+        }
+        return false;
     }
 
     public static String classColourCode(String className) {
@@ -468,7 +711,7 @@ public class Utility extends MyActionBarActivity {
 
     public static String removeSpecialChars(String str) {
         if (!UtilString.isBlank(str)) {
-            str = str.replaceAll("[^\\w\\s-]", "");
+            str = str.replaceAll("[^A-Za-z0-9_\\.]", "-");
         }
         return str;
     }
@@ -587,6 +830,109 @@ public class Utility extends MyActionBarActivity {
             return true;
         }
         return false;
+    }
+
+    public static boolean isTagSame(ImageView imageView, String oldTag){
+        if(imageView != null && imageView.getTag() != null && oldTag != null && oldTag.equals((String)imageView.getTag())){
+            return true;
+        }
+        return false;
+    }
+
+    //Appsee not used
+    public static String getAppseeId(){
+        String appseeId = SessionManager.getInstance().getAppseeId();
+        if(appseeId == null){
+            appseeId = Config.APPSEE_ID; //default fallback is the old key
+        }
+        return appseeId;
+    }
+
+    //Appsee not used
+    public static void fetchAppseeIdIfNeeded(){
+        Date appseeExpiry = SessionManager.getInstance().getDate(SessionManager.KEY_APPSEE_EXPIRY);
+        if(appseeExpiry == null){
+            appseeExpiry = Config.APPSEE_EXPIRY;
+        }
+
+        Date current = new Date();
+
+        Log.d("__appsee", "exp=" + Utility.MyDateFormatter.getInstance().giveInDetail(appseeExpiry) +
+                ", cur=" + Utility.MyDateFormatter.getInstance().giveInDetail(current) + " compare=" + current.compareTo(appseeExpiry));
+
+        Date lastChecked = SessionManager.getInstance().getDate(SessionManager.KEY_APPSEE_LAST_CHECKED);
+        if(lastChecked == null){
+            lastChecked = new GregorianCalendar(2015, 1, 1).getTime(); //1 jan 2015 just some old date
+        }
+        Log.d("__appsee", "last checked=" + Utility.MyDateFormatter.getInstance().giveInDetail(lastChecked));
+
+        if((current.getTime() - appseeExpiry.getTime() > 0) || (current.getTime() - lastChecked.getTime() > Config.APPSEE_RETRY_INTERVAL_ALWAYS)){
+
+            if(current.getTime() - lastChecked.getTime() > Config.APPSEE_RETRY_INTERVAL){
+                //more than 1 day, start a thread to fetch new id
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        /*Log.d("__appsee", "sleep start");
+                        TestingUtililty.sleep(5000);
+                        String id = "abc";
+                        Calendar expiryCal = Calendar.getInstance();
+                        expiryCal.add(Calendar.MINUTE, TestingUtililty.multiplier * 5);
+                        Date expiry = expiryCal.getTime();
+                        Log.d("__appsee", "sleep over");*/
+
+                        String id = null;
+                        Date expiry = null;
+
+                        try {
+                            ParseQuery keyQuery = new ParseQuery("Appsee");
+                            keyQuery.whereEqualTo("name", "appsee");
+                            keyQuery.setLimit(1);
+
+                            List<ParseObject> results = keyQuery.find();
+                            ParseObject keyDetail = results.get(0);
+
+                            id = keyDetail.getString("key");
+                            expiry = keyDetail.getDate("expiry");
+                        }
+                        catch (ParseException e){
+                            e.printStackTrace();
+                        }
+
+                        if(id != null && expiry != null){
+                            Log.d("__appsee", "success id=" + id + ", expiry=" + Utility.MyDateFormatter.getInstance().giveInDetail(expiry));
+                            SessionManager.getInstance().setAppseeId(id);
+                            SessionManager.getInstance().setDate(SessionManager.KEY_APPSEE_EXPIRY, expiry);
+                            SessionManager.getInstance().setDate(SessionManager.KEY_APPSEE_LAST_CHECKED, new Date());//now
+                            Log.d("__appsee", "success persistently set");
+                        }
+                        else{
+                            Log.d("__appsee", "failure");
+                        }
+                    }
+                }).start();
+            }
+            else{
+                Log.d("__appsee", "too frequent to retry");
+            }
+        }
+        else{
+            Log.d("__appsee", "not yet expired");
+        }
+    }
+
+    //call in background thread only as it makes a blocking parse object save call
+    public static void saveParseInstallationIfNeeded() throws ParseException{
+        Log.d("__save_installation", "checking");
+
+        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        if(parseInstallation != null){
+            if(parseInstallation.getObjectId() == null){
+                Log.d("__save_installation", "saving");
+                parseInstallation.save();
+                Log.d("__save_installation", "save success");
+            }
+        }
     }
 
     public static class LogoutUtility{

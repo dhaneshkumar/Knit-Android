@@ -157,6 +157,7 @@ public class LoginPage extends MyActionBarActivity {
       PhoneSignUpVerfication.fillDetailsForSession(true, params);
 
       try {
+        Utility.saveParseInstallationIfNeeded();
         HashMap<String, Object> result = ParseCloud.callFunction("appEnter", params);
         String sessionToken = (String) result.get("sessionToken");
 
