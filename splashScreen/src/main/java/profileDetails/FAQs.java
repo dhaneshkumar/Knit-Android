@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -40,7 +41,6 @@ public class FAQs extends MyActionBarActivity {
   private LinearLayout progressLayout;
   private LinearLayout editLayout;
 
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -62,33 +62,18 @@ public class FAQs extends MyActionBarActivity {
       return;
     }
 
-    Queries query = new Queries();
-    try {
-      faqList = query.getLocalFAQs(currentParseUser.getString("role"));
+    faqList = new ArrayList<ParseObject>();
+    editLayout.setVisibility(View.GONE);
+    progressLayout.setVisibility(View.VISIBLE);
 
-
-      if (faqList == null || faqList.size() == 0) {
-
-          editLayout.setVisibility(View.GONE);
-          progressLayout.setVisibility(View.VISIBLE);
-
-          GetServerFaqs serverFaqs =
-              new GetServerFaqs(currentParseUser.getString("role"));
-          serverFaqs.execute();
-      }
-
-    } catch (ParseException e) {
-    }
-
-    if (faqList == null)
-      faqList = new ArrayList<ParseObject>();
+    GetServerFaqs serverFaqs =
+            new GetServerFaqs(currentParseUser.getString("role"));
+    serverFaqs.execute();
 
     faqListView.setAdapter(faqAdapter);
 
     getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     getSupportActionBar().setTitle("FAQs");
-
-
 
     faqListView.setOnItemClickListener(new OnItemClickListener() {
 
@@ -175,6 +160,7 @@ public class FAQs extends MyActionBarActivity {
 
     private String role;
     private List<ParseObject> tempFaqList;
+    int errorCode;
 
     public GetServerFaqs(String role) {
       this.role = role;
@@ -185,53 +171,75 @@ public class FAQs extends MyActionBarActivity {
     protected Void doInBackground(Void... params) {
 
       ParseUser currentParseUser = ParseUser.getCurrentUser();
+
       if(currentParseUser == null){
         Utility.LogoutUtility.logout();
         return null;
       }
 
       List<ParseObject> faqs = null;
-      try {
 
+      faqs = Queries.getLocalFAQs(currentParseUser.getString("role"), currentParseUser.getUsername());
+      if(faqs != null && faqs.size() > 0){
+        Log.d("__faqs", "got faqs locally");
+        tempFaqList = faqs;
+        return null;
+      }
+
+      //now fetch from cloud
+      if(!Utility.isInternetExistWithoutPopup()){
+        errorCode = ParseException.CONNECTION_FAILED;
+        return null;
+      }
+
+      try {
         HashMap<String, Date> param = new HashMap<>();
 
-          Date d = null;
-          try {
-              SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-              // here set the pattern as you date in string was containing like date/month/year
+        Date d = null;
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            // here set the pattern as you date in string was containing like date/month/year
 
-              d = sdf.parse("20/01/2014");
-          } catch (java.text.ParseException e) {
-              e.printStackTrace();
-          }
+            d = sdf.parse("20/01/2014");
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+        }
 
-          param.put("date", d);
-          faqs = ParseCloud.callFunction("faq", param);
+        param.put("date", d);
+        Log.d("__faqs", "calling cloud function");
+        faqs = ParseCloud.callFunction("faq", param);
+        Log.d("__faqs", "success cloud function");
 
       } catch (ParseException e) {
+        errorCode = e.getCode();
+        Log.d("__faqs", "error cloud function " + e.getCode() + ", " + e.getMessage());
         Utility.LogoutUtility.checkAndHandleInvalidSession(e);
       }
 
       if (faqs != null) {
+        tempFaqList = faqs;
+
         for (int i = 0; i < faqs.size(); i++) {
           ParseObject faq = faqs.get(i);
-
-          tempFaqList.add(faq);
           faq.put("userId", currentParseUser.getUsername());
-
-          try {
-            faq.pin();
-          } catch (ParseException e1) {
-          }
         }
+
+        ParseObject.pinAllInBackground(faqs);
       }
 
       return null;
     }
 
-
     @Override
     protected void onPostExecute(Void result) {
+      if(tempFaqList == null || tempFaqList.size() == 0){
+        if(errorCode == ParseException.CONNECTION_FAILED){
+          Utility.toast("Connection error!");
+        }
+        else{
+          Utility.toast("Some unexpected error occured!");
+        }
+      }
       faqList = tempFaqList;
       faqAdapter.notifyDataSetChanged();
       progressLayout.setVisibility(View.GONE);

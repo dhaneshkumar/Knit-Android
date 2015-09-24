@@ -5,7 +5,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.parse.ParseException;
+import com.parse.ParseObject;
+import com.parse.ParseQuery;
 import com.parse.ParseUser;
+
+import java.util.List;
 
 import notifications.NotificationGenerator;
 import profileDetails.ProfilePage;
@@ -176,6 +181,19 @@ public class TestingUtililty {
             currentUser.remove("place_name");
             currentUser.remove("place_area");
             currentUser.pinInBackground();
+        }
+    }
+
+    public static void clearLocalFAQs(){
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("FAQs");
+        query.fromLocalDatastore();
+
+        try{
+            List<ParseObject> faqs = query.find();
+            ParseObject.unpinAll(faqs);
+        }
+        catch (ParseException e){
+            e.printStackTrace();
         }
     }
 }

@@ -39,7 +39,6 @@ import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
 import utility.Queries;
-import utility.TestingUtililty;
 import utility.Tools;
 import utility.Utility;
 
@@ -71,6 +70,8 @@ public class Subscribers extends MyActionBarActivity {
         super.onCreate(savedInstanceState);
 
         //TestingUtililty.resetSchoolInputCase();
+        //TestingUtililty.clearLocalFAQs();
+
         setContentView(R.layout.classmembers_layout);
 
         //setting action bar title

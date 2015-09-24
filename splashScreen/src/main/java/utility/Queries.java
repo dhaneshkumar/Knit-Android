@@ -786,19 +786,25 @@ public class Queries {
     /*
      * get FAQs locally
      */
-    public List<ParseObject> getLocalFAQs(String role) throws ParseException {
+    public static List<ParseObject> getLocalFAQs(String role, String username){
 
         ParseQuery<ParseObject> query = ParseQuery.getQuery("FAQs");
         query.fromLocalDatastore();
         query.orderByAscending(Constants.TIMESTAMP);
-        query.whereEqualTo("userId", userId);
+        query.whereEqualTo("userId", username);
 
         if (role.equals(Constants.PARENT))
             query.whereEqualTo("role", "Parent"); // role stored in faq is "Parent" where in user table : "parent"
 
-        List<ParseObject> msgs = query.find();
+        try {
+            List<ParseObject> msgs = query.find();
+            return msgs;
+        }
+        catch (ParseException e){
+            e.printStackTrace();
+        }
 
-        return msgs;
+        return null;
     }
 
     /**

@@ -313,6 +313,7 @@ public class JoinClassDialog extends DialogFragment {
     class AddChild_Background extends AsyncTask<Void, Void, Boolean> {
         boolean classExist; //flag to test whether class already added in user's joined-group or not
         boolean classCodeNotExist;
+        List<ParseObject> tempInboxMessages;
 
         @Override
         protected Boolean doInBackground(Void... params) {
@@ -335,6 +336,13 @@ public class JoinClassDialog extends DialogFragment {
                     int result = JoinedHelper.joinClass(code, childName);
 
                     if (result == 1) {
+                        try {
+                            tempInboxMessages = query.getLocalInboxMsgs();
+                        }
+                        catch (ParseException e){
+                            e.printStackTrace();
+                        }
+                        Messages.updateInboxTotalCount();
                         return true;      //successfully joined class
                     }
                     else if (result == 2) {
@@ -391,16 +399,14 @@ public class JoinClassDialog extends DialogFragment {
 
                 //Refreshing inbox fetched messages
 
-                try {
-                    Messages.groupDetails = query.getLocalInboxMsgs();
-                    Messages.updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
+                Messages.groupDetails = tempInboxMessages;
+                 //update total inbox count required to manage how/when scrolling loads more messages
 
-                    if(Messages.groupDetails == null)
-                        Messages.groupDetails = new ArrayList<ParseObject>();
+                if(Messages.groupDetails == null)
+                    Messages.groupDetails = new ArrayList<>();
 
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+                if(Messages.myadapter != null)
+                    Messages.myadapter.notifyDataSetChanged();
 
                 if(getActivity() != null){
                     //show if signup account, and not set in sharedprefs
@@ -423,9 +429,6 @@ public class JoinClassDialog extends DialogFragment {
                         }
                     }
                 }
-
-                if( Messages.myadapter != null)
-                    Messages.myadapter.notifyDataSetChanged();
 
                 dialog.dismiss();
 

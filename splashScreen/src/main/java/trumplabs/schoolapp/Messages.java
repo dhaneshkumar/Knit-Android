@@ -176,50 +176,8 @@ public class Messages extends Fragment {
         //initialize msgs as it is static and can be persistent from previous user who logged out
         groupDetails = new ArrayList<>();
 
-        /*
-        If user is a teacher then load data in background (since there are 3 tabs to load) else load directly
-         */
-        String role = currentParseUser.getString(Constants.ROLE);
-        if(role.equals(Constants.TEACHER))
-        {
-            GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
-            getLocalInboxMsg.execute();
-        }
-        else
-        {
-            inbox_messages_pb.setVisibility(View.GONE);
-            inbox_messages_bg.setVisibility(View.VISIBLE);
-
-            try {
-                groupDetails = query.getLocalInboxMsgs();
-                updateInboxTotalCount(); //update total inbox count required to manage how/when scrolling loads more messages
-            } catch (ParseException e) {
-            }
-
-            if (groupDetails == null)
-                groupDetails = new ArrayList<>();
-
-            if (groupDetails.size() == 0)
-                inemptylayout.setVisibility(View.VISIBLE);
-            else
-                inemptylayout.setVisibility(View.GONE);
-
-
-            if(refreshServerMessage) {
-                if(Config.SHOWLOG) Log.d("DEBUG_MESSAGES", "showing mPullToRefreshLayout");
-                if (mPullToRefreshLayout != null) {
-                    runSwipeRefreshLayout(mPullToRefreshLayout, 10);
-                }
-
-                if(!Inbox.isQueued){
-                    Inbox newInboxMsg = new Inbox();
-                    newInboxMsg.execute();
-                }
-
-                refreshServerMessage = false;
-            }
-        }
-
+        GetLocalInboxMsgInBackground  getLocalInboxMsg = new GetLocalInboxMsgInBackground();
+        getLocalInboxMsg.execute();
 
         // Collections.reverse(msgs);
         myadapter = new RecycleAdapter();
