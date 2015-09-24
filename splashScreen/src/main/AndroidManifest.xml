@@ -221,9 +221,6 @@
                 <data android:scheme="package"/>
             </intent-filter>
         </receiver>
-
-        <!-- appsee service -->
-        <service android:name="com.appsee.AppseeBackgroundUploader" />
     </application>
 
 </manifest>

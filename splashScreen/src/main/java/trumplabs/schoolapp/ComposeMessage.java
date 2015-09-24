@@ -32,8 +32,6 @@ import android.widget.TextView;
 
 import com.parse.ParseUser;
 
-import org.jcodec.Util;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;

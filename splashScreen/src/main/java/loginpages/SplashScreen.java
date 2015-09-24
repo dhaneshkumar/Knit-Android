@@ -87,13 +87,6 @@ public class SplashScreen extends MyActionBarActivity {
         AppsFlyerLib.setAppsFlyerKey(Config.APPS_FLYER_ID);
         AppsFlyerLib.sendTracking(getApplicationContext());
 
-        //String appseeId = Utility.getAppseeId();
-        //Utility.fetchAppseeIdIfNeeded();
-
-        //Log.d("__appsee", "Appsee.start() with=" + appseeId);
-        //APPSEE measure
-        //Appsee.start(appseeId);
-
     /*
      * Setting parse analytics
      */
