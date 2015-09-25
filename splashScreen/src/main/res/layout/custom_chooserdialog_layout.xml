@@ -95,7 +95,7 @@
 			android:layout_weight="1"
 			android:layout_marginLeft="16dp"
 			android:gravity="left|center_vertical"
-			android:text="Attach a document"
+			android:text="Attach File (upto 10 MB)"
 			android:textColor="@color/black"
 			android:textSize="16sp"/>
 	</LinearLayout>

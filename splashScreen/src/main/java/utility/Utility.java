@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -63,6 +64,7 @@ import library.UtilString;
 import loginpages.Signup;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
+import trumplab.textslate.BuildConfig;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Application;
 import trumplabs.schoolapp.Constants;
@@ -849,6 +851,59 @@ public class Utility{
                 Log.d("__save_installation", "saving");
                 parseInstallation.save();
                 Log.d("__save_installation", "save success");
+            }
+        }
+    }
+
+    public static void updateAppVersionIfNeeded(){
+        Log.d("__update_app_v", "entry");
+        //call in worker thread
+        ParseInstallation parseInstallation = ParseInstallation.getCurrentInstallation();
+        if(parseInstallation != null){
+            if(parseInstallation.getObjectId() != null){
+                String currentVersion = null;
+                try{
+                    currentVersion = Application.getAppContext().getPackageManager().getPackageInfo(Application.getAppContext().getPackageName(), 0).versionName;
+                    if(currentVersion == null){
+                        Log.d("__update_app_v", "null current version");
+                        return;
+                    }
+                }
+                catch (PackageManager.NameNotFoundException e){
+                    Log.d("__update_app_v", "error : getting versionName " + e.getMessage());
+                    e.printStackTrace();
+                    return;
+                }
+
+                String storedVersion = SessionManager.getInstance().getString(SessionManager.APP_VERSION);
+                if(storedVersion == null) {
+                    Log.d("__update_app_v", "null stored version");
+                    storedVersion = parseInstallation.getString("appVersion");
+                }
+
+                Log.d("__update_app_v", "current=" + currentVersion + ", stored=" + storedVersion);
+                if(currentVersion != null && (storedVersion == null || !storedVersion.equals(currentVersion))){
+                    Log.d("__update_app_v", "calling cloud updateAppVersion");
+                    //store the current version on cloud
+                    HashMap<String, String> params = new HashMap<>();
+                    params.put("appVersion", currentVersion);
+                    params.put("installationId", parseInstallation.getInstallationId());
+
+                    try{
+                        Object result = ParseCloud.callFunction("updateAppVersion", params);
+                        Log.d("__update_app_v", "success " + result);
+                        if(result instanceof Boolean){
+                            boolean r = (Boolean) result;
+                            if(r){
+                                SessionManager.getInstance().setString(SessionManager.APP_VERSION, currentVersion);
+                            }
+                        }
+                    }
+                    catch (ParseException e){
+                        Log.d("__update_app_v", "error : " + e.getCode() + ", " + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }

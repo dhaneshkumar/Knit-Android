@@ -28,6 +28,7 @@ public class Refresher {
         freshUser = ParseUser.getCurrentUser();
 
         if(freshUser == null){
+            Utility.updateAppVersionIfNeeded(); //irrespective of whether logged in or not
             return;
         }
 
@@ -122,6 +123,8 @@ public class Refresher {
         SendPendingMessages.spawnThread(false); //direct call since already in a thread
 
         if(Config.SHOWLOG) Log.d(LOGTAG, "Leaving Refresher Thread");
+
+        Utility.updateAppVersionIfNeeded(); //if user non null, last priority
     }
 
     /*

@@ -27,6 +27,7 @@
             android:paddingLeft="16dp"
             android:paddingRight="72dp"
             android:paddingTop="16dp"
+            android:singleLine="true"
             android:text="Rahul"
             android:textColor="@color/black"
             android:textSize="16sp" />

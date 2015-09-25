@@ -272,4 +272,16 @@ public class SessionManager {
         int value = pref.getInt(key, -1);
         return value;
     }
+
+    /*********** app version **************/
+    public static final String APP_VERSION = "app_version";
+    public void setString(String key, String value){
+        editor.putString(key, value);
+        editor.commit();
+    }
+
+    public String getString(String key){
+        String value = pref.getString(key, null);
+        return value;
+    }
 }
