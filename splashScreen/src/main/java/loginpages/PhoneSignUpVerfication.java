@@ -26,6 +26,7 @@ import com.parse.ParseException;
 import com.parse.ParseInstallation;
 import com.parse.ParseUser;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,7 +43,6 @@ import trumplabs.schoolapp.Messages;
 import trumplabs.schoolapp.Outbox;
 import utility.Config;
 import utility.SessionManager;
-import utility.TestingUtililty;
 import utility.Tools;
 import utility.Utility;
 
@@ -50,20 +50,31 @@ import utility.Utility;
  * Created by ashish on 26/2/15.
  */
 public class PhoneSignUpVerfication extends MyActionBarActivity {
-    public static EditText verificationCodeET;
-    static ProgressDialog pdialog;
-    static SmoothProgressBar smoothProgressBar;
-    static TextView errorMsgTV;
-    static TextView resendActionTV;
-    static String verificationCode;
-    static Boolean isLogin;
-    static Menu menu;
+    EditText verificationCodeET;
+    ProgressDialog pdialog;
+    SmoothProgressBar smoothProgressBar;
+    TextView errorMsgTV;
+    TextView resendActionTV;
+    String verificationCode;
 
-    private static CountDownTimer countDownTimer = null;
-    static TextView timerTV;
+    int purpose;
+    public final static int SIGN_IN = 0;
+    public final static int SIGN_UP = 1;
+    public final static int UPDATE_PHONE = 2;
 
-    static Context activityContext;
-    static Activity thisActivity;
+    String phoneNumber;
+    String displayName;
+    String role;
+
+    Menu menu;
+
+    private CountDownTimer countDownTimer = null;
+    TextView timerTV;
+
+    Context activityContext;
+    Activity thisActivity;
+
+    public static WeakReference<PhoneSignUpVerfication> myWeakReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,9 +96,20 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         if(getIntent() != null && getIntent().getExtras() != null) {
-            isLogin = getIntent().getExtras().getBoolean("login");
+            Bundle bundle = getIntent().getExtras();
+            purpose = bundle.getInt("purpose");
+            if(purpose == SIGN_IN){
+                phoneNumber = bundle.getString("phoneNumber");
+            }
+            else if(purpose == SIGN_UP){
+                phoneNumber = bundle.getString("phoneNumber");
+                displayName = bundle.getString("displayName");
+                role = bundle.getString("role");
+            }
+            else{
+                phoneNumber = bundle.getString("phoneNumber");
+            }
         }
-
 
         verificationCodeET.setOnEditorActionListener(new EditText.OnEditorActionListener() {
             @Override
@@ -100,14 +122,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             }
         });
 
-        String headerText;
-        if(isLogin)
-            headerText = "+91"+ PhoneLoginPage.phoneNumber ;
-        else
-            headerText =  "+91" + PhoneSignUpName.phoneNumber;
-
+        String headerText = "+91" + phoneNumber;;
         header.setText(Html.fromHtml(headerText), TextView.BufferType.SPANNABLE);
-
 
         //Again send the verification code
         resendActionTV.setOnClickListener(new View.OnClickListener() {
@@ -119,14 +135,8 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 timerTV.setVisibility(View.VISIBLE);
                 resendActionTV.setVisibility(View.GONE);
 
-                if(isLogin){
-                    PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(2, PhoneLoginPage.phoneNumber);
-                    generateVerificationCode.execute();
-                }
-                else{
-                    PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(2, PhoneSignUpName.phoneNumber);
-                    generateVerificationCode.execute();
-                }
+                PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(phoneNumber);
+                generateVerificationCode.execute();
             }
         });
 
@@ -180,13 +190,20 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             pdialog.setMessage("Please Wait...");
             pdialog.show();
 
-            VerifyCodeTask verifyCodeTask = new VerifyCodeTask(verificationCode);
-            verifyCodeTask.execute();
+            if(purpose == UPDATE_PHONE){
+                UpdatePhoneTask updatePhoneTask = new UpdatePhoneTask(verificationCode);
+                updatePhoneTask.execute();
+            }
+            else {
+                VerifyCodeTask verifyCodeTask = new VerifyCodeTask(verificationCode);
+                verifyCodeTask.execute();
+            }
         }
     }
+
     /* call from main(GUI) thread */
-    public static void smsListenerVerifyTask(String code){
-        pdialog = new ProgressDialog(PhoneSignUpVerfication.activityContext);
+    public void smsListenerVerifyTask(String code){
+        pdialog = new ProgressDialog(activityContext);
         pdialog.setCancelable(false);
         pdialog.setMessage("Please Wait...");
         pdialog.show();
@@ -195,11 +212,17 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         //smoothProgressBar.setVisibility(View.GONE);
 
         if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "triggering PhoneSignUpVerfication.VerifyCodeTask");
-        VerifyCodeTask verifyCodeTask = new VerifyCodeTask(code);
-        verifyCodeTask.execute();
+        if(purpose == UPDATE_PHONE){
+            UpdatePhoneTask updatePhoneTask = new UpdatePhoneTask(code);
+            updatePhoneTask.execute();
+        }
+        else {
+            VerifyCodeTask verifyCodeTask = new VerifyCodeTask(code);
+            verifyCodeTask.execute();
+        }
     }
 
-    public static void showError(String error, boolean timerCancel){
+    public void showError(String error, boolean timerCancel){
         if(errorMsgTV != null) {
             errorMsgTV.setText(error);
             errorMsgTV.setVisibility(View.VISIBLE);
@@ -214,14 +237,14 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
     }
 
-    public static void hideVerifyOption(){
+    public void hideVerifyOption(){
         if(thisActivity != null){
             thisActivity.finish();
             thisActivity = null;
         }
     }
 
-    static void showResendAction(){
+    void showResendAction(){
         resendActionTV.setVisibility(View.VISIBLE);
     }
 
@@ -254,7 +277,14 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
     }
 
-    private static class VerifyCodeTask extends AsyncTask<Void, Void, Void> {
+    @Override
+    public void onResume() {
+        super.onResume();
+        myWeakReference = new WeakReference<>(this);
+        //no need to make this null in onPause as it is a weak reference, won't hold the resource as such
+    }
+
+    private class VerifyCodeTask extends AsyncTask<Void, Void, Void> {
         Boolean loginError = false; //session code login status
         Boolean networkError = false; //parse exception
         Boolean verifyError = false; //code verification status
@@ -279,17 +309,17 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             HashMap<String, Object> params = new HashMap<String, Object>();
             params.put("code", Integer.parseInt(code));
 
-            if(!isLogin) {
-                params.put("number", PhoneSignUpName.phoneNumber);
-                params.put("name", /*PhoneSignUpName.title + " " + */ PhoneSignUpName.displayName);
-                params.put("role", PhoneSignUpName.role);
+            if(purpose == SIGN_UP) {
+                params.put("number", phoneNumber);
+                params.put("name", displayName);
+                params.put("role", role);
                 String emailId = Utility.getAccountEmail();
                 if(emailId != null){
                     params.put("email", emailId);
                 }
             }
             else{
-                params.put("number", PhoneLoginPage.phoneNumber);
+                params.put("number", phoneNumber);
             }
 
             //appInstallation params - devicetype, installationId
@@ -297,7 +327,7 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
             params.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
 
             //Sessions save params - os, model, location(lat, long)
-            fillDetailsForSession(isLogin, params);
+            fillDetailsForSession((purpose == SIGN_IN), params);
 
             try {
                 Utility.saveParseInstallationIfNeeded();
@@ -368,15 +398,14 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
                 }
 
                 if(flag != null && flag.equals("logIn")){
-                    isLogin = true;
+                    purpose = SIGN_IN;
                 }
 
-                if(isLogin){
+                if(purpose == SIGN_IN){
                     PostLoginTask postLoginTask = new PostLoginTask(user, pdialog);
                     postLoginTask.execute();
                 }
                 else {
-
                     SessionManager.getInstance().setSignUpAccount();
 
                     // The current user is now set to user. Do registration in default class
@@ -428,6 +457,79 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         }
     }
 
+    private class UpdatePhoneTask extends AsyncTask<Void, Void, Void> {
+        boolean networkError = false; //parse exception
+        boolean taskSuccess = false;
+        boolean verifyError = false;
+
+        String code;
+        public UpdatePhoneTask(String tcode){//code to verify. Number will be taken from relevant activity
+            code = tcode;
+        }
+
+        @Override
+        protected Void doInBackground(Void... par) {
+            //setting parameters
+            HashMap<String, Object> params = new HashMap<String, Object>();
+            params.put("code", Integer.parseInt(code));
+            params.put("number", phoneNumber);
+
+            try {
+                Object result = ParseCloud.callFunction("updatePhoneNumber", params);
+                if(result instanceof Boolean){
+                    taskSuccess = (Boolean) result;
+                    if(!taskSuccess){
+                        verifyError = true;
+                    }
+                }
+            } catch (ParseException e) {
+                Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    networkError = true;
+                }
+                e.printStackTrace();
+            }
+            if(Config.SHOWLOG) Log.d("__phone", "background : returning null");
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void result){
+            if(pdialog != null){
+                pdialog.dismiss();
+            }
+            if(Config.SHOWLOG) Log.d("__phone", "onPostExecute() of VerifyCodeTask with taskSuccess " + taskSuccess);
+
+            if(taskSuccess){
+                ParseUser user = ParseUser.getCurrentUser();
+                //If user has joined any class then locally saving it in session manager
+                if(user != null) {
+                    user.put("phone", phoneNumber);
+                    user.pinInBackground();
+                    Utility.toast("Number verified !");
+                    Intent intent = new Intent(PhoneSignUpVerfication.this, MainActivity.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    return;
+                }
+            }
+
+            if(networkError){
+                Utility.toast("Connection failure", true);
+                showError("Unable to establish connection. Please try again", false);
+                showResendAction();
+            } else if(verifyError){
+                Utility.toast("Wrong verification code", true);
+                showError("Wrong verification code.\nPlease re-enter code and try again", false);
+            }
+            else {
+                Utility.toast("Oops ! some error occured.", true);
+                showError( "Some unexpected error occured. Please try again later", false);
+                showResendAction();
+            }
+        }
+    }
+
 
     static class PostLoginTask extends AsyncTaskProxy<Void, Void, Void> {
         ParseUser user;
@@ -441,8 +543,11 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
 
         protected Void doInBackground(Void... params) {
             Utility.updateCurrentTime();
-            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
-            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+            //SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
+            //SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+
+            SessionManager.getInstance().setInteger(SessionManager.PHONE_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount() - 1);
+            SessionManager.getInstance().setInteger(SessionManager.PHONE_INPUT_SHOW_COUNT, 0);
 
             if(user != null) {
                 user.remove("place_name");
@@ -487,8 +592,11 @@ public class PhoneSignUpVerfication extends MyActionBarActivity {
         protected Void doInBackground(Void... params) {
 
             Utility.updateCurrentTime();
-            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
-            SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+            //SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount());
+            //SessionManager.getInstance().setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
+
+            SessionManager.getInstance().setInteger(SessionManager.PHONE_INPUT_BASE_COUNT, SessionManager.getInstance().getAppOpeningCount() - 1);
+            SessionManager.getInstance().setInteger(SessionManager.PHONE_INPUT_SHOW_COUNT, 0);
 
             //set inbox fetch flag. We dont need to fetch old messages in this account
             if(currentParseUser != null) {

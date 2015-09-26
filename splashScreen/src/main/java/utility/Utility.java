@@ -371,6 +371,8 @@ public class Utility{
      * @return
      */
     public static final boolean isInternetExistWithoutPopup() {
+        //if(true) return true; //for testing
+
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);
@@ -386,6 +388,8 @@ public class Utility{
 
 
     public static boolean isInternetExist() {
+        //if(true) return true; //for testing
+
         ConnectivityManager connec =
                 (ConnectivityManager) Application.getAppContext().getSystemService(
                         Context.CONNECTIVITY_SERVICE);

@@ -263,6 +263,10 @@ public class SessionManager {
     /********** school input **************/
     public static final String SCHOOL_INPUT_BASE_COUNT = "school_input_base_count"; //open count when updated app first launched
     public static final String SCHOOL_INPUT_SHOW_COUNT = "school_input_show_count"; //how many times school input dialog shown
+
+    public static final String PHONE_INPUT_BASE_COUNT = "phone_input_base_count"; //open count when updated app first launched
+    public static final String PHONE_INPUT_SHOW_COUNT = "phone_input_show_count"; //how many times school input dialog shown
+
     public void setInteger(String key, int value){
         editor.putInt(key, value);
         editor.commit();

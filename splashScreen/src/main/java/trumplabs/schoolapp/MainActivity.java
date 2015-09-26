@@ -59,6 +59,7 @@ import joinclasses.JoinClassesContainer;
 import library.UtilString;
 import notifications.AlarmTrigger;
 import profileDetails.ProfilePage;
+import school.PhoneInputDialog;
 import school.SchoolInputDialog;
 import trumplab.textslate.R;
 import tutorial.ShowcaseCreator;
@@ -466,7 +467,7 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
         }
 
         //If SCHOOL_INPUT_BASE_COUNT not yet set(in case app is updated and opened for first time)
-        if(sessionManager.getInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT) < 0){
+        /*if(sessionManager.getInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT) < 0){
             sessionManager.setInteger(SessionManager.SCHOOL_INPUT_BASE_COUNT, appOpeningCount);
             sessionManager.setInteger(SessionManager.SCHOOL_INPUT_SHOW_COUNT, 0);
             Log.d("__school", "setting school_input_base_count to " + appOpeningCount);
@@ -490,6 +491,34 @@ public class MainActivity extends MyActionBarActivity implements TabListener {
             }
             else{
                 Log.d("__school", "NOT showing appOpeningCount=" + appOpeningCount + ", baseCount=" + baseCount + ", showCount=" + showCount);
+            }
+        }*/
+
+        //If PHONE_INPUT_BASE_COUNT not yet set(in case app is updated and opened for first time)
+        if(sessionManager.getInteger(SessionManager.PHONE_INPUT_BASE_COUNT) < 0){
+            sessionManager.setInteger(SessionManager.PHONE_INPUT_BASE_COUNT, appOpeningCount-1);
+            sessionManager.setInteger(SessionManager.PHONE_INPUT_SHOW_COUNT, 0);
+            Log.d("__phone", "setting school_input_base_count to " + (appOpeningCount-1));
+        }
+
+        if(!somethingshown && UtilString.isBlank(user.getString("phone"))) {
+            int baseCount = sessionManager.getInteger(SessionManager.PHONE_INPUT_BASE_COUNT);
+            int showCount = sessionManager.getInteger(SessionManager.PHONE_INPUT_SHOW_COUNT);
+            int diff = appOpeningCount - baseCount;
+            if(diff > 1 && showCount < 10){//show 10 times, every 2th time
+                Log.d("__phone", "showing appOpeningCount=" + appOpeningCount + ", baseCount=" + baseCount + ", showCount=" + showCount);
+                //show the dialog
+                FragmentManager fm = getSupportFragmentManager();
+                PhoneInputDialog phoneInputDialog = new PhoneInputDialog();
+                phoneInputDialog.show(fm, "phone info");
+                somethingshown = true;
+
+                sessionManager.setAppOpeningCount(); //not show again if MainActivity is recreated
+                sessionManager.setInteger(SessionManager.PHONE_INPUT_BASE_COUNT, appOpeningCount + 1);
+                sessionManager.setInteger(SessionManager.PHONE_INPUT_SHOW_COUNT, showCount + 1);
+            }
+            else{
+                Log.d("__phone", "NOT showing appOpeningCount=" + appOpeningCount + ", baseCount=" + baseCount + ", showCount=" + showCount);
             }
         }
 

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="@dimen/signup_margin"
+    android:layout_width="match_parent"
+    android:background="@color/lightbackgroundcolor"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:background="@color/white"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:paddingBottom="32dp"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/phone_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter 10-digit Mobile Number"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/apptheme_edit_text_holo_light"
+            android:paddingLeft="16dp"
+            android:layout_marginTop="30dp"
+            android:paddingRight="1dp"
+            android:inputType="number"
+            android:maxLength="10"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
+            android:textColor="@color/black"
+            android:imeOptions="actionDone"
+            android:singleLine="true"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+</LinearLayout>

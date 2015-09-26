@@ -57,12 +57,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
     EditText displayNameET;
     EditText phoneNumberET;
 
-    static String role = "";
-    static String displayName = "";
-    static String phoneNumber = "";
+    String role = "";
+    String displayName = "";
+    String phoneNumber = "";
     static Location mLastLocation = null;
 
-    static ProgressDialog pdialog;
+    ProgressDialog pdialog;
 
     GoogleApiClient mLocationGoogleApiClient = null;
     boolean callLocationApi = false;
@@ -171,7 +171,7 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             dialog.show();
 
             TextView edit = (TextView) view.findViewById(R.id.edit);
-            TextView nextButton = (TextView) view.findViewById(R.id.nextButton);
+            final TextView nextButton = (TextView) view.findViewById(R.id.nextButton);
             TextView header = (TextView) view.findViewById(R.id.header);
 
             header.setText(msg);
@@ -182,9 +182,12 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     dialog.dismiss();
                     Intent nextIntent = new Intent(PhoneSignUpName.this, PhoneSignUpVerfication.class);
                     //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    nextIntent.putExtra("login", false);
+                    nextIntent.putExtra("purpose", PhoneSignUpVerfication.SIGN_UP);
+                    nextIntent.putExtra("phoneNumber", phoneNumber);
+                    nextIntent.putExtra("role", role);
+                    nextIntent.putExtra("displayName", displayName);
 
-                    GenerateVerificationCode generateVerificationCode = new GenerateVerificationCode(1, phoneNumber);
+                    GenerateVerificationCode generateVerificationCode = new GenerateVerificationCode(phoneNumber);
                     startActivity(nextIntent);
 
                     generateVerificationCode.execute();
@@ -305,10 +308,8 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
         Boolean success = false;
         Boolean networkError = false;
 
-        int callerId;
         String number;
-        public GenerateVerificationCode(int id, String num){ //id identifies the caller, num the phone number
-            callerId = id;
+        public GenerateVerificationCode(String num){ //id identifies the caller, num the phone number
             number = num;
             SmsListener.register();
         }
@@ -347,10 +348,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     String errorMsg = "Please enter a valid mobile number.";
                     Utility.toast(toastMsg, true);
                     //show error and hide timer as sms was not sent successfully
-                    PhoneSignUpVerfication.showError(errorMsg, true);
+                    if(PhoneSignUpVerfication.myWeakReference != null && PhoneSignUpVerfication.myWeakReference.get() != null) {
+                        PhoneSignUpVerfication instance = PhoneSignUpVerfication.myWeakReference.get();
+                        instance.showError(errorMsg, true);
 
-                    if(Config.DETECT_INVALID_NUMBER) { //if invalid number detection is on
-                        PhoneSignUpVerfication.hideVerifyOption();
+                        if (Config.DETECT_INVALID_NUMBER) { //if invalid number detection is on
+                            instance.hideVerifyOption();
+                        }
                     }
                 }
             }
@@ -365,56 +369,48 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
 
                 Utility.toast(toastMsg, true);
                 //show error and hide timer as sms was not sent successfully
-                PhoneSignUpVerfication.showError(errorMsg, true);
-                PhoneSignUpVerfication.showResendAction();
+                if(PhoneSignUpVerfication.myWeakReference != null && PhoneSignUpVerfication.myWeakReference.get() != null) {
+                    PhoneSignUpVerfication instance = PhoneSignUpVerfication.myWeakReference.get();
+                    instance.showError(errorMsg, true);
+                    instance.showResendAction();
+                }
             }
         }
     }
 
-    public static class FBVerifyTask extends AsyncTask<Void, Void, Void> {
+    public static class FBVerifyLoginTask extends AsyncTask<Void, Void, Void> {
         Boolean networkError = false; //parse exception
         Boolean unexpectedError = false;
-
         Boolean taskSuccess = false;
 
         String token;
-        boolean isLogin;
         String fbUserId;
+        ProgressDialog progressDialog;
 
         //response
         String flag;
 
-        public FBVerifyTask(String token, String fbUserId, boolean isLogin){//code to verify. Number will be taken from relevant activity
+        public FBVerifyLoginTask(String token, String fbUserId, ProgressDialog progressDialog){//code to verify. Number will be taken from relevant activity
             this.token = token;
             this.fbUserId = fbUserId;
-            this.isLogin = isLogin;
+            this.progressDialog = progressDialog;
         }
 
         @Override
         protected Void doInBackground(Void... par) {
-            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "FBVerifyTask : doInBackground");
+            if(Config.SHOWLOG) Log.d("D_FB_VERIF", "FBVerifyLoginTask : doInBackground");
 
             //setting parameters
             HashMap<String, Object> params = new HashMap<String, Object>();
 
-            if(!isLogin) {
-                params.put("accessToken", token);
-                params.put("role", PhoneSignUpName.role);
-                String emailId = Utility.getAccountEmail();
-                if(emailId != null){
-                    params.put("email", emailId);
-                }
-            }
-            else{
-                params.put("accessToken", token);
-            }
+            params.put("accessToken", token);
 
             //appInstallation params - devicetype, installationId
             params.put("deviceType", "android");
             params.put("installationId", ParseInstallation.getCurrentInstallation().getInstallationId());
 
             //Sessions save params - os, model, location(lat, long)
-            PhoneSignUpVerfication.fillDetailsForSession(isLogin, params);
+            PhoneSignUpVerfication.fillDetailsForSession(true, params);
 
             try {
                 if(Config.SHOWLOG) Log.d("D_FB_VERIF", "appEnter : calling");
@@ -458,7 +454,6 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                                 t.setPriority(Thread.MIN_PRIORITY);
                                 t.start();
                             }
-
 
                             /* remaining work in onPostExecute since new Asynctask to be created and started in GUI thread*/
                         } else {
@@ -508,26 +503,13 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
                     SessionManager.getInstance().setHasUserJoinedClass();
                 }
 
-                if(flag != null && flag.equals("logIn")){
-                    isLogin = true;
-                }
-
-                if(isLogin){
-                    PhoneSignUpVerfication.PostLoginTask postLoginTask = new PhoneSignUpVerfication.PostLoginTask(user, pdialog);
-                    postLoginTask.execute();
-                }
-                else {
-                    SessionManager.getInstance().setSignUpAccount();
-
-                    // The current user is now set to user. Do registration in default class
-                    PhoneSignUpVerfication.PostSignUpTask postSignUpTask = new PhoneSignUpVerfication.PostSignUpTask(user, pdialog);
-                    postSignUpTask.execute();
-                }
+                PhoneSignUpVerfication.PostLoginTask postLoginTask = new PhoneSignUpVerfication.PostLoginTask(user, progressDialog);
+                postLoginTask.execute();
             }
 
             if(!taskSuccess){
-                if(pdialog != null){
-                    pdialog.dismiss();
+                if(progressDialog != null){
+                    progressDialog.dismiss();
                 }
                 //hide progress bar
             }
@@ -538,11 +520,10 @@ public class PhoneSignUpName extends MyActionBarActivity implements GoogleApiCli
             else if(unexpectedError){
                 Utility.toast("Oops ! some error occured.", true);
 
-                if(pdialog != null){
-                    pdialog.dismiss();
+                if(progressDialog != null){
+                    progressDialog.dismiss();
                 }
             }
-
         }
     }
 

@@ -196,4 +196,12 @@ public class TestingUtililty {
             e.printStackTrace();
         }
     }
+
+    public static void removePhone(){
+        ParseUser currentUser = ParseUser.getCurrentUser();
+        if(currentUser != null){
+            currentUser.remove("phone");
+            currentUser.pinInBackground();
+        }
+    }
 }

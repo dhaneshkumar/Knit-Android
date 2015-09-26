@@ -71,15 +71,15 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
     Activity activity;
 
-    static String phoneNumber = "";
+    String phoneNumber = "";
+    static Location mLastLocation = null;
 
     GoogleApiClient mGoogleApiClient = null;
     GoogleApiClient mLocationGoogleApiClient = null;
     boolean callLocationApi = false;
 
-    static Location mLastLocation = null;
     CallbackManager callbackManager;
-    static ProgressDialog pdialog;
+    ProgressDialog pdialog;
     Context activityContext;
 
     /* Request code used to invoke sign in user interactions. */
@@ -171,8 +171,8 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
                     String fbUserId = AccessToken.getCurrentAccessToken().getUserId();
 
-                    PhoneSignUpName.FBVerifyTask fbVerifyTask = new PhoneSignUpName.FBVerifyTask(token, fbUserId, true); //isLogin = false
-                    fbVerifyTask.execute();
+                    PhoneSignUpName.FBVerifyLoginTask fbVerifyLoginTask = new PhoneSignUpName.FBVerifyLoginTask(token, fbUserId, pdialog); //isLogin = false
+                    fbVerifyLoginTask.execute();
                 } else {
                     Log.d("D_FB_VERIF", "access token null");
                 }
@@ -477,9 +477,10 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
             Intent nextIntent = new Intent(this, PhoneSignUpVerfication.class);
             //nextIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            nextIntent.putExtra("login", true);
+            nextIntent.putExtra("purpose", PhoneSignUpVerfication.SIGN_IN);
+            nextIntent.putExtra("phoneNumber", phoneNumber);
 
-            PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(2, phoneNumber);
+            PhoneSignUpName.GenerateVerificationCode generateVerificationCode = new PhoneSignUpName.GenerateVerificationCode(phoneNumber);
             startActivity(nextIntent);
 
             generateVerificationCode.execute();
@@ -490,7 +491,6 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
             ParseAnalytics.trackEvent("Login", dimensions);
 
         }
-
     }
 
 
@@ -512,7 +512,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
 
         @Override
         protected Void doInBackground(Void... par) {
-            Log.d("D_GOOGLE_VERIF", "FBVerifyTask : doInBackground");
+            Log.d("D_GOOGLE_VERIF", "FBVerifyLoginTask : doInBackground");
 
             /*
             Retrieving idToken

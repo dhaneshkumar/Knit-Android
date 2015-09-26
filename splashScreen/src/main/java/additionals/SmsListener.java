@@ -20,7 +20,7 @@ import utility.Config;
 public class SmsListener extends BroadcastReceiver {
     static boolean isListeningOn = false;
 
-    static SmsListener listener = new SmsListener();
+    public static SmsListener listener = new SmsListener();
 
     String endMsgContent = "is your Knit verification Code"; //genCode2
     String senderCore = "myKnit"; //genCode2
@@ -49,15 +49,14 @@ public class SmsListener extends BroadcastReceiver {
                             isListeningOn = false;
                             final String code = extractCode(msgBody);
                             if(code != null) {
-                                if (PhoneSignUpVerfication.verificationCodeET != null) {
-                                    if(Config.SHOWLOG) Log.d("DEBUG_SMS_LISTENER", "posting to PhoneSignUpVerfication");
-                                    PhoneSignUpVerfication.verificationCodeET.post(new Runnable() {
+                                if(PhoneSignUpVerfication.myWeakReference != null && PhoneSignUpVerfication.myWeakReference.get() != null) {
+                                    final PhoneSignUpVerfication phoneSignUpVerfication = PhoneSignUpVerfication.myWeakReference.get();
+                                    phoneSignUpVerfication.runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {
-                                            PhoneSignUpVerfication.smsListenerVerifyTask(code);
+                                            phoneSignUpVerfication.smsListenerVerifyTask(code);
                                         }
                                     });
-                                    break; //ignore other messages
                                 }
                             }
                         }

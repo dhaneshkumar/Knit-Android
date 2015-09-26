@@ -51,7 +51,7 @@ import java.util.HashMap;
 
 import baseclasses.MyActionBarActivity;
 import library.UtilString;
-import school.SchoolActivity;
+import school.PhoneInputActivity;
 import trumplab.textslate.R;
 import trumplabs.schoolapp.Constants;
 import trumplabs.schoolapp.FeedBackClass;
@@ -62,8 +62,10 @@ import utility.Utility;
 public class ProfilePage extends MyActionBarActivity implements OnClickListener , GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener {
     private ImageView profileimgview;
-    private TextView name_textView;
-    private TextView phone_textView;
+    private TextView nameTV;
+    private TextView usernameTV;
+    private TextView numberTV;
+
     private LinearLayout schoolHolder;
     public static TextView schoolNameTV;
 
@@ -100,18 +102,22 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
         setContentView(R.layout.profile);
 
-        name_textView = (TextView) findViewById(R.id.name);
-        phone_textView = (TextView) findViewById(R.id.phone);
+        nameTV = (TextView) findViewById(R.id.name);
+        usernameTV = (TextView) findViewById(R.id.username);
+        numberTV = (TextView) findViewById(R.id.number);
+
+        LinearLayout editName = (LinearLayout) findViewById(R.id.editName);
+        LinearLayout editUsername = (LinearLayout) findViewById(R.id.editUsername);
+        LinearLayout editNumber = (LinearLayout) findViewById(R.id.editNumber);
+
         profileimgview = (ImageView) findViewById(R.id.profileimg);
 
-        schoolHolder = (LinearLayout) findViewById(R.id.schoolHolder);
-        schoolNameTV = (TextView) findViewById(R.id.schoolName);
+        /*schoolHolder = (LinearLayout) findViewById(R.id.schoolHolder);
+        schoolNameTV = (TextView) findViewById(R.id.schoolName);*/
 
         TextView profile = (TextView) findViewById(R.id.profile);
         TextView account = (TextView) findViewById(R.id.account);
         TextView about = (TextView) findViewById(R.id.about);
-        LinearLayout editName = (LinearLayout) findViewById(R.id.editName);
-        LinearLayout editPhone = (LinearLayout) findViewById(R.id.editPhone);
         TextView rateOurApp = (TextView) findViewById(R.id.rateOurApp);
         TextView faq = (TextView) findViewById(R.id.faq);
         TextView feedback = (TextView) findViewById(R.id.feedback);
@@ -149,20 +155,36 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         name = currentParseUser.getString(Constants.NAME);
 
         if (!UtilString.isBlank(name))
-            name_textView.setText(name);
+            nameTV.setText(name);
+
+        editNumber.setVisibility(View.GONE);
 
         if(!UtilString.isBlank(userId)) {
-            if (userId.length() == 10 || userId.contains("@"))
-                phone_textView.setText(userId);
+            if (userId.length() == 10 || userId.contains("@")) {
+                usernameTV.setText(userId);
+            }
             else {
-                editPhone.setVisibility(View.GONE);
+                editUsername.setVisibility(View.GONE);
+            }
+
+            String phoneNumber = currentParseUser.getString("phone");
+            if(UtilString.isBlank(phoneNumber)){
+                numberTV.setText("No number added yet (tap to add)");
+                editNumber.setOnClickListener(this);
+                editNumber.setVisibility(View.VISIBLE);
+            }
+            else if(! phoneNumber.trim().equals(userId.trim())){
+                //phone is not same as username, show but not clickable
+                numberTV.setText(phoneNumber.trim());
+                editNumber.setVisibility(View.VISIBLE);
             }
         }
+
 
         /*
             show hide school
          */
-        String role = currentParseUser.getString("role");
+        /*String role = currentParseUser.getString("role");
         if(role != null && role.equals(Constants.TEACHER)){
             schoolHolder.setVisibility(View.VISIBLE);
             if(!UtilString.isBlank(currentParseUser.getString("place_id"))
@@ -181,7 +203,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
         }
         else{
             schoolHolder.setVisibility(View.GONE);
-        }
+        }*/
 
     /*
      * set Profile Pic.
@@ -458,7 +480,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                                         public void done(Boolean result, ParseException e) {
                                             if (e == null && result) {
                                                 name = value;
-                                                name_textView.setText(name);
+                                                nameTV.setText(name);
                                                 Utility.toast("Name updated !");
                                                 user.put("name", value);
                                                 try {
@@ -494,6 +516,12 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
                 dialog.show();
 
                 break;
+
+            case R.id.editNumber:
+                Intent phoneIntent = new Intent(ProfilePage.this, PhoneInputActivity.class);
+                startActivity(phoneIntent);
+                break;
+
       /*
        * Setting feedback
        */

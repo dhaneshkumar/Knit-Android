@@ -39,6 +39,7 @@ import library.UtilString;
 import trumplab.textslate.R;
 import utility.Config;
 import utility.Queries;
+import utility.TestingUtililty;
 import utility.Tools;
 import utility.Utility;
 
@@ -71,6 +72,7 @@ public class Subscribers extends MyActionBarActivity {
 
         //TestingUtililty.resetSchoolInputCase();
         //TestingUtililty.clearLocalFAQs();
+        //TestingUtililty.removePhone();
 
         setContentView(R.layout.classmembers_layout);
 

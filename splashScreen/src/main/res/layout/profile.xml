@@ -141,7 +141,7 @@
 
 
                 <LinearLayout
-                    android:id="@+id/editPhone"
+                    android:id="@+id/editUsername"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
@@ -149,25 +149,34 @@
                     android:paddingTop="17dp">
 
                     <TextView
-                        android:id="@+id/phone"
+                        android:id="@+id/username"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/text_left_margin"
                         android:text="Username"
                         android:textColor="@color/profile_heading"
                         android:textSize="@dimen/profil_heading_font_size" />
-
-                   <!-- <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="@dimen/text_left_margin"
-                        android:layout_marginTop="3dp"
-                        android:text="Edit"
-                        android:textColor="@color/profile_edit"
-                        android:textSize="@dimen/profil_edit_font_size" />-->
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/editNumber"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingBottom="17dp"
+                    android:paddingTop="17dp">
+
+                    <TextView
+                        android:id="@+id/number"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/text_left_margin"
+                        android:text="8976208510"
+                        android:textColor="@color/profile_heading"
+                        android:textSize="@dimen/profil_heading_font_size" />
+                </LinearLayout>
+
+                <!--<LinearLayout
                     android:id="@+id/schoolHolder"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -199,7 +208,7 @@
                         android:textColor="@color/profile_edit"
                         android:paddingBottom="17dp"
                         android:textSize="@dimen/profil_edit_font_size" />
-                </LinearLayout>
+                </LinearLayout>-->
 
                 <TextView
                     android:layout_width="match_parent"
