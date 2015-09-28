@@ -436,9 +436,8 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
               Log.d("__file_picker", "SaveFile: size exceeds");
               //Utility.toast("attachment size limit is 10 MB");
               resultFlag = CommunicatorInterface.SIZE_LIMIT_EXCEED;
+              f.delete();
             }
-
-            f.delete();
             return null;
 
           } catch (FileNotFoundException e) {
