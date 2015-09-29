@@ -743,12 +743,12 @@ public class Messages extends Fragment {
                                 writeLoadAndShowTask.execute();
                             }
                             else{
-                                Log.d("__file_picker", "m) exists " + imageName);
+                                if(Config.SHOWLOG) Log.d("__file_picker", "m) exists " + imageName);
                                 //set file icon and run onSuccessRunnable
                                 rb.onFileSuccessRunnable.run();
                             }
                         } else if(Utility.isInternetExistWithoutPopup()) {
-                            Log.d("__file_picker", "m) downloading " + imageName);
+                            if(Config.SHOWLOG) Log.d("__file_picker", "m) downloading " + imageName);
                             if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
 
                             // Have to download image from server

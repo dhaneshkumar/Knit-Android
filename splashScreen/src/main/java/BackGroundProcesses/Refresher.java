@@ -114,7 +114,7 @@ public class Refresher {
             if(Config.SHOWLOG) Log.d(LOGTAG, "local Codegroup data intact. No need to fetch anything");
         }
 
-        SchoolUtils.fetchSchoolInfoFromIdIfRequired(freshUser);
+        //SchoolUtils.fetchSchoolInfoFromIdIfRequired(freshUser);
 
         //Send all pending invites
         InviteTasks.sendAllPendingInvites();

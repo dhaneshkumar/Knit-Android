@@ -228,10 +228,10 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
             }
           }
 
-          Log.d("__file_picker", "onActivityResult realFileName=" + realFileName + ", extension=" + extension);
+          if(Config.SHOWLOG) Log.d("__file_picker", "onActivityResult realFileName=" + realFileName + ", extension=" + extension);
 
 
-          Log.d("__file_picker", "onActivityResult realFileSize=" + realFileSize);
+          if(Config.SHOWLOG) Log.d("__file_picker", "onActivityResult realFileSize=" + realFileSize);
           boolean isSizeUnderLimit = true;
 
           if(realFileSize > 10 * 1024 * 1024){//more than 10 MB
@@ -253,7 +253,7 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
           }
           break;
         case Activity.RESULT_CANCELED:
-          Log.d("__file_picker", "onActivityResult cancelled");
+          if(Config.SHOWLOG) Log.d("__file_picker", "onActivityResult cancelled");
           break;
       }
     }
@@ -261,8 +261,10 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
   }
 
   public interface CommunicatorInterface {
-    public static final int ALL_OK = 0;
-    public static final int SIZE_LIMIT_EXCEED = 1;
+    int ALL_OK = 0;
+    int SIZE_LIMIT_EXCEED = 1;
+    int STORE_FAILED = 2;
+
     void sendImagePic(String imgname);
     void sendDocument(String documentName, int flag);
   }
@@ -384,6 +386,8 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         return null;
       }
 
+      this.resultFlag = CommunicatorInterface.STORE_FAILED;
+
       boolean retrieveSuccess = false; //succesfully retrieved and saved from uri(local or cloud)
 
       if(pdfName == null){
@@ -426,14 +430,15 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
               outStream.close();
 
             retrieveSuccess = true;
-            Log.d("__file_picker", "SaveFile: saved at loc=" + storagePath + ", now check file size again");
+            if(Config.SHOWLOG) Log.d("__file_picker", "SaveFile: saved at loc=" + storagePath + ", now check file size again");
 
             File f = new File(storagePath);
             long fSize = f.length();
 
-            Log.d("__file_picker", "SaveFile: size=" + fSize);
+            if(Config.SHOWLOG) Log.d("__file_picker", "SaveFile: size=" + fSize);
+            resultFlag = CommunicatorInterface.ALL_OK;
             if(fSize > 10 * 1024 * 1024){//more than 10 MB
-              Log.d("__file_picker", "SaveFile: size exceeds");
+              if(Config.SHOWLOG) Log.d("__file_picker", "SaveFile: size exceeds");
               //Utility.toast("attachment size limit is 10 MB");
               resultFlag = CommunicatorInterface.SIZE_LIMIT_EXCEED;
               f.delete();
@@ -446,13 +451,13 @@ public class ChooserDialog extends DialogFragment implements OnClickListener {
         }
       }
 
-      Log.d("__file_picker", "SaveFile: failed");
+      if(Config.SHOWLOG) Log.d("__file_picker", "SaveFile: failed");
       return null;
     }
 
     @Override
     protected void onPostExecute(Void res) {
-      Log.d("__file_picker", "SaveFile : onPostExecute");
+      if(Config.SHOWLOG) Log.d("__file_picker", "SaveFile : onPostExecute");
 
       activity.sendDocument(parseFileName, resultFlag);
     }

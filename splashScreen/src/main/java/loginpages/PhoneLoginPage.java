@@ -567,7 +567,7 @@ public class PhoneLoginPage extends MyActionBarActivity implements GoogleApiClie
                 HashMap<String, Object> params = new HashMap<String, Object>();
 
 
-                params.put("accessToken", accessToken);
+                //params.put("accessToken", accessToken);
                 params.put("idToken", idToken);
 
                 //appInstallation params - devicetype, installationId

@@ -457,9 +457,13 @@ public class ComposeMessage extends MyActionBarActivity implements ChooserDialog
             attachmentNameTV.setText(documentName);
             attachmentNameTV.setVisibility(View.VISIBLE);
         }
-        else{
+        else if(flag == ChooserDialog.CommunicatorInterface.SIZE_LIMIT_EXCEED){
             ComposeMessage.sendimgpreview.setVisibility(View.GONE);
             Utility.toast("attachment size limited to 10 MB");
+        }
+        else{
+            ComposeMessage.sendimgpreview.setVisibility(View.GONE);
+            Utility.toast("Sorry, failed to attach!");
         }
     }
 

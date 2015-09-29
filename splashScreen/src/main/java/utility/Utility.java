@@ -319,24 +319,24 @@ public class Utility{
         }
 
         public String convertTimeStampNew(Date msgDate){
-            Log.d("__timestamp", "enter");
+            if(Config.SHOWLOG) Log.d("__timestamp", "enter");
             String result;
 
             if (msgDate != null) {
 
                 String msgDateString = sdfDateYear.format(msgDate);
                 String msgYearString = sdfYearOnly.format(msgDate);
-                Log.d("__timestamp", "msgDateString " + msgDateString + ", " + msgYearString);
+                if(Config.SHOWLOG) Log.d("__timestamp", "msgDateString " + msgDateString + ", " + msgYearString);
 
                 Calendar today = Calendar.getInstance();
                 String todayDateString = sdfDateYear.format(today.getTime());
                 String currentYearString = sdfYearOnly.format(today.getTime());
-                Log.d("__timestamp", "todayString " + todayDateString + ", " + currentYearString);
+                if(Config.SHOWLOG) Log.d("__timestamp", "todayString " + todayDateString + ", " + currentYearString);
 
                 Calendar yesterday = Calendar.getInstance();
                 yesterday.add(Calendar.DATE, -1);
                 String yesterdayDateString = sdfDateYear.format(yesterday.getTime());
-                Log.d("__timestamp", "yesterdayString " + yesterdayDateString);
+                if(Config.SHOWLOG) Log.d("__timestamp", "yesterdayString " + yesterdayDateString);
 
                 if(msgDateString.equals(todayDateString)){
                     result = sdfTimeOnly.format(msgDate);
@@ -351,7 +351,7 @@ public class Utility{
                     result = sdfTimeDateYear.format(msgDate);
                 }
 
-                Log.d("__timestamp", "exit");
+                if(Config.SHOWLOG) Log.d("__timestamp", "exit");
                 return result;
             }
 
@@ -582,12 +582,12 @@ public class Utility{
 
     public static String getFileLocationInAppFolder(String fileName){
         if(isFileImageType(fileName)){
-            Log.d("__file_picker", "getFileLocationInAppFolder image type : " + fileName);
+            if(Config.SHOWLOG) Log.d("__file_picker", "getFileLocationInAppFolder image type : " + fileName);
             return getWorkingAppDir() + "/media/" + fileName;
         }
         else {
             //for non-image type files
-            Log.d("__file_picker", "getFileLocationInAppFolder fallback : " + fileName);
+            if(Config.SHOWLOG) Log.d("__file_picker", "getFileLocationInAppFolder fallback : " + fileName);
             return getWorkingAppDir() + "/docs/" + fileName;
         }
     }
@@ -678,17 +678,17 @@ public class Utility{
     public static String getMimeType(String fileName){
         String extension = getExtension(fileName);
         if(extension != null){
-            Log.d("__file_picker", "non null extension=" + extension);
+            if(Config.SHOWLOG) Log.d("__file_picker", "non null extension=" + extension);
             MimeTypeMap myMime = MimeTypeMap.getSingleton();
             String mimeType = myMime.getMimeTypeFromExtension(extension);
             if(mimeType != null){
-                Log.d("__file_picker", "non null mimeType=" + mimeType);
+                if(Config.SHOWLOG) Log.d("__file_picker", "non null mimeType=" + mimeType);
                 return mimeType;
             }
         }
 
         //default fallback, won't occur in general
-        Log.d("__file_picker", "default fallback");
+        if(Config.SHOWLOG) Log.d("__file_picker", "default fallback");
         return "*/*";
     }
 

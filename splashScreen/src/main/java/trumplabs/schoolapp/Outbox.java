@@ -350,8 +350,10 @@ public class Outbox extends Fragment {
                     String candidate = msg.substring(candidateIndex);
                     if(candidate.equals(Config.attachmentMessage)){
                         msg = msg.substring(0, candidateIndex);
-                        //msgObject.put("title", msg); don't do this o/w pending message content would be changed
-                        //msgObject.pinInBackground(); //Remove the extra note
+                        if(!msgObject.getBoolean("pending")){
+                            msgObject.put("title", msg); //alert pending message content would be changed
+                            msgObject.pinInBackground(); //Remove the extra note
+                        }
                     }
                 }
             }
@@ -516,7 +518,7 @@ public class Outbox extends Fragment {
             if (!UtilString.isBlank(imageName)) {
                 final boolean isFileAnImage = Utility.isFileImageType(imageName);
 
-                Log.d("__file_picker", imageName);
+                if(Config.SHOWLOG) Log.d("__file_picker", imageName);
                 final String imageFilePath = Utility.getFileLocationInAppFolder(imageName);
                 final File imgFile = new File(imageFilePath);
                 holder.imgmsgview.setTag(imgFile.getAbsolutePath());
@@ -638,12 +640,12 @@ public class Outbox extends Fragment {
                                 writeLoadAndShowTask.execute();
                             }
                             else{
-                                Log.d("__file_picker", "m) exists " + imageName);
+                                if(Config.SHOWLOG) Log.d("__file_picker", "m) exists " + imageName);
                                 //set file icon and run onSuccessRunnable
                                 rb.onFileSuccessRunnable.run();
                             }
                         } else if(Utility.isInternetExistWithoutPopup()) {
-                            Log.d("__file_picker", "m) downloading " + imageName);
+                            if(Config.SHOWLOG) Log.d("__file_picker", "m) downloading " + imageName);
                             if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
 
                             // Have to download image from server

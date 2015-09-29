@@ -593,8 +593,10 @@ public class SendMessage extends MyActionBarActivity  {
                     String candidate = stringmsg.substring(candidateIndex);
                     if(candidate.equals(Config.attachmentMessage)){
                         stringmsg = stringmsg.substring(0, candidateIndex);
-                        //msgObject.put("title", stringmsg); don't do this o/w pending message content would be changed
-                        //msgObject.pinInBackground(); //Remove the extra note
+                        if(!pending){
+                            msgObject.put("title", stringmsg); //alert pending message content would be changed
+                            msgObject.pinInBackground(); //Remove the extra note
+                        }
                     }
                 }
             }
@@ -735,12 +737,12 @@ public class SendMessage extends MyActionBarActivity  {
                                 writeLoadAndShowTask.execute();
                             }
                             else{
-                                Log.d("__file_picker", "m) exists " + imageName);
+                                if(Config.SHOWLOG) Log.d("__file_picker", "m) exists " + imageName);
                                 //set file icon and run onSuccessRunnable
                                 rb.onFileSuccessRunnable.run();
                             }
                         } else if(Utility.isInternetExistWithoutPopup()) {
-                            Log.d("__file_picker", "m) downloading " + imageName);
+                            if(Config.SHOWLOG) Log.d("__file_picker", "m) downloading " + imageName);
                             if(Config.SHOWLOG) Log.d(ImageCache.LOGTAG, "(m) downloading data : " + imageName);
 
                             // Have to download image from server

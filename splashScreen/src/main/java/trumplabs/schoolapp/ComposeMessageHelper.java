@@ -181,7 +181,7 @@ public class ComposeMessageHelper {
         ParseException.INVALID_SESSION_TOKEN(209) : invalid session token
         -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
     */
-    public static int sendMultiTextMessageCloud(final List<ParseObject> batch, String uniqueBatchId){
+    public static int sendMultiTextMessageCloud(final List<ParseObject> batch, String uniqueBatchId, List<ParseObject> errorCases){
         if(!Utility.isInternetExistWithoutPopup()){
             if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
             return 100; //not connected to internet
@@ -253,19 +253,20 @@ public class ComposeMessageHelper {
 
                 List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
 
-                if(failedMessages.size() == batch.size()){
-                    //only if all fail
-                    if(updatedCreatedGroups != null){
-                        //class has been deleted
-                        retVal = 200;
-                    }
-                    else {
-                        //no members error hence
-                        retVal = 201;
-                    }
-                }
-
                 if(failedMessages.size() > 0) {
+                    //assuming no mix of : deleted & no-members case
+                    if(updatedCreatedGroups != null){
+                        retVal = 200;
+                        if(errorCases != null){
+                            errorCases.add(failedMessages.get(0));
+                        }
+                    }
+                    else{
+                        retVal = 201;
+                        if(errorCases != null){
+                            errorCases.add(failedMessages.get(0));
+                        }
+                    }
                     //first update created groups of user
                     if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "FAILED #classes=" + failedMessages.size());
 
@@ -361,7 +362,7 @@ public class ComposeMessageHelper {
        ParseException.INVALID_SESSION_TOKEN(209) : invalid session token
        -1 : failure due to other error(won't happen usually, hence safe to ignore and continue with other pending messsages)
    */
-    public static int sendMultiPicMessageCloud(final List<ParseObject> batch, String uniqueBatchId){
+    public static int sendMultiPicMessageCloud(final List<ParseObject> batch, String uniqueBatchId, List<ParseObject> errorCases){
         if(!Utility.isInternetExistWithoutPopup()){
             if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "send text cloud : saving cloud call when offline");
             return 100; //not connected to internet
@@ -456,6 +457,7 @@ public class ComposeMessageHelper {
             params.put("parsefile", imageParseFile);
             params.put("timestamp", uniqueBatchId);
 
+            Log.d("__photo_cloud", "calling sendMultiPhotoTextMessage2 " + master.getString("attachment_name"));
             HashMap result = ParseCloud.callFunction("sendMultiPhotoTextMessage2", params);
             //if (!TestingUtililty.ignoreResponse && result != null) {
             if (result != null) {
@@ -491,19 +493,22 @@ public class ComposeMessageHelper {
                 }
 
                 List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
-                if(failedMessages.size() == batch.size()){
-                    //only if all fail
-                    if(updatedCreatedGroups != null){
-                        //class has been deleted
-                        retVal = 200;
-                    }
-                    else {
-                        //no members error hence
-                        retVal = 201;
-                    }
-                }
 
                 if(failedMessages.size() > 0) {
+                    //assuming no mix of : deleted & no-members case
+                    if(updatedCreatedGroups != null){
+                        retVal = 200;
+                        if(errorCases != null){
+                            errorCases.add(failedMessages.get(0));
+                        }
+                    }
+                    else{
+                        retVal = 201;
+                        if(errorCases != null){
+                            errorCases.add(failedMessages.get(0));
+                        }
+                    }
+
                     //first update created groups of user
                     if(Config.SHOWLOG) Log.d(SendPendingMessages.LOGTAG, "FAILED #classes=" + failedMessages.size());
 

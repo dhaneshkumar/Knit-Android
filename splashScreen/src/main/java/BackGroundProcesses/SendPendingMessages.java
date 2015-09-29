@@ -187,18 +187,20 @@ public class SendPendingMessages {
                 ParseObject master = nextBatch.get(0);
 
                 int res = -1;
+                List<ParseObject> errorCases = new ArrayList<>();
+
                 if (!UtilString.isBlank(master.getString("title")) && UtilString.isBlank(master.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     if(Config.SHOWLOG) Log.d(LOGTAG, "pending text msg content : '" + master.getString("title") + "'" + ", multicast=" + nextBatch.size());
                     String uniqueBatchId = userObjectId + "_" + master.getLong(Constants.BATCH_ID);
-                    res = ComposeMessageHelper.sendMultiTextMessageCloud(nextBatch, uniqueBatchId);
+                    res = ComposeMessageHelper.sendMultiTextMessageCloud(nextBatch, uniqueBatchId, errorCases);
                 }
 
                 if (!UtilString.isBlank(master.getString("attachment_name"))) {
                     //title non empty, attachment empty
                     if(Config.SHOWLOG) Log.d(LOGTAG, "pending pic msg attachment name : " + master.getString("attachment_name") + ", multicast=" + nextBatch.size());
                     String uniqueBatchId = userObjectId + "_" + master.getLong(Constants.BATCH_ID);
-                    res = ComposeMessageHelper.sendMultiPicMessageCloud(nextBatch, uniqueBatchId);
+                    res = ComposeMessageHelper.sendMultiPicMessageCloud(nextBatch, uniqueBatchId, errorCases);
                 }
 
                 final int result = res;
@@ -225,7 +227,13 @@ public class SendPendingMessages {
 
                 //view.post globally shown - so show even if in some other activity. Hence use MainActivity's view as it won't be null if the app is running
                 if(showToast && isLive) {
-                    final String className = master.getString(Constants.GroupDetails.NAME);
+                    String tClassName = master.getString(Constants.GroupDetails.NAME);
+                    if(errorCases != null && errorCases.size() > 0){
+                        tClassName = errorCases.get(0).getString(Constants.GroupDetails.NAME);
+                    }
+
+                    final String className = tClassName;
+
                     if (Application.applicationHandler != null) {
                         Application.applicationHandler.post(new Runnable() {
                             @Override
