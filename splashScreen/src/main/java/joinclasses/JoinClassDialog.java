@@ -311,8 +311,9 @@ public class JoinClassDialog extends DialogFragment {
      * joining class using code in background
      */
     class AddChild_Background extends AsyncTask<Void, Void, Boolean> {
-        boolean classExist; //flag to test whether class already added in user's joined-group or not
-        boolean classCodeNotExist;
+        boolean classExist = false; //flag to test whether class already added in user's joined-group or not
+        boolean classCodeNotExist = false;
+        boolean networkError = false;
         List<ParseObject> tempInboxMessages;
 
         @Override
@@ -326,8 +327,6 @@ public class JoinClassDialog extends DialogFragment {
                 childName = UtilString.changeFirstToCaps(childName);
                 childName = UtilString.parseString(childName);
 
-                classExist = false; //setting flag initially false
-                classCodeNotExist = false; //Assuming class code exist
                 /*
                 * Change first letter to caps
                 */
@@ -349,15 +348,20 @@ public class JoinClassDialog extends DialogFragment {
                         classExist = true;    //already joined
                         return false;
                     }
-                    else if(result ==3) {
+                    else if(result == 3) {
                         classCodeNotExist = true;
                         return false;
                     }
-                    else
+                    else if(result == 4){
+                        networkError = true;
+                    }
+                    else {
                         return false;       //failed to join
+                    }
 
-                } else
+                } else {
                     return false;
+                }
             }
 
             return false;
@@ -434,11 +438,13 @@ public class JoinClassDialog extends DialogFragment {
 
             } else {
                 if (classExist)
-                    Utility.toast("Classroom already joined.");
+                    Utility.toast("Classroom already joined");
                 else if(classCodeNotExist)
                     Utility.toast(WRONG_CLASS_CODE_MSG);
+                else if(networkError)
+                    Utility.toast("Unable to connect");
                 else
-                    Utility.toast("Sorry, Something went wrong. Try Again.");
+                    Utility.toast("Sorry, Something went wrong. Try Again");
             }
 
             progressLayout.setVisibility(View.GONE);

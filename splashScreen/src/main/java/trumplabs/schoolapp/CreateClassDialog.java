@@ -184,11 +184,12 @@ public class CreateClassDialog extends DialogFragment{
             Utility.toast("Enter Class Name");
     }
 
-    private class createGroup extends AsyncTask<Void, Void, Boolean> {
-
+    private class createGroup extends AsyncTask<Void, Void, Void> {
+        boolean success = false;
+        boolean networkError = false;
 
         @Override
-        protected Boolean doInBackground(Void... param) {
+        protected Void doInBackground(Void... param) {
 
             //setting parameters
             HashMap<String, Object> params = new HashMap<String, Object>();
@@ -202,19 +203,23 @@ public class CreateClassDialog extends DialogFragment{
             } catch (ParseException e) {
                 if(Config.SHOWLOG) Log.d("__A", "createClass3 parseexception, code=" + e.getCode() + " msg=" + e.getMessage());
                 Utility.LogoutUtility.checkAndHandleInvalidSession(e);
+                if(e.getCode() == ParseException.CONNECTION_FAILED){
+                    networkError = true;
+                }
                 e.printStackTrace();
-                return false;
+                return null;
             }
 
             if (result == null)
-                return false;
+                return null;
 
             ParseObject codeGroupObject = (ParseObject) result.get("codegroup");
             List<List<String>> updatedCreatedGroups = (List<List<String>>) result.get(Constants.CREATED_GROUPS);
 
             ParseUser currentUser = ParseUser.getCurrentUser();
-            if(codeGroupObject == null || updatedCreatedGroups == null || currentUser == null)
-                return false;
+            if(codeGroupObject == null || updatedCreatedGroups == null || currentUser == null) {
+                return null;
+            }
 
             //successfully created your class
             //locally saving codegroup(of that class) and updated user object
@@ -232,13 +237,16 @@ public class CreateClassDialog extends DialogFragment{
 
             //retrieving class name
             className = codeGroupObject.getString(Constants.Codegroup.NAME);
-            return true;
+            success = true;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+
             if(Config.SHOWLOG) Log.d("__A", "createGroup : onPostExecute()");
-            if (result) {
+            if (success) {
                 if(user == null){
                     return;
                 }
@@ -289,9 +297,13 @@ public class CreateClassDialog extends DialogFragment{
             {
                 contentLayout.setVisibility(View.VISIBLE);
                 progressLayout.setVisibility(View.GONE);
-                Utility.toast("Oops! Something went wrong. Can't create your class");
+                if(networkError) {
+                    Utility.toast("Unable to connect");
+                }
+                else{
+                    Utility.toast("Oops! Something went wrong. Can't create your class");
+                }
             }
-            super.onPostExecute(result);
         }
     }
 }

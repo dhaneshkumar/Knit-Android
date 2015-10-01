@@ -169,7 +169,7 @@ public class ProfilePage extends MyActionBarActivity implements OnClickListener 
 
             String phoneNumber = currentParseUser.getString("phone");
             if(UtilString.isBlank(phoneNumber)){
-                numberTV.setText("No number added yet (tap to add)");
+                numberTV.setText("(tap to add mobile number)");
                 editNumber.setOnClickListener(this);
                 editNumber.setVisibility(View.VISIBLE);
             }

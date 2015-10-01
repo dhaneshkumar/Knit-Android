@@ -68,6 +68,10 @@ public class JoinedHelper {
 
             if(e.getMessage().equals("No such class exits"))
                 return 3;
+
+            if(e.getCode() == ParseException.CONNECTION_FAILED){
+                return 4;
+            }
             return 0;
         }
 

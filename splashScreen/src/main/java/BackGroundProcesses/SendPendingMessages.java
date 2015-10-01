@@ -190,20 +190,30 @@ public class SendPendingMessages {
                 List<ParseObject> errorCases = new ArrayList<>();
 
                 if (!UtilString.isBlank(master.getString("title")) && UtilString.isBlank(master.getString("attachment_name"))) {
-                    //title non empty, attachment empty
+                    //title non-empty, attachment empty
                     if(Config.SHOWLOG) Log.d(LOGTAG, "pending text msg content : '" + master.getString("title") + "'" + ", multicast=" + nextBatch.size());
                     String uniqueBatchId = userObjectId + "_" + master.getLong(Constants.BATCH_ID);
                     res = ComposeMessageHelper.sendMultiTextMessageCloud(nextBatch, uniqueBatchId, errorCases);
                 }
-
-                if (!UtilString.isBlank(master.getString("attachment_name"))) {
-                    //title non empty, attachment empty
+                else if (!UtilString.isBlank(master.getString("attachment_name"))) {
+                    //attachment non-empty
                     if(Config.SHOWLOG) Log.d(LOGTAG, "pending pic msg attachment name : " + master.getString("attachment_name") + ", multicast=" + nextBatch.size());
                     String uniqueBatchId = userObjectId + "_" + master.getLong(Constants.BATCH_ID);
                     res = ComposeMessageHelper.sendMultiPicMessageCloud(nextBatch, uniqueBatchId, errorCases);
                 }
 
                 final int result = res;
+
+                Log.d("__send_error", "result = " + result);
+                // Assume that apart from invalid session or connection_failed any other error is persistent
+                // and hence this call will never succeed, so no point of retrying forever
+                // just remove this message completely
+                if(result == -1){
+                    //notify outbox and class page adapter
+                    ParseObject.unpinAllInBackground(nextBatch);
+                    SendMessage.notifyAdapter(nextBatch);
+                    Outbox.notifyAdapter(nextBatch);
+                }
 
                 //process the result
                 Boolean showToast = false;
@@ -246,6 +256,9 @@ public class SendPendingMessages {
                                 }
                                 else if (result == 201) { //no subscribers in class
                                     Utility.toast("You can't send message to class " + className + " as it has no members", false, 15);
+                                }
+                                else if(result == -1){
+                                    Utility.toast("Unable to send message. Please try again", false, 15);
                                 }
                             }
                         });
